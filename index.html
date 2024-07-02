@@ -210,8 +210,9 @@
             showData(sampleData);
         });
 
-        function showData(dataarray) {
-            $('#example').DataTable({
+    function showData(dataarray) {
+      $(document).ready(function() {
+        var table = $('#example').DataTable({
           "pageLength": 10, // Set the default number of entries to 25
           "lengthMenu": [10, 25, 50, 100,1000,2000], // Provide options for the number of entries per page
           "data": dataarray,
