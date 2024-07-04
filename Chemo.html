@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chemotherapy Regimen Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>Chemotherapy Regimen Calculator</h1>
+    <form id="chemoForm">
+        <label for="weight">Weight (kg):</label>
+        <input type="number" id="weight" name="weight" required>
+        
+        <label for="height">Height (cm):</label>
+        <input type="number" id="height" name="height" required>
+        
+        <label for="regimen">Select Regimen:</label>
+        <select id="regimen" name="regimen" required>
+            <option value="folfox6">FOLFOX6</option>
+            <!-- Add more regimens as needed -->
+        </select>
+        
+        <button type="button" onclick="calculateRegimen()">Calculate</button>
+    </form>
+    <div id="result" class="result" style="display: none;"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
