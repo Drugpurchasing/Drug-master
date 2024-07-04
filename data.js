@@ -1313,7 +1313,7 @@ var sampleData = [
 ["1200001325","Candid mouth paint (15 mL)","Clotrimazole mouth paint (15 mL) (NED)","906322","-","NED","Bottle","64.5","Bottle","53","Bottle","ยกเลิก","5","12","3","4","0","0","0","0","2","7","8","4"],
 ["1200001326","Kamillosan-M spray 20 ml","Standardised chamomile extr 370.5 mg+essential oil 100 mg%+chamazulene 3 mg% mouth spray (20 mL)","699639","-","NED","Bottle","220","Bottle","181.9","Bottle","ในบัญชี","386","376","416","506","498","551","575","667","558","564","514","621"],
 ["1200001327","C-20 mouth wash  0.12% (180mL)","Chlorhexidine gluconate mouth wash 0.12% (180 mL)","845412","-","ED","Bottle","38","Bottle","31.03","Bottle","ในบัญชี","417","379","433","505","479","377","482","449","494","475","477","466"],
-["1200001328","Siriraj Fluoride Gel","-","-","เบิกไม่ได้","Tube","91","Tube","75","Tube","ในบัญชี","0","0","0","0","0","0","0","0","0","0","0","0"],
+["1200001328","Siriraj Fluoride Gel","Siriraj Fluoride Gel","-","-","เบิกไม่ได้","Tube","91","Tube","75","Tube","ในบัญชี","0","0","0","0","0","0","0","0","0","0","0","0"],
 ["1200001329","Xylocaine 2% (ORAL) viscous 100 ml","Lidocaine HCl viscous 2 % (100 mL)","769571","-","ED","Bottle","299","Bottle","250","Bottle","ในบัญชี","90","48","114","103","131","94","95","120","87","66","49","63"],
 ["1200001330","Mouth wash solution 250 ml","Mouth wash solution (Chlorhexidine gluconate)  (250 mL)","836870","-","ED","Bottle","46","Bottle","37.45","Bottle","ยกเลิก","0","0","0","0","0","0","0","0","0","0","0","0"],
 ["1200001332","Miconazole 2% oral gel (10 g) **เฉพาะเคส","Miconazole nitrate 2% ORAL gel (10 g)**เฉพาะเคส**","826640","-","ED","Tube","34.5","Tube","0","Tube","เฉพาะเคส","0","0","0","0","0","0","0","0","0","0","0","0"],
