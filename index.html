@@ -11,20 +11,19 @@
         font-family: 'Sarabun', sans-serif;
         margin: 10px 20px 10px 10px;
         padding: 10px 20px 20px 10px;
-        font-color: #1f3d7d;
+        color: #1f3d7d;
         font-weight: 700;
         table-layout: fixed;
 
       }
       #example {
         margin: auto;
-        padding: 10px 10px 10px 10px;
-        font-size: 16px;
-        font-color: #000000;
-        font-weight: bold;
-        max-width: 100%; 
-        table-layout: auto;
-        
+  padding: 10px 10px 10px 10px;
+  font-size: 16px;
+  font-color: #000000;
+  font-weight: bold;
+  max-width: 100%; 
+  table-layout: auto;
       }
       
       /* Adjust font and colors */
@@ -56,14 +55,33 @@
         background-color: #fff8e1; /* Set the background color of the hovered row */
       }
       
-      /* Set column width and add line between columns */
-      #example td, #example th {
-        border-right: 1px solid #ddd; /* Add a line between columns */
-        padding: 8px; /* Set cell padding */
-        text-align: center;
-        flex: 1;
-      }
-      
+
+#example th:nth-child(1), #example td:nth-child(1) { width: 120px; }
+#example th:nth-child(2), #example td:nth-child(2) { width: 400px; text-align: left; }
+#example th:nth-child(3), #example td:nth-child(3) { width: 250px; text-align: left; }
+#example th:nth-child(4), #example td:nth-child(4) { width: 50px; text-align: center;}
+#example th:nth-child(5), #example td:nth-child(5) { width: 50px; text-align: center;}
+#example th:nth-child(6), #example td:nth-child(6) { width: 50px; text-align: center;}
+#example th:nth-child(7), #example td:nth-child(7) { width: 50px; text-align: center;}
+#example th:nth-child(8), #example td:nth-child(8) { width: 50px; text-align: center;}
+#example th:nth-child(9), #example td:nth-child(9) { width: 50px; text-align: center;}
+#example th:nth-child(10), #example td:nth-child(10) { width: 50px; text-align: center;}
+#example th:nth-child(11), #example td:nth-child(11) { width: 50px; text-align: center;}
+#example th:nth-child(12), #example td:nth-child(12) { width: 50px; text-align: center;}
+#example th:nth-child(4), #example td:nth-child(13) { width: 50px; text-align: center;}
+#example th:nth-child(5), #example td:nth-child(14) { width: 50px; text-align: center;}
+#example th:nth-child(6), #example td:nth-child(15) { width: 50px; text-align: center;}
+#example th:nth-child(7), #example td:nth-child(16) { width: 50px; text-align: center;}
+#example th:nth-child(8), #example td:nth-child(17) { width: 50px; text-align: center;}
+#example th:nth-child(9), #example td:nth-child(18) { width: 50px; text-align: center;}
+#example th:nth-child(10), #example td:nth-child(19) { width: 50px; text-align: center;}
+#example th:nth-child(11), #example td:nth-child(20) { width: 50px; text-align: center;}
+#example th:nth-child(12), #example td:nth-child(21) { width: 50px; text-align: center;}
+#example th:nth-child(12), #example td:nth-child(22) { width: 50px; text-align: center;}
+#example th:nth-child(12), #example td:nth-child(23) { width: 50px; text-align: center;}
+#example th:nth-child(12), #example td:nth-child(24) { width: 50px; text-align: center;}
+
+
       #example th:last-child, #example td:last-child {
         border-right: none; /* Remove the line on the last column */
       }
@@ -228,7 +246,6 @@
             { "title": "Cost price", "visible": false }, 
             { "title": "Base Unit"},
             { "title": "Status" },            
-            { "title": "มิ.ย. 66", "visible": false },
             { "title": "ก.ค. 66", "visible": false },
             { "title": "ส.ค. 66", "visible": false },
             { "title": "ก.ย. 66", "visible": false },
@@ -240,6 +257,7 @@
             { "title": "มี.ค. 67", "visible": false },
             { "title": "เม.ษ. 67", "visible": false},
             { "title": "พ.ค. 67", "visible": false},
+            { "title": "มิ.ย. 67", "visible": false }
           ]
         });
 
