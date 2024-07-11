@@ -1,437 +1,407 @@
+<!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>Drug master V1.15 (7/2024)</title>
     <base target="_top">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@100;300&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <style>
-      /* Set the table to occupy the full page */
-      html {
-        font-family: 'Sarabun', sans-serif;
-        margin: 10px 20px 10px 10px;
-        padding: 10px 20px 20px 10px;
-        color: #1f3d7d;
-        font-weight: 700;
-        table-layout: fixed;
+        /* Set the table to occupy the full page */
+        html {
+            font-family: 'Sarabun', sans-serif;
+            margin: 10px 20px 10px 10px;
+            padding: 10px 20px 20px 10px;
+            color: #1f3d7d;
+            font-weight: 700;
+            table-layout: fixed;
+        }
+        #example {
+            margin: auto;
+            padding: 10px 10px 10px 10px;
+            font-size: 16px;
+            font-color: #000000;
+            font-weight: bold;
+            max-width: 100%;
+            table-layout: auto;
+        }
 
-      }
-      #example {
-        margin: auto;
-  padding: 10px 10px 10px 10px;
-  font-size: 16px;
-  font-color: #000000;
-  font-weight: bold;
-  max-width: 100%; 
-  table-layout: auto;
-      }
-      
-      /* Adjust font and colors */
-      body {
-        font-family: sarabun; /* Set the desired font family */
-        font-size: 17px; /* Set the desired font size */
-        color: #1f3d7d;
-        background-color: #f8f9fc; /* Set the background color of the page */
-      }
+        /* Adjust font and colors */
+        body {
+            font-family: sarabun; /* Set the desired font family */
+            font-size: 17px; /* Set the desired font size */
+            color: #1f3d7d;
+            background-color: #f8f9fc; /* Set the background color of the page */
+        }
 
-      #update {
-      text-align: right;
-      font-weight: bold;
-      }
-      
-      /* Header row style */
-      #example thead th {
-        background-color: #f3732c; /* Set the background color of the header row */
-        color: #fff; /* Set the font color of the header row */
-      }
-      
-      /* Alternating row colors */
-      #example tbody tr:nth-child(even) {
-        background-color: #ffecb3; /* Set the background color of even rows */
-      }
-      
-      /* Hover effect on rows */
-      #example tbody tr:hover {
-        background-color: #fff8e1; /* Set the background color of the hovered row */
-      }
-      
+        #update {
+            text-align: right;
+            font-weight: bold;
+        }
 
-#example th:nth-child(1), #example td:nth-child(1) { width: 120px; }
-#example th:nth-child(2), #example td:nth-child(2) { width: 400px; text-align: left; }
-#example th:nth-child(3), #example td:nth-child(3) { width: 250px; text-align: left; }
-#example th:nth-child(4), #example td:nth-child(4) { width: 50px; text-align: center;}
-#example th:nth-child(5), #example td:nth-child(5) { width: 50px; text-align: center;}
-#example th:nth-child(6), #example td:nth-child(6) { width: 50px; text-align: center;}
-#example th:nth-child(7), #example td:nth-child(7) { width: 50px; text-align: center;}
-#example th:nth-child(8), #example td:nth-child(8) { width: 50px; text-align: center;}
-#example th:nth-child(9), #example td:nth-child(9) { width: 50px; text-align: center;}
-#example th:nth-child(10), #example td:nth-child(10) { width: 50px; text-align: center;}
-#example th:nth-child(11), #example td:nth-child(11) { width: 50px; text-align: center;}
-#example th:nth-child(12), #example td:nth-child(12) { width: 50px; text-align: center;}
-#example th:nth-child(4), #example td:nth-child(13) { width: 50px; text-align: center;}
-#example th:nth-child(5), #example td:nth-child(14) { width: 50px; text-align: center;}
-#example th:nth-child(6), #example td:nth-child(15) { width: 50px; text-align: center;}
-#example th:nth-child(7), #example td:nth-child(16) { width: 50px; text-align: center;}
-#example th:nth-child(8), #example td:nth-child(17) { width: 50px; text-align: center;}
-#example th:nth-child(9), #example td:nth-child(18) { width: 50px; text-align: center;}
-#example th:nth-child(10), #example td:nth-child(19) { width: 50px; text-align: center;}
-#example th:nth-child(11), #example td:nth-child(20) { width: 50px; text-align: center;}
-#example th:nth-child(12), #example td:nth-child(21) { width: 50px; text-align: center;}
-#example th:nth-child(12), #example td:nth-child(22) { width: 50px; text-align: center;}
-#example th:nth-child(12), #example td:nth-child(23) { width: 50px; text-align: center;}
-#example th:nth-child(12), #example td:nth-child(24) { width: 50px; text-align: center;}
+        /* Header row style */
+        #example thead th {
+            background-color: #f3732c; /* Set the background color of the header row */
+            color: #fff; /* Set the font color of the header row */
+        }
 
+        /* Alternating row colors */
+        #example tbody tr:nth-child(even) {
+            background-color: #ffecb3; /* Set the background color of even rows */
+        }
 
-      #example th:last-child, #example td:last-child {
-        border-right: none; /* Remove the line on the last column */
-      }
-      
-      #example th:first-child, #example td:first-child {
-        border-left: none; /* Remove the line on the first column */
-      }
-      
+        /* Hover effect on rows */
+        #example tbody tr:hover {
+            background-color: #fff8e1; /* Set the background color of the hovered row */
+        }
 
-      #title {
-        text-shadow: 3px 3px 3px #ababab;
-        font-family: sarabun;
-        font-size: 25px; /* Set the font size of the title */
-        font-weight: bold; /* Make the title bold */
-        color: #000000; /* Set the font color of the title */
-        text-align: center; /* Center align the title */
+        #example th:nth-child(1), #example td:nth-child(1) { width: 120px; }
+        #example th:nth-child(2), #example td:nth-child(2) { width: 400px; text-align: left; }
+        #example th:nth-child(3), #example td:nth-child(3) { width: 250px; text-align: left; }
+        #example th:nth-child(4), #example td:nth-child(4) { width: 50px; text-align: center;}
+        #example th:nth-child(5), #example td:nth-child(5) { width: 50px; text-align: center;}
+        #example th:nth-child(6), #example td:nth-child(6) { width: 50px; text-align: center;}
+        #example th:nth-child(7), #example td:nth-child(7) { width: 50px; text-align: center;}
+        #example th:nth-child(8), #example td:nth-child(8) { width: 50px; text-align: center;}
+        #example th:nth-child(9), #example td:nth-child(9) { width: 50px; text-align: center;}
+        #example th:nth-child(10), #example td:nth-child(10) { width: 50px; text-align: center;}
+        #example th:nth-child(11), #example td:nth-child(11) { width: 50px; text-align: center;}
+        #example th:nth-child(12), #example td:nth-child(12) { width: 50px; text-align: center;}
+        #example th:nth-child(13), #example td:nth-child(13) { width: 50px; text-align: center;}
+        #example th:nth-child(14), #example td:nth-child(14) { width: 50px; text-align: center;}
+        #example th:nth-child(15), #example td:nth-child(15) { width: 50px; text-align: center;}
+        #example th:nth-child(16), #example td:nth-child(16) { width: 50px; text-align: center;}
+        #example th:nth-child(17), #example td:nth-child(17) { width: 50px; text-align: center;}
+        #example th:nth-child(18), #example td:nth-child(18) { width: 50px; text-align: center;}
+        #example th:nth-child(19), #example td:nth-child(19) { width: 50px; text-align: center;}
+        #example th:nth-child(20), #example td:nth-child(20) { width: 50px; text-align: center;}
+        #example th:nth-child(21), #example td:nth-child(21) { width: 50px; text-align: center;}
+        #example th:nth-child(22), #example td:nth-child(22) { width: 50px; text-align: center;}
+        #example th:nth-child(23), #example td:nth-child(23) { width: 50px; text-align: center;}
+        #example th:nth-child(24), #example td:nth-child(24) { width: 50px; text-align: center;}
 
+        #example th:last-child, #example td:last-child {
+            border-right: none; /* Remove the line on the last column */
+        }
 
-      }
+        #example th:first-child, #example td:first-child {
+            border-left: none; /* Remove the line on the first column */
+        }
 
-      #logo{
-        text-align: center;
-        margin-right: 10px;
-        padding-bottom: 30px;
+        #title {
+            text-shadow: 3px 3px 3px #ababab;
+            font-family: sarabun;
+            font-size: 25px; /* Set the font size of the title */
+            font-weight: bold; /* Make the title bold */
+            color: #000000; /* Set the font color of the title */
+            text-align: center; /* Center align the title */
+        }
 
-      }
+        #logo {
+            text-align: center;
+            margin-right: 10px;
+            padding-bottom: 30px;
+        }
 
-      .toggle-button {
-      background-color: #007bff;
-      font-size: 15px;
-      color: #fff;
-      padding: 8px 16px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      margin: 5px;
-      }
+        .toggle-button {
+            background-color: #007bff;
+            font-size: 15px;
+            color: #fff;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
 
-      .toggle-button:hover,.toggle:hover {
-      background-color: #9dccff;
-      }
+        .toggle-button:hover, .toggle:hover {
+            background-color: #9dccff;
+        }
 
-      .box {
-       width: 200px;
-       margin: 5px;
-      }
-      #footer {
-        
-       font-size: 10px;
-       text-align: right;
-      
-      }
+        .box {
+            width: 200px;
+            margin: 5px;
+        }
 
-      .toggle{
-      background-color: #007bff;
-      font-size: 15px;
-      color: #fff;
-      font-size: 20px;
-      width: 400px; /* Adjust width to your desired size */
-      height: 40px; /* Adjust height to your desired size */
-      cursor: pointer;
-      border: none;
-      border-radius: 4px;
-      margin: 10px;
-      text-align: center; 
+        #footer {
+            font-size: 10px;
+            text-align: right;
+        }
 
-  }
+        .toggle {
+            background-color: #007bff;
+            font-size: 15px;
+            color: #fff;
+            font-size: 20px;
+            width: 400px; /* Adjust width to your desired size */
+            height: 40px; /* Adjust height to your desired size */
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            margin: 10px;
+            text-align: center;
+        }
 
-    #example td:nth-child(2),
-    #example td:nth-child(3) {
-    text-align: left;
-  }
-
+        #example td:nth-child(2),
+        #example td:nth-child(3) {
+            text-align: left;
+        }
     </style>
     <script src="data.js"></script>
-  </head>
+</head>
 <body>
+    <div id="logo">
+        <img id="logo" src="https://xn--12c6cez7ezb.com/ib/EB0NE3YvsDpDOGH_1699412219.png" width="auto" height="100">
+        <span id="title">บัญชียาโรงพยาบาลจุฬาภรณ์</span>
+    </div>
+    
+    <table id="example" class="row-border"></table>
 
-  <div id="logo">
-  <img id="logo" src="https://xn--12c6cez7ezb.com/ib/EB0NE3YvsDpDOGH_1699412219.png" width=auto height="100">
+    <button id="toggleColumns" class="toggle">ราคาทุน</button>
+    <button id="toggleRate" class="toggle">Rate</button>
+    <button id="toggleData" class="toggle" style="display: none;">Drug data</button>
 
-  <span id="title">บัญชียาโรงพยาบาลจุฬาภรณ์</span>
-  </div>
-  
-  <table id="example" class="row-border">
+    <br>
+    <input type="text" id="materialFilter" placeholder="Filter by Material No." class="box" autocomplete="on">
+    <input type="text" id="sapNameFilter" placeholder="Filter by SAP Name" class="box" autocomplete="on">
+    <input type="text" id="genericNameFilter" placeholder="Filter by Generic Name" class="box" autocomplete="on">
+    <input type="text" id="coPayFilter" placeholder="Filter by เงื่อนไขการเบิกจ่าย" class="box" autocomplete="on">
+    <input type="text" id="banchiFilter" placeholder="Filter by บัญชียา" class="box" autocomplete="on" list="บัญชี">
+    <datalist id="บัญชี">
+        <option value="ED">
+        <option value="NED">
+    </datalist>
+    
+    <input type="text" id="purchasingUnitFilter" placeholder="Filter by Base Unit" class="box" autocomplete="on">
+    <input type="text" id="statusFilter" placeholder="Filter by Status" class="box" list="fruits">
+    <datalist id="fruits">
+        <option value="ในบัญชี">
+        <option value="NS">
+        <option value="ใช้ชั่วคราว">
+        <option value="เฉพาะเคส">
+        <option value="ตัวแทน">
+    </datalist>
 
-  </table>
+    <button id="filterButton" class="toggle-button">Filter</button>
+    <button id="resetButton" class="toggle-button">Reset Filters</button>
+    
+    <br>
+    <button id="hideColumn3" class="toggle-button">Hide/show Generic Name</button>
+    <button id="hideColumn4" class="toggle-button">Hide/show เงื่อนไขการเบิกจ่าย</button>
+    <button id="hideColumn5" class="toggle-button">Hide/show บัญชียา</button>
+    <button id="hideColumn6" class="toggle-button">Hide/show Purchasing Unit</button>
+    <button id="hideColumn7" class="toggle-button">Hide/show Sale price</button>
+    <button id="hideColumn8" class="toggle-button">Hide/show Sale Unit</button>
+    <button id="hideColumn9" class="toggle-button">Hide/show Status</button>
 
-  <button id="toggleColumns" class="toggle">ราคาทุน</button>
-  <button id="toggleRate" class="toggle">Rate</button>
-  <button id="toggleData" class="toggle" style="display: none;">Drug data</button>
+    <p id="update"> (Latest update 10/07/2567; Version 1.15)</p>
 
-  <br>
-  <input type="text" id="materialFilter" placeholder="Filter by Material No." class="box" autocomplete="on">
-  <input type="text" id="sapNameFilter" placeholder="Filter by SAP Name" class="box" autocomplete="on">
-  <input type="text" id="genericNameFilter" placeholder="Filter by Generic Name" class="box" autocomplete="on">
-  <input type="text" id="coPayFilter" placeholder="Filter by เงื่อนไขการเบิกจ่าย" class="box" autocomplete="on">
-  <input type="text" id="banchiFilter" placeholder="Filter by บัญชียา" class="box" autocomplete="on" list="บัญชี">
-  <datalist id="บัญชี">
-    <option value="ED">
-    <option value="NED">
-  </datalist>
-  
-  <input type="text" id="purchasingUnitFilter" placeholder="Filter by Base Unit" class="box" autocomplete="on">
-  <input type="text" id="statusFilter" placeholder="Filter by Status" class="box" list="fruits">
-  <datalist id="fruits">
-    <option value="ในบัญชี">
-    <option value="NS">
-    <option value="ใช้ชั่วคราว">
-    <option value="เฉพาะเคส">
-    <option value="ตัวแทน">
-  </datalist>
+    <footer>
+        <hr>
+        <p id="footer">The Unofficial Drug Master Data for RxCCC, created by BG X ChatGPT</p>
+        <br>
+    </footer>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx-populate/1.22.0/xlsx-populate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
-  <button id="filterButton" class="toggle-button">Filter</button>
-  <button id="resetButton" class="toggle-button">Reset Filters</button>
-  
-  <br>
-  <button id="hideColumn3" class="toggle-button">Hide/show Generic Name</button>
-  <button id="hideColumn4" class="toggle-button">Hide/show เงื่อนไขการเบิกจ่าย</button>
-  <button id="hideColumn5" class="toggle-button">Hide/show บัญชียา</button>
-  <button id="hideColumn6" class="toggle-button">Hide/show Purchasing Unit</button>
-  <button id="hideColumn7" class="toggle-button">Hide/show Sale price</button>
-  <button id="hideColumn8" class="toggle-button">Hide/show Sale Unit</button>
-  <button id="hideColumn9" class="toggle-button">Hide/show Status</button>
-
-  <p id="update"> (Latest update 10/07/2567; Version 1.15)</p>
-
-  <footer>
-      <hr>
-      <p id="footer">The Unofficial Drug Master Data for RxCCC, created by BG X ChatGPT</p>
-      <br>
-  </footer>
-
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx-populate/1.22.0/xlsx-populate.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-
-  <script>
-
-      $(document).ready(function() {
+    <script>
+        $(document).ready(function() {
             showData(sampleData);
         });
 
-    function showData(dataarray) {
-      $(document).ready(function() {
-        var table = $('#example').DataTable({
-          "pageLength": 10, // Set the default number of entries to 25
-          "lengthMenu": [10, 25, 50, 100,1000,2000], // Provide options for the number of entries per page
-          "data": dataarray,
-          "columns": [
-            { "title": "Material No." },
-            { "title": "SAP Name", "visible": true, "searchable": true},
-            { "title": "Generic Name", "visible": true, "searchable": true},
-            { "title": "TPU", "visible": true, "searchable": true},
-            { "title": "เงื่อนไขการเบิกจ่าย // Co-pay (Baht)", "visible": true, "searchable": true },
-            { "title": "บัญชียา" },
-            { "title": "Purchasing Unit" },
-            { "title": "Sale price" },
-            { "title": "Sale Unit" },
-            { "title": "Cost price", "visible": false }, 
-            { "title": "Base Unit"},
-            { "title": "Status" },            
-            { "title": "ก.ค. 66", "visible": false },
-            { "title": "ส.ค. 66", "visible": false },
-            { "title": "ก.ย. 66", "visible": false },
-            { "title": "ต.ค. 66", "visible": false },
-            { "title": "พ.ย. 66", "visible": false },
-            { "title": "ธ.ค. 66", "visible": false },
-            { "title": "ม.ค. 67", "visible": false },
-            { "title": "ก.พ. 67", "visible": false },
-            { "title": "มี.ค. 67", "visible": false },
-            { "title": "เม.ษ. 67", "visible": false},
-            { "title": "พ.ค. 67", "visible": false},
-            { "title": "มิ.ย. 67", "visible": false }
-          ]
-        });
+        function showData(dataarray) {
+            $(document).ready(function() {
+                var table = $('#example').DataTable({
+                    "pageLength": 10, // Set the default number of entries to 10
+                    "lengthMenu": [10, 25, 50, 100, 1000, 2000], // Provide options for the number of entries per page
+                    "data": dataarray,
+                    "columns": [
+                        { "title": "Material No." },
+                        { "title": "SAP Name", "visible": true, "searchable": true},
+                        { "title": "Generic Name", "visible": true, "searchable": true},
+                        { "title": "TPU", "visible": true, "searchable": true},
+                        { "title": "เงื่อนไขการเบิกจ่าย // Co-pay (Baht)", "visible": true, "searchable": true },
+                        { "title": "บัญชียา" },
+                        { "title": "Purchasing Unit" },
+                        { "title": "Sale price" },
+                        { "title": "Sale Unit" },
+                        { "title": "Cost price", "visible": false },
+                        { "title": "Base Unit"},
+                        { "title": "Status" },
+                        { "title": "ก.ค. 66", "visible": false },
+                        { "title": "ส.ค. 66", "visible": false },
+                        { "title": "ก.ย. 66", "visible": false },
+                        { "title": "ต.ค. 66", "visible": false },
+                        { "title": "พ.ย. 66", "visible": false },
+                        { "title": "ธ.ค. 66", "visible": false },
+                        { "title": "ม.ค. 67", "visible": false },
+                        { "title": "ก.พ. 67", "visible": false },
+                        { "title": "มี.ค. 67", "visible": false },
+                        { "title": "เม.ษ. 67", "visible": false},
+                        { "title": "พ.ค. 67", "visible": false},
+                        { "title": "มิ.ย. 67", "visible": false }
+                    ]
+                });
 
-      function applyFilters() {
-        var materialFilter = $('#materialFilter').val();
-        var sapNameFilter = $('#sapNameFilter').val();
-        var genericNameFilter = $('#genericNameFilter').val();
-        var coPayFilter = $('#coPayFilter').val();
-        var banchiFilter = $('#banchiFilter').val();
-        var purchasingUnitFilter = $('#purchasingUnitFilter').val();
-        var statusFilter = $('#statusFilter').val();
+                function applyFilters() {
+                    var materialFilter = $('#materialFilter').val();
+                    var sapNameFilter = $('#sapNameFilter').val();
+                    var genericNameFilter = $('#genericNameFilter').val();
+                    var coPayFilter = $('#coPayFilter').val();
+                    var banchiFilter = $('#banchiFilter').val();
+                    var purchasingUnitFilter = $('#purchasingUnitFilter').val();
+                    var statusFilter = $('#statusFilter').val();
 
-  // Apply filters to the specified columns
-        table.column(0).search(materialFilter).draw(); // Material column
-        table.column(1).search(sapNameFilter).draw(); // SAP Name column
-        table.column(2).search(genericNameFilter).draw(); // Generic Name column
-        table.column(4).search(coPayFilter).draw(); // เงื่อนไขการเบิกจ่าย column
-        table.column(5).search(banchiFilter).draw(); // บัญชียา column
-        table.column(10).search(purchasingUnitFilter).draw(); // Purchasing Unit column
-        table.column(11).search(statusFilter).draw(); // Status column
-    }
+                    // Apply filters to the specified columns
+                    table.column(0).search(materialFilter).draw(); // Material column
+                    table.column(1).search(sapNameFilter).draw(); // SAP Name column
+                    table.column(2).search(genericNameFilter).draw(); // Generic Name column
+                    table.column(4).search(coPayFilter).draw(); // เงื่อนไขการเบิกจ่าย column
+                    table.column(5).search(banchiFilter).draw(); // บัญชียา column
+                    table.column(10).search(purchasingUnitFilter).draw(); // Purchasing Unit column
+                    table.column(11).search(statusFilter).draw(); // Status column
+                }
 
+                $('#filterButton').on('click', function() {
+                    applyFilters();
+                });
 
-      $('#filterButton').on('click', function() {
-      applyFilters();
+                $(document).on('keydown', function(event) {
+                    if (event.key === "Enter") {
+                        applyFilters();
+                    }
+                });
+
+                $('#resetButton').on('click', function() {
+                    $('#materialFilter, #sapNameFilter, #genericNameFilter, #statusFilter,#coPayFilter,#banchiFilter,#purchasingUnitFilter').val('');
+                    applyFilters();
+                });
+
+                $('#toggleRate').on('click', function() {
+                    $('#example').css('max-width', '100%');
+                    $('#toggleRate').hide();
+                    $('#toggleData').show();
+                    $('#toggleColumns').hide();
+
+                    var column = table.column([2]);
+                    column.visible(!column.visible());
+                    column = table.column([3]);
+                    column.visible(!column.visible());
+                    column = table.column([4]);
+                    column.visible(!column.visible());
+                    column = table.column([5]);
+                    column.visible(!column.visible());
+                    column = table.column([6]);
+                    column.visible(!column.visible());
+                    column = table.column([7]);
+                    column.visible(!column.visible());
+                    column = table.column([8]);
+                    column.visible(!column.visible());
+                    for (var i = 11; i <= 24; i++) {
+                        column = table.column(i);
+                        column.visible(!column.visible());
+                    }
+
+                    $('#example td:nth-child(2)').css('text-align', 'left');
+                    $('#example td:nth-child(3)').css('text-align', 'center');
+                });
+
+                $('#toggleData').on('click', function() {
+                    $('#example').css('max-width', '100%');
+                    $('#toggleRate').show();
+                    $('#toggleData').hide();
+                    $('#toggleColumns').show();
+
+                    var column = table.column([2]);
+                    column.visible(!column.visible());
+                    column = table.column([3]);
+                    column.visible(!column.visible());
+                    column = table.column([4]);
+                    column.visible(!column.visible());
+                    column = table.column([5]);
+                    column.visible(!column.visible());
+                    column = table.column([6]);
+                    column.visible(!column.visible());
+                    column = table.column([7]);
+                    column.visible(!column.visible());
+                    column = table.column([8]);
+                    column.visible(!column.visible());
+
+                    for (var i = 11; i <= 24; i++) {
+                        column = table.column(i);
+                        column.visible(!column.visible());
+                    }
+
+                    $('#example td:nth-child(2)').css('text-align', 'left');
+                    $('#example td:nth-child(3)').css('text-align', 'left');
+                });
+
+                $('#toggleColumns').on('click', function() {
+                    var password = prompt("กรุณาใส่รหัสเพื่อเข้าถึงข้อมูล");
+
+                    if (password === "rxccc") {
+                        var column = table.column([9]);
+                        column.visible(!column.visible());
+                        column = table.column([10]);
+                        column.visible(!column.visible());
+                        $('#example').css('max-width', '100%');
+                    } else {
+                        alert("รหัสขอเข้าถึงข้อมูลไม่ถูกต้อง");
+                    }
+                });
+
+                $('#hideColumn3').on('click', function() {
+                    var column = table.column([2]);
+                    column.visible(!column.visible());
+                    $('#example').css('max-width', '100%');
+                });
+
+                $('#hideColumn4').on('click', function() {
+                    var column = table.column([4]);
+                    column.visible(!column.visible());
+                    $('#example').css('max-width', '100%');
+                });
+
+              $('#hideColumn5').on('click', function() {
+                var column = table.column([5])
+                column.visible(!column.visible());
+                $('#example ').css('max-width','100%');
       
+              });
+              
+              $('#hideColumn6').on('click', function() {
+                var column = table.column([6])
+                column.visible(!column.visible());
+                $('#example ').css('max-width','100%');
       
-
-    });
-    
-    $(document).on('keydown', handleEnterKeyPress);
-    function handleEnterKeyPress(event) {
-    if (event.key === "Enter") {
-    applyFilters();
-
-      }
-    }
-
-        $('#resetButton').on('click', function() {
-        $('#materialFilter, #sapNameFilter, #genericNameFilter, #statusFilter,#coPayFilter,#banchiFilter,#purchasingUnitFilter').val('');
-      applyFilters();
-    });
-
-        $('#toggleRate').on('click', function() {
-
-
-          $('#example ').css('max-width','100%');
-          $('#toggleRate').hide();
-          $('#toggleData').show();
-          $('#toggleColumns').hide();
-
-
-          var column = table.column([2]);
-          column.visible(!column.visible());
-          var column = table.column([3]);
-          column.visible(!column.visible());
-          var column = table.column([4]);
-          column.visible(!column.visible());
-          var column = table.column([5]);
-          column.visible(!column.visible());
-          var column = table.column([6]);
-          column.visible(!column.visible());
-          var column = table.column([7]);
-          column.visible(!column.visible());
-          var column = table.column([8]);
-          column.visible(!column.visible());
-          for (var i = 11; i <= 24; i++) {
-            var column = table.column(i);
-            column.visible(!column.visible());
+              });
+              
+              $('#hideColumn7').on('click', function() {
+                var column = table.column([7])
+                column.visible(!column.visible());
+                $('#example ').css('max-width','100%');
+      
+              });
+              
+              $('#hideColumn8').on('click', function() {
+                var column = table.column([8])
+                column.visible(!column.visible());
+                $('#example ').css('max-width','100%');
+      
+              });
+              $('#hideColumn9').on('click', function() {
+                var column = table.column([11])
+                column.visible(!column.visible());
+                $('#example ').css('max-width','100%');
+      
+              });
+              
+            });
           }
-
-          $('#example td:nth-child(2)').css('text-align', 'left');
-          $('#example td:nth-child(3)').css('text-align', 'center');
-
-        });
-
-        $('#toggleData').on('click', function() {
-
-
-          $('#example ').css('max-width','100%');
-          $('#toggleRate').show();
-          $('#toggleData').hide();
-          $('#toggleColumns').show();
-
-          var column = table.column([2]);
-          column.visible(!column.visible());
-          var column = table.column([3]);
-          column.visible(!column.visible());
-          var column = table.column([4]);
-          column.visible(!column.visible());
-          var column = table.column([5]);
-          column.visible(!column.visible());
-          var column = table.column([6]);
-          column.visible(!column.visible());
-          var column = table.column([7]);
-          column.visible(!column.visible());
-          var column = table.column([8]);
-          column.visible(!column.visible());
-
-          for (var i = 11; i <= 24; i++) {
-            var column = table.column(i);
-            column.visible(!column.visible());
-          }
-
-          $('#example td:nth-child(2)').css('text-align', 'left');
-          $('#example td:nth-child(3)').css('text-align', 'left');
-
-        });
-
-        $('#toggleColumns').on('click', function() {
-          var password = prompt("กรุณาใส่รหัสเพื่อเข้าถึงข้อมูล");
-
-          if (password === "rxccc") {
-            var column = table.column([9]);
-            column.visible(!column.visible());
-            var column = table.column([10]);
-            column.visible(!column.visible());
-            $('#example ').css('max-width','100%');
-          } else {
-            alert("รหัสขอเข้าถึงข้อมูลไม่ถูกต้อง");
-          }
-        });
-        
-        $('#hideColumn3').on('click', function() {
-          var column = table.column([2])
-          column.visible(!column.visible());
-          $('#example ').css('max-width','100%');
-
-        });
-        
-        $('#hideColumn4').on('click', function() {
-          var column = table.column([4])
-          column.visible(!column.visible());
-          $('#example ').css('max-width','100%');
-
-        });
-        
-        $('#hideColumn5').on('click', function() {
-          var column = table.column([5])
-          column.visible(!column.visible());
-          $('#example ').css('max-width','100%');
-
-        });
-        
-        $('#hideColumn6').on('click', function() {
-          var column = table.column([6])
-          column.visible(!column.visible());
-          $('#example ').css('max-width','100%');
-
-        });
-        
-        $('#hideColumn7').on('click', function() {
-          var column = table.column([7])
-          column.visible(!column.visible());
-          $('#example ').css('max-width','100%');
-
-        });
-        
-        $('#hideColumn8').on('click', function() {
-          var column = table.column([8])
-          column.visible(!column.visible());
-          $('#example ').css('max-width','100%');
-
-        });
-        $('#hideColumn9').on('click', function() {
-          var column = table.column([11])
-          column.visible(!column.visible());
-          $('#example ').css('max-width','100%');
-
-        });
-        
-      });
-    }
-  </script>
+        </script>
 
 </body>
 </html>
