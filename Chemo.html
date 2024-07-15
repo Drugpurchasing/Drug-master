@@ -25,6 +25,162 @@
             margin-bottom: 10px;
             margin-top: 10px
         }
+        html {
+    font-family: 'Sarabun', sans-serif;
+
+}
+
+#logo{
+
+    padding-top: 10px;
+
+  }
+
+body {
+    font-family: 'Sarabun', sans-serif;
+    margin: 20px;
+    padding: 0;
+    background-color: #f4f4f9;
+}
+.container {
+    font-family: 'Sarabun', sans-serif;
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    border-radius: 10px;
+}
+#title{
+    font-family: 'Sarabun', sans-serif;
+    text-align: center;
+    font-size: 22px;
+    padding: 18px;
+    font-weight: bold;
+    color: #000000;
+
+}
+label {
+    font-family: 'Sarabun', sans-serif;
+    display: block;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    color: #1f3d7d;
+    font-weight: bold;
+    font-size: 16px;
+}
+select#gender {
+    width: 100%;
+    padding: 5px;
+}
+#gender,input{
+    width: 90%;
+    padding: 5px;
+    padding-right: 20;
+    font-family: 'Sarabun', sans-serif;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button {
+    font-family: 'Sarabun', sans-serif;
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-top: 30px;
+
+    border: none;
+    color:#1f3d7d;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+}
+
+
+.result {
+    font-family: 'Sarabun', sans-serif;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #e9ffe9;
+    border: 1px solid #b2ffb2;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 18px;
+}
+
+.regimen {
+    margin-bottom: 30px;
+    width: 100%;
+    padding: 100px;
+    white-space: normal;  /* Ensure text wraps in dropdown options */
+    word-wrap: break-word;  /* Break long words if necessary */
+    font-size: 20px;
+}
+
+#reset-button {
+    margin-left: 10px;
+    margin-right: 10px;
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+#calculate-button {
+    background-color: green;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+#add-drug-button,#add-regimen-button
+{
+    background-color: #1f3d7d;
+    margin-top: 30px;
+    margin-left: 10px;
+    margin-right: 10px;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.required-label::after {
+    content: " *";
+    color: red;
+}
+select#gender {
+    width: 100%;
+    padding: 5px;
+}
+.form-group {
+    display: flex;
+    justify-content: space-between;
+}
+.form-group > div {
+    flex: 1;
+    margin-right: 10px;
+}
+.form-group > div:last-child {
+    margin-right: 0;
+}
+#age, #gender, #serumCreatinine,#Lage,#Lgen,#Lscr {
+    display: none;
+}
+
+#PS {
+    text-align: center;
+    color: red;
+
+}
+
+.form-group2 {
+    display: flex;
+    justify-content: space-evenly;
+}
     </style>
 </head>
 <body>
