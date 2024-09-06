@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Drug master V1.17 (9/2024)</title>
+    <title>Drug master CRA V2.00 (9/2024)</title>
     <base target="_top">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
@@ -11,7 +11,19 @@
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#ffffff">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@100;300&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx-populate/1.22.0/xlsx-populate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.20/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     <style>
         html {
             font-family: 'Sarabun', sans-serif;
@@ -69,9 +81,8 @@
             text-align: center;
             margin-right: 10px;
             padding-bottom: 30px;
-        
         }
-        .toggle-button, .toggle {
+        .toggle-button {
             background-color: #0056b3;
             font-size: 15px;
             color: #fff;
@@ -82,17 +93,43 @@
             margin: 5px;
             transition: background-color 0.3s, box-shadow 0.3s;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }        
+        
+        .filter-button {
+            background-color: #E6A700;
+            font-size: 15px;
+            color: #fff;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .toggle-button:hover, .toggle:hover {
+        
+        .toggle-button:hover {
             background-color: #003366;
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+        }
+        .toggle:hover {
+            background-color: #D9591C;
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+        }
+        .togglepic:hover {
+            background-color: #B22222;
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+        }
+        .toggleexcel:hover {
+            background-color: #1A5A37;
             box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
         }
 
         .dataTables_filter input {
-                width: 200px;
-                padding-bottom: 200px;
-                margin: 50; 
-            }
+            width: 200px;
+            padding-bottom: 200px;
+            margin: 50; 
+        }
       
         .box {
             width: 200px;
@@ -103,6 +140,32 @@
         }
         .toggle {
             background-color: #F36B21;
+            padding: 8px;
+            color: #fff;
+            font-size: 20px;
+            width: 400px; /* Adjust width to your desired size */
+            height: 40px; /* Adjust height to your desired size */
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            margin: 10px;
+            text-align: center;
+        }
+        .toggleexcel {
+            background-color: #217346;
+            padding: 8px;
+            color: #fff;
+            font-size: 20px;
+            width: 400px; /* Adjust width to your desired size */
+            height: 40px; /* Adjust height to your desired size */
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            margin: 10px;
+            text-align: center;
+        }
+        .togglepic {
+            background-color: #D72828;
             padding: 8px;
             color: #fff;
             font-size: 20px;
@@ -141,28 +204,62 @@
     <button id="toggleRate" class="toggle">Rate</button>
     <button id="toggleData" class="toggle" style="display: none;">Drug data</button>
 
+    <button id="exportButton" class="toggleexcel">Export to Excel (.xlsx)</button>
+    <button id="exportJPEGButton" class="togglepic">Screenshot (JPEG)</button>
+
     <br>
     <input type="text" id="materialFilter" placeholder="Filter by Material No." class="box" autocomplete="on">
     <input type="text" id="sapNameFilter" placeholder="Filter by SAP Name" class="box" autocomplete="on">
     <input type="text" id="genericNameFilter" placeholder="Filter by Generic Name" class="box" autocomplete="on">
     <input type="text" id="coPayFilter" placeholder="Filter by เงื่อนไขการเบิกจ่าย" class="box" autocomplete="on">
     <input type="text" id="banchiFilter" placeholder="Filter by บัญชียา" class="box" autocomplete="on" list="บัญชี">
+    
     <datalist id="บัญชี">
         <option value="ED">
         <option value="NED">
     </datalist>
     <input type="text" id="purchasingUnitFilter" placeholder="Filter by Base Unit" class="box" autocomplete="on">
+
     <input type="text" id="statusFilter" placeholder="Filter by Status" class="box" list="fruits">
     <datalist id="fruits">
-        <option value="ในบัญชี">
-        <option value="NS">
-        <option value="ใช้ชั่วคราว">
-        <option value="เฉพาะเคส">
-        <option value="ตัวแทน">
+        <option value="ในบัญชี">ในบัญชี</option>
+        <option value="ในบัญชี(ATD)">ในบัญชี(ATD)</option>
+        <option value="ในบัญชี(ผสม)">ในบัญชี(ผสม)</option>
+        <option value="ในบัญชี(วถ)">ในบัญชี(วถ)</option>
+        <option value="ในบัญชี(ยส)">ในบัญชี(ยส)</option>
+        <option value="NS">NS</option>
+        <option value="ตัดออกจากบัญชี">ตัดออกจากบัญชี</option>
+        <option value="ตัวแทน">ตัวแทน</option>
+        <option value="สำหรับคีย์">สำหรับคีย์</option>
+        <option value="Raw mat">Raw mat</option>
+        <option value="โครงการ">โครงการ</option>
+        <option value="Promotion">Promotion</option>
     </datalist>
 
-    <button id="filterButton" class="toggle-button">Filter</button>
-    <button id="resetButton" class="toggle-button">Reset Filters</button>
+    <input type="text" id="drugFilter" placeholder="Filter by Drug group" class="box" autocomplete="on" list="Druggrouplist">
+    <datalist id="Druggrouplist">
+        <option value="Infections">Infections</option>
+        <option value="Nutrition and blood">Nutrition and blood</option>
+        <option value="Respiratory system">Respiratory system</option>
+        <option value="Cardiovascular system">Cardiovascular system</option>
+        <option value="Malignant disease and immunosuppression">Malignant disease and immunosuppression</option>
+        <option value="Central nervous system">Central nervous system</option>
+        <option value="Gastro-intestinal system">Gastro-intestinal system</option>
+        <option value="Obstetrics, gynaecology, and urinary-tract disorders">Obstetrics, gynaecology, and urinary-tract disorders</option>
+        <option value="Musculoskeletal and joint diseases">Musculoskeletal and joint diseases</option>
+        <option value="Endocrine system">Endocrine system</option>
+        <option value="Skin">Skin</option>
+        <option value="Ear, nose, and oropharynx and oral cavity">Ear, nose, and oropharynx and oral cavity</option>
+        <option value="Antidotes">Antidotes</option>
+        <option value="Eye">Eye</option>
+        <option value="Anesthesia">Anesthesia</option>
+        <option value="Immunological products and vaccines">Immunological products and vaccines</option>
+        <option value="Contrast media and Radiopharmaceuticals">Contrast media and Radiopharmaceuticals</option>
+    </datalist>
+
+    <button id="filterButton" class="filter-button">Filter</button>
+    <button id="resetButton" class="filter-button">Reset Filters</button>
+
 
     <br>
     <button id="hideColumn3" class="toggle-button">Hide/show Generic Name</button>
@@ -173,44 +270,47 @@
     <button id="hideColumn8" class="toggle-button">Hide/show Sale Unit</button>
     <button id="hideColumn9" class="toggle-button">Hide/show Status</button>
 
-    <p id="update">(Latest update 04/09/2567; Version 1.17)</p>
+    <p id="update">(Latest update 06/09/2567; Version 2.00)</p>
 
     <footer>
         <hr>
         <p>The Unofficial Drug Master Data for RxCCC, created by BG X ChatGPT</p>
     </footer>
 
-
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx-populate/1.22.0/xlsx-populate.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/xlsx-populate/browser/xlsx-populate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.20/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <script>
+
         $(document).ready(function() {
             showData(sampleData);
             $('.dataTables_filter input').attr('placeholder', 'Search the table...');
         });
-
+    
         function showData(dataarray) {
             $(document).ready(function() {
                 var table = $('#example').DataTable({
-                    "pageLength": 10, // Set the default number of entries to 10
-                    "lengthMenu": [10, 25, 50, 100, 1000, 2000], // Provide options for the number of entries per page
+                    "pageLength": 10,
+                    "lengthMenu": [10, 25, 50, 100, 1000, 2000],
                     "data": dataarray,
                     "columns": [
                         { "title": "Material No." },
-                        { "title": "SAP Name", "visible": true, "searchable": true},
-                        { "title": "Generic Name", "visible": true, "searchable": true},
-                        { "title": "TPU", "visible": true, "searchable": true},
+                        { "title": "SAP Name", "visible": true, "searchable": true },
+                        { "title": "Generic Name", "visible": true, "searchable": true },
+                        { "title": "TPU", "visible": true, "searchable": true },
                         { "title": "เงื่อนไขการเบิกจ่าย // Co-pay (Baht)", "visible": true, "searchable": true },
                         { "title": "บัญชียา" },
                         { "title": "Purchasing Unit" },
                         { "title": "Sale price" },
                         { "title": "Sale Unit" },
                         { "title": "Cost price", "visible": false },
-                        { "title": "Base Unit"},
+                        { "title": "Base Unit" },
                         { "title": "Status" },
                         { "title": "ก.ย. 66", "visible": false },
                         { "title": "ต.ค. 66", "visible": false },
@@ -219,14 +319,15 @@
                         { "title": "ม.ค. 67", "visible": false },
                         { "title": "ก.พ. 67", "visible": false },
                         { "title": "มี.ค. 67", "visible": false },
-                        { "title": "เม.ษ. 67", "visible": false},
-                        { "title": "พ.ค. 67", "visible": false},
+                        { "title": "เม.ษ. 67", "visible": false },
+                        { "title": "พ.ค. 67", "visible": false },
                         { "title": "มิ.ย. 67", "visible": false },
                         { "title": "ก.ค. 67", "visible": false },
-                        { "title": "ส.ค. 67", "visible": false }
+                        { "title": "ส.ค. 67", "visible": false },
+                        { "title": "Drug group", "visible": true }
                     ]
                 });
-
+    
                 function applyFilters() {
                     var materialFilter = $('#materialFilter').val();
                     var sapNameFilter = $('#sapNameFilter').val();
@@ -235,38 +336,40 @@
                     var banchiFilter = $('#banchiFilter').val();
                     var purchasingUnitFilter = $('#purchasingUnitFilter').val();
                     var statusFilter = $('#statusFilter').val();
-
+                    var drugFilter = $('#drugFilter').val();
+    
                     // Apply filters to the specified columns
-                    table.column(0).search(materialFilter).draw(); // Material column
-                    table.column(1).search(sapNameFilter).draw(); // SAP Name column
-                    table.column(2).search(genericNameFilter).draw(); // Generic Name column
-                    table.column(4).search(coPayFilter).draw(); // เงื่อนไขการเบิกจ่าย column
-                    table.column(5).search(banchiFilter).draw(); // บัญชียา column
-                    table.column(10).search(purchasingUnitFilter).draw(); // Purchasing Unit column
-                    table.column(11).search(statusFilter).draw(); // Status column
+                    table.column(0).search(materialFilter).draw();
+                    table.column(1).search(sapNameFilter).draw();
+                    table.column(2).search(genericNameFilter).draw();
+                    table.column(4).search(coPayFilter).draw();
+                    table.column(5).search(banchiFilter).draw();
+                    table.column(10).search(purchasingUnitFilter).draw();
+                    table.column(11).search(statusFilter).draw();
+                    table.column(24).search(drugFilter).draw();
                 }
-
+    
                 $('#filterButton').on('click', function() {
                     applyFilters();
                 });
-
+    
                 $(document).on('keydown', function(event) {
                     if (event.key === "Enter") {
                         applyFilters();
                     }
                 });
-
+    
                 $('#resetButton').on('click', function() {
-                    $('#materialFilter, #sapNameFilter, #genericNameFilter, #statusFilter,#coPayFilter,#banchiFilter,#purchasingUnitFilter').val('');
+                    $('#materialFilter, #sapNameFilter, #genericNameFilter, #statusFilter,#coPayFilter,#banchiFilter,#purchasingUnitFilter,#drugFilter').val('');
                     applyFilters();
                 });
-
+    
                 $('#toggleRate').on('click', function() {
                     $('#example').css('max-width', '100%');
                     $('#toggleRate').hide();
                     $('#toggleData').show();
                     $('#toggleColumns').hide();
-
+    
                     var column = table.column([2]);
                     column.visible(!column.visible());
                     column = table.column([3]);
@@ -285,17 +388,17 @@
                         column = table.column(i);
                         column.visible(!column.visible());
                     }
-
+    
                     $('#example td:nth-child(2)').css('text-align', 'left');
                     $('#example td:nth-child(3)').css('text-align', 'center');
                 });
-
+    
                 $('#toggleData').on('click', function() {
                     $('#example').css('max-width', '100%');
                     $('#toggleRate').show();
                     $('#toggleData').hide();
                     $('#toggleColumns').show();
-
+    
                     var column = table.column([2]);
                     column.visible(!column.visible());
                     column = table.column([3]);
@@ -310,79 +413,165 @@
                     column.visible(!column.visible());
                     column = table.column([8]);
                     column.visible(!column.visible());
-
+    
                     for (var i = 11; i <= 24; i++) {
                         column = table.column(i);
                         column.visible(!column.visible());
                     }
-
+    
                     $('#example td:nth-child(2)').css('text-align', 'left');
                     $('#example td:nth-child(3)').css('text-align', 'left');
                 });
-
-                $('#toggleColumns').on('click', function() {
-                    var password = prompt("กรุณาใส่รหัสเพื่อเข้าถึงข้อมูล");
-
-                    if (password === "rxccc") {
+    
+                $('#toggleColumns').on('click', function () {
+                    promptPassword(function () {
+                        // Toggle the visibility of columns after the password is validated
                         var column = table.column([9]);
                         column.visible(!column.visible());
                         column = table.column([10]);
                         column.visible(!column.visible());
                         $('#example').css('max-width', '100%');
-                    } else {
-                        alert("รหัสขอเข้าถึงข้อมูลไม่ถูกต้อง");
-                    }
+                    });
                 });
-
+    
                 $('#hideColumn3').on('click', function() {
                     var column = table.column([2]);
                     column.visible(!column.visible());
                     $('#example').css('max-width', '100%');
                 });
-
+    
                 $('#hideColumn4').on('click', function() {
                     var column = table.column([4]);
                     column.visible(!column.visible());
                     $('#example').css('max-width', '100%');
                 });
+    
+                $('#hideColumn5').on('click', function() {
+                    var column = table.column([5]);
+                    column.visible(!column.visible());
+                    $('#example').css('max-width', '100%');
+                });
+    
+                $('#hideColumn6').on('click', function() {
+                    var column = table.column([6]);
+                    column.visible(!column.visible());
+                    $('#example').css('max-width', '100%');
+                });
+    
+                $('#hideColumn7').on('click', function() {
+                    var column = table.column([7]);
+                    column.visible(!column.visible());
+                    $('#example').css('max-width', '100%');
+                });
+    
+                $('#hideColumn8').on('click', function() {
+                    var column = table.column([8]);
+                    column.visible(!column.visible());
+                    $('#example').css('max-width', '100%');
+                });
+    
+                $('#hideColumn9').on('click', function() {
+                    var column = table.column([11]);
+                    column.visible(!column.visible());
+                    $('#example').css('max-width', '100%');
+                });
+    
+                // Function to hide SweetAlert2 loader and show success message
+                function showSwalSuccess() {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Export ข้อมูลเรียบร้อยแล้ว!',
+                        text: 'ไฟล์จะดาวน์โหลดเข้าสู่เครื่องของท่านโดยอัตโนมัติ กรุณาตรวจสอบที่โฟลเดอร์ดาวน์โหลด',
+                    });
+                }
 
-              $('#hideColumn5').on('click', function() {
-                var column = table.column([5])
-                column.visible(!column.visible());
-                $('#example ').css('max-width','100%');
-      
-              });
-              
-              $('#hideColumn6').on('click', function() {
-                var column = table.column([6])
-                column.visible(!column.visible());
-                $('#example ').css('max-width','100%');
-      
-              });
-              
-              $('#hideColumn7').on('click', function() {
-                var column = table.column([7])
-                column.visible(!column.visible());
-                $('#example ').css('max-width','100%');
-      
-              });
-              
-              $('#hideColumn8').on('click', function() {
-                var column = table.column([8])
-                column.visible(!column.visible());
-                $('#example ').css('max-width','100%');
-      
-              });
-              $('#hideColumn9').on('click', function() {
-                var column = table.column([11])
-                column.visible(!column.visible());
-                $('#example ').css('max-width','100%');
-      
-              });
-              
+                function promptPassword(exportCallback) {
+                    Swal.fire({
+                        title: 'กรุณาใส่รหัสเพื่อเข้าถึงข้อมูล',
+                        input: 'password',
+                        inputPlaceholder: 'ใส่รหัส',
+                        showCancelButton: true,
+                        inputValidator: (value) => {
+                            if (!value) {
+                                return 'กรุณาใส่รหัสผ่าน!';
+                            } else if (value !== 'rxccc') {  // Replace 'rxccc' with your desired password
+                                return 'รหัสผ่านไม่ถูกต้อง!';
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            exportCallback(); // If password is correct, call the export function
+                        }
+                    });
+                }
+
+                // Export to Excel
+                $('#exportButton').on('click', function () {
+                    promptPassword(function () {
+                        var table = $('#example').DataTable();
+                        var tableData = [];
+
+                        // Get the headers of visible columns
+                        var headers = [];
+                        $('#example thead th').each(function (index) {
+                            if (table.column(index).visible()) {
+                                headers.push($(this).text().trim());
+                            }
+                        });
+                        tableData.push(headers);
+
+                        // Get the actual data from the visible columns in the DataTable
+                        table.rows({ search: 'applied' }).every(function () {
+                            var rowData = this.data();
+                            var visibleRowData = [];
+                            $('#example thead th').each(function (index) {
+                                if (table.column(index).visible()) {
+                                    visibleRowData.push(rowData[index]);
+                                }
+                            });
+                            tableData.push(visibleRowData);
+                        });
+
+                        // Create a new worksheet using SheetJS
+                        var ws = XLSX.utils.aoa_to_sheet(tableData);
+
+                        // Create a new workbook and append the worksheet
+                        var wb = XLSX.utils.book_new();
+                        XLSX.utils.book_append_sheet(wb, ws, "Drug Master Data");
+
+                        // Export the workbook to an Excel file
+                        XLSX.writeFile(wb, 'drug_master_data.xlsx');
+
+                        // Show success message after export
+                        showSwalSuccess();
+                    });
+                });
+
+                // Export to JPEG
+                $('#exportJPEGButton').on('click', function () {
+                    var tableElement = document.getElementById('example');
+
+                    // Use html2canvas to capture the table element
+                    html2canvas(tableElement).then(function (canvas) {
+                        // Convert the canvas to a JPEG image
+                        var imgData = canvas.toDataURL("image/jpeg", 1.0);
+
+                        // Create a link element to download the image
+                        var link = document.createElement('a');
+                        link.href = imgData;
+                        link.download = 'drug_master_data.jpg';
+
+                        // Simulate a click to trigger the download
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+
+                        // Show success message after export
+                        showSwalSuccess();
+                    });
+                });
             });
-          }
-        </script>
-
+        }
+    </script>
 </body>
 </html>
