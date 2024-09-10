@@ -25,6 +25,19 @@
     </style>
 </head>
 <body>
-    <iframe src="https://script.google.com/macros/s/AKfycbwFqkKuPm-KRXVvZMm0mOeGEpUMR702BMOs-COLCIyy7efqcZLaudMA_4Nt5P0zL0kUpA/exec"></iframe>
+    <iframe src="https://script.google.com/macros/s/AKfycbzfzRFDjzSQBKekgcjZMyXLXGsDm7B5Gs6jTr2an2RneTVNwB7HN5SWEgqQXVbeRQGXZg/exec"></iframe>
+</body>
+</html>
+
+    <script>
+        // Set a timeout to check if the iframe loads successfully
+        setTimeout(function() {
+            var iframe = document.getElementById('formFrame');
+            if (!iframe.contentWindow || iframe.contentWindow.location.href === 'about:blank') {
+                // If the iframe didn't load, redirect to another site
+                window.location.href = 'https://google.com'; // Change this URL to your desired alternative link
+            }
+        }, 5000); // Wait 5 seconds to check if iframe loads
+    </script>
 </body>
 </html>
