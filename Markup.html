@@ -2,14 +2,9 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-    <meta name="msapplication-TileColor" content="#da532c">
-    <meta name="theme-color" content="#ffffff">
-    <title>โปรแกรมคำนวนราคา Mark up กรมบัญชีกลาง</title>
+    <title>Mark up กรมบัญชีกลาง</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
     <style>
         body {
             font-family: 'Sarabun', sans-serif;
@@ -20,6 +15,15 @@
             padding: 10px;
             margin: 5px 0;
             border-radius: 5px;
+        }
+        .shortcut-info {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-top: 10px;
+        }
+        .reference-table {
+            font-size: 0.9em;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -40,16 +44,23 @@
                         </div>
                         
                         <div class="mb-3">
-                            <button class="btn btn-success" onclick="addNewRow()">
-                                <i class="bi bi-plus-circle"></i> เพิ่มรายการ
-                            </button>
-                            <button class="btn btn-primary" onclick="calculateAll()">คำนวนราคา Mark up</button>
+                            <button class="btn btn-success" onclick="addNewRow()">เพิ่มรายการ</button>
+                            <button class="btn btn-primary" onclick="calculateAll()">คำนวณทั้งหมด</button>
+                            <button class="btn btn-success" onclick="exportToExcel()">Export to Excel</button>
+                        </div>
+
+                        <div class="shortcut-info">
+                            <p>Shortcuts:</p>
+                            <ul>
+                                <li>กด Enter เพื่อคำนวณ</li>
+                                <li>กด Ctrl + Enter เพื่อเพิ่มรายการ</li>
+                                <li>สามารถ Copy และ Paste จาก Excel ได้โดยตรง</li>
+                            </ul>
                         </div>
 
                         <div id="results" class="mt-4">
-                            <h4>ราคาที่คำนวนได้ธ์</h4>
+                            <h4>ราคาที่คำนวนได้</h4>
                             <div id="results-container"></div>
-                            <div id="total-result" class="mt-3 fw-bold"></div>
                         </div>
                     </div>
                 </div>
@@ -58,110 +69,144 @@
     </div>
 
     <script>
-// Add event listeners for keyboard shortcuts
-document.addEventListener('keydown', function(e) {
-    // Enter key for calculation
-    if (e.key === 'Enter' && !e.ctrlKey) {
-        calculateAll();
-    }
-    // Ctrl + Enter for adding new row
-    if (e.key === 'Enter' && e.ctrlKey) {
-        addNewRow();
-    }
-});
-
-// Add event listener to all input fields for paste functionality
-document.addEventListener('input', function(e) {
-    if (e.target.classList.contains('cost-input')) {
-        // Handle pasted content
-        const value = e.target.value;
-        if (value.includes('\n')) {
-            const values = value.split('\n').filter(v => v.trim());
-            e.target.value = values[0];
+        // Handle paste events
+        document.addEventListener('paste', function(e) {
+            e.preventDefault();
+            let clipboardData = e.clipboardData || window.clipboardData;
+            let pastedData = clipboardData.getData('text');
+            let rows = pastedData.split(/\r\n|\r|\n/).filter(row => row.trim());
             
-            // Add new rows for additional values
-            values.slice(1).forEach(val => {
-                addNewRow(val);
+            const container = document.getElementById('input-container');
+            while (container.children.length > 1) {
+                container.removeChild(container.lastChild);
+            }
+            
+            if (rows.length > 0) {
+                const firstInput = document.querySelector('.cost-input');
+                firstInput.value = parseFloat(rows[0].replace(',', '.')) || '';
+            }
+            
+            for (let i = 1; i < rows.length; i++) {
+                let value = parseFloat(rows[i].replace(',', '.'));
+                if (!isNaN(value)) {
+                    addNewRow(value.toString());
+                }
+            }
+            calculateAll();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.ctrlKey) {
+                calculateAll();
+            }
+            if (e.key === 'Enter' && e.ctrlKey) {
+                addNewRow();
+            }
+        });
+
+        function calculateSingle(cost) {
+            let reimbursement = 0;
+            cost = parseFloat(cost);
+            
+            if (cost >= 0.01 && cost <= 0.20) {
+                reimbursement = 0.50;
+            } else if (cost <= 0.50) {
+                reimbursement = 1.00;
+            } else if (cost <= 1.00) {
+                reimbursement = 1.50;
+            } else if (cost <= 10.00) {
+                reimbursement = 1.50 + ((cost - 1) * 1.25);
+            } else if (cost <= 100.00) {
+                reimbursement = 13 + ((cost - 10) * 1.20);
+            } else if (cost <= 1000.00) {
+                reimbursement = 126 + ((cost - 100) * 1.15);
+            } else {
+                reimbursement = 1161 + ((cost - 1000) * 1.10);
+            }
+
+            // Apply rounding rules
+            if (cost < 10) {
+                reimbursement = Math.ceil(reimbursement * 4) / 4; // Round to 0.25
+            } else if (cost <= 100) {
+                reimbursement = Math.ceil(reimbursement * 2) / 2; // Round to 0.50
+            } else {
+                reimbursement = Math.ceil(reimbursement * 2) / 2; // Round to 0.50
+            }
+
+            return reimbursement;
+        }
+
+        function addNewRow(value = '') {
+            const container = document.getElementById('input-container');
+            const newRow = document.createElement('div');
+            newRow.className = 'input-group mb-3';
+            newRow.innerHTML = `
+                <input type="number" class="form-control cost-input" step="0.01" min="0" 
+                       placeholder="ราคาต้นทุน" value="${value}">
+                <button class="btn btn-outline-danger remove-row" type="button">ลบ</button>
+            `;
+            container.appendChild(newRow);
+
+            newRow.querySelector('.remove-row').addEventListener('click', function() {
+                newRow.remove();
+            });
+
+            if (!value) {
+                newRow.querySelector('input').focus();
+            }
+        }
+
+        function calculateAll() {
+            const inputs = document.querySelectorAll('.cost-input');
+            const resultsContainer = document.getElementById('results-container');
+            resultsContainer.innerHTML = '';
+
+            inputs.forEach((input, index) => {
+                const cost = parseFloat(input.value);
+                if (!isNaN(cost)) {
+                    const reimbursement = calculateSingle(cost);
+                    const resultDiv = document.createElement('div');
+                    resultDiv.className = 'result-row';
+                    resultDiv.innerHTML = `
+                        <div class="row">
+                            <div class="col">รายการที่ ${index + 1}</div>
+                            <div class="col">ราคาต้นทุน: ${cost.toFixed(2)} บาท</div>
+                            <div class="col">ราคาที่เบิกได้: ${reimbursement.toFixed(2)} บาท</div>
+                        </div>
+                    `;
+                    resultsContainer.appendChild(resultDiv);
+                }
             });
         }
-    }
-});
 
-function addNewRow(value = '') {
-    const container = document.getElementById('input-container');
-    const newRow = document.createElement('div');
-    newRow.className = 'input-group mb-3';
-    newRow.innerHTML = `
-        <input type="number" class="form-control cost-input" step="0.01" min="0" placeholder="ราคาต้นทุน" value="${value}">
-        <button class="btn btn-outline-danger remove-row" type="button">ลบ</button>
-    `;
-    container.appendChild(newRow);
+        function exportToExcel() {
+            const inputs = document.querySelectorAll('.cost-input');
+            let data = [['ราคาต้นทุน', 'ราคาที่เบิกได้']];
 
-    // Add event listener to remove button
-    newRow.querySelector('.remove-row').addEventListener('click', function() {
-        newRow.remove();
-    });
+            inputs.forEach(input => {
+                const cost = parseFloat(input.value);
+                if (!isNaN(cost)) {
+                    const reimbursement = calculateSingle(cost);
+                    data.push([
+                        Number(cost.toFixed(2)),
+                        Number(reimbursement.toFixed(2))
+                    ]);
+                }
+            });
 
-    // Focus on the new input
-    newRow.querySelector('input').focus();
-}
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Prices");
 
-function calculateSingle(cost) {
-    let reimbursement = 0;
-    
-    // Base calculation
-    if (cost >= 0 && cost <= 0.20) {
-        reimbursement = 0.50;
-    } else if (cost <= 0.50) {
-        reimbursement = 1.00;
-    } else if (cost <= 1.00) {
-        reimbursement = 1.50;
-    } else if (cost <= 10.00) {
-        reimbursement = 1.50 + ((cost - 1) * 1.25);
-    } else if (cost <= 100.00) {
-        reimbursement = 13 + ((cost - 10) * 1.20);
-    } else if (cost <= 1000.00) {
-        reimbursement = 126 + ((cost - 100) * 1.15);
-    } else {
-        reimbursement = 1161 + ((cost - 1000) * 1.10);
-    }
+            ws['!cols'] = [
+                {wch: 15},
+                {wch: 15}
+            ];
 
-    // Additional rounding rules
-    if (cost < 10) {
-        reimbursement = Math.ceil(reimbursement * 4) / 4; // Round up to nearest 0.25 baht
-    } else if (cost <= 100) {
-        reimbursement = Math.ceil(reimbursement * 2) / 2; // Round up to nearest 0.50 baht
-    } else {
-        reimbursement = Math.ceil(reimbursement * 2) / 2; // Round up to nearest 0.50 baht
-    }
-
-    return reimbursement;
-}
-
-function calculateAll() {
-    const inputs = document.querySelectorAll('.cost-input');
-    const resultsContainer = document.getElementById('results-container');
-    resultsContainer.innerHTML = '';
-
-    inputs.forEach((input, index) => {
-        const cost = parseFloat(input.value);
-        if (!isNaN(cost)) {
-            const reimbursement = calculateSingle(cost);
-            const resultDiv = document.createElement('div');
-            resultDiv.className = 'result-row';
-            resultDiv.innerHTML = `
-                <div class="row">
-                    <div class="col">รายการที่ ${index + 1}</div>
-                    <div class="col">ราคาต้นทุน: ${cost.toFixed(2)} บาท</div>
-                    <div class="col">ราคาที่เบิกได้: ${reimbursement.toFixed(2)} บาท</div>
-                </div>
-            `;
-            resultsContainer.appendChild(resultDiv);
+            XLSX.writeFile(wb, "price_calculations.xlsx");
         }
-    });
-}
 
-        // Add event listener to initial remove button
+        // Initialize first remove button
         document.querySelector('.remove-row').addEventListener('click', function(e) {
             e.target.parentElement.remove();
         });
@@ -170,3 +215,4 @@ function calculateAll() {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
