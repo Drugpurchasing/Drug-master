@@ -1311,7 +1311,7 @@ var sampleData = [
 ["1200001325","Candid mouth paint (15 mL)","Clotrimazole mouth paint (15 mL) (NED)","906322","-","NED","Bottle","64.50","Bottle","53.00","Bottle","ตัดออกจากบัญชี","0","0","0","0","0","0","0","0","0","0","0","0","Infections "],
 ["1200001326","Kamillosan-M spray 20 ml","Standardised chamomile extr 370.5 mg+essential oil 100 mg%+chamazulene 3 mg% mouth spray (20 mL)","699639","-","NED","Bottle","220.00","Bottle","181.90","Bottle","ในบัญชี","575","667","558","564","514","621","557","615","667","667","573","789","Ear, nose, and oropharynx and oral cavity"],
 ["1200001327","C-20 mouth wash  0.12% (180mL)","Chlorhexidine gluconate mouth wash 0.12% (180 mL)","845412","-","ED (ก)","Bottle","38.00","Bottle","31.03","Bottle","ในบัญชี","476","457","454","475","469","466","558","388","647","535","503","456","Ear, nose, and oropharynx and oral cavity"],
-["1200001328","Siriraj Fluoride Gel","-","-","เบิกไม่ได้","Tube","91.00","Tube","75.00","Tube","ในบัญชี","0","0","0","0","0","0","13","0","0","0","0","0","Ear, nose, and oropharynx and oral cavity"],
+["1200001328","Siriraj Fluoride Gel","Siriraj Fluoride Gel.","-","-","เบิกไม่ได้","Tube","91.00","Tube","75.00","Tube","ในบัญชี","0","0","0","0","0","0","13","0","0","0","0","0","Ear, nose, and oropharynx and oral cavity"],
 ["1200001329","Xylocaine 2% (ORAL) viscous 100 ml","Lidocaine HCl viscous 2 % (100 mL)","769571","-","ED (ก)","Bottle","299.00","Bottle","250.00","Bottle","ในบัญชี","95","120","87","66","49","63","90","135","151","160","145","100","Anesthesia "],
 ["1200001330","Mouth wash solution 250 ml","Mouth wash solution (Chlorhexidine gluconate)  (250 mL)","836870","-","ED (ก)","Bottle","46.00","Bottle","37.45","Bottle","ตัดออกจากบัญชี","0","0","0","0","0","0","0","0","0","0","0","0","Ear, nose, and oropharynx and oral cavity"],
 ["1200001332","Miconazole 2% oral gel (10 g) **เฉพาะเคส","Miconazole nitrate 2% ORAL gel (10 g)**เฉพาะเคส**","826640","-","ED (ก)","Tube","34.50","Tube","0.00","Tube","ตัดออกจากบัญชี","0","0","0","0","0","0","0","0","0","0","0","0","-"],
@@ -2387,6 +2387,8 @@ var sampleData = [
 ["1400000306","Anastrozole 1 mg **วิจัย**","Anastrozole 1 mg tablet **วิจัย**","-","-","Promotion","Tablet",".00","Tablet","0.00","Tablet","Promotion","0","0","0","0","0","0","0","0","0","0","0","0","-"],
 ["1400000307","Camizestrant (AZD9833) 75 mg **วิจัย**","Camizestrant (AZD9833) 75 mg **วิจัย**","-","-","Promotion","Tablet",".00","Tablet","0.00","Tablet","Promotion","0","0","0","0","0","0","0","0","0","0","0","0","-"],
 ["1400000308","Saruparib (AZD5305) 20 mg **วิจัย**","Saruparib (AZD5305) 20 mg **วิจัย**.","-","-","Promotion","Tablet",".00","Tablet","0.00","Tablet","Promotion","0","0","0","0","0","0","0","0","0","0","0","0","-"],
+
+
 
 
 
