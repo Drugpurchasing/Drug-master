@@ -106,12 +106,23 @@
       background-color: #FF8C00;
       border-color: #FF8C00;
     }
+
+    .footer {
+      text-align: center;
+      padding: 10px;
+      margin-top: 20px;
+      color: #6c757d;
+      font-size: 0.8rem;
+      font-style: italic;
+    }
   </style>
 </head>
 
 <body>
+
   <div class="container">
     <div class="row justify-content-center">
+      <!-- Card แรก -->
       <div class="col-md-10">
         <div class="card shadow">
           <div class="card-header">
@@ -152,83 +163,70 @@
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
 
-  <div class="container">
-    <div class="row justify-content-center">
-      <!-- Card แรก -->
-      <div class="col-md-10">
-        <div class="card shadow">
-          <div class="card-header">
-            <h3 class="mb-0">โปรแกรมคำนวนราคา Mark up กรมบัญชีกลาง</h3>
-          </div>
-          <div class="card-body">
-            <!-- เนื้อหาเดิมของ card แรก -->
-          </div>
-        </div>
-      </div>
-
-      <!-- Card ที่สอง (ใช้ col-md-10 เหมือนกัน) -->
-      <div class="col-md-10">
-        <div class="card shadow mt-4">
-          <div class="card-header compare-header">
-            <h3 class="mb-0">เปรียบเทียบราคา</h3>
-          </div>
-          <div class="card-body">
-            <div class="input-group mb-3">
-              <span class="input-group-text compare-text">ราคาเก่า</span>
-              <input type="number" id="oldPrice" class="form-control" step="0.01" min="0">
-              <span class="input-group-text compare-text">ราคาใหม่</span>
-              <input type="number" id="newPrice" class="form-control" step="0.01" min="0">
-              <button class="btn btn-compare" onclick="comparePrice()">เปรียบเทียบ</button>
+        <!-- Card ที่สอง (ใช้ col-md-10 เหมือนกัน) -->
+        <div class="col-md-10">
+          <div class="row justify-content-center"></div>
+          <div class="card shadow mt-4">
+            <div class="card-header compare-header">
+              <h3 class="mb-0">เปรียบเทียบราคา</h3>
             </div>
-            <div id="compareResult"></div>
+            <div class="card-body">
+              <div class="input-group mb-3">
+                <span class="input-group-text compare-text">ราคาเก่า</span>
+                <input type="number" id="oldPrice" class="form-control" step="0.01" min="0">
+                <span class="input-group-text compare-text">ราคาใหม่</span>
+                <input type="number" id="newPrice" class="form-control" step="0.01" min="0">
+                <button class="btn btn-compare" onclick="comparePrice()">เปรียบเทียบ</button>
+              </div>
+              <div id="compareResult"></div>
+            </div>
+          </div>
+          <div class="footer">
+            <p>Created by BG X Claude</p>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
 
 
 
-  <script>
-    function calculateSingle(cost) {
-      let reimbursement = 0;
-      cost = parseFloat(cost);
+    <script>
+      function calculateSingle(cost) {
+        let reimbursement = 0;
+        cost = parseFloat(cost);
 
-      if (cost >= 0.01 && cost <= 0.20) {
-        reimbursement = 0.50;
-      } else if (cost <= 0.50) {
-        reimbursement = 1.00;
-      } else if (cost <= 1.00) {
-        reimbursement = 1.50;
-      } else if (cost <= 10.00) {
-        reimbursement = 1.50 + ((cost - 1) * 1.25);
-      } else if (cost <= 100.00) {
-        reimbursement = 13 + ((cost - 10) * 1.20);
-      } else if (cost <= 1000.00) {
-        reimbursement = 126 + ((cost - 100) * 1.15);
-      } else {
-        reimbursement = 1161 + ((cost - 1000) * 1.10);
+        if (cost >= 0.01 && cost <= 0.20) {
+          reimbursement = 0.50;
+        } else if (cost <= 0.50) {
+          reimbursement = 1.00;
+        } else if (cost <= 1.00) {
+          reimbursement = 1.50;
+        } else if (cost <= 10.00) {
+          reimbursement = 1.50 + ((cost - 1) * 1.25);
+        } else if (cost <= 100.00) {
+          reimbursement = 13 + ((cost - 10) * 1.20);
+        } else if (cost <= 1000.00) {
+          reimbursement = 126 + ((cost - 100) * 1.15);
+        } else {
+          reimbursement = 1161 + ((cost - 1000) * 1.10);
+        }
+
+        if (cost < 10) {
+          reimbursement = Math.ceil(reimbursement * 4) / 4;
+        } else {
+          reimbursement = Math.ceil(reimbursement * 2) / 2;
+        }
+
+        return reimbursement;
       }
 
-      if (cost < 10) {
-        reimbursement = Math.ceil(reimbursement * 4) / 4;
-      } else {
-        reimbursement = Math.ceil(reimbursement * 2) / 2;
-      }
-
-      return reimbursement;
-    }
-
-    function addNewRow(cost = '', units = '1', bonus = '0') {
-      const container = document.getElementById('input-container');
-      const newRow = document.createElement('div');
-      newRow.className = 'input-row';
-      newRow.innerHTML = `
+      function addNewRow(cost = '', units = '1', bonus = '0') {
+        const container = document.getElementById('input-container');
+        const newRow = document.createElement('div');
+        newRow.className = 'input-row';
+        newRow.innerHTML = `
         <div class="input-group">
             <span class="input-group-text">ราคาต้นทุน</span>
             <input type="number" class="form-control cost-input" step="0.01" min="0" value="${cost}">
@@ -239,69 +237,87 @@
             <button class="btn btn-outline-danger remove-row" type="button">ลบ</button>
         </div>
     `;
-      container.appendChild(newRow);
-      newRow.querySelector('.remove-row').addEventListener('click', function () {
-        newRow.remove();
+        container.appendChild(newRow);
+        newRow.querySelector('.remove-row').addEventListener('click', function () {
+          newRow.remove();
+        });
+        if (!cost) {
+          newRow.querySelector('.cost-input').focus();
+        }
+      }
+
+      function formatNumber(number) {
+        // ตรวจสอบว่าเป็นตัวเลขหรือไม่
+        if (typeof number !== 'number') {
+          number = parseFloat(number);
+        }
+        // ถ้ายังไม่เป็นตัวเลขหรือเป็น NaN ให้คืนค่า 0
+        if (isNaN(number)) {
+          return "0.00";
+        }
+        // แปลงเป็นรูปแบบที่มีทศนิยม 2 ตำแหน่งและใส่คอมม่า
+        return number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      }
+
+
+      function comparePrice() {
+        const oldPrice = parseFloat(document.getElementById('oldPrice').value) || 0;
+        const newPrice = parseFloat(document.getElementById('newPrice').value) || 0;
+        const resultDiv = document.getElementById('compareResult');
+
+        if (isNaN(oldPrice) || isNaN(newPrice)) {
+          resultDiv.innerHTML = '<p class="text-danger">กรุณากรอกตัวเลขที่ถูกต้อง</p>';
+          return;
+        }
+
+        const difference = newPrice - oldPrice;
+        const percentChange = (difference / oldPrice) * 100;
+
+        let resultText = `<p>ราคาเก่า: ${formatNumber(oldPrice)} บาท</p>`;
+        resultText += `<p>ราคาใหม่: ${formatNumber(newPrice)} บาท</p>`;
+        resultText += `<p>ความแตกต่าง: ${formatNumber(difference)} บาท</p>`;
+        resultText += `<p>เปลี่ยนแปลง: ${formatNumber(percentChange)}%</p>`;
+
+        resultDiv.innerHTML = resultText;
+      }
+
+      document.getElementById('newPrice').addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          comparePrice();
+        }
       });
-      if (!cost) {
-        newRow.querySelector('.cost-input').focus();
-      }
-    }
 
-    function formatNumber(number) {
-      return number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    }
+      // เพิ่ม Event Listener สำหรับช่องราคาเก่า
+      document.getElementById('oldPrice').addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          comparePrice();
+        }
+      });
 
-    function comparePrice() {
-      const oldPrice = parseFloat(document.getElementById('oldPrice').value);
-      const newPrice = parseFloat(document.getElementById('newPrice').value);
-      const resultDiv = document.getElementById('compareResult');
 
-      if (isNaN(oldPrice) || isNaN(newPrice)) {
-        resultDiv.innerHTML = '<p class="text-danger">กรุณากรอกตัวเลขที่ถูกต้อง</p>';
-        return;
-      }
+      function calculateAll() {
+        const inputs = document.querySelectorAll('.cost-input');
+        const bonuses = document.querySelectorAll('.bonus-input');
+        const unitsPerBox = document.querySelectorAll('.units-per-box');
+        const resultsContainer = document.getElementById('results-container');
+        resultsContainer.innerHTML = '';
 
-      const difference = newPrice - oldPrice;
-      const percentChange = ((difference / oldPrice) * 100).toFixed(2);
+        inputs.forEach((input, index) => {
+          const originalCost = parseFloat(input.value);
+          const bonusPercentage = parseFloat(bonuses[index].value) || 0;
+          const units = parseInt(unitsPerBox[index].value) || 1;
 
-      let resultText = `<p>ราคาเก่า (ราคาชื่อการค้าทื่ 1): ${oldPrice.toFixed(2)} บาท</p>`;
-      resultText += `<p>ราคาใหม่ (ราคาชื่อการค้าทื่ 2): ${newPrice.toFixed(2)} บาท</p>`;
-      resultText += `<p>ความแตกต่าง: ${difference.toFixed(2)} บาท</p>`;
-      resultText += `<p>เปลี่ยนแปลง: ${percentChange}%</p>`;
+          if (!isNaN(originalCost)) {
+            const adjustedCost = originalCost * (100 / (100 + bonusPercentage));
+            const reimbursement = calculateSingle(adjustedCost);
+            const unitCost = adjustedCost / units;
+            const unitReimbursement = reimbursement / units;
+            const marginPerUnit = unitReimbursement - unitCost;
+            const marginPercentage = (marginPerUnit / unitCost) * 100;
 
-      resultDiv.innerHTML = resultText;
-    }
-
-    document.getElementById('newPrice').addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') {
-        comparePrice();
-      }
-    });
-
-    function calculateAll() {
-      const inputs = document.querySelectorAll('.cost-input');
-      const bonuses = document.querySelectorAll('.bonus-input');
-      const unitsPerBox = document.querySelectorAll('.units-per-box');
-      const resultsContainer = document.getElementById('results-container');
-      resultsContainer.innerHTML = '';
-
-      inputs.forEach((input, index) => {
-        const originalCost = parseFloat(input.value);
-        const bonusPercentage = parseFloat(bonuses[index].value) || 0;
-        const units = parseInt(unitsPerBox[index].value) || 1;
-
-        if (!isNaN(originalCost)) {
-          const adjustedCost = originalCost * (100 / (100 + bonusPercentage));
-          const reimbursement = calculateSingle(adjustedCost);
-          const unitCost = adjustedCost / units;
-          const unitReimbursement = reimbursement / units;
-          const marginPerUnit = unitReimbursement - unitCost;
-          const marginPercentage = (marginPerUnit / unitCost) * 100;
-
-          const resultDiv = document.createElement('div');
-          resultDiv.className = 'result-row';
-          resultDiv.innerHTML = `
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'result-row';
+            resultDiv.innerHTML = `
                 <div class="row">
                     <div class="col-md-3">รายการที่ ${index + 1}</div>
                     <div class="col-md-3">ราคาต้นก่อนส่วนแถม: ${formatNumber(originalCost)} บาท</div>
@@ -320,107 +336,107 @@
                     <div class="col-md-3">กำไร: ${formatNumber(marginPerUnit)} บาท (${marginPercentage.toFixed(2)}%)</div>
                 </div>
             `;
-          resultsContainer.appendChild(resultDiv);
-        }
-      });
-    }
-
-
-
-    function exportToExcel() {
-      const inputs = document.querySelectorAll('.cost-input');
-      const bonuses = document.querySelectorAll('.bonus-input');
-      const unitsPerBox = document.querySelectorAll('.units-per-box');
-
-      let data = [['ราคาต้นทุนเดิม', 'ส่วนแถม (%)', 'จำนวนต่อกล่อง', 'ต้นทุนต่อหน่วย', 'ราคาเบิกต่อหน่วย', 'ต้นทุนต่อกล่อง', 'ราคาเบิกต่อกล่อง']];
-
-      inputs.forEach((input, index) => {
-        const originalCost = parseFloat(input.value);
-        const bonusPercentage = parseFloat(bonuses[index].value) || 0;
-        const units = parseInt(unitsPerBox[index].value) || 1;
-
-        if (!isNaN(originalCost)) {
-          const unitCost = originalCost / units;
-          const adjustedUnitCost = unitCost * (100 / (100 + bonusPercentage));
-          const unitReimbursement = calculateSingle(adjustedUnitCost);
-          const adjustedCost = adjustedUnitCost * units;
-          const reimbursement = unitReimbursement * units;
-
-          data.push([
-            Number(originalCost.toFixed(2)),
-            Number(bonusPercentage.toFixed(2)),
-            units,
-            Number(adjustedUnitCost.toFixed(2)),
-            Number(unitReimbursement.toFixed(2)),
-            Number(adjustedCost.toFixed(2)),
-            Number(reimbursement.toFixed(2))
-          ]);
-        }
-      });
-
-
-      const ws = XLSX.utils.aoa_to_sheet(data);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Prices");
-      ws['!cols'] = [{ wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 },
-      { wch: 15 }, { wch: 15 }, { wch: 15 }];
-      XLSX.writeFile(wb, "price_calculations.xlsx");
-    }
-
-    // Event Listeners
-    document.addEventListener('paste', function (e) {
-      e.preventDefault();
-      let clipboardData = e.clipboardData || window.clipboardData;
-      let pastedData = clipboardData.getData('text');
-      let rows = pastedData.split(/\r\n|\r|\n/).filter(row => row.trim());
-      const container = document.getElementById('input-container');
-
-      while (container.children.length > 1) {
-        container.removeChild(container.lastChild);
+            resultsContainer.appendChild(resultDiv);
+          }
+        });
       }
 
-      if (rows.length > 0) {
-        const firstRow = rows[0].split(/\t/).map(val => val.trim());
-        const firstInput = container.querySelector('.cost-input');
-        const firstUnits = container.querySelector('.units-per-box');
-        const firstBonus = container.querySelector('.bonus-input');
 
-        firstInput.value = parseFloat(firstRow[0].replace(/,/g, '')) || '';
-        firstUnits.value = parseFloat(firstRow[1]) || '1';
-        firstBonus.value = parseFloat(firstRow[2]) || '0';
 
-        for (let i = 1; i < rows.length; i++) {
-          const values = rows[i].split(/\t/);
-          const cost = parseFloat(values[0].replace(/,/g, '')) || '';
-          const units = parseFloat(values[1]) || '1';
-          const bonus = parseFloat(values[2]) || '0';
+      function exportToExcel() {
+        const inputs = document.querySelectorAll('.cost-input');
+        const bonuses = document.querySelectorAll('.bonus-input');
+        const unitsPerBox = document.querySelectorAll('.units-per-box');
 
-          if (!isNaN(cost)) {
-            addNewRow(cost, units, bonus);
+        let data = [['ราคาต้นทุนเดิม', 'ส่วนแถม (%)', 'จำนวนต่อกล่อง', 'ต้นทุนต่อหน่วย', 'ราคาเบิกต่อหน่วย', 'ต้นทุนต่อกล่อง', 'ราคาเบิกต่อกล่อง']];
+
+        inputs.forEach((input, index) => {
+          const originalCost = parseFloat(input.value);
+          const bonusPercentage = parseFloat(bonuses[index].value) || 0;
+          const units = parseInt(unitsPerBox[index].value) || 1;
+
+          if (!isNaN(originalCost)) {
+            const unitCost = originalCost / units;
+            const adjustedUnitCost = unitCost * (100 / (100 + bonusPercentage));
+            const unitReimbursement = calculateSingle(adjustedUnitCost);
+            const adjustedCost = adjustedUnitCost * units;
+            const reimbursement = unitReimbursement * units;
+
+            data.push([
+              Number(originalCost.toFixed(2)),
+              Number(bonusPercentage.toFixed(2)),
+              units,
+              Number(adjustedUnitCost.toFixed(2)),
+              Number(unitReimbursement.toFixed(2)),
+              Number(adjustedCost.toFixed(2)),
+              Number(reimbursement.toFixed(2))
+            ]);
+          }
+        });
+
+
+        const ws = XLSX.utils.aoa_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Prices");
+        ws['!cols'] = [{ wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 },
+        { wch: 15 }, { wch: 15 }, { wch: 15 }];
+        XLSX.writeFile(wb, "price_calculations.xlsx");
+      }
+
+      // Event Listeners
+      document.addEventListener('paste', function (e) {
+        e.preventDefault();
+        let clipboardData = e.clipboardData || window.clipboardData;
+        let pastedData = clipboardData.getData('text');
+        let rows = pastedData.split(/\r\n|\r|\n/).filter(row => row.trim());
+        const container = document.getElementById('input-container');
+
+        while (container.children.length > 1) {
+          container.removeChild(container.lastChild);
+        }
+
+        if (rows.length > 0) {
+          const firstRow = rows[0].split(/\t/).map(val => val.trim());
+          const firstInput = container.querySelector('.cost-input');
+          const firstUnits = container.querySelector('.units-per-box');
+          const firstBonus = container.querySelector('.bonus-input');
+
+          firstInput.value = parseFloat(firstRow[0].replace(/,/g, '')) || '';
+          firstUnits.value = parseFloat(firstRow[1]) || '1';
+          firstBonus.value = parseFloat(firstRow[2]) || '0';
+
+          for (let i = 1; i < rows.length; i++) {
+            const values = rows[i].split(/\t/);
+            const cost = parseFloat(values[0].replace(/,/g, '')) || '';
+            const units = parseFloat(values[1]) || '1';
+            const bonus = parseFloat(values[2]) || '0';
+
+            if (!isNaN(cost)) {
+              addNewRow(cost, units, bonus);
+            }
           }
         }
-      }
-      calculateAll();
-    });
-
-
-
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' && !e.ctrlKey) {
         calculateAll();
-      }
-      if (e.key === 'Enter' && e.ctrlKey) {
-        addNewRow();
-      }
-    });
+      });
 
-    // Initialize first remove button
-    document.querySelector('.remove-row').addEventListener('click', function (e) {
-      e.target.parentElement.remove();
-    });
-  </script>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && !e.ctrlKey) {
+          calculateAll();
+        }
+        if (e.key === 'Enter' && e.ctrlKey) {
+          addNewRow();
+        }
+      });
+
+      // Initialize first remove button
+      document.querySelector('.remove-row').addEventListener('click', function (e) {
+        e.target.parentElement.remove();
+      });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
