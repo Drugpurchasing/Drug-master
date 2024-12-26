@@ -194,33 +194,42 @@
 
     <script>
       function calculateSingle(cost) {
-        let reimbursement = 0;
-        cost = parseFloat(cost);
+    let reimbursement = 0;
+    cost = parseFloat(cost);
 
-        if (cost >= 0.01 && cost <= 0.20) {
-          reimbursement = 0.50;
-        } else if (cost <= 0.50) {
-          reimbursement = 1.00;
-        } else if (cost <= 1.00) {
-          reimbursement = 1.50;
-        } else if (cost <= 10.00) {
-          reimbursement = 1.50 + ((cost - 1) * 1.25);
-        } else if (cost <= 100.00) {
-          reimbursement = 13 + ((cost - 10) * 1.20);
-        } else if (cost <= 1000.00) {
-          reimbursement = 126 + ((cost - 100) * 1.15);
+    if (cost >= 0.01 && cost <= 0.20) {
+        reimbursement = 0.50;
+    } else if (cost <= 0.50) {
+        reimbursement = 1.00;
+    } else if (cost <= 1.00) {
+        reimbursement = 1.50;
+    } else if (cost <= 10.00) {
+        reimbursement = 1.50 + ((cost - 1) * 1.25);
+    } else if (cost <= 100.00) {
+        reimbursement = 13 + ((cost - 10) * 1.20);
+    } else if (cost <= 1000.00) {
+        reimbursement = 126 + ((cost - 100) * 1.15);
+    } else {
+        reimbursement = 1161 + ((cost - 1000) * 1.10);
+    }
+
+    // ปรับการปัดเศษตามหลักเกณฑ์ใหม่
+    if (reimbursement < 10) {
+        reimbursement = Math.floor(reimbursement * 4) / 4;
+    } else if (reimbursement <= 100) {
+        reimbursement = Math.floor(reimbursement * 2) / 2;
+    } else {
+        let fractionalPart = reimbursement - Math.floor(reimbursement);
+        if (fractionalPart < 0.50) {
+            reimbursement = Math.floor(reimbursement);
         } else {
-          reimbursement = 1161 + ((cost - 1000) * 1.10);
+            reimbursement = Math.ceil(reimbursement);
         }
+    }
 
-        if (cost < 10) {
-          reimbursement = Math.ceil(reimbursement * 4) / 4;
-        } else {
-          reimbursement = Math.ceil(reimbursement * 2) / 2;
-        }
+    return reimbursement;
+}
 
-        return reimbursement;
-      }
 
       function addNewRow(cost = '', units = '1', bonus = '0') {
         const container = document.getElementById('input-container');
