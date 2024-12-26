@@ -309,9 +309,9 @@
 
           if (!isNaN(originalCost)) {
             const adjustedCost = originalCost * (100 / (100 + bonusPercentage));
-            const reimbursement = calculateSingle(adjustedCost);
             const unitCost = adjustedCost / units;
-            const unitReimbursement = reimbursement / units;
+            const unitReimbursement = calculateSingle(unitCost);
+            const reimbursement = unitReimbursement * units;
             const marginPerUnit = unitReimbursement - unitCost;
             const marginPercentage = (marginPerUnit / unitCost) * 100;
 
@@ -320,14 +320,9 @@
             resultDiv.innerHTML = `
                 <div class="row">
                     <div class="col-md-3">รายการที่ ${index + 1}</div>
-                    <div class="col-md-3">ราคาต้นก่อนส่วนแถม: ${formatNumber(originalCost)} บาท</div>
+                    <div class="col-md-3">ราคาทุนก่อนส่วนแถม: ${formatNumber(originalCost)} บาท</div>
                     <div class="col-md-3">ส่วนแถม: ${bonusPercentage}%</div>
                     <div class="col-md-3">จำนวนต่อกล่อง: ${units} หน่วย</div>
-                </div>
-                <div class="row mt-2">
-                    <div class="col-md-3">ราคาต่อกล่อง:</div>
-                    <div class="col-md-3">ราคาทุน: ${formatNumber(adjustedCost)} บาท</div>
-                    <div class="col-md-6">ราคาขาย: ${formatNumber(reimbursement)} บาท</div>
                 </div>
                 <div class="row mt-2">
                     <div class="col-md-3">ราคาต่อหน่วยย่อยสุด:</div>
@@ -335,11 +330,18 @@
                     <div class="col-md-3">ราคาขาย: ${formatNumber(unitReimbursement)} บาท</div>
                     <div class="col-md-3">กำไร: ${formatNumber(marginPerUnit)} บาท (${marginPercentage.toFixed(2)}%)</div>
                 </div>
+                <div class="row mt-2">
+                    <div class="col-md-3">ราคาต่อกล่อง:</div>
+                    <div class="col-md-3">ราคาทุน: ${formatNumber(adjustedCost)} บาท</div>
+                    <div class="col-md-6">ราคาขาย: ${formatNumber(reimbursement)} บาท</div>
+                </div>
+
             `;
             resultsContainer.appendChild(resultDiv);
           }
         });
       }
+
 
 
 
