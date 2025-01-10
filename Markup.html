@@ -215,17 +215,17 @@
 
     // ปรับการปัดเศษตามหลักเกณฑ์ใหม่
     if (reimbursement < 10) {
-        reimbursement = Math.floor(reimbursement * 4) / 4;
-    } else if (reimbursement <= 100) {
-        reimbursement = Math.floor(reimbursement * 2) / 2;
-    } else {
-        let fractionalPart = reimbursement - Math.floor(reimbursement);
-        if (fractionalPart < 0.50) {
-            reimbursement = Math.floor(reimbursement);
-        } else {
-            reimbursement = Math.ceil(reimbursement);
-        }
-    }
+    // For prices below 10 baht, round to the nearest 0.25 baht
+    return Math.round(reimbursement * 4) / 4;
+  } else if (reimbursement <= 100) {
+    // For prices between 10 and 100 baht, round to the nearest 0.50 baht
+    return Math.round(reimbursement * 2) / 2;
+  } else {
+    // For prices above 100 baht, round to the nearest whole baht
+    // If decimal part is less than 0.50, round down, otherwise round up
+    return Math.round(reimbursement);
+  }
+
 
     return reimbursement;
 }
