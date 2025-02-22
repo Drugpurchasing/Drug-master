@@ -267,28 +267,44 @@
         // แปลงเป็นรูปแบบที่มีทศนิยม 2 ตำแหน่งและใส่คอมม่า
         return number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
       }
+      
+function calculatePercentageDifference(oldValue, newValue) {
+  if (oldValue === 0) return 0;
+  return ((newValue - oldValue) / Math.abs(oldValue)) * 100;
+}
+
+function formatPercentage(percentage) {
+  return percentage > 0 
+    ? `+${percentage.toFixed(2)}%` 
+    : `${percentage.toFixed(2)}%`;
+}
 
 
-      function comparePrice() {
-        const oldPrice = parseFloat(document.getElementById('oldPrice').value) || 0;
-        const newPrice = parseFloat(document.getElementById('newPrice').value) || 0;
-        const resultDiv = document.getElementById('compareResult');
+function comparePrice() {
+  const oldPrice = parseFloat(document.getElementById('oldPrice').value) || 0;
+  const newPrice = parseFloat(document.getElementById('newPrice').value) || 0;
+  const resultDiv = document.getElementById('compareResult');
 
-        if (isNaN(oldPrice) || isNaN(newPrice)) {
-          resultDiv.innerHTML = '<p class="text-danger">กรุณากรอกตัวเลขที่ถูกต้อง</p>';
-          return;
-        }
+  if (isNaN(oldPrice) || isNaN(newPrice)) {
+    resultDiv.innerHTML = '<p class="text-danger">กรุณากรอกตัวเลขที่ถูกต้อง</p>';
+    return;
+  }
 
-        const difference = newPrice - oldPrice;
-        const percentChange = (difference / oldPrice) * 100;
+  const difference = newPrice - oldPrice;
+  const percentDiff = calculatePercentageDifference(oldPrice, newPrice);
+  
+  let resultText = `
+    <div class="alert ${difference >= 0 ? 'alert-warning' : 'alert-success'} mt-3">
+      <p><strong>ราคาเก่า:</strong> ${formatNumber(oldPrice)} บาท</p>
+      <p><strong>ราคาใหม่:</strong> ${formatNumber(newPrice)} บาท</p>
+      <p><strong>ส่วนต่าง:</strong> ${formatNumber(difference)} บาท</p>
+      <p><strong>เปอร์เซ็นต์การเปลี่ยนแปลง:</strong> ${formatPercentage(percentDiff)}</p>
+    </div>
+  `;
 
-        let resultText = `<p>ราคาเก่า: ${formatNumber(oldPrice)} บาท</p>`;
-        resultText += `<p>ราคาใหม่: ${formatNumber(newPrice)} บาท</p>`;
-        resultText += `<p>ความแตกต่าง: ${formatNumber(difference)} บาท</p>`;
-        resultText += `<p>เปลี่ยนแปลง: ${formatNumber(percentChange)}%</p>`;
+  resultDiv.innerHTML = resultText;
+}
 
-        resultDiv.innerHTML = resultText;
-      }
 
       document.getElementById('newPrice').addEventListener('keydown', function (e) {
         if (e.key === 'Enter') {
