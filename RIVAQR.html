@@ -145,7 +145,7 @@
                 <div id="qr-text"></div>
                 <div class="d-grid gap-2 mt-3">
                     <button class="btn btn-download" id="download-btn">Download QR Code</button>
-                    <button class="btn btn-print" id="print-btn">Print 11x11 Grid</button>
+                    <button class="btn btn-print" id="print-btn">Print QR code (11*12)</button>
                 </div>
             </div>
         </div>
@@ -330,7 +330,7 @@
                     
                     // Create 11x11 grid of QR codes
                     for (let i = 0; i < 11; i++) {
-                        for (let j = 0; j < 11; j++) {
+                        for (let j = 0; j < 12; j++) {
                             const qrItem = document.createElement('div');
                             qrItem.className = 'qr-item';
                             
