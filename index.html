@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Drug master CRA V2.07 (04/2025)</title>
+    <meta charset="utf-8">
+    <title>Drug master CRA V3.00 (04/2025)</title>
     <base target="_top">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
@@ -10,568 +12,840 @@
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#ffffff">
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@100;300&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx-populate/1.22.0/xlsx-populate.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.20/jspdf.plugin.autotable.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <!-- Select2 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Select2 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
     <style>
-        html {
-            font-family: 'Sarabun', sans-serif;
-            margin: 10px 20px;
-            padding: 10px 20px;
-            color: #003366;
-            background-color: #f4f4f4;
-            table-layout: fixed;
+        :root {
+            --primary-color: #003366;
+            --secondary-color: #1e40af;
+            --accent-color: #00296b;
+            --light-bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --text-light: #64748b;
         }
+
         body {
-            font-family: 'Sarabun', sans-serif;
-            font-size: 17px;
-            color: #003366;
-            background-color: #f4f4f4;
-        }
-        #example {
-            margin: auto;
-            padding: 10px 10px 10px 10px;
-            font-size: 16px;
-            font-weight: bold;
-            border-collapse: collapse;
-            background-color: #ffffff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            table-layout: auto;
-        }
-        #example thead th {
-            background-color: #003366;
-            color: #fff;
-            border: 1px solid #ddd;
-        }
-        #example tbody tr:nth-child(even) {
-            background-color: #e6f2ff;
-        }
-        #example tbody tr:hover {
-            background-color: #cce6ff;
-        }
-        #example th, #example td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-        #example th:nth-child(2), #example td:nth-child(2),
-        #example th:nth-child(3), #example td:nth-child(3) {
-            text-align: left;
-        }
-        #title {
-            font-size: 25px;
-            text-shadow: 3px 3px 3px #ababab;
-            font-weight: bold;
-            color: #003366;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        #logo {
-            text-align: center;
-            margin-right: 10px;
-            padding-bottom: 30px;
-        }
-        .toggle-button {
-            background-color: #0056b3;
-            font-size: 15px;
-            color: #fff;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin: 5px;
-            transition: background-color 0.3s, box-shadow 0.3s;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }        
-        
-        .filter-button {
-            background-color: #E6A700;
-            font-size: 15px;
-            color: #fff;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin: 5px;
-            transition: background-color 0.3s, box-shadow 0.3s;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .toggle-button:hover {
-            background-color: #003366;
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
-        }
-        .toggle:hover {
-            background-color: #D9591C;
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
-        }
-        .togglepic:hover {
-            background-color: #B22222;
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
-        }
-        .toggleexcel:hover {
-            background-color: #1A5A37;
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
         }
 
-        .dataTables_filter input {
-            width: 200px;
-            padding-bottom: 200px;
-            margin: 50; 
+        .container-fluid {
+            padding: 20px;
+            width: 100%;
+            max-width: 100%;
         }
-      
-        .box {
-            width: 200px;
-            margin: 5px;
-            padding: 8px;
+
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            margin-bottom: 24px;
+            background-color: var(--card-bg);
+            width: 100%;
+        }
+
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 12px 12px 0 0 !important;
+            padding: 16px 24px;
+            font-weight: 600;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .logo-container img {
+            height: 80px;
+        }
+
+        .app-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .filter-section {
+            background-color: var(--card-bg);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .dataTables_wrapper .dataTables_filter input {
+            border-radius: 6px;
+            padding: 6px 12px;
             border: 1px solid #ddd;
-            border-radius: 4px;
         }
-        .toggle {
-            background-color: #F36B21;
-            padding: 8px;
-            color: #fff;
-            font-size: 20px;
-            width: 400px; /* Adjust width to your desired size */
-            height: 40px; /* Adjust height to your desired size */
-            cursor: pointer;
-            border: none;
-            border-radius: 4px;
-            margin: 10px;
-            text-align: center;
+
+        table.dataTable thead th {
+            border-bottom: 2px solid var(--primary-color);
+            font-weight: 600;
         }
-        .toggleexcel {
-            background-color: #217346;
-            padding: 8px;
-            color: #fff;
-            font-size: 20px;
-            width: 400px; /* Adjust width to your desired size */
-            height: 40px; /* Adjust height to your desired size */
-            cursor: pointer;
-            border: none;
-            border-radius: 4px;
-            margin: 10px;
-            text-align: center;
+
+        .badge {
+            font-weight: 500;
+            padding: 5px 10px;
         }
-        .togglepic {
-            background-color: #D72828;
-            padding: 8px;
-            color: #fff;
-            font-size: 20px;
-            width: 400px; /* Adjust width to your desired size */
-            height: 40px; /* Adjust height to your desired size */
-            cursor: pointer;
-            border: none;
-            border-radius: 4px;
-            margin: 10px;
-            text-align: center;
-        }
-        #update {
+
+        .version-info {
+            font-size: 14px;
+            color: var(--text-light);
             text-align: right;
-            font-weight: bold;
-            margin-top: 20px;
         }
+
         footer {
-            font-size: 10px;
-            text-align: right;
-            margin-top: 20px;
-            color: #003366;
+            font-size: 12px;
+            color: var(--text-light);
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
         }
 
+        /* Column-specific styling */
+        .high-value {
+            background-color: rgba(75, 192, 192, 0.2);
+            font-weight: 500;
+        }
+
+        .medium-value {
+            background-color: rgba(255, 206, 86, 0.2);
+        }
+
+        .low-value {
+            background-color: rgba(255, 99, 132, 0.2);
+        }
+
+        .rate-high {
+            color: #e63946;
+            font-weight: 600;
+        }
+
+        .rate-medium {
+            color: #457b9d;
+        }
+
+        .rate-low {
+            color: #2a9d8f;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .logo-container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .app-title {
+                font-size: 24px;
+            }
+
+            .btn {
+                margin-bottom: 8px;
+                width: 100%;
+            }
+        }
+
+        .view-toggle.active {
+            border-color: #0d6efd;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-color);
+        }
+
+        /* Make table header filters visible */
+        .dt-thead th input {
+            width: 100%;
+            padding: 3px;
+            box-sizing: border-box;
+            margin-top: 5px;
+        }
+
+        #drugTable {
+            table-layout: fixed;
+            width: 100% !important;
+        }
+
+        #drugTable th:nth-child(1),
+        #drugTable td:nth-child(1) {
+            width: 7%;
+        }
+
+        /* Material No */
+        #drugTable th:nth-child(2),
+        #drugTable td:nth-child(2) {
+            width: 12%;
+        }
+
+        /* SAP Name */
+        #drugTable th:nth-child(3),
+        #drugTable td:nth-child(3) {
+            width: 15%;
+        }
+
+        /* Generic Name */
+        #drugTable th:nth-child(4),
+        #drugTable td:nth-child(4) {
+            width: 5%;
+        }
+
+        /* TPU */
+        #drugTable th:nth-child(5),
+        #drugTable td:nth-child(5) {
+            width: 8%;
+        }
+
+        /* Co-pay */
+        #drugTable th:nth-child(6),
+        #drugTable td:nth-child(6) {
+            width: 8%;
+        }
+
+        /* บัญชียา */
+        #drugTable th:nth-child(7),
+        #drugTable td:nth-child(7) {
+            width: 7%;
+        }
+
+        /* Purchasing Unit */
+        #drugTable th:nth-child(8),
+        #drugTable td:nth-child(8) {
+            width: 7%;
+        }
+
+        /* Sale Price */
+        #drugTable th:nth-child(9),
+        #drugTable td:nth-child(9) {
+            width: 7%;
+        }
+
+        /* Sale Unit */
+        #drugTable th:nth-child(10),
+        #drugTable td:nth-child(10) {
+            width: 7%;
+        }
+
+        /* Cost Price */
+        #drugTable th:nth-child(11),
+        #drugTable td:nth-child(11) {
+            width: 7%;
+        }
+
+        /* Base Unit */
+        #drugTable th:nth-child(12),
+        #drugTable td:nth-child(12) {
+            width: 7%;
+        }
+
+        /* Status */
+        #drugTable th:nth-child(13),
+        #drugTable td:nth-child(13) {
+            width: 5%;
+        }
+
+        /* Rate columns */
+        #drugTable th:nth-child(25),
+        #drugTable td:nth-child(25) {
+            width: 10%;
+        }
+
+        /* Drug Group */
+
+        /* Rate columns (13-24) */
+        #drugTable th:nth-child(n+13):nth-child(-n+24),
+        #drugTable td:nth-child(n+13):nth-child(-n+24) {
+            width: 5%;
+        }
+
+        .dataTables_filter {
+            display: none;
+        }
+
+        /* Allow text wrapping in the withdrawal condition column */
+        .withdrawal-condition {
+            white-space: normal !important;
+            word-wrap: break-word;
+        }
+
+        /* Style for the badges with text wrapping */
+        .badge.text-wrap {
+            white-space: normal;
+            text-align: left;
+            display: inline-block;
+            max-width: 100%;
+            margin: 2px 0;
+            line-height: 1.3;
+        }
     </style>
-    <script src="data.js"></script>
 </head>
+
 <body>
-    <div id="logo">
-        <img id="logo" src="CRAlogo.png" width="auto" height="100">
-        <span id="title">บัญชียาโรงพยาบาลจุฬาภรณ์</span>
+    <div class="container-fluid">
+        <div class="logo-container">
+            <img src="CRAlogo.png" alt="Logo" class="img-fluid">
+            <div>
+                <h1 class="app-title">Drug master CRA</h1>
+                <p class="version-info mb-0">Latest update 06/04/2568 | Version 3.00</p>
+            </div>
+        </div>
+
+        <div class="card">
+
+            <div class="btn-group">
+                <button id="toggleData" class="toggle btn btn-sm btn-outline-light" style="display: none;">
+                    <i class="fas fa-pills me-1"></i>Drug Data
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="filter-section">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            <input type="text" id="globalSearch" class="form-control"
+                                placeholder="Search across all columns...">
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <button id="exportButton" class="btn btn-success me-2">
+                            <i class="fas fa-file-excel me-1"></i>Export Excel
+                        </button>
+                        <button id="exportJPEGButton" class="btn btn-danger">
+                            <i class="fas fa-camera me-1"></i>Screenshot
+                        </button>
+                        <button id="defaultView" class="btn view-toggle">
+                            <i class="fas fa-eye me-1"></i>Essential View
+                        </button>
+                        <button id="purchasingView" class="btn view-toggle">
+                            <i class="fas fa-eye me-1"></i>Purchasing View
+                        </button>
+                        <button id="rateView" class="btn view-toggle">
+                            <i class="fas fa-chart-line me-1"></i>Rates View
+                        </button>
+                        <button id="allView" class="btn view-toggle">
+                            <i class="fas fa-chart-line me-1"></i>View all
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table id="drugTable" class="table table-hover table-striped w-100">
+
+                    <thead>
+                        <tr>
+                            <th>Material No.</th>
+                            <th>SAP Name</th>
+                            <th>Generic Name</th>
+                            <th>TPU</th>
+                            <th>GPU</th>
+                            <th>Special rules</th>
+                            <th>ED/NED</th>
+                            <th>Purchasing Unit</th>
+                            <th>Sale Price</th>
+                            <th>Sale Unit</th>
+                            <th class="cost-column">Cost Price</th>
+                            <th>Base Unit</th>
+                            <th>Status</th>
+                            <th class="rate-column">03/67</th>
+                            <th class="rate-column">04/67</th>
+                            <th class="rate-column">05/67</th>
+                            <th class="rate-column">06/67</th>
+                            <th class="rate-column">07/67</th>
+                            <th class="rate-column">08/67</th>
+                            <th class="rate-column">09/67</th>
+                            <th class="rate-column">10/67</th>
+                            <th class="rate-column">11/67</th>
+                            <th class="rate-column">12/67</th>
+                            <th class="rate-column">01/68</th>
+                            <th class="rate-column">02/68</th>
+                            <th>Drug Group</th>
+                            <th>ราคากลาง</th>
+                            <th>FS</th>
+                            <th>รหัสยาทดแทน</th>
+                            <th>วันที่ยาเข้าบัญชี</th>
+                            <th>Distributor</th>
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be loaded from data.js -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-    
-    <table id="example" class="row-border"></table>
-
-    <button id="toggleColumns" class="toggle">ราคาทุน</button>
-    <button id="toggleRate" class="toggle">Rate</button>
-    <button id="toggleData" class="toggle" style="display: none;">Drug data</button>
-
-    <button id="exportButton" class="toggleexcel">Export to Excel (.xlsx)</button>
-    <button id="exportJPEGButton" class="togglepic">Screenshot (JPEG)</button>
-
-    <br>
-    <input type="text" id="materialFilter" placeholder="Filter by Material No." class="box" autocomplete="on">
-    <input type="text" id="sapNameFilter" placeholder="Filter by SAP Name" class="box" autocomplete="on">
-    <input type="text" id="genericNameFilter" placeholder="Filter by Generic Name" class="box" autocomplete="on">
-    <input type="text" id="coPayFilter" placeholder="Filter by เงื่อนไขการเบิกจ่าย" class="box" autocomplete="on">
-    <input type="text" id="banchiFilter" placeholder="Filter by บัญชียา" class="box" autocomplete="on" list="บัญชี">
-    
-    <datalist id="บัญชี">
-        <option value="ED">
-        <option value="NED">
-    </datalist>
-    <input type="text" id="purchasingUnitFilter" placeholder="Filter by Base Unit" class="box" autocomplete="on">
-
-    <input type="text" id="statusFilter" placeholder="Filter by Status" class="box" list="fruits">
-    <datalist id="fruits">
-        <option value="ในบัญชี">ในบัญชี</option>
-        <option value="ในบัญชี(ATD)">ในบัญชี(ATD)</option>
-        <option value="ในบัญชี(ผสม)">ในบัญชี(ผสม)</option>
-        <option value="ในบัญชี(วถ)">ในบัญชี(วถ)</option>
-        <option value="ในบัญชี(ยส)">ในบัญชี(ยส)</option>
-        <option value="NS">NS</option>
-        <option value="ตัดออกจากบัญชี">ตัดออกจากบัญชี</option>
-        <option value="ตัวแทน">ตัวแทน</option>
-        <option value="สำหรับคีย์">สำหรับคีย์</option>
-        <option value="Raw mat">Raw mat</option>
-        <option value="โครงการ">โครงการ</option>
-        <option value="Promotion">Promotion</option>
-    </datalist>
-
-    <input type="text" id="drugFilter" placeholder="Filter by Drug group" class="box" autocomplete="on" list="Druggrouplist">
-    <datalist id="Druggrouplist">
-        <option value="Infections">Infections</option>
-        <option value="Nutrition and blood">Nutrition and blood</option>
-        <option value="Respiratory system">Respiratory system</option>
-        <option value="Cardiovascular system">Cardiovascular system</option>
-        <option value="Malignant disease and immunosuppression">Malignant disease and immunosuppression</option>
-        <option value="Central nervous system">Central nervous system</option>
-        <option value="Gastro-intestinal system">Gastro-intestinal system</option>
-        <option value="Obstetrics, gynaecology, and urinary-tract disorders">Obstetrics, gynaecology, and urinary-tract disorders</option>
-        <option value="Musculoskeletal and joint diseases">Musculoskeletal and joint diseases</option>
-        <option value="Endocrine system">Endocrine system</option>
-        <option value="Skin">Skin</option>
-        <option value="Ear, nose, and oropharynx and oral cavity">Ear, nose, and oropharynx and oral cavity</option>
-        <option value="Antidotes">Antidotes</option>
-        <option value="Eye">Eye</option>
-        <option value="Anesthesia">Anesthesia</option>
-        <option value="Immunological products and vaccines">Immunological products and vaccines</option>
-        <option value="Contrast media and Radiopharmaceuticals">Contrast media and Radiopharmaceuticals</option>
-    </datalist>
-
-    <button id="filterButton" class="filter-button">Filter</button>
-    <button id="resetButton" class="filter-button">Reset Filters</button>
-
-
-    <br>
-    <button id="hideColumn3" class="toggle-button">Hide/show Generic Name</button>
-    <button id="hideColumn4" class="toggle-button">Hide/show เงื่อนไขการเบิกจ่าย</button>
-    <button id="hideColumn5" class="toggle-button">Hide/show บัญชียา</button>
-    <button id="hideColumn6" class="toggle-button">Hide/show Purchasing Unit</button>
-    <button id="hideColumn7" class="toggle-button">Hide/show Sale price</button>
-    <button id="hideColumn8" class="toggle-button">Hide/show Sale Unit</button>
-    <button id="hideColumn9" class="toggle-button">Hide/show Status</button>
-
-    <p id="update">(Latest update 03/04/2568; Version 2.07)</p>
 
     <footer>
         <hr>
-        <p>The Unofficial Drug Master Data for RxCCC, created by BG X ChatGPT</p>
+        <p>The Unofficial Drug Master Data for RxCCC, created by BG X Deepseek AI</p>
     </footer>
+    </div>
 
+    <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx-populate/1.22.0/xlsx-populate.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/xlsx-populate/browser/xlsx-populate.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.20/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="data.js"></script>
 
     <script>
 
-        $(document).ready(function() {
-            showData(sampleData);
-            $('.dataTables_filter input').attr('placeholder', 'Search the table...');
-        });
-    
-        function showData(dataarray) {
-            $(document).ready(function() {
-                var table = $('#example').DataTable({
-                    "pageLength": 10,
-                    "lengthMenu": [10, 25, 50, 100, 1000, 2000],
-                    "data": dataarray,
-                    "columns": [
-                        { "title": "Material No." },
-                        { "title": "SAP Name", "visible": true, "searchable": true },
-                        { "title": "Generic Name", "visible": true, "searchable": true },
-                        { "title": "TPU", "visible": true, "searchable": true },
-                        { "title": "เงื่อนไขการเบิกจ่าย // Co-pay (Baht)", "visible": true, "searchable": true },
-                        { "title": "บัญชียา" },
-                        { "title": "Purchasing Unit" },
-                        { "title": "Sale price" },
-                        { "title": "Sale Unit" },
-                        { "title": "Cost price", "visible": false },
-                        { "title": "Base Unit" },
-                        { "title": "Status" },
-                        { "title": "มี.ค. 67", "visible": false },
-                        { "title": "เม.ษ. 67", "visible": false },
-                        { "title": "พ.ค. 67", "visible": false },
-                        { "title": "มิ.ย. 67", "visible": false },
-                        { "title": "ก.ค. 67", "visible": false },
-                        { "title": "ส.ค. 67", "visible": false },
-                        { "title": "ก.ย. 67", "visible": false },
-                        { "title": "ต.ค. 67", "visible": false },
-                        { "title": "พ.ย. 67", "visible": false },
-                        { "title": "ธ.ค. 67", "visible": false },
-                        { "title": "ม.ค. 68", "visible": false },
-                        { "title": "ก.พ. 68", "visible": false },
-                        { "title": "Drug group", "visible": true }
-                    ]
-                });
-    
-                function applyFilters() {
-                    var materialFilter = $('#materialFilter').val();
-                    var sapNameFilter = $('#sapNameFilter').val();
-                    var genericNameFilter = $('#genericNameFilter').val();
-                    var coPayFilter = $('#coPayFilter').val();
-                    var banchiFilter = $('#banchiFilter').val();
-                    var purchasingUnitFilter = $('#purchasingUnitFilter').val();
-                    var statusFilter = $('#statusFilter').val();
-                    var drugFilter = $('#drugFilter').val();
-    
-                    // Apply filters to the specified columns
-                    table.column(0).search(materialFilter).draw();
-                    table.column(1).search(sapNameFilter).draw();
-                    table.column(2).search(genericNameFilter).draw();
-                    table.column(4).search(coPayFilter).draw();
-                    table.column(5).search(banchiFilter).draw();
-                    table.column(10).search(purchasingUnitFilter).draw();
-                    table.column(11).search(statusFilter).draw();
-                    table.column(24).search(drugFilter).draw();
-                }
-    
-                $('#filterButton').on('click', function() {
-                    applyFilters();
-                });
-    
-                $(document).on('keydown', function(event) {
-                    if (event.key === "Enter") {
-                        applyFilters();
-                    }
-                });
-    
-                $('#resetButton').on('click', function() {
-                    $('#materialFilter, #sapNameFilter, #genericNameFilter, #statusFilter,#coPayFilter,#banchiFilter,#purchasingUnitFilter,#drugFilter').val('');
-                    applyFilters();
-                });
-    
-                $('#toggleRate').on('click', function() {
-                    $('#example').css('max-width', '100%');
-                    $('#toggleRate').hide();
-                    $('#toggleData').show();
-                    $('#toggleColumns').hide();
-    
-                    var column = table.column([2]);
-                    column.visible(!column.visible());
-                    column = table.column([3]);
-                    column.visible(!column.visible());
-                    column = table.column([4]);
-                    column.visible(!column.visible());
-                    column = table.column([5]);
-                    column.visible(!column.visible());
-                    column = table.column([6]);
-                    column.visible(!column.visible());
-                    column = table.column([7]);
-                    column.visible(!column.visible());
-                    column = table.column([8]);
-                    column.visible(!column.visible());
-                    for (var i = 11; i <= 25; i++) {
-                        column = table.column(i);
-                        column.visible(!column.visible());
-                    }
-    
-                    $('#example td:nth-child(2)').css('text-align', 'left');
-                    $('#example td:nth-child(3)').css('text-align', 'center');
-                });
-    
-                $('#toggleData').on('click', function() {
-                    $('#example').css('max-width', '100%');
-                    $('#toggleRate').show();
-                    $('#toggleData').hide();
-                    $('#toggleColumns').show();
-    
-                    var column = table.column([2]);
-                    column.visible(!column.visible());
-                    column = table.column([3]);
-                    column.visible(!column.visible());
-                    column = table.column([4]);
-                    column.visible(!column.visible());
-                    column = table.column([5]);
-                    column.visible(!column.visible());
-                    column = table.column([6]);
-                    column.visible(!column.visible());
-                    column = table.column([7]);
-                    column.visible(!column.visible());
-                    column = table.column([8]);
-                    column.visible(!column.visible());
-    
-                    for (var i = 11; i <= 25; i++) {
-                        column = table.column(i);
-                        column.visible(!column.visible());
-                    }
-    
-                    $('#example td:nth-child(2)').css('text-align', 'left');
-                    $('#example td:nth-child(3)').css('text-align', 'left');
-                });
-    
-                $('#toggleColumns').on('click', function () {
-                    promptPassword(function () {
-                        // Toggle the visibility of columns after the password is validated
-                        var column = table.column([9]);
-                        column.visible(!column.visible());
-                        column = table.column([10]);
-                        column.visible(!column.visible());
-                        $('#example').css('max-width', '100%');
-                    });
-                });
-    
-                $('#hideColumn3').on('click', function() {
-                    var column = table.column([2]);
-                    column.visible(!column.visible());
-                    $('#example').css('max-width', '100%');
-                });
-    
-                $('#hideColumn4').on('click', function() {
-                    var column = table.column([4]);
-                    column.visible(!column.visible());
-                    $('#example').css('max-width', '100%');
-                });
-    
-                $('#hideColumn5').on('click', function() {
-                    var column = table.column([5]);
-                    column.visible(!column.visible());
-                    $('#example').css('max-width', '100%');
-                });
-    
-                $('#hideColumn6').on('click', function() {
-                    var column = table.column([6]);
-                    column.visible(!column.visible());
-                    $('#example').css('max-width', '100%');
-                });
-    
-                $('#hideColumn7').on('click', function() {
-                    var column = table.column([7]);
-                    column.visible(!column.visible());
-                    $('#example').css('max-width', '100%');
-                });
-    
-                $('#hideColumn8').on('click', function() {
-                    var column = table.column([8]);
-                    column.visible(!column.visible());
-                    $('#example').css('max-width', '100%');
-                });
-    
-                $('#hideColumn9').on('click', function() {
-                    var column = table.column([11]);
-                    column.visible(!column.visible());
-                    $('#example').css('max-width', '100%');
-                });
-    
-                // Function to hide SweetAlert2 loader and show success message
-                function showSwalSuccess() {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Export ข้อมูลเรียบร้อยแล้ว!',
-                        text: 'ไฟล์จะดาวน์โหลดเข้าสู่เครื่องของท่านโดยอัตโนมัติ กรุณาตรวจสอบที่โฟลเดอร์ดาวน์โหลด',
-                    });
-                }
-
-                function promptPassword(exportCallback) {
-                    Swal.fire({
-                        title: 'กรุณาใส่รหัสเพื่อเข้าถึงข้อมูล',
-                        input: 'password',
-                        inputPlaceholder: 'ใส่รหัส',
-                        showCancelButton: true,
-                        inputValidator: (value) => {
-                            if (!value) {
-                                return 'กรุณาใส่รหัสผ่าน!';
-                            } else if (value !== 'rxccc') {  // Replace 'rxccc' with your desired password
-                                return 'รหัสผ่านไม่ถูกต้อง!';
-                            }
+        $(document).ready(function () {
+            // Initialize DataTable
+            var table = $('#drugTable').DataTable({
+                data: sampleData,
+                columns: [
+                    { data: 0, title: 'Material No.', className: 'default-column material-column', width: "7%" },
+                    {
+                        data: 1,
+                        title: 'SAP Name',
+                        width: "20%",
+                        className: 'default-column sapname-column',
+                        render: function (data, type) {
+                            if (type === 'display') return `<span style="color: #003366">${data}</span>`;
+                            return data;
                         }
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            exportCallback(); // If password is correct, call the export function
+                    },
+                    {
+                        data: 2,
+                        title: 'Generic Name',
+                        width: "20%",
+                        className: 'default-column',
+                        render: function (data, type) {
+                            if (type === 'display') return `<span class="fw-medium">${data}</span>`;
+                            return data;
                         }
-                    });
-                }
-
-                // Export to Excel
-                $('#exportButton').on('click', function () {
-                    promptPassword(function () {
-                        var table = $('#example').DataTable();
-                        var tableData = [];
-
-                        // Get the headers of visible columns
-                        var headers = [];
-                        $('#example thead th').each(function (index) {
-                            if (table.column(index).visible()) {
-                                headers.push($(this).text().trim());
+                    },
+                    {
+                        data: 3,
+                        title: 'TPU',
+                        className: 'default-column',
+                        width: "5%",
+                    },
+                    {
+                        data: 4,
+                        title: 'GPU',
+                        className: 'default-column',
+                        width: "5%",
+                    },
+                    {
+                        data: 5,
+                        title: 'เงื่อนไขการเบิกจ่าย',
+                        className: 'default-column withdrawal-condition',
+                        width: "10%",
+                        render: function (data, type) {
+                            if (type === 'display' && data) {
+                                const status = data.toLowerCase().trim();
+                                const statusMap = {
+                                    'สำรองจ่าย': 'bg-primary',
+                                    'ในบัญชี(วถ)': 'bg-info',
+                                    'ed': 'bg-success',
+                                    'ned': 'bg-danger',
+                                    'ไม่ให้เบิก': 'bg-danger',
+                                    'วัคซีน': 'bg-danger',
+                                    'ค่าสารทึบ': 'bg-primary'
+                                };
+                                const statusClass = Object.entries(statusMap).find(([key]) =>
+                                    status.includes(key)
+                                )?.[1] || 'bg-secondary';
+                                return `<span class="badge ${statusClass} text-wrap">${data}</span>`;
                             }
-                        });
-                        tableData.push(headers);
+                            return data;
+                        }
+                    },
+                    {
+                        data: 6,
+                        title: 'บัญชียา',
+                        className: 'default-column',
+                        width: "6%",
+                        render: function (data, type) {
+                            if (type === 'display' && data) {
+                                const status = data.toLowerCase().trim();
+                                const statusMap = {
+                                    'promotion': 'bg-warning',
+                                    'ในบัญชี(วถ)': 'bg-info',
+                                    'ed': 'bg-success',
+                                    'ned': 'bg-danger',
+                                    'เบิกไม่ได้': 'bg-danger',
+                                    'วัคซีน': 'bg-danger',
+                                    'ค่าสารทึบ': 'bg-primary'
+                                };
+                                const statusClass = Object.entries(statusMap).find(([key]) =>
+                                    status.includes(key)
+                                )?.[1] || 'bg-secondary';
+                                return `<span class="badge ${statusClass}">${data}</span>`;
+                            }
+                            return data;
+                        }
+                    },
+                    {
+                        data: 7,
+                        title: 'Purchasing Unit',
+                        className: 'default-column purchasing-column',
+                        width: "5%",
+                    },
+                    {
+                        data: 8,
+                        title: 'Sale Price',
+                        className: 'default-column purchasing-column',
+                        width: "5%",
+                    },
+                    {
+                        data: 9,
+                        title: 'Sale Unit',
+                        className: 'default-column rate-column purchasing-column saleunit-column',
+                        width: "5%",
+                    },
+                    {
+                        data: 10,
+                        title: 'Cost Price',
+                        className: 'purchasing-column cost-column',
+                        width: "5%",
+                        visible: false
+                    },
+                    {
+                        data: 11,
+                        title: 'Base Unit',
+                        className: 'default-column purchasing-column',
+                        width: "5%",
+                    },
+                    {
+                        data: 12,
+                        title: 'Status',
+                        className: 'default-column',
+                        render: function (data, type) {
+                            if (type === 'display' && data) {
+                                const status = data.toLowerCase().trim();
+                                const statusMap = {
+                                    'promotion': 'bg-warning',
+                                    'ในบัญชี(วถ)': 'bg-info',
+                                    'ในบัญชี': 'bg-success',
+                                    'ตัดออกจากบัญชี': 'bg-danger',
+                                    'ns': 'bg-primary'
+                                };
+                                const statusClass = Object.entries(statusMap).find(([key]) =>
+                                    status.includes(key)
+                                )?.[1] || 'bg-secondary';
+                                return `<span class="badge ${statusClass}">${data}</span>`;
+                            }
+                            return data;
+                        }
+                    },
+                    { data: 13, title: '03/67', className: 'rate-column', visible: false },
+                    { data: 14, title: '04/67', className: 'rate-column', visible: false },
+                    { data: 15, title: '05/67', className: 'rate-column', visible: false },
+                    { data: 16, title: '06/67', className: 'rate-column', visible: false },
+                    { data: 17, title: '07/67', className: 'rate-column', visible: false },
+                    { data: 18, title: '08/67', className: 'rate-column', visible: false },
+                    { data: 19, title: '09/67', className: 'rate-column', visible: false },
+                    { data: 20, title: '10/67', className: 'rate-column', visible: false },
+                    { data: 21, title: '11/67', className: 'rate-column', visible: false },
+                    { data: 22, title: '12/67', className: 'rate-column', visible: false },
+                    { data: 23, title: '01/68', className: 'rate-column', visible: false },
+                    { data: 24, title: '02/68', className: 'rate-column', visible: false },
+                    { data: 25, title: 'Drug Group', className: 'all-column' },
+                    {
+                        data: 26,
+                        title: 'ราคากลาง',
+                        className: 'purchasing-column',
+                        visible: false,
+                        render: function (data, type) {
+                            if (type === 'display' && data) return parseFloat(data).toFixed(2);
+                            return data;
+                        }
+                    },
+                    {
+                        data: 27,
+                        title: 'Fee Schedule',
+                        className: 'purchasing-column',
+                        visible: false,
+                        render: function (data, type) {
+                            if (type === 'display' && data) return parseFloat(data).toFixed(2);
+                            return data;
+                        }
+                    },
+                    {
+                        data: 28,
+                        title: 'รหัสยาทดแทน',
+                        className: 'purchasing-column',
+                        visible: false
+                    },
+                    {
+                        data: 29,
+                        title: 'การรับเข้าบัญชี',
+                        className: 'purchasing-column',
+                        visible: false,
+                    },
+                    {
+                        data: 30,
+                        title: 'Distributor',
+                        className: 'purchasing-column',
 
-                        // Get the actual data from the visible columns in the DataTable
-                        table.rows({ search: 'applied' }).every(function () {
-                            var rowData = this.data();
-                            var visibleRowData = [];
-                            $('#example thead th').each(function (index) {
-                                if (table.column(index).visible()) {
-                                    visibleRowData.push(rowData[index]);
-                                }
+                    }
+                ],
+                dom: 'rt<"bottom"lip>',
+                pageLength: 10,
+                lengthMenu: [10, 25, 50, 100],
+                scrollX: true,
+                responsive: true,
+                initComplete: function () {
+                    // Add filter inputs
+                    this.api().columns().every(function () {
+                        var column = this;
+                        var header = $(column.header());
+                        if (header.find('input.filter-input').length > 0) return;
+
+                        $('<input type="text" class="form-control form-control-sm filter-input" placeholder="Search...">')
+                            .appendTo(header)
+                            .on('click', function (e) { e.stopPropagation(); })
+                            .on('keyup change clear', function () {
+                                if (column.search() !== this.value) column.search(this.value).draw();
                             });
-                            tableData.push(visibleRowData);
-                        });
-
-                        // Create a new worksheet using SheetJS
-                        var ws = XLSX.utils.aoa_to_sheet(tableData);
-
-                        // Create a new workbook and append the worksheet
-                        var wb = XLSX.utils.book_new();
-                        XLSX.utils.book_append_sheet(wb, ws, "Drug Master Data");
-
-                        // Export the workbook to an Excel file
-                        XLSX.writeFile(wb, 'drug_master_data.xlsx');
-
-                        // Show success message after export
-                        showSwalSuccess();
                     });
+
+                    $('#globalSearch').on('keyup', function () {
+                        table.search(this.value).draw();
+                    });
+                }
+            });
+
+            // View mode buttons
+            // View mode buttons with proper reset functionality
+            $('#defaultView').on('click', function () {
+                resetActiveButton();
+                $(this).addClass('active');
+
+                // Hide all columns first
+                table.columns().visible(false);
+
+                // Show default columns (all columns with default-column class)
+                table.columns('.default-column').visible(true);
+
+                // Ensure rate columns are hidden
+                table.columns('.rate-column').visible(false);
+
+                // Ensure purchasing-specific columns are hidden
+                table.columns('.purchasing-column').not('.default-column').visible(false);
+            });
+
+            $('#rateView').on('click', function () {
+                resetActiveButton();
+                $(this).addClass('active');
+
+                // Hide all columns first
+                table.columns().visible(false);
+
+                // Show only the columns we want for rate view
+                table.columns('.material-column, .sapname-column, .saleunit-column').visible(true);
+                table.columns('.rate-column').visible(true);
+            });
+
+            $('#purchasingView').on('click', function () {
+                resetActiveButton();
+                $(this).addClass('active');
+
+                // Hide all columns first
+                table.columns().visible(false);
+
+                // Show purchasing view columns
+                table.columns('.material-column, .sapname-column, .tpu-column, .purchasing-column').visible(true);
+            });
+
+            $('#allView').on('click', function () {
+                resetActiveButton();
+                $(this).addClass('active');
+
+                // Show all columns
+                table.columns().visible(true);
+            });
+
+            // Set default view on load
+            $('#defaultView').trigger('click');
+
+            function resetActiveButton() {
+                $('.view-toggle').removeClass('active');
+            }
+
+            function promptPassword(callback) {
+                Swal.fire({
+                    title: 'Authentication Required',
+                    input: 'password',
+                    inputAttributes: { autocapitalize: 'off' },
+                    showCancelButton: true,
+                    confirmButtonText: 'Submit',
+                    showLoaderOnConfirm: true,
+                    preConfirm: (password) => {
+                        if (password !== 'rxccc') {
+                            Swal.showValidationMessage('Incorrect password');
+                        }
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                }).then((result) => {
+                    if (result.isConfirmed) callback();
+                });
+            }
+        });
+
+        // Export to Excel
+        $('#exportButton').on('click', function () {
+            promptPassword(function () {
+                // Create a temporary table with only visible columns
+                var visibleColumns = table.columns().visible();
+                var headers = [];
+                var data = [];
+
+                // Get headers
+                table.columns().every(function (index) {
+                    if (visibleColumns[index]) {
+                        headers.push(table.column(index).header().textContent);
+                    }
+                });
+                data.push(headers);
+
+                // Get data
+                table.rows({ search: 'applied' }).every(function () {
+                    var rowData = this.data();
+                    var visibleRowData = [];
+                    table.columns().every(function (index) {
+                        if (visibleColumns[index]) {
+                            visibleRowData.push(rowData[index]);
+                        }
+                    });
+                    data.push(visibleRowData);
                 });
 
-                // Export to JPEG
-                $('#exportJPEGButton').on('click', function () {
-                    var tableElement = document.getElementById('example');
+                // Create workbook
+                var wb = XLSX.utils.book_new();
+                var ws = XLSX.utils.aoa_to_sheet(data);
+                XLSX.utils.book_append_sheet(wb, ws, "Drug Master Data");
 
-                    // Use html2canvas to capture the table element
-                    html2canvas(tableElement).then(function (canvas) {
-                        // Convert the canvas to a JPEG image
-                        var imgData = canvas.toDataURL("image/jpeg", 1.0);
+                // Export
+                XLSX.writeFile(wb, 'drug_master_data.xlsx');
 
-                        // Create a link element to download the image
-                        var link = document.createElement('a');
-                        link.href = imgData;
-                        link.download = 'drug_master_data.jpg';
+                showSwalSuccess('Excel exported successfully!');
+            });
+        });
 
-                        // Simulate a click to trigger the download
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
+        // Export to JPEG
+        $('#exportJPEGButton').on('click', function () {
+            html2canvas($('#drugTable')[0], {
+                scale: 2,
+                logging: true,
+                useCORS: true
+            }).then(function (canvas) {
+                var link = document.createElement('a');
+                link.download = 'drug_master_data.jpg';
+                link.href = canvas.toDataURL('image/jpeg', 0.9);
+                link.click();
+                showSwalSuccess('Screenshot saved successfully!');
+            });
+        });
 
-                        // Show success message after export
-                        showSwalSuccess();
-                    });
-                });
+        // Show success message
+        function showSwalSuccess(message) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: message,
+                timer: 2000,
+                showConfirmButton: false
             });
         }
+
+        // Password prompt function
+        function promptPassword(callback) {
+            Swal.fire({
+                title: 'Authentication Required',
+                text: 'Please enter your password to continue:',
+                input: 'password',
+                inputAttributes: {
+                    autocapitalize: 'off',
+                    autocorrect: 'off'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                cancelButtonText: 'Cancel',
+                showLoaderOnConfirm: true,
+                preConfirm: (password) => {
+                    if (password !== 'rxccc') {
+                        Swal.showValidationMessage('Incorrect password');
+                    }
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    callback();
+                }
+            });
+        }
+
     </script>
 </body>
+
 </html>
