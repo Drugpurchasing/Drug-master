@@ -180,47 +180,38 @@
         }
 
         /* Responsive adjustments */
-        /* Better mobile responsiveness for table */
-        .table-responsive {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
+        /* Default font size */
+        #drugTable th,
+        #drugTable td {
+            font-size: 1rem;
+            /* base size for normal screens */
         }
 
-        /* Stack buttons and adjust margins */
-        @media (max-width: 576px) {
+        @media (max-width: 768px) {
 
-            .input-group,
-            .btn,
-            .view-toggle {
-                width: 100%;
-                margin-bottom: 10px;
+            body,
+            #drugTable_wrapper,
+            #drugTable_wrapper *,
+            button,
+            input,
+            select,
+            label {
+                font-size: 0.6875rem !important;
+                /* ~11px */
             }
+        }
 
-            .text-md-end {
-                text-align: left !important;
-            }
+        @media (max-width: 480px) {
 
-            .card-body {
-                padding: 10px;
-            }
-
-            .logo-container img {
-                height: 50px;
-            }
-
-            .app-title {
-                font-size: 18px;
-            }
-
-            .version-info {
-                font-size: 12px;
-                text-align: center;
-            }
-
-            .dataTables_wrapper .dataTables_length,
-            .dataTables_wrapper .dataTables_info,
-            .dataTables_wrapper .dataTables_paginate {
-                text-align: center;
+            body,
+            #drugTable_wrapper,
+            #drugTable_wrapper *,
+            button,
+            input,
+            select,
+            label {
+                font-size: 0.625rem !important;
+                /* ~10px */
             }
         }
 
@@ -772,20 +763,7 @@
                 });
             }
         });
-        // Dynamically adjust view toggle buttons for small screens
-        window.addEventListener('resize', () => {
-            const buttons = document.querySelectorAll('.view-toggle');
-            if (window.innerWidth < 576) {
-                buttons.forEach(btn => btn.classList.add('w-100', 'mb-2'));
-            } else {
-                buttons.forEach(btn => btn.classList.remove('w-100', 'mb-2'));
-            }
-        });
-    
-        // Trigger on initial load
-        window.dispatchEvent(new Event('resize'));
     </script>
-    
 </body>
 
 </html>
