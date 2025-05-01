@@ -514,7 +514,7 @@
                     {
                         data: 12,
                         title: 'Status',
-                        className: 'default-column sapname-column',
+                        className: 'default-column status-column',
                         render: function (data, type) {
                             if (type === 'display' && data) {
                                 const status = data.toLowerCase().trim();
@@ -619,7 +619,7 @@
                 resetActiveButton();
                 $(this).addClass('active');
                 table.columns().visible(false);
-                table.columns('.material-column, .sapname-column, .saleunit-column').visible(true);
+                table.columns('.material-column, .sapname-column, .saleunit-column,.status-column').visible(true);
                 table.columns('.rate-column').visible(true);
             });
 
@@ -629,7 +629,7 @@
                     resetActiveButton();
                     button.addClass('active');
                     table.columns().visible(false);
-                    table.columns('.material-column, .sapname-column, .tpu-column, .purchasing-column').visible(true);
+                    table.columns('.material-column, .sapname-column, .tpu-column, .purchasing-column,.status-column').visible(true);
                 });
             });
 
