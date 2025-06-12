@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infographic สรุปข้อมูลยา</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+        }
+        .card-category {
+            border-left: 4px solid;
+        }
+        .category-gi { border-color: #34D399; }
+        .category-transplant { border-color: #60A5FA; }
+        .category-renal { border-color: #FBBF24; }
+        .category-cardio { border-color: #F87171; }
+        .category-diabetes { border-color: #A78BFA; }
+        .category-neuro { border-color: #F472B6; }
+        .category-hema-onco { border-color: #FB923C; }
+        .category-pulmonary { border-color: #2DD4BF; }
+        .category-iv { border-color: #93C5FD; }
+        .category-misc { border-color: #A3A3A3; }
+        .category-obgyn { border-color: #F0ABFC; }
+        .category-ophtha { border-color: #7DD3FC; }
+        .category-vaccine { border-color: #818CF8; }
+
+        .category-tag {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: white;
+        }
+        .tag-gi { background-color: #34D399; }
+        .tag-transplant { background-color: #60A5FA; }
+        .tag-renal { background-color: #FBBF24; }
+        .tag-cardio { background-color: #F87171; }
+        .tag-diabetes { background-color: #A78BFA; }
+        .tag-neuro { background-color: #F472B6; }
+        .tag-hema-onco { background-color: #FB923C; }
+        .tag-pulmonary { background-color: #2DD4BF; }
+        .tag-iv { background-color: #93C5FD; }
+        .tag-misc { background-color: #A3A3A3; }
+        .tag-obgyn { background-color: #F0ABFC; }
+        .tag-ophtha { background-color: #7DD3FC; }
+        .tag-vaccine { background-color: #818CF8; }
+
+        /* Modal styles */
+        .modal {
+            transition: opacity 0.25s ease;
+        }
+        .modal-active {
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        .modal-content {
+            transition: transform 0.25s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800">สรุปรายการยาใหม่</h1>
+            <p class="text-lg text-gray-500 mt-2">Infographic ข้อมูลยาเข้าใหม่รอบประชุม มิย 2568</p>
+        </header>
+
+        <!-- Drug cards will be dynamically inserted here -->
+        <div id="drug-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+            <!-- Cards will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Gemini Summary Modal -->
+    <div id="gemini-modal" class="modal-active pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center opacity-0 z-50">
+        <div id="modal-overlay" class="absolute w-full h-full bg-gray-900 opacity-50"></div>
+        
+        <div id="modal-content" class="modal-content bg-white w-11/12 md:max-w-xl mx-auto rounded-lg shadow-lg z-50 transform -translate-y-full">
+            <div class="p-6">
+                <!-- Title -->
+                <div class="flex justify-between items-center pb-3 border-b">
+                    <p class="text-2xl font-bold text-gray-800">✨ กำลังสรุปข้อมูลยา ข้อมูลยาที่จะแสดงเป็นการสรุปจาก Gen AI (Gemini) โปรดตรวจสอบข้อมูลซ้ำอีก 1 ครั้ง</p>
+                    <button id="modal-close" class="cursor-pointer z-50 p-2 rounded-full hover:bg-gray-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Content -->
+                <div id="modal-body" class="my-5">
+                    <!-- Loading Spinner -->
+                    <div id="loading-spinner" class="w-full flex justify-center items-center py-10">
+                        <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+                    </div>
+                    <!-- Gemini Response -->
+                    <div id="gemini-response" class="text-gray-700 text-base leading-relaxed whitespace-pre-wrap"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        const drugData = [
+            { id: 1, sapCode: '1200002429', category: 'ระบบทางเดินอาหาร', code: 'gi', name: 'Risavie 550 (Rifaximin) 550 mg FC tab', generic: 'Rifaximin 550 mg Film coated tablet', dose: '550 mg 2 times daily (hepatic encephalopathy)', food: 'Take with or without food.', storage: 'Store below 30°C.', indication: '1. Reduction in recurrence episodes of overt hepatic encephalopathy in patients > 18 years of age.', type: 'NED', notes: '1. สามารถให้คู่กับ Lactulose ได้ ตามข้อบ่งใช้ (recurrence episode)<br>2. Almost non-absorbed(&lt;1%) broad spectrum antibac (gram +, -, anaerobe) <br>3. ระวังการ cross allergy กับ rifampicin<br>4. Weak inducer of CYP3A4 <br>5. DI: ↑ ciclosporin, INR (warfarin)', stock: '5 - 10 เคส', unit: 'Box / 30' },
+            { id: 2, sapCode: '1200002430', category: 'ระบบทางเดินอาหาร', code: 'gi', name: 'Meteospasmyl 60/300 mg soft cap', generic: 'Alverine citrate 60 mg + Simeticone 300 mg Soft gelatin Capsule', dose: '1 capsule 2-3 times daily (max 6 caps/day)', food: 'With meals or prn.', storage: 'Store below 30°C.', indication: '1. Symptomatic treatment of abdominal pain/ discomfort, bloating and spasm in patients with gastrointestinal disorders such as irritable bowel syndrome (IBS).', type: 'NED', notes: '1. อาจให้ร่วมกับ anti-spasmodic ตัวอื่นได้', stock: '50 % ของ Dicetel', unit: 'Box / 30' },
+            { id: 3, sapCode: '1200002431', category: 'ระบบทางเดินอาหาร', code: 'gi', name: 'Livact 4.15 g sachet (BCAA)', generic: 'L-Isoleucine 952 mg + L-Leucine 1,904 mg + L-Valine 1,144 mg Granule', dose: '1 sachet 3 times daily', food: 'After meals.', storage: 'Store below 30°C.', indication: '1. Improvement of hypoalbuminemia in patients with decompensated hepatic cirrhosis presenting with hypoalbumunemia despite adequate dietary intake.', type: 'NED', notes: '1. กำหนดการสั่งเฉพาะ แพทย์สาขา<br>  1.1 อายุรกรรมทางเดินอาหาร<br>  1.2 โภชนศาสตร์คลินิก<br>2. ฉีกซอง และเทใส่ปากโดยตรง แล้วดื่มน้ำตาม (เหมือน epadel)', stock: '5 เคส', unit: 'Box / 84' },
+            { id: 4, sapCode: '1200002432', category: 'ยากดภูมิคุ้มกัน/ปลูกถ่ายอวัยวะ', code: 'transplant', name: 'Dailiport 0.5 mg (tacrolimus) PR cap', generic: 'Tacrolimus 0.5 mg Prolonged-release capsule', dose: '0.5-1 mg daily (transplant); dose adjusted per levels', food: 'Take on empty stomach (1 hr before/ 2 hr after food).', storage: 'Store below 30°C. protect from light.', indication: '1. Prophylaxis of transplant rejection in adult kidney or liver allograft recipients.<br>2. Treatment of allograft rejection resistant to treatment with other immunosuppressive medicinal products in adult patients.', type: 'NED', notes: '1. switch IR to PR tablet ในสัดส่วน 1 : 1<br>2. ถ้าเปิดซอง Aluminium foil แล้ว อยู่ได้ 3 เดือน<br>3. กรณี switch จาก ciclosporin ต้องเว้นอย่างน้อย 12 ชั่วโมง ', stock: 'ประมาณ 30% ของ Prograf 30 คนต่อปี', unit: 'Box / 50' },
+            { id: 5, sapCode: '1200002433', category: 'ยากดภูมิคุ้มกัน/ปลูกถ่ายอวัยวะ', code: 'transplant', name: 'Dailiport 1 mg (tacrolimus) PR cap', generic: 'Tacrolimus 1 mg Prolonged-release capsule', dose: '0.5-1 mg daily (transplant); dose adjusted per levels', food: 'Take on empty stomach (1 hr before/ 2 hr after food).', storage: 'Store below 30°C. protect from light.', indication: '1. Prophylaxis of transplant rejection in adult kidney or liver allograft recipients.<br>2. Treatment of allograft rejection resistant to treatment with other immunosuppressive medicinal products in adult patients.', type: 'NED', notes: '1. switch IR to PR tablet ในสัดส่วน 1 : 1<br>2. ถ้าเปิดซอง Aluminium foil แล้ว อยู่ได้ 3 เดือน<br>3. กรณี switch จาก ciclosporin ต้องเว้นอย่างน้อย 12 ชั่วโมง ', stock: 'ประมาณ 30% ของ Prograf 30 คนต่อปี', unit: 'Box / 50' },
+            { id: 6, sapCode: '1200002434', category: 'โรคไตและอิเล็กโทรไลต์', code: 'renal', name: 'Lokelma 5 g dry susp sachet', generic: 'Sodium Zirconium Cyclosilicate 5 g Powder for Oral Suspension', dose: '• Correction phase: 10 g tid for 2-3 days<br>• Maintenance phase: max 10 g/day (2 ซอง)', food: 'Take with or without food', storage: 'Store below 30°C.', indication: '1. Treatment of hyperkalemia in adult patients.', type: 'NED, ขรก.เบิกไม่ได้', notes: '1. กรมบัญชีกลาง เบิกไม่ได้<br>2. กำหนดข้อบ่งใช้ในผู้ป่วยที่มีข้อห้ามในการใช้ kalimate หรือใช้ kalimate แล้วยังไม่สามารถลดระดับโพแทสเซียมได้ <br>3. กำหนดการสั่งเฉพาะ แพทย์อายุรกรรม<br>4. เปรียบเทียบกับ Kalimate<br>  - Onset เร็วกว่า (1 hr)<br>  - GI S/E น้อยกว่า<br>  - DI น้อยกว่า', stock: 'ประมาณ 10 เคส เน้นไปที่ Stat dose ยาราคาแพง ขรก เบิกไม่ได้', unit: 'Box / 30' },
+            { id: 7, sapCode: '1200002435', category: 'โรคไตและอิเล็กโทรไลต์', code: 'renal', name: 'Jinarc (Tolvaptan) 30 mg tab (Non-stock)', generic: 'Tolvaptan 30 mg Plain tablet', dose: '60-120 mg daily in split dose regimen (bid)<br>  • 45 mg +15 mg, 60 mg +30 mg, 90 mg +30 mg', food: 'High fat meal increase absorption (sig. for big dose only)', storage: 'Store below 30°C. protect from light.', indication: '1. Slow the progression of cyst development and renal insufficiency of Autosomal dominant polycystic kidney disease (ADPKD)...', type: 'NED, ขรก.เบิกไม่ได้', notes: '1. กรมบัญชีกลาง เบิกไม่ได้<br>2. เข้าบัญชีฯ แบบไม่สำรองคงคลัง (Non-stock)<br>3. ...fast progression<br>4. กำหนดการสั่งเฉพาะอายุรแพทย์โรคไต<br>5. ...<br>6. DI with CYP3A4 inhibitor/inducer<br>7. Common S/E: HyperNa, Thirst, Polyurea, Nocturia<br>8. ยาหักได้ แต่ห้ามบดเคี้ยวเม็ดยา', stock: 'Non-stock ไม่ต้องเบิก', unit: 'Box / 30' },
+            { id: 8, sapCode: '1200002436', category: 'โรคหัวใจและหลอดเลือด', code: 'cardio', name: 'Kanarb (Fimasartan) 60 mg FC tab', generic: 'Fimasartan potassium 60 mg Tablet', dose: '60-120 mg once daily', food: 'Take with or without food.', storage: 'Store below 30°C.', indication: '1. Treatment of Essential Hypertension.', type: 'NED', notes: '1. Potent ARBs<br>2. เข้าทดแทน Olmesartan 40 mg ', stock: 'เข้าแทน olmsartan สต๊อคตามได้เลย', unit: 'Box / 30' },
+            { id: 10, sapCode: '1200002437', category: 'โรคหัวใจและหลอดเลือด', code: 'cardio', name: 'Atozet 10/20 mg FC tab', generic: 'Ezetimibe 10 mg + Atovastatin 20 mg', dose: '1 tablet once daily', food: 'Take with or without food.', storage: 'Store below 30°C.', indication: '1. Prevention of cardiovascular disease<br>2. Primary hypercholesterolemia<br>3. Homozygous Familial Hypercholesterolemia (HoFH)', type: 'NED', notes: '-', stock: 'ยาไม่เหมือนคล้ายๆ Vytorin อาจจะสต๊อคตาม Vytorin ไปก่อน แนวโน้มจะมากกว่า', unit: 'Box / 30' },
+            { id: 11, sapCode: '1200002438', category: 'โรคหัวใจและหลอดเลือด', code: 'cardio', name: 'Atozet 10/40 mg FC tab', generic: 'Ezetimibe 10 mg + Atovastatin 40 mg', dose: '1 tablet once daily', food: 'Take with or without food.', storage: 'Store below 30°C.', indication: '1. Prevention of cardiovascular disease<br>2. Primary hypercholesterolemia<br>3. Homozygous Familial Hypercholesterolemia (HoFH)', type: 'NED', notes: '-', stock: 'ยาไม่เหมือนคล้ายๆ Vytorin อาจจะสต๊อคตาม Vytorin ไปก่อน แนวโน้มจะมากกว่า', unit: 'Box / 30' },
+            { id: 12, sapCode: '1200002334', category: 'โรคหัวใจและหลอดเลือด', code: 'cardio', name: 'Opsumit 10 mg FC tab (Non-stock)', generic: 'Macitentan 10 mg Film coated tablet', dose: '10 mg once daily', food: 'Take with or without food.', storage: 'Store below 30°C. protect from light.', indication: '1. Long-term treatment of PAH in patients of WHO Functional class II to III to reduce morbidity and the risk of mortality.', type: 'NED', notes: '1. กำหนดการสั่งเฉพาะ แพทย์สาขา<br>  1.1 Cardiologist, 1.2 Pulmonologist, 1.3 Rheumatologist<br>2. เข้าบัญชีฯ แบบไม่สำรองคงคลัง (Non-stock)<br>3. เป็นยาในกลุ่ม ERAs ที่ guideline แนะนำ', stock: 'Non-stock ไม่ต้องเบิก', unit: 'Box / 30' },
+            { id: 14, sapCode: '1200002235', category: 'โรคเบาหวาน', code: 'diabetes', name: 'Novorapid penfill (3 mL) (Non-stock)', generic: 'insulin glargine 100 iu/mL prefilled pen (3 ml)', dose: 'Individualized', food: '-', storage: 'Unopened: Refrigerate; Opened: Room temp (≤4 weeks)', indication: '1. Treatment of diabetes mellitus in adults, adolescents and children aged 1 year and above.', type: 'ED ง', notes: '1. กำหนดให้สั่งได้ไม่เกินครั้งละ 3 เดือน <br>2. เข้าบัญชีฯ แบบไม่สำรองคงคลัง (Non-stock)<br>3. เป็นรูปแบบที่สามารถใช้ได้กับ Infusion pump', stock: 'Non-stock ไม่ต้องเบิก', unit: 'Box / 5' },
+            { id: 15, sapCode: '1200002439', category: 'โรคเบาหวาน', code: 'diabetes', name: 'Lantus SoloStar 100 iu/mL prefilled pen', generic: 'Insulin glargine 100 iu/mL prefilled pen (3 ml)', dose: 'Individualized', food: '-', storage: 'Unopened: Refrigerate; Opened: Room temp (≤4 weeks)', indication: '1. The treatment of adults, aldolescents and children of 2 years or above with diabetes melitus, where treatment with insulin is required.', type: 'ED ง', notes: '-', stock: 'เข้านอกรอบมาแล้วเบิกแล้ว', unit: 'Box / 5' },
+            { id: 16, sapCode: '1200002440', category: 'ระบบประสาทและจิตเวช', code: 'neuro', name: 'Amantadine Stada 100 mg tab', generic: 'Amantadine hydrochloride 100 mg Tablet', dose: '100 mg 2 times daily max dose: 400 mg/day', food: 'Take with or without food.', storage: 'Store below 30°C.', indication: '1. Treatment of parkinsonism.', type: 'ED ง', notes: '1. กำหนดการสั่งเฉพาะ แพทย์สาขา<br>   1.1 อายุรกรรมประสาท<br>   1.2 ศัลยกรรมประสาท<br>2. ให้สำรองคงคลังปริมาณน้อย ', stock: '10-20 คน ต่อปี ไม่เยอะ', unit: 'Box / 30' },
+            { id: 17, sapCode: '1200002441', category: 'ระบบประสาทและจิตเวช', code: 'neuro', name: 'Stalevo 200/50/200 mg FC tab', generic: 'Levodopa 200 mg, Carbidopa 50 mg, Entacapone 200 mg', dose: '1 tab 3-4 times daily (Parkinson’s)', food: 'High-protein meals may reduce absorption. Take 30-60 min before meals.', storage: 'Store below 30°C.', indication: '1. Treatment of patients with parkinson\'s disease and end-of-dose motor fluctuations...', type: 'NED', notes: '-', stock: 'ประมาณ 50% ของ comtan เนื่องจากคนทุกคนต้องเริ่ม Madopar ก่อนอยู่แล้ว', unit: 'Box / 100' },
+            { id: 18, sapCode: '1200002442', category: 'ระบบประสาทและจิตเวช', code: 'neuro', name: 'Rexulti (Brexpiprazole) 1 mg FC tab', generic: 'Brexpiprazole 1 mg Film Coated Tablet', dose: '0.5–4 mg once daily, depending on the indication', food: 'Take with or without food.', storage: 'Store below 30°C.', indication: '1. Adjunctive treatment of major depressive disorder (MDD)<br>2 Treatment of schizophrenia...<br>3. Treatment of agitation associated with dementia due to alzeimer\'s disease.', type: 'NED', notes: '1. กำหนดการสั่งเฉพาะ แพทย์สาขา (ประสาท, ศัลย์ประสาท, ผู้สูงอายุ, จิตเวช)<br>2. DI with CYP3A4 and CYP2D6<br>3. ไม่สามารถทดแทน Aripiprazole ได้ เนื่องจากไม่มีข้อบ่งใช้ เรื่อง bipolar', stock: '30-40% ของ Abilify ไม่เหมือนกันซะทีเดียวแต่น่าจะพอๆกัน', unit: 'Box / 30' },
+            { id: 19, sapCode: '1200002443', category: 'โลหิตวิทยาและมะเร็ง', code: 'hema-onco', name: 'Enoxaparin Stada 40 mg/0.4 mL PFS', generic: 'Enoxaparin sodium 40 mg/0.4 mL (4,000 anti-Xa)', dose: 'SC once/twice daily', food: '-', storage: 'Store below 30°C.', indication: 'ป้องกันและรักษาโรคลิ่มเลือดอุดตันในหลอดเลือดดำ (VTE) ในภาวะต่างๆ', type: 'ED (ค)', notes: '1. สำหรับใช้ในสิทธิที่ ไม่สามารถเบิกจ่าย Clexane ได้<br>2. Interchangable with Clexane (US FDA approved therapeutic equivalence)', stock: '20-25% ของ Clexane', unit: 'Box / 2' },
+            { id: 20, sapCode: '1200002444', category: 'โลหิตวิทยาและมะเร็ง', code: 'hema-onco', name: 'Enoxaparin Stada 60 mg/0.6 mL PFS', generic: 'Enoxaparin sodium 60 mg/0.6 mL (6,000 anti-Xa)', dose: 'SC once/twice daily', food: '-', storage: 'Store below 30°C.', indication: 'ป้องกันและรักษาโรคลิ่มเลือดอุดตันในหลอดเลือดดำ (VTE) ในภาวะต่างๆ', type: 'ED (ค)', notes: '1. สำหรับใช้ในสิทธิที่ ไม่สามารถเบิกจ่าย Clexane ได้<br>2. Interchangable with Clexane (US FDA approved therapeutic equivalence)', stock: '20-25% ของ Clexane', unit: 'Box / 2' },
+            { id: 21, sapCode: '1200002445', category: 'โลหิตวิทยาและมะเร็ง', code: 'hema-onco', name: 'Enoxaparin Stada 80 mg/0.8 mL PFS', generic: 'Enoxaparin sodium 80 mg/0.8 mL (8,000 anti-Xa)', dose: 'SC once/twice daily', food: '-', storage: 'Store below 30°C.', indication: 'ป้องกันและรักษาโรคลิ่มเลือดอุดตันในหลอดเลือดดำ (VTE) ในภาวะต่างๆ', type: 'ED (ค)', notes: '1. สำหรับใช้ในสิทธิที่ ไม่สามารถเบิกจ่าย Clexane ได้<br>2. Interchangable with Clexane (US FDA approved therapeutic equivalence)', stock: '20-25% ของ Clexane', unit: 'Box / 2' },
+            { id: 22, sapCode: '1200002414', category: 'โลหิตวิทยาและมะเร็ง', code: 'hema-onco', name: 'Brukinsa 80 mg cap (Non-stock)', generic: 'Zanubrutinib 80 mg แคปซูล', dose: '160 mg twice daily', food: 'Take with or without food.', storage: 'Store below 30°C.', indication: 'รักษา CLL, SLL, WM, MCL, MZL, FL', type: 'NED', notes: '1. กรมบัญชีกลาง เบิกไม่ได้<br>2. เข้าบัญชีฯ แบบไม่สำรองคงคลัง (Non-stock)', stock: 'Non-stock ไม่ต้องเบิก', unit: 'Box / 120' },
+            { id: 23, sapCode: '1200002422', category: 'โลหิตวิทยาและมะเร็ง', code: 'hema-onco', name: 'Enhertu 100 mg inj. (Non-stock)', generic: 'Trastuzumab Deruxtecan 100mg/Vial Powder', dose: '5.4 mg/kg IV q3w', food: '-', storage: 'Refrigerate (2-8°C)', indication: 'รักษามะเร็งเต้านม, ปอด, กระเพาะอาหาร ที่มี HER2-positive/low', type: 'NED', notes: '1. กรมบัญชีกลาง เบิกไม่ได้<br>2. เข้าบัญชีฯ แบบไม่สำรองคงคลัง (Non-stock)', stock: 'Non-stock ไม่ต้องเบิก', unit: 'Vial' },
+            { id: 24, sapCode: '1200002446', category: 'โลหิตวิทยาและมะเร็ง', code: 'hema-onco', name: 'Decitex 50 mg inj. (Non-stock)', generic: 'Decitabine 50 mg powder for solution for injection', dose: '20 mg/m² IV daily', food: 'No interaction', storage: 'Below 30°C', indication: 'รักษา MDS และ AML', type: 'NED', notes: '1. ข้าราชการ สำรองจ่าย<br>2. เข้าบัญชีฯ แบบไม่สำรองคงคลัง (Non-stock)', stock: 'Non-stock ไม่ต้องเบิก', unit: 'Vial' },
+            { id: 25, sapCode: '1200002447', category: 'โลหิตวิทยาและมะเร็ง', code: 'hema-onco', name: 'NESP 120 mcg/0.5 mL prefilled syr', generic: 'Darbepoetin alfa 120 mcg/0.5 mL Sterile solution', dose: 'Individualized', food: '-', storage: 'Refrigerate (2-8°C); protect from light. Do not freeze.', indication: 'รักษาภาวะโลหิตจางจากโรคไตเรื้อรัง, เคมีบำบัด, MDS', type: 'NED', notes: '-', stock: '30 % ของ Epoetin high dose เช่น Eprex 40000 Hema 40000', unit: 'Syringe' },
+            { id: 28, sapCode: '1200002423', category: 'โลหิตวิทยาและมะเร็ง', code: 'hema-onco', name: 'Nubeqa 300 mg FC tab (Non-stock)', generic: 'Darolutamide 300 mg Film-coated tablet', dose: '600 mg twice daily', food: 'Take with food', storage: 'Store below 30°C.', indication: 'รักษามะเร็งต่อมลูกหมาก (nmCRPC, mHSPC)', type: 'NED', notes: '1. กรมบัญชีกลาง เบิกไม่ได้<br>2. เข้าบัญชีฯ แบบไม่สำรองคงคลัง (Non-stock)<br>3. ผู้ป่วยสิทธิ์ข้าราชการให้พิจารณาเลือกใช้ Enzalutamide ก่อน เนื่องจากเป็นยาที่อยู่ในระบบ OCPA', stock: 'Non-stock ไม่ต้องเบิก', unit: 'Box / 112' },
+            { id: 29, sapCode: '1200002450', category: 'โลหิตวิทยาและมะเร็ง', code: 'hema-onco', name: 'Vinorelbine (Vinobel) 50 mg/5 mL inj.', generic: 'Vinorelbine 10 mg/1 mL solution for injection', dose: '25-30 mg/m² IV weekly', food: 'No interaction', storage: 'Store below 30°C; protect from light.', indication: 'รักษา NSCLC และมะเร็งเต้านมระยะลุกลาม', type: 'ED (ง)', notes: '1. รายการยารูปแบบรับประทานให้คงไว้ สำหรับผู้ป่วยที่มีปัญหาการให้ยารูปแบบฉีดทางเส้นเลือด เช่น extravasation', stock: 'เข้านอกรอบมาแล้วเบิกแล้ว', unit: 'Vial' },
+            { id: 30, sapCode: '1200002451', category: 'โลหิตวิทยาและมะเร็ง', code: 'hema-onco', name: 'Vinorelbine (Vinobel) 10 mg/1 mL inj.', generic: 'Vinorelbine 50 mg/5 mL solution for injection', dose: '25-30 mg/m² IV weekly', food: 'No interaction', storage: 'Store below 30°C; protect from light.', indication: 'รักษา NSCLC และมะเร็งเต้านมระยะลุกลาม', type: 'ED (ง)', notes: '1. รายการยารูปแบบรับประทานให้คงไว้ สำหรับผู้ป่วยที่มีปัญหาการให้ยารูปแบบฉีดทางเส้นเลือด เช่น extravasation', stock: 'เข้านอกรอบมาแล้วเบิกแล้ว', unit: 'Vial' },
+            { id: 31, sapCode: '1200000681', category: 'ระบบประสาทและจิตเวช', code: 'neuro', name: 'Somazina 1000 mg/4 mL inj', generic: 'Citicoline 1000 mg solution for injection', dose: '500-2000 mg/day IV/IM', food: '-', storage: 'Store below 30°C; protect from light.', indication: '1. Cerebrovascular accidents in acute and subacute phase<br>2. Recent head traumatisms and their sequalae', type: 'NED', notes: '1. Switch IV to PO ในสัดส่วน 1 : 1<br>2. สามารถให้ร่วมกับ cerebrolysin ได้ <br>3. Common S/E: GI', stock: '50 % ของ Cerebrolysin IV', unit: 'Box / 5' },
+            { id: 32, sapCode: '1200002452', category: 'ยาใช้ภายนอกและอื่นๆ', code: 'misc', name: 'Perskindol Classic gel (100 mL)', generic: 'L-Menthol+Essential Oils Topical Gel 100 mL', dose: 'Apply topically 3-4× daily', food: '-', storage: 'Store below 30°C.', indication: 'สำหรับบรรเทาอาการปวดกล้ามเนื้อและปวดข้อ...', type: 'NED', notes: '1. กรมบัญชีกลาง เบิกไม่ได้', stock: '30 % ของ Perskin spray', unit: 'Canister' },
+            { id: 33, sapCode: '1200002453', category: 'ยาใช้ภายนอกและอื่นๆ', code: 'misc', name: 'Perskindol Cool 7% gel (100 mL)', generic: 'L-Menthol Topical Gel 100 mL', dose: 'Apply topically 3-4× daily', food: '-', storage: 'Store below 30°C.', indication: 'บรรเทาอาการปวดกล้ามเนื้อ และ/หรือ อาการบวมที่เกิดจากอาการเคล็ด ขัดยอก, การตึงตัวของกล้ามเนื้อ', type: 'NED', notes: '1. กรมบัญชีกลาง เบิกไม่ได้', stock: '30 % ของ Perskin spray', unit: 'Canister' },
+            { id: 34, sapCode: '1200002340', category: 'วัคซีน', code: 'vaccine', name: 'Prevnar 20 0.5 mL prefilled syr', generic: 'Pneumococcal polysaccharide conjugate vaccine (20-valent, adsorbed)', dose: '0.5 mL IM once', food: '-', storage: 'Refrigerate (2-8°C); protect from light. Do not freeze.', indication: 'ป้องกันโรคติดเชื้อนิวโมคอคคัส', type: 'NED, วัคซีน เบิกไม่ได้', notes: '1. เข้าทดแทนรายการยา PCV 15', stock: 'เข้านอกรอบมาแล้วเบิกแล้ว', unit: 'Syringe' },
+            { id: 35, sapCode: '1200002454', category: 'ยาหยอดตา', code: 'ophtha', name: 'Azarga eye drop susp', generic: 'Brinzolamide 10 mg/ml, Timolol 5 mg/ml Eye drop suspension', dose: '1 drop twice daily', food: '-', storage: 'Store below 30°C', indication: 'ใช้ลดความดันภายในลูกตา (IOP) ในผู้ป่วยต้อหินชนิดมุมเปิด...', type: 'ED ง', notes: '1. เข้าทดแทนรายการยา cosopt', stock: 'เข้านอกรอบมาแล้วเบิกแล้ว', unit: 'Bottle' },
+            { id: 36, sapCode: '1200002455', category: 'สูตินรีเวช/ภาวะมีบุตรยาก', code: 'obgyn', name: 'Cetrotide (Cetrorelix) 0.25 mg/1 mL inj.', generic: 'Cetrorelix acetate 0.25 mg Powder for injection', dose: '0.25 mg SC daily', food: '-', storage: 'Refrigerate (2-8°C); protect from light.', indication: 'สำหรับการป้องกันการตกของไข่ก่อนกำหนด ในสตรีที่มีบุตรยาก...', type: 'NED, เบิกไม่ได้', notes: '-', stock: 'เท่าๆกับ Orgalutran ฉีดง่ายกว่าเจ็บน้อยกว่า', unit: 'Vial' },
+            { id: 37, sapCode: '1200002456', category: 'สูตินรีเวช/ภาวะมีบุตรยาก', code: 'obgyn', name: 'Elonva 150 mcg/0.5 mL prefilled syr', generic: 'Corifollitropin alpha 150 mcg Solution for Injection', dose: '150 mcg SC once', food: '-', storage: 'Refrigerate (2-8°C); protect from light.', indication: 'ใช้สำหรับการกระตุ้นรังไข่ (Controlled Ovarian Stimulation)...', type: 'NED, เบิกไม่ได้', notes: '-', stock: 'สต๊อค หาร 7 ของยา Gonal f // follitrope ยาค่อนข้างแพงอยู่ เคสไม่เยอะ', unit: 'Syringe' },
+            { id: 38, sapCode: '1200002457', category: 'ระบบทางเดินหายใจ', code: 'pulmonary', name: 'Symbicort Rapihaler 160/4.5 (120 doses)', generic: 'Budesonide/Formoterol 160/4.5 μg pMDI', dose: '1-2 inhalations twice daily', food: '-', storage: 'Store below 30°C.', indication: '1. โรคหอบหืด (Asthma)<br>2. โรคปอดอุดกั้นเรื้อรัง (COPD)', type: 'NED', notes: '-', stock: '50% ของ Symbicort turbu', unit: 'Bottle' },
+            { id: 39, sapCode: '1200002458', category: 'ระบบทางเดินหายใจ', code: 'pulmonary', name: 'Breztri Aerosphere 160/7.2/5 (120 doses)', generic: 'Budesonide, Glycopyrronium, Formoterol fumarate', dose: '2 inhalations twice daily', food: '-', storage: 'Store below 30°C.', indication: 'maintenance treatment in adult patients with moderate to severe COPD...', type: 'NED', notes: '-', stock: '50% ของ  Trelegy Ellipta', unit: 'Bottle' },
+            { id: 40, sapCode: '1200001066', category: 'สารน้ำและสารอาหาร', code: 'iv', name: 'Oliclinomel N7-1000E (1800Kcal/1500 mL)', generic: '3-in-1 Parenteral Nutrition 1500 mL', dose: 'Individualized', food: '-', storage: 'Store below 30°C.', indication: 'Parenteral nutrition for adults and children above 2 years of age...', type: 'ED ง', notes: '-', stock: 'สต๊อคพอๆกับ central line อื่นๆ', unit: 'Bag' },
+            { id: 41, sapCode: '1200002460', category: 'สารน้ำและสารอาหาร', code: 'iv', name: 'Pan-Enteral 400 g', generic: 'อาหารทางการแพทย์ให้ทางสายให้อาหาร powder', dose: 'Individualized', food: '-', storage: 'Store below 30°C.', indication: 'ผู้ป่วยที่มีปัญหา malnutrition และ malabsorption...', type: 'วิตามิน อาหารเสริม (เบิกไม่ได้)', notes: 'สูตรอาหารเฉพาะสำหรับทารก และเด็กที่ป่วยเกี่ยวกับการย่อยและดูดซึมอาหาร', stock: '5 เคส', unit: 'Canister' },
+            { id: 42, sapCode: '1200002461', category: 'สารน้ำและสารอาหาร', code: 'iv', name: 'Enfalac A+ premature 400 g', generic: 'นมดัดแปลงสำหรับทารกเกิดก่อนกำหนด (Preterm formula)', dose: 'Individualized', food: '-', storage: 'Store below 30°C.', indication: 'N/A', type: 'วิตามิน อาหารเสริม (เบิกไม่ได้)', notes: '-', stock: '5 เคส', unit: 'Canister' },
+            { id: 51, sapCode: '1200002354', category: 'โรคหัวใจและหลอดเลือด', code: 'cardio', name: 'Livalo (Pitavastatin) 4 mg FC tab', generic: 'Pitavastatin 4 mg film-coated tablet', dose: '1-4 mg OD', food: 'Take with or without food.', storage: 'Store below 30°C; protect from light.', indication: '1. Hypercholesterolemia, Familial hypercholesterolemia, and mixed dyslipidemia...', type: 'NED', notes: '-', stock: '70% ของ pitasor อาจจะมาแย่งตลาด เพราะเป็นยา original', unit: 'Box / 100' }
+        ];
+
+        const drugGroups = {
+            "ยาเข้าบัญชี (เร่งด่วน)": [
+                '1200002439', // Lantus
+                '1200002450', // Vinorelbine 50
+                '1200002451', // Vinorelbine 10
+                '1200002454'  // Azarga
+            ],
+            "ยาเข้าบัญชี": [
+                '1200002429', // Risavie
+                '1200002430', // Meteospasmyl
+                '1200002431', // Livact
+                '1200002432', // Dailiport 0.5
+                '1200002433', // Dailiport 1
+                '1200002434', // Lokelma
+                '1200002436', // Kanarb
+                '1200002437', // Atozet 10/20
+                '1200002438', // Atozet 10/40
+                '1200002440', // Amantadine
+                '1200002441', // Stalevo
+                '1200002442', // Rexulti
+                '1200002354', // Livalo
+                '1200002443', // Enoxaparin 40
+                '1200002444', // Enoxaparin 60
+                '1200002445', // Enoxaparin 80
+                '1200002447', // NESP
+                '1200000681', // Somazina
+                '1200002452', // Perskindol Classic
+                '1200002453', // Perskindol Cool
+                '1200002455', // Cetrotide
+                '1200002456', // Elonva
+                '1200002457', // Symbicort
+                '1200002458', // Breztri
+                '1200001066', // Oliclinomel
+                '1200002460', // Pan-Enteral
+                '1200002461', // Enfalac
+                '1200002340'  // Prevnar
+            ],
+            "ยาเข้าบัญชีแบบ Non-stock": [
+                '1200002435', // Jinarc
+                '1200002235', // Novorapid
+                '1200002334', // Opsumit
+                '1200002422', // Enhertu
+                '1200002423', // Nubeqa
+                '1200002414', // Brukinsa
+                '1200002446'  // Decitex
+            ]
+        };
+
+        const grid = document.getElementById('drug-grid');
+        const modal = document.getElementById('gemini-modal');
+        const modalContent = document.getElementById('modal-content');
+        const modalClose = document.getElementById('modal-close');
+        const modalOverlay = document.getElementById('modal-overlay');
+        const geminiResponseEl = document.getElementById('gemini-response');
+        const loadingSpinner = document.getElementById('loading-spinner');
+
+        // Function to open the modal
+        const openModal = () => {
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modalContent.classList.remove('-translate-y-full');
+            modalContent.classList.add('translate-y-0');
+        };
+
+        // Function to close the modal
+        const closeModal = () => {
+            modalContent.classList.remove('translate-y-0');
+            modalContent.classList.add('-translate-y-full');
+            setTimeout(() => {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+            }, 250);
+        };
+
+        modalClose.addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', closeModal);
+
+        /**
+         * Calls the Gemini API to get a summary for a drug.
+         * @param {object} drug - The drug object containing its details.
+         */
+        const getDrugSummary = async (drug) => {
+            openModal();
+            loadingSpinner.style.display = 'flex';
+            geminiResponseEl.textContent = '';
+
+            // Construct the prompt for the Gemini API
+            const prompt = `กรุณาสรุปข้อมูลยาต่อไปนี้ให้เข้าใจง่ายสำหรับบุคลากรทางการแพทย์ โดยเน้นประเด็นสำคัญ:
+- ชื่อการค้า: ${drug.name}
+- ชื่อสามัญ: ${drug.generic}
+- ข้อบ่งใช้หลัก: ${drug.indication}
+- ขนาดใช้ยา: ${drug.dose}
+- การรับประทานร่วมกับอาหาร: ${drug.food}
+- ข้อควรระวังหรือหมายเหตุสำคัญ: ${drug.notes.replace(/<br>/g, ' ')}
+            
+กรุณาจัดรูปแบบให้อ่านง่าย`;
+
+            const apiKey = ""; // API key is handled by the environment
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            
+            const payload = {
+                contents: [{
+                    parts: [{
+                        text: prompt
+                    }]
+                }]
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    geminiResponseEl.textContent = text;
+                } else {
+                    geminiResponseEl.textContent = 'ขออภัย ไม่สามารถสร้างบทสรุปได้ในขณะนี้ (ไม่มีข้อมูลตอบกลับ)';
+                }
+            } catch (error) {
+                console.error("Error fetching Gemini summary:", error);
+                geminiResponseEl.textContent = 'ขออภัย เกิดข้อผิดพลาดในการเชื่อมต่อกับ Gemini API กรุณาลองใหม่อีกครั้ง';
+            } finally {
+                loadingSpinner.style.display = 'none';
+            }
+        };
+
+        // Loop through the groups and render the drugs
+        Object.keys(drugGroups).forEach(groupName => {
+            const header = document.createElement('div');
+            header.className = 'col-span-1 md:col-span-2 xl:col-span-3 mt-8 mb-4';
+            header.innerHTML = `<h2 class="text-3xl font-bold border-b-4 border-gray-300 pb-3 text-gray-700">${groupName}</h2>`;
+            grid.appendChild(header);
+
+            const drugsInGroup = drugGroups[groupName];
+            drugsInGroup.forEach((sapCode, index) => {
+                const drug = drugData.find(d => d.sapCode === sapCode);
+                if (drug) {
+                    const stockInfo = drug.stock || 'N/A';
+                    const unitInfo = drug.unit || 'N/A';
+
+                    const card = document.createElement('div');
+                    card.className = `bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col card-category category-${drug.code}`;
+                    
+                    // The main content of the card
+                    const cardContent = `
+                        <div class="p-6 flex-grow">
+                            <div class="flex justify-between items-start">
+                                <div class="w-full pr-2">
+                                     <div class="flex items-center mb-1">
+                                        <span class="text-gray-400 font-bold text-lg mr-3">${index + 1}.</span>
+                                        <p class="text-sm font-semibold text-gray-500">${drug.generic}</p>
+                                    </div>
+                                    <h3 class="text-xl font-bold text-gray-900 mt-1 ml-6">${drug.name}</h3>
+                                    <p class="text-sm text-gray-500 font-mono mt-1 ml-6">รหัสยา: ${drug.sapCode}</p>
+                                </div>
+                                <span class="category-tag tag-${drug.code} whitespace-nowrap">${drug.type}</span>
+                            </div>
+
+                            <div class="mt-4 space-y-4 text-sm text-gray-700">
+                                 <div class="flex items-start">
+                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-400 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 9a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1zm1 4a1 1 0 100 2h2a1 1 0 100-2H9z" clip-rule="evenodd" /></svg>
+                                    <div><strong class="font-semibold">หน่วยเบิก:</strong> ${unitInfo}</div>
+                                </div>
+                                 <div class="flex items-start text-blue-800">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-blue-600 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path d="M2 4a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V4zm2 2v10h12V6H4zm3 2h6a1 1 0 010 2H7a1 1 0 010-2z" /></svg>
+                                    <div><strong class="font-semibold">จำนวนที่ควรสต๊อค:</strong> ${stockInfo}</div>
+                                </div>
+                                <div class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-${drug.code}-500 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" /></svg>
+                                    <div><strong class="font-semibold">ข้อบ่งใช้:</strong> ${drug.indication}</div>
+                                </div>
+                                <div class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-${drug.code}-500 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" /></svg>
+                                    <div><strong class="font-semibold">ขนาดใช้ยา:</strong> ${drug.dose}</div>
+                                </div>
+                                <div class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-${drug.code}-500 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.993.883L4 8v9a1 1 0 001 1h10a1 1 0 001-1V8l-.007-.117A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4z" /></svg>
+                                    <div><strong class="font-semibold">การจัดเก็บ:</strong> ${drug.storage}</div>
+                                </div>
+                                <div class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-${drug.code}-500 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 14.95a1 1 0 001.414 1.414l.707-.707a1 1 0 00-1.414-1.414l-.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1zM4.343 5.757a1 1 0 001.414-1.414l-.707-.707a1 1 0 10-1.414 1.414l.707.707z" /></svg>
+                                    <div><strong class="font-semibold">อาหาร:</strong> ${drug.food}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-100 px-6 py-4 border-t border-gray-200">
+                             <div class="flex justify-between items-center">
+                                 <p class="text-sm text-gray-700 w-full"><strong class="font-semibold text-gray-800">หมายเหตุ:</strong> ${drug.notes}</p>
+                                 <button class="gemini-btn ml-4 flex-shrink-0 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-3 rounded-lg transition-colors duration-200 flex items-center">
+                                     ✨
+                                     <span class="ml-2 hidden sm:inline">สรุปข้อมูลโดยระเอียด</span>
+                                 </button>
+                             </div>
+                        </div>
+                    `;
+                    card.innerHTML = cardContent;
+
+                    // Add event listener to the Gemini button
+                    card.querySelector('.gemini-btn').addEventListener('click', () => {
+                        getDrugSummary(drug);
+                    });
+
+                    grid.appendChild(card);
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
