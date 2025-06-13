@@ -135,15 +135,22 @@
 </head>
 <body class="bg-gray-100">
 
-    <div class="flex h-screen">
-        <aside id="sidebar" class="w-72 bg-[#001d3d] text-gray-200 flex-shrink-0">
-            <div class="p-4 text-center border-b border-gray-700">
-                <h1 class="text-xl font-bold text-white">รายการยาเข้าใหม่ มิ.ย.68</h1>
+<div class="flex h-screen">
+    <aside id="sidebar" class="bg-[#001d3d] text-gray-200 flex-shrink-0 flex flex-col h-screen w-20 hover:w-72 transition-all duration-300 ease-in-out group overflow-x-hidden">
+        <div class="p-4 text-center border-b border-gray-700 flex items-center justify-center space-x-4">
+            <i class="fa-solid fa-bars text-xl text-white flex-shrink-0"></i>
+            <h1 class="text-xl font-bold text-white opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">รายการยาเข้าใหม่ มิ.ย.68</h1>
+        </div>
+        <nav id="drug-nav" class="p-2 space-y-1 flex-1 overflow-y-auto">
+            <div class="text-center p-4 text-gray-400">
+                <i class="fa-solid fa-spinner fa-spin"></i>
             </div>
-            <nav id="drug-nav" class="p-2 space-y-1">
-                 <div class="text-center p-4 text-gray-400">กำลังโหลดข้อมูล...</div>
-            </nav>
-        </aside>
+        </nav>
+    </aside>
+
+    <main class="flex-1 p-4 md:p-8 overflow-y-auto transition-all duration-300 ease-in-out">
+        </main>
+</div>
 
         <main class="flex-1 p-4 md:p-8 overflow-y-auto">
             <div class="view-switcher">
@@ -285,46 +292,56 @@ function parseCsv(csvText) {
             }
         }
 
-        function renderNav() {
-            const navContainer = document.getElementById('drug-nav');
-            navContainer.innerHTML = ''; // Clear loader
-            drugDatabase.forEach((drug, index) => {
-                const navItem = document.createElement('a');
-                navItem.href = '#';
-                navItem.className = 'block p-3 rounded-md nav-item hover:bg-[#003566] hover:text-white';
-                navItem.textContent = drug.name;
-                navItem.onclick = (e) => {
-                    e.preventDefault();
-                    switchView('details');
-                    displayDrugDetails(index);
-                    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-                    navItem.classList.add('active');
-                };
-                navContainer.appendChild(navItem);
-            });
-        }
+// Corrected Function
+function renderNav() {
+    const navContainer = document.getElementById('drug-nav');
+    navContainer.innerHTML = ''; // Clear loader
+    drugDatabase.forEach((drug, index) => {
+        const navItem = document.createElement('a');
+        navItem.href = '#';
+        // Add classes to hide text when sidebar is collapsed (via group-hover)
+        navItem.className = 'block p-3 rounded-md nav-item hover:bg-[#003566] hover:text-white whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200';
+        navItem.textContent = drug.name;
+        navItem.onclick = (e) => {
+            e.preventDefault();
+            switchView('details');
+            displayDrugDetails(index);
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            navItem.classList.add('active');
+        };
+        navContainer.appendChild(navItem);
+    });
+}
         
-        function renderSummaryTable() {
-            const tableBody = document.querySelector('#summary-table tbody');
-            tableBody.innerHTML = ''; // Clear loader
-            if(drugDatabase.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="6" class="text-center p-4">ไม่พบข้อมูล</td></tr>';
-                return;
-            }
-            drugDatabase.forEach((drug, index) => {
-                const row = `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${drug.name}</td>
-                        <td>${drug.strength}</td>
-                        <td>${drug.form}</td>
-                        <td>${drug.manufacturer}</td>
-                        <td>${drug.proposingPhysician}</td>
-                    </tr>
-                `;
-                tableBody.innerHTML += row;
-            });
-        }
+// Corrected Function
+function renderSummaryTable() {
+    const tableBody = document.querySelector('#summary-table tbody');
+    tableBody.innerHTML = ''; // Clear loader
+    if(drugDatabase.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="6" class="text-center p-4">ไม่พบข้อมูล</td></tr>';
+        return;
+    }
+    drugDatabase.forEach((drug, index) => {
+        // Process the physician string to include line breaks
+        const physicianHtml = (drug.proposingPhysician || '')
+            .split(/,|\n/)
+            .map(s => s.trim())
+            .filter(Boolean)
+            .join('<br>');
+
+        const row = `
+            <tr>
+                <td>${index + 1}</td>
+                <td>${drug.name}</td>
+                <td>${drug.strength}</td>
+                <td>${drug.form}</td>
+                <td>${drug.manufacturer}</td>
+                <td>${physicianHtml || '-'}</td>
+            </tr>
+        `;
+        tableBody.innerHTML += row;
+    });
+}
 
         function switchView(view) {
             const detailsView = document.getElementById('drug-details-view');
