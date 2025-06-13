@@ -159,33 +159,20 @@
 
 <body class="bg-gray-100">
 
-    <div class="relative min-h-screen md:flex">
-
-    <aside id="sidebar" class="bg-[#001d3d] text-gray-200 flex-shrink-0 flex flex-col fixed inset-y-0 left-0 z-30 w-72 transform -translate-x-full transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:w-20 md:hover:w-72 group">
-        <div class="p-4 text-center border-b border-gray-700 flex items-center justify-center space-x-4 overflow-hidden">
-            <i class="fa-solid fa-bars text-xl text-white flex-shrink-0"></i>
-            <h1 class="text-xl font-bold text-white break-words transition-opacity duration-200 opacity-100 md:opacity-0 md:group-hover:opacity-100">รายการยาเข้าใหม่ มิ.ย.68</h1>
-        </div>
-        <nav id="drug-nav" class="p-2 space-y-1 flex-1 overflow-y-auto">
-            <div class="text-center p-4 text-gray-400">
-                <i class="fa-solid fa-spinner fa-spin"></i>
+    <div class="flex h-screen">
+        <aside id="sidebar" class="bg-[#001d3d] text-gray-200 flex-shrink-0 flex flex-col h-screen w-20 hover:w-72 transition-all duration-300 ease-in-out group overflow-x-hidden">
+            <div class="p-4 text-center border-b border-gray-700 flex items-center justify-center space-x-4">
+                <i class="fa-solid fa-bars text-xl text-white flex-shrink-0"></i>
+                <h1 class="text-xl font-bold text-white opacity-0 group-hover:opacity-100 break-words transition-opacity duration-200">รายการยาเข้าใหม่ มิ.ย.68</h1>
             </div>
-        </nav>
-    </aside>
+            <nav id="drug-nav" class="p-2 space-y-1 flex-1 overflow-y-auto">
+                <div class="text-center p-4 text-gray-400">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                </div>
+            </nav>
+        </aside>
 
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden md:hidden"></div>
-
-    <div class="flex-1 flex flex-col">
-        <header class="md:hidden bg-white shadow-sm sticky top-0 z-10 flex items-center justify-between p-4">
-            <button id="mobile-menu-btn" aria-label="Open Menu">
-                <i class="fa-solid fa-bars text-2xl text-gray-600"></i>
-            </button>
-            <h2 class="text-lg font-bold text-gray-800">
-                เสนอยาเข้าใหม่
-            </h2>
-            <div class="w-8"></div> </header>
-
-        <main class="p-4 md:p-8 overflow-y-auto">
+        <main class="flex-1 p-4 md:p-8 overflow-y-auto transition-all duration-300 ease-in-out">
             <div class="view-switcher">
                 <button id="details-view-btn" class="view-switcher-btn active">รายละเอียดยา</button>
                 <button id="table-view-btn" class="view-switcher-btn">ตารางสรุป</button>
@@ -227,7 +214,6 @@
             </div>
         </main>
     </div>
-</div>
 
     <script>
         // URL for the published Google Sheet as CSV
@@ -325,33 +311,26 @@
         }
 
         // Corrected Function
-// Replace your existing renderNav function with this one
-function renderNav() {
-    const navContainer = document.getElementById('drug-nav');
-    navContainer.innerHTML = ''; // Clear loader
-    drugDatabase.forEach((drug, index) => {
-        const navItem = document.createElement('a');
-        navItem.href = '#';
-        // Responsive classes for text visibility and wrapping
-        navItem.className = 'block p-3 rounded-md nav-item hover:bg-[#003566] hover:text-white break-words transition-opacity duration-200 opacity-100 md:opacity-0 md:group-hover:opacity-100';
-        navItem.textContent = drug.name;
-        navItem.onclick = (e) => {
-            e.preventDefault();
-            switchView('details');
-            displayDrugDetails(index);
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            navItem.classList.add('active');
-
-            // Close sidebar if it's open on mobile
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar.classList.contains('open')) {
-                sidebar.classList.remove('open');
-                document.getElementById('sidebar-overlay').classList.add('hidden');
-            }
-        };
-        navContainer.appendChild(navItem);
-    });
-}
+        function renderNav() {
+            const navContainer = document.getElementById('drug-nav');
+            navContainer.innerHTML = ''; // Clear loader
+            drugDatabase.forEach((drug, index) => {
+                const navItem = document.createElement('a');
+                navItem.href = '#';
+                // Add classes to hide text when sidebar is collapsed (via group-hover)
+                // Corrected navItem.className
+                navItem.className = 'block p-3 rounded-md nav-item hover:bg-[#003566] hover:text-white break-words opacity-0 group-hover:opacity-100 transition-opacity duration-200';
+                navItem.textContent = drug.name;
+                navItem.onclick = (e) => {
+                    e.preventDefault();
+                    switchView('details');
+                    displayDrugDetails(index);
+                    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+                    navItem.classList.add('active');
+                };
+                navContainer.appendChild(navItem);
+            });
+        }
 
         // Corrected Function
         function renderSummaryTable() {
@@ -539,7 +518,5 @@ function renderNav() {
     </script>
 
 </body>
-
-</html>
 
 </html>
