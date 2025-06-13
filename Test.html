@@ -3,222 +3,420 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>สรุปข้อมูลยาเข้าใหม่ มิย. 68</title>
+    <title>ฐานข้อมูลยารายการ</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <style>
-        body { font-family: 'Sarabun', sans-serif; }
-        .card-category { border-left: 4px solid; }
-
-        /* --- NEW CATEGORY COLORS --- */
-        /* Group 1: Light Red */
-        .category-1 { border-color: #FCA5A5; /* red-300 */ }
-        .tag-1 { background-color: #FCA5A5; color: #7F1D1D; } /* red-300 bg, red-900 text */
-
-        /* Group 2: Light Purple */
-        .category-2 { border-color: #C4B5FD; /* purple-300 */ }
-        .tag-2 { background-color: #C4B5FD; color: #4C1D95; } /* purple-300 bg, purple-900 text */
-
-        /* Group 3: Skin/Tan */
-        .category-3 { border-color: #FED7AA; /* orange-200 */ }
-        .tag-3 { background-color: #FED7AA; color: #7C2D12; } /* orange-200 bg, orange-900 text */
-
-        /* Group 4: Blue */
-        .category-4 { border-color: #60A5FA; /* blue-400 */ }
-        .tag-4 { background-color: #60A5FA; color: #1E3A8A; } /* blue-400 bg, blue-900 text */
-        
-        /* Fallback for misc */
-        .category-misc { border-color: #A3A3A3; }
-        .tag-misc { background-color: #A3A3A3; color: white; }
-
-        .category-tag {
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600; /* Bolder text for better contrast */
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #f4f7f9;
+        }
+        .main-content {
+            transition: opacity 0.3s ease-in-out;
+        }
+        .nav-item {
+            transition: all 0.2s ease;
+        }
+        .nav-item.active {
+            background-color: #0077b6;
+            color: white;
+            border-right: 4px solid #fbaf00;
+        }
+        .info-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .info-header {
+            color: white;
+            padding: 0.75rem 1.25rem;
+            font-weight: 700;
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+        }
+        .info-header .fa-solid {
+            margin-right: 0.75rem;
+            font-size: 1.25rem;
         }
         
-        #loader {
-            border: 8px solid #f3f3f3; border-top: 8px solid #3498db;
-            border-radius: 50%; width: 60px; height: 60px; animation: spin 2s linear infinite;
+        .label {
+            font-weight: 600;
+            color: #4a5568;
+            display: block;
+            font-size: 0.875rem;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .truncate-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .value {
+            color: #1a202c;
+            font-size: 1.125rem; /* Increased font size */
+        }
+        .reimburse-no {
+            color: #d90429;
+            font-weight: 700;
+            background-color: #fee2e2;
+            border-radius: 4px;
+            padding: 0.25rem 0.5rem;
+            display: inline-block;
+        }
+        .reimburse-yes {
+             color: #028a0f;
+            font-weight: 700;
+            background-color: #dcfce7;
+            border-radius: 4px;
+            padding: 0.25rem 0.5rem;
+            display: inline-block;
+        }
+        .pap-card {
+            border-top: 4px solid #fbaf00;
+        }
+        .view-switcher {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background-color: #e2e8f0;
+            border-radius: 8px;
+        }
+        .view-switcher-btn {
+            flex: 1;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: none;
+            background-color: transparent;
+            color: #475569;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .view-switcher-btn.active {
+            background-color: #ffffff;
+            color: #0077b6;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        #summary-table th {
+            background-color: #f1f5f9;
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            color: #1e293b;
+        }
+         #summary-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #e2e8f0;
+         }
+         #summary-table tbody tr:hover {
+            background-color: #f8fafc;
+         }
+        #sticky-drug-header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .loader {
+            text-align: center;
+            padding: 2rem;
+            font-size: 1.25rem;
+            color: #475569;
+        }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-gray-100">
 
-<div class="container mx-auto p-4 md:p-8">
-    <header class="text-center mb-12">
-        <h1 class="text-4xl md:text-5xl font-bold text-gray-800">สรุปข้อมูลยาเข้าใหม่ มิย. 68</h1>
-    </header>
+    <div class="flex h-screen">
+        <aside id="sidebar" class="w-72 bg-[#001d3d] text-gray-200 flex-shrink-0">
+            <div class="p-4 text-center border-b border-gray-700">
+                <h1 class="text-xl font-bold text-white">รายการยาใหม่</h1>
+            </div>
+            <nav id="drug-nav" class="p-2 space-y-1">
+                 <div class="text-center p-4 text-gray-400">กำลังโหลดข้อมูล...</div>
+            </nav>
+        </aside>
 
-    <div id="loading-container" class="flex flex-col items-center justify-center p-10">
-        <div id="loader"></div>
-        <p class="text-gray-600 mt-4">กำลังโหลดข้อมูล กรุณารอสักครู่</p>
+        <main class="flex-1 p-4 md:p-8 overflow-y-auto">
+            <div class="view-switcher">
+                <button id="details-view-btn" class="view-switcher-btn active">รายละเอียดยา</button>
+                <button id="table-view-btn" class="view-switcher-btn">ตารางสรุป</button>
+            </div>
+
+            <div id="drug-details-view">
+                <div id="sticky-drug-header" class="opacity-0"></div>
+                <div id="drug-details" class="main-content opacity-100">
+                    <div class="loader">กำลังโหลดข้อมูลยา...</div>
+                </div>
+            </div>
+
+            <div id="summary-table-view" class="hidden">
+                 <div class="info-card">
+                    <div class="info-header bg-[#03045e]">
+                         <i class="fa-solid fa-table-list"></i>
+                        <span>ตารางสรุปรายการยาทั้งหมด</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table id="summary-table" class="w-full text-sm">
+                            <thead>
+                                <tr>
+                                    <th>ลำดับ</th>
+                                    <th>รายการยา</th>
+                                    <th>ความแรง</th>
+                                    <th>รูปแบบยา</th>
+                                    <th>บริษัทผู้ผลิต</th>
+                                    <th>แพทย์ผู้เสนอ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                 <tr><td colspan="6" class="text-center p-4">กำลังโหลดข้อมูล...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
-    
-    <div id="drug-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8"></div>
-</div>
 
-<script>
-const googleSheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTv6yIfVLrXZ76oqef80u3iZbheswq3h-igusVAjNryZYucvVhnXc35I2HDNvEZr-4FYf4rwIu9EHn-/pub?gid=0&single=true&output=csv';
+    <script>
+        // URL for the published Google Sheet as CSV
+        const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR_sO9yL2bY1yW5L8mQjG3N7p9HkX6cZ5tJ7oR_vF_kY9B-jT9L0jA5hW8rJ4kS7lG-sO-n3D_iE2f/pub?gid=0&single=true&output=csv';
 
-const grid = document.getElementById('drug-grid');
-const loadingContainer = document.getElementById('loading-container');
+        // Global variable to hold the fetched data
+        let drugDatabase = [];
 
-// Fallback for undefined group, tag, color
-function safeCode(code) {
-    // Allows only 1, 2, 3, 4 as valid codes, otherwise falls back to 'misc'
-    if (['1', '2', '3', '4'].includes(String(code))) {
-        return String(code);
-    }
-    return 'misc';
-}
+        /**
+         * Parses CSV text into an array of objects.
+         * @param {string} csvText - The CSV data as a string.
+         * @returns {Array<Object>} - An array of drug data objects.
+         */
+        function parseCsv(csvText) {
+            const lines = csvText.trim().split('\n');
+            if (lines.length < 2) return [];
 
-async function loadDrugData() {
-    if (!googleSheetUrl || googleSheetUrl.trim() === '') {
-        loadingContainer.innerHTML = '<p class="text-red-600 font-bold text-center">!! ข้อผิดพลาด: กรุณาตั้งค่า URL ของ Google Sheet ในโค้ดก่อน<br>ไปที่ตัวแปร `googleSheetUrl` แล้ววางลิงก์ CSV ที่เผยแพร่จาก Google Sheet ของคุณ</p>';
-        return;
-    }
-    try {
-        const response = await fetch(googleSheetUrl);
-        if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
-        const csvText = await response.text();
-        Papa.parse(csvText, {
-            header: true, skipEmptyLines: true,
-            complete: function(results) {
-                loadingContainer.style.display = 'none';
-                const validDrugData = results.data.filter(row => row.sapCode && row.sapCode.trim() !== '');
-                if(validDrugData.length === 0) {
-                    grid.innerHTML = '<div class="col-span-1 md:col-span-2 xl:col-span-3 text-center text-red-500 font-semibold">ไม่มีข้อมูลที่จะแสดง กรุณาตรวจสอบชีตหรือรีเฟรช</div>';
-                    return;
-                }
-                renderCards(validDrugData);
-            },
-            error: function(error) {
-                loadingContainer.innerHTML = `<p class="text-red-600 font-bold">ไม่สามารถประมวลผลข้อมูล CSV ได้: ${error.message}</p>`;
+            const headers = lines[0].trim().split(',').map(h => h.trim());
+            const data = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                const entry = {};
+                headers.forEach((header, j) => {
+                    let value = (values[j] || '').trim().replace(/^"|"$/g, '').replace(/""/g, '"');
+                    
+                    if (header === 'salePrice' || header === 'costPrice') {
+                        entry[header] = parseFloat(value) || 0;
+                    } else if (header === 'hospitals') {
+                        entry[header] = value.split(';').map(h => h.trim()).filter(h => h);
+                    } else {
+                        entry[header] = value;
+                    }
+                });
+                data.push(entry);
             }
+            return data;
+        }
+
+        /**
+         * Fetches and processes drug data from the Google Sheet.
+         */
+        async function loadAndInitializeApp() {
+            try {
+                const response = await fetch(GOOGLE_SHEET_CSV_URL);
+                if (!response.ok) {
+                    throw new Error(`Network response was not ok: ${response.statusText}`);
+                }
+                const csvText = await response.text();
+                drugDatabase = parseCsv(csvText);
+                
+                // Once data is loaded, render everything
+                renderNav();
+                renderSummaryTable();
+                if (drugDatabase.length > 0) {
+                    displayDrugDetails(0);
+                    document.querySelector('.nav-item').classList.add('active');
+                } else {
+                     document.getElementById('drug-details').innerHTML = '<div class="loader">ไม่พบข้อมูลยา</div>';
+                }
+            } catch (error) {
+                console.error('Failed to load drug data:', error);
+                document.getElementById('drug-nav').innerHTML = '<div class="text-center p-4 text-red-400">ไม่สามารถโหลดข้อมูลได้</div>';
+                document.getElementById('drug-details').innerHTML = '<div class="loader text-red-500">เกิดข้อผิดพลาดในการโหลดข้อมูลยา</div>';
+            }
+        }
+
+        function renderNav() {
+            const navContainer = document.getElementById('drug-nav');
+            navContainer.innerHTML = ''; // Clear loader
+            drugDatabase.forEach((drug, index) => {
+                const navItem = document.createElement('a');
+                navItem.href = '#';
+                navItem.className = 'block p-3 rounded-md nav-item hover:bg-[#003566] hover:text-white';
+                navItem.textContent = drug.name;
+                navItem.onclick = (e) => {
+                    e.preventDefault();
+                    switchView('details');
+                    displayDrugDetails(index);
+                    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+                    navItem.classList.add('active');
+                };
+                navContainer.appendChild(navItem);
+            });
+        }
+        
+        function renderSummaryTable() {
+            const tableBody = document.querySelector('#summary-table tbody');
+            tableBody.innerHTML = ''; // Clear loader
+            if(drugDatabase.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="6" class="text-center p-4">ไม่พบข้อมูล</td></tr>';
+                return;
+            }
+            drugDatabase.forEach((drug, index) => {
+                const row = `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${drug.name}</td>
+                        <td>${drug.strength}</td>
+                        <td>${drug.form}</td>
+                        <td>${drug.manufacturer}</td>
+                        <td>${drug.proposingPhysician}</td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        function switchView(view) {
+            const detailsView = document.getElementById('drug-details-view');
+            const tableView = document.getElementById('summary-table-view');
+            const detailsBtn = document.getElementById('details-view-btn');
+            const tableBtn = document.getElementById('table-view-btn');
+            const sidebar = document.getElementById('sidebar');
+            const stickyHeader = document.getElementById('sticky-drug-header');
+
+            if (view === 'details') {
+                detailsView.classList.remove('hidden');
+                tableView.classList.add('hidden');
+                detailsBtn.classList.add('active');
+                tableBtn.classList.remove('active');
+                sidebar.classList.remove('hidden');
+                stickyHeader.classList.remove('hidden');
+            } else {
+                detailsView.classList.add('hidden');
+                tableView.classList.remove('hidden');
+                detailsBtn.classList.remove('active');
+                tableBtn.classList.add('active');
+                sidebar.classList.add('hidden');
+                stickyHeader.classList.add('hidden');
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAndInitializeApp();
+            document.getElementById('details-view-btn').onclick = () => switchView('details');
+            document.getElementById('table-view-btn').onclick = () => switchView('table');
         });
-    } catch (error) {
-        loadingContainer.innerHTML = `<p class="text-red-600 font-bold">ไม่สามารถโหลดข้อมูลได้ ตรวจสอบ URL และการตั้งค่าการเผยแพร่ (Publish to the web): ${error.message}</p>`;
-    }
-}
 
-function renderCards(drugData) {
-    grid.innerHTML = '';
-    const drugGroups = drugData.reduce((acc, drug) => {
-        const groupName = (drug.group || 'ไม่มีกลุ่ม').trim();
-        if (!acc[groupName]) acc[groupName] = [];
-        acc[groupName].push(drug);
-        return acc;
-    }, {});
-
-    const sortedGroupNames = Object.keys(drugGroups).sort((a, b) => {
-        const aOrder = parseInt(drugGroups[a][0]?.groupOrder || 99, 10);
-        const bOrder = parseInt(drugGroups[b][0]?.groupOrder || 99, 10);
-        return aOrder - bOrder;
-    });
-
-    // --- Icon Color Mapping based on new category codes ---
-    const iconColorMap = {
-        '1': 'text-red-500',
-        '2': 'text-purple-500',
-        '3': 'text-orange-500',
-        '4': 'text-blue-500',
-        'misc': 'text-gray-500'
-    };
-
-    sortedGroupNames.forEach(groupName => {
-        if(groupName === "ไม่มีกลุ่ม" && drugGroups[groupName].length === 0) return;
-        const header = document.createElement('div');
-        header.className = 'col-span-1 md:col-span-2 xl:col-span-3 mt-8 mb-4';
-        header.innerHTML = `<h2 class="text-3xl font-bold border-b-4 border-gray-300 pb-3 text-gray-700">${groupName}</h2>`;
-        grid.appendChild(header);
-
-        const drugsInGroup = drugGroups[groupName].sort((a, b) => parseInt(a.itemOrder || 99, 10) - parseInt(b.itemOrder || 99, 10));
-
-        drugsInGroup.forEach((drug, index) => {
-            const code = safeCode(drug.code);
-            const iconColor = iconColorMap[code]; // Get the correct icon color class
-            const imageUrl = (drug.image && drug.image.trim() !== '') ? drug.image : '';
-            const stockInfo = drug.stock || '-';
-            const unitInfo = drug.unit || '-';
-            const proposerInfo = (drug.proposer || '-').replace(/\\n|\n/g, '<br>');
-            const notesInfo = (drug.notes || '-').replace(/\\n|\n/g, '<br>');
-            const dose = drug.dose || '-';
-            const indication = drug.indication || '-';
-            const storage = drug.storage || '-';
-            const food = drug.food || '-';
+        function displayDrugDetails(index) {
+            if (index >= drugDatabase.length) return;
+            const drug = drugDatabase[index];
+            const detailsContainer = document.getElementById('drug-details');
+            const stickyHeader = document.getElementById('sticky-drug-header');
             
-            const card = document.createElement('div');
-            card.className = `bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col card-category category-${code}`;
-            card.innerHTML = `
-                <div class="h-48 w-full bg-gray-100 flex items-center justify-center">
-                    <img class="max-h-full max-w-full object-contain"
-                         src="${imageUrl}"
-                         alt="รูปยา ${drug.name || ''}"
-                         onerror="this.onerror=null;this.src='https://placehold.co/600x400/E2E8F0/4A5568?text=Image+Not+Found';">
-                </div>
-                <div class="p-6 flex-grow flex flex-col">
-                    <div class="flex justify-between items-start">
-                        <div class="w-full pr-2">
-                            <div class="flex items-center mb-1">
-                                <span class="text-gray-400 font-bold text-lg mr-3">${index + 1}.</span>
-                                <p class="text-sm font-semibold text-gray-500">${drug.generic || '-'}</p>
-                            </div>
-                            <h3 class="text-xl font-bold text-gray-900 mt-1 ml-6">${drug.name || '-'}</h3>
-                            <p class="text-sm text-gray-500 font-mono mt-1 ml-6">รหัสยา: ${drug.sapCode || '-'}</p>
-                        </div>
-                        <span class="category-tag tag-${code} whitespace-nowrap">${drug.type || '-'}</span>
-                    </div>
-                    <div class="mt-4 space-y-4 text-sm text-gray-700 overflow-auto">
-                        <div class="flex items-start">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-400 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 9a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1zm1 4a1 1 0 100 2h2a1 1 0 100-2H9z" clip-rule="evenodd" /></svg>
-                            <div><strong class="font-semibold">หน่วยเบิก:</strong> ${unitInfo}</div>
-                        </div>
-                        <div class="flex items-start text-blue-800">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-blue-600 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path d="M2 4a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V4zm2 2v10h12V6H4zm3 2h6a1 1 0 010 2H7a1 1 0 010-2z" /></svg>
-                            <div><strong class="font-semibold">จำนวนที่ควรสต๊อค:</strong> ${stockInfo}</div>
-                        </div>
-                        <div class="flex items-start">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-purple-600 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg>
-                            <div><strong class="font-semibold">แพทย์ผู้เสนอ:</strong> ${proposerInfo}</div>
-                        </div>
-                        <div class="flex items-start">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 ${iconColor} flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" /></svg>
-                            <div><strong class="font-semibold">ข้อบ่งใช้:</strong> ${indication}</div>
-                        </div>
-                        <div class="flex items-start">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 ${iconColor} flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" /></svg>
-                            <div><strong class="font-semibold">ขนาดใช้ยา:</strong> ${dose}</div>
-                        </div>
-                        <div class="flex items-start">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 ${iconColor} flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.993.883L4 8v9a1 1 0 001 1h10a1 1 0 001-1V8l-.007-.117A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4z" /></svg>
-                            <div><strong class="font-semibold">การจัดเก็บ:</strong> ${storage}</div>
-                        </div>
-                        <div class="flex items-start">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 ${iconColor} flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 14.95a1 1 0 001.414 1.414l.707-.707a1 1 0 00-1.414-1.414l-.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1zM4.343 5.757a1 1 0 001.414-1.414l-.707-.707a1 1 0 10-1.414 1.414l.707.707z" /></svg>
-                            <div><strong class="font-semibold">อาหาร:</strong> ${food}</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-gray-100 px-6 py-4 border-t border-gray-200">
-                    <p class="text-sm text-gray-700" title="${notesInfo.replace(/<br>/g,'\n')}">
-                        <strong class="font-semibold text-gray-800">หมายเหตุ:</strong> <span class="truncate-3">${notesInfo}</span>
-                    </p>
-                </div>
-            `;
-            grid.appendChild(card);
-        });
-    });
-}
+            stickyHeader.style.opacity = '0';
+            detailsContainer.style.opacity = '0';
 
-// Initial load
-loadDrugData();
-</script>
-</body>
-</html>
+            setTimeout(() => {
+                const accountColorClass = drug.account === 'NED' ? 'text-red-600' : (drug.account === 'ED' ? 'text-green-600' : 'text-blue-800');
+                
+                stickyHeader.innerHTML = `
+                <div class="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-md mb-6">
+                    <h2 class="text-2xl font-bold text-slate-800">${drug.name}</h2>
+                </div>
+                `;
+
+                detailsContainer.innerHTML = `
+                <div class="space-y-6">
+                    <!-- CARD 1: Main Info -->
+                    <div class="info-card">
+                        <div class="info-header bg-[#03045e]">
+                             <i class="fa-solid fa-pills"></i>
+                            <span>ข้อมูลทั่วไปและราคา</span>
+                        </div>
+                        <div class="p-4 grid grid-cols-1 md:grid-cols-12 gap-6">
+                            <div class="md:col-span-7 space-y-4">
+                                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">ความแรง</span><span class="value font-semibold">${drug.strength}</span></div>
+                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">รูปแบบยา</span><span class="value">${drug.form}</span></div>
+                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">ขนาดบรรจุ</span><span class="value">${drug.packSize}</span></div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">ราคาขาย (หน่วยย่อย)</span><span class="value text-lg font-bold text-green-600">${drug.salePrice.toLocaleString('th-TH', { style: 'currency', currency: 'THB' })}</span></div>
+                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">ราคาทุน (หน่วยย่อย)</span><span class="value text-lg font-bold text-orange-600">${drug.costPrice.toLocaleString('th-TH', { style: 'currency', currency: 'THB' })}</span></div>
+                                </div>
+                                 <div>
+                                    <h3 class="font-semibold text-lg mb-2 text-[#001d3d]">สถานะการเบิกจ่าย</h3>
+                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                        <div class="bg-slate-50 rounded-md p-3 text-center"><span class="label">กรมบัญชีกลาง</span><span class="${drug.govReimburse.toLowerCase() !== 'เบิกไม่ได้' ? 'reimburse-yes' : 'reimburse-no'}">${drug.govReimburse}</span></div>
+                                        <div class="bg-slate-50 rounded-md p-3 text-center"><span class="label">ประกันสังคม</span><span class="${drug.socialSecurity.toLowerCase() !== 'เบิกไม่ได้' ? 'reimburse-yes' : 'reimburse-no'}">${drug.socialSecurity}</span></div>
+                                        <div class="bg-slate-50 rounded-md p-3 text-center"><span class="label">สปสช.</span><span class="${drug.nhso.toLowerCase() !== 'เบิกไม่ได้' ? 'reimburse-yes' : 'reimburse-no'}">${drug.nhso}</span></div>
+                                        <div class="bg-slate-50 rounded-md p-3 text-center"><span class="label">ใน/นอก DRG</span><span class="${drug.drg.toLowerCase() !== 'เบิกไม่ได้' ? 'reimburse-yes' : 'reimburse-no'}">${drug.drg}</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="md:col-span-5 space-y-4">
+                                <div class="bg-slate-50 rounded-md p-3 h-full flex flex-col">
+                                    <div class="mb-4"><span class="label">บริษัทผู้ผลิต/จัดจำหน่าย</span><span class="value">${drug.manufacturer}</span></div>
+                                    <div class="mb-4"><span class="label">แพทย์ผู้เสนอ</span><span class="value">${drug.proposingPhysician}</span></div>
+                                    <div class="mb-4"><span class="label">บัญชียา</span><span class="value font-bold text-xl ${accountColorClass}">${drug.account}</span></div>
+                                </div>
+                            </div>
+                        </div>
+                         <div class="p-4 pt-0">
+                             <span class="label">รูปภาพผลิตภัณฑ์</span>
+                             <div class="mt-1 w-full h-72 bg-gray-200 rounded-md flex items-center justify-center overflow-hidden">
+                                 <img src="${drug.imageUrl || 'https://placehold.co/400x225/e2e8f0/adb5bd?text=No+Image'}" alt="รูปภาพผลิตภัณฑ์ ${drug.name}" class="w-full h-full object-contain">
+                             </div>
+                         </div>
+                    </div>
+
+                    <!-- CARD: Physician's Reason -->
+                     <div class="info-card">
+                        <div class="info-header bg-green-700"><i class="fa-solid fa-user-doctor"></i><span>เหตุผลของแพทย์ผู้เสนอ</span></div>
+                        <div class="p-4"><p class="text-xl font-bold">${drug.physicianReason || 'ไม่มีข้อมูล'}</p></div>
+                    </div>
+
+                    <!-- CARD: Competitor -->
+                     <div class="info-card">
+                        <div class="info-header bg-[#5a189a]"><i class="fa-solid fa-code-compare"></i><span>ยาใกล้เคียงในบัญชี</span></div>
+                        <div class="p-4"><p class="text-xl font-bold">${drug.competitor || 'ไม่มีข้อมูล'}</p></div>
+                    </div>
+
+                    <!-- CARD: Hospitals -->
+                    <div class="info-card">
+                        <div class="info-header bg-gray-600"><i class="fa-solid fa-hospital"></i><span>โรงพยาบาลโรงเรียนแพทย์ที่มียา</span></div>
+                        <div class="p-4"><ul class="list-disc list-inside text-xl font-bold columns-1 md:columns-2">${drug.hospitals.map(h => `<li>${h}</li>`).join('')}</ul></div>
+                    </div>
+
+                    <!-- CARD: PAP -->
+                    ${drug.pap !== 'ไม่มี' ? `
+                    <div class="info-card pap-card">
+                        <div class="info-header bg-[#fbaf00] text-gray-800"><i class="fa-solid fa-hand-holding-medical"></i><span>โครงการช่วยเหลือผู้ป่วย (PAP)</span></div>
+                        <div class="p-4"><p class="text-xl font-bold">${drug.papFull}</p></div>
+                    </div>` : ''}
+                    
+                    <!-- CARD: Proposal (Last) -->
+                    <div class="info-card">
+                        <div class="info-header bg-[#0077b6]"><i class="fa-solid fa-clipboard-check"></i><span>ข้อเสนอฝ่ายเภสัชกรรม</span></div>
+                        <div class="p-4"><p class="text-3xl font-bold">${drug.proposal}</p></div>
+                    </div>
+                </div>
+                `;
+                detailsContainer.style.opacity = '1';
+                stickyHeader.style.opacity = '1';
+            }, 150);
+        }
+    </script>
+
 </body>
 </html>
