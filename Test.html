@@ -375,7 +375,8 @@ function parseCsv(csvText) {
         const hospitalsHtml = (drug.hospitals && typeof drug.hospitals === 'string')
             ? drug.hospitals.split(/\n|;/).filter(h => h.trim()).map(h => `<li>${h.trim()}</li>`).join('')
             : (Array.isArray(drug.hospitals) ? drug.hospitals.filter(h => h.trim()).map(h => `<li>${h.trim()}</li>`).join('') : '');
-
+        
+        const proposingPhysicianHtml = (drug.proposingPhysician || '').replace(/\n/g, '<br>');
         const physicianReasonHtml = (drug.physicianReason || '').replace(/\n/g, '<br>');
         const competitorHtml = (drug.competitor || '').replace(/\n/g, '<br>');
         const proposalHtml = (drug.proposal || '').replace(/\n/g, '<br>');
