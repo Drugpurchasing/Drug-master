@@ -398,123 +398,160 @@
             return text.split(/,|\n/).map(s => s.trim()).filter(Boolean).map(s => `<li>${s}</li>`).join('');
         }
 
-        function displayDrugDetails(index) {
-            if (index >= drugDatabase.length) return;
-            const drug = drugDatabase[index];
-            const detailsContainer = document.getElementById('drug-details');
-            const stickyHeader = document.getElementById('sticky-drug-header');
+        // Replace your entire displayDrugDetails function with this corrected one
+function displayDrugDetails(index) {
+    if (index >= drugDatabase.length) return;
+    const drug = drugDatabase[index];
+    const detailsContainer = document.getElementById('drug-details');
+    const stickyHeader = document.getElementById('sticky-drug-header');
 
-            stickyHeader.style.opacity = '0';
-            detailsContainer.style.opacity = '0';
+    stickyHeader.style.opacity = '0';
+    detailsContainer.style.opacity = '0';
 
-            setTimeout(() => {
-                const accountColorClass = drug.account === 'NED' ? 'text-red-600' : (drug.account === 'ED' ? 'text-green-600' : 'text-blue-800');
+    setTimeout(() => {
+        const accountColorClass = drug.account === 'NED' ? 'text-red-600' : (drug.account === 'ED' ? 'text-green-600' : 'text-blue-800');
 
-                // ฟิลด์ที่รองรับขึ้นบรรทัดใหม่
-                const hospitalsHtml = (drug.hospitals && typeof drug.hospitals === 'string') ?
-                drug.hospitals.split(/\n|;/).filter(h => h.trim()).map(h => `<li>${h.trim()}</li>`).join('') :
-                (Array.isArray(drug.hospitals) ? drug.hospitals.filter(h => h.trim()).map(h => `<li>${h.trim()}</li>`).join('') : '');
+        // --- START: New logic for handling multiple images ---
+        const hasImage1 = drug.imageUrl && drug.imageUrl.trim() !== '';
+        const hasImage2 = drug.imageUrl2 && drug.imageUrl2.trim() !== '';
 
-                const proposingPhysicianHtml = (drug.proposingPhysician || '').replace(/\n/g, '<br>');
-                const physicianReasonHtml = (drug.physicianReason || '').replace(/\n/g, '<br>');
-                const competitorHtml = (drug.competitor || '').replace(/\n/g, '<br>');
-                const proposalHtml = (drug.proposal || '').replace(/\n/g, '<br>');
-                const papFullHtml = (drug.papFull || '').replace(/\n/g, '<br>');
+        let imagesHtml;
+        const imageContainerClasses = "w-full h-72 bg-gray-200 rounded-md flex items-center justify-center overflow-hidden";
+        const imageClasses = "w-full h-full object-contain";
+        const placeholderUrl = "https://placehold.co/400x225/e2e8f0/adb5bd?text=No+Image";
 
-                stickyHeader.innerHTML = `
-                    <div class="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-md mb-6">
-                        <h2 class="text-2xl font-bold text-slate-800">${drug.name || '-'}</h2>
+        if (hasImage1 && hasImage2) {
+            imagesHtml = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="${imageContainerClasses}">
+                        <img src="${drug.imageUrl}" alt="รูปภาพผลิตภัณฑ์ 1 ${drug.name || ''}" class="${imageClasses}">
                     </div>
-                `;
-
-                detailsContainer.innerHTML = `
-                <div class="space-y-6">
-                    <div class="info-card">
-                        <div class="info-header bg-[#03045e]">
-                            <i class="fa-solid fa-pills"></i>
-                            <span>ข้อมูลทั่วไปและราคา</span>
-                        </div>
-                        <div class="p-4 grid grid-cols-1 md:grid-cols-12 gap-6">
-                            <div class="md:col-span-7 space-y-4">
-                                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">ความแรง</span><span class="value font-semibold">${drug.strength || '-'}</span></div>
-                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">รูปแบบยา</span><span class="value">${drug.form || '-'}</span></div>
-                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">ขนาดบรรจุ</span><span class="value">${drug.packSize || '-'}</span></div>
-                                </div>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">ราคาขาย (หน่วยย่อย)</span><span class="value text-lg font-bold text-green-600">${drug.salePrice ? drug.salePrice.toLocaleString('th-TH', { style: 'currency', currency: 'THB' }) : '-'}</span></div>
-                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">ราคาทุน (หน่วยย่อย)</span><span class="value text-lg font-bold text-orange-600">${drug.costPrice ? drug.costPrice.toLocaleString('th-TH', { style: 'currency', currency: 'THB' }) : '-'}</span></div>
-                                </div>
-                                <div>
-                                    <h3 class="font-semibold text-lg mb-2 text-[#001d3d]">สถานะการเบิกจ่าย</h3>
-                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-                                        <div class="bg-slate-50 rounded-md p-3 text-center"><span class="label">กรมบัญชีกลาง</span><span class="${drug.govReimburse && drug.govReimburse.toLowerCase() !== 'เบิกไม่ได้' ? 'reimburse-yes' : 'reimburse-no'}">${drug.govReimburse || '-'}</span></div>
-                                        <div class="bg-slate-50 rounded-md p-3 text-center"><span class="label">ประกันสังคม</span><span class="${drug.socialSecurity && drug.socialSecurity.toLowerCase() !== 'เบิกไม่ได้' ? 'reimburse-yes' : 'reimburse-no'}">${drug.socialSecurity || '-'}</span></div>
-                                        <div class="bg-slate-50 rounded-md p-3 text-center"><span class="label">สปสช.</span><span class="${drug.nhso && drug.nhso.toLowerCase() !== 'เบิกไม่ได้' ? 'reimburse-yes' : 'reimburse-no'}">${drug.nhso || '-'}</span></div>
-                                        <div class="bg-slate-50 rounded-md p-3 text-center"><span class="label">ใน/นอก DRG</span><span class="${drug.drg && drug.drg.toLowerCase() !== 'เบิกไม่ได้' ? 'reimburse-yes' : 'reimburse-no'}">${drug.drg || '-'}</span></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="md:col-span-5 space-y-4">
-                                <div class="bg-slate-50 rounded-md p-3 h-full flex flex-col">
-                                    <div class="mb-4"><span class="label">บริษัทผู้ผลิต/จัดจำหน่าย</span><span class="value">${drug.manufacturer || '-'}</span></div>
-                                    <div class="mb-4">
-                                        <span class="label">แพทย์ผู้เสนอ</span>
-                                        <ul class="value list-none m-0 p-0" style="color: #1a202c; font-size: 1.125rem;">
-                                            ${renderList(drug.proposingPhysician)}
-                                        </ul>
-                                    </div>
-                                    <div class="mb-4"><span class="label">บัญชียา</span><span class="value font-bold text-xl ${accountColorClass}">${drug.account || '-'}</span></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="p-4 pt-0">
-                            <span class="label">รูปภาพผลิตภัณฑ์</span>
-                            <div class="mt-1 w-full h-72 bg-gray-200 rounded-md flex items-center justify-center overflow-hidden">
-                                <img src="${drug.imageUrl || 'https://placehold.co/400x225/e2e8f0/adb5bd?text=No+Image'}" alt="รูปภาพผลิตภัณฑ์ ${drug.name || ''}" class="w-full h-full object-contain">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="info-card">
-                        <div class="info-header bg-green-700"><i class="fa-solid fa-user-doctor"></i><span>เหตุผลของแพทย์ผู้เสนอ</span></div>
-                        <div class="p-4">
-                            <ul class="list-disc list-inside text-xl font-bold">${renderList(drug.physicianReason)}</ul>
-                        </div>
-                    </div>
-
-                    <div class="info-card">
-                        <div class="info-header bg-[#5a189a]"><i class="fa-solid fa-code-compare"></i><span>ยาใกล้เคียงในบัญชี</span></div>
-                        <div class="p-4">
-                            <ul class="list-disc list-inside text-xl font-bold">${renderList(drug.competitor)}</ul>
-                        </div>
-                    </div>
-
-                    <div class="info-card">
-                        <div class="info-header bg-gray-600"><i class="fa-solid fa-hospital"></i><span>โรงพยาบาลโรงเรียนแพทย์ที่มียา</span></div>
-                        <div class="p-4">
-                            <ul class="list-disc list-inside text-xl font-bold columns-1 md:columns-2">
-                                ${renderList(Array.isArray(drug.hospitals) ? drug.hospitals.join(', ') : drug.hospitals)}
-                            </ul>
-                        </div>
-                    </div>
-
-                    ${drug.pap && drug.pap !== 'ไม่มี' ? `
-                    <div class="info-card pap-card">
-                        <div class="info-header bg-[#fbaf00] text-gray-800"><i class="fa-solid fa-hand-holding-medical"></i><span>โครงการช่วยเหลือผู้ป่วย (PAP)</span></div>
-                        <div class="p-4"><p class="text-xl font-bold">${papFullHtml || '-'}</p></div>
-                    </div>` : ''}
-                    
-                    <div class="info-card">
-                        <div class="info-header bg-[#0077b6]"><i class="fa-solid fa-clipboard-check"></i><span>ข้อเสนอฝ่ายเภสัชกรรม</span></div>
-                        <div class="p-4"><p class="text-3xl font-bold">${proposalHtml || '-'}</p></div>
+                    <div class="${imageContainerClasses}">
+                        <img src="${drug.imageUrl2}" alt="รูปภาพผลิตภัณฑ์ 2 ${drug.name || ''}" class="${imageClasses}">
                     </div>
                 </div>
-                `;
-                detailsContainer.style.opacity = '1';
-                stickyHeader.style.opacity = '1';
-            }, 150);
+            `;
+        } else if (hasImage1) {
+            imagesHtml = `
+                <div class="${imageContainerClasses}">
+                    <img src="${drug.imageUrl}" alt="รูปภาพผลิตภัณฑ์ ${drug.name || ''}" class="${imageClasses}">
+                </div>
+            `;
+        } else if (hasImage2) {
+            imagesHtml = `
+                <div class="${imageContainerClasses}">
+                    <img src="${drug.imageUrl2}" alt="รูปภาพผลิตภัณฑ์ ${drug.name || ''}" class="${imageClasses}">
+                </div>
+            `;
+        } else {
+            imagesHtml = `
+                <div class="${imageContainerClasses}">
+                    <img src="${placeholderUrl}" alt="ไม่มีรูปภาพ" class="${imageClasses}">
+                </div>
+            `;
         }
+        // --- END: New logic for handling multiple images ---
+
+        const proposingPhysicianHtml = (drug.proposingPhysician || '').replace(/\n/g, '<br>');
+        const physicianReasonHtml = (drug.physicianReason || '').replace(/\n/g, '<br>');
+        const competitorHtml = (drug.competitor || '').replace(/\n/g, '<br>');
+        const proposalHtml = (drug.proposal || '').replace(/\n/g, '<br>');
+        const papFullHtml = (drug.papFull || '').replace(/\n/g, '<br>');
+
+        stickyHeader.innerHTML = `
+            <div class="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-md mb-6">
+                <h2 class="text-2xl font-bold text-slate-800">${drug.name || '-'}</h2>
+            </div>
+        `;
+
+        detailsContainer.innerHTML = `
+        <div class="space-y-6">
+            <div class="info-card">
+                <div class="info-header bg-[#03045e]">
+                    <i class="fa-solid fa-pills"></i>
+                    <span>ข้อมูลทั่วไปและราคา</span>
+                </div>
+                <div class="p-4 grid grid-cols-1 md:grid-cols-12 gap-6">
+                    <div class="md:col-span-7 space-y-4">
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            <div class="bg-slate-50 rounded-md p-3"><span class="label">ความแรง</span><span class="value font-semibold">${drug.strength || '-'}</span></div>
+                            <div class="bg-slate-50 rounded-md p-3"><span class="label">รูปแบบยา</span><span class="value">${drug.form || '-'}</span></div>
+                            <div class="bg-slate-50 rounded-md p-3"><span class="label">ขนาดบรรจุ</span><span class="value">${drug.packSize || '-'}</span></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-slate-50 rounded-md p-3"><span class="label">ราคาขาย (หน่วยย่อย)</span><span class="value text-lg font-bold text-green-600">${drug.salePrice ? drug.salePrice.toLocaleString('th-TH', { style: 'currency', currency: 'THB' }) : '-'}</span></div>
+                            <div class="bg-slate-50 rounded-md p-3"><span class="label">ราคาทุน (หน่วยย่อย)</span><span class="value text-lg font-bold text-orange-600">${drug.costPrice ? drug.costPrice.toLocaleString('th-TH', { style: 'currency', currency: 'THB' }) : '-'}</span></div>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-lg mb-2 text-[#001d3d]">สถานะการเบิกจ่าย</h3>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                <div class="bg-slate-50 rounded-md p-3 text-center"><span class="label">กรมบัญชีกลาง</span><span class="${drug.govReimburse && drug.govReimburse.toLowerCase() !== 'เบิกไม่ได้' ? 'reimburse-yes' : 'reimburse-no'}">${drug.govReimburse || '-'}</span></div>
+                                <div class="bg-slate-50 rounded-md p-3 text-center"><span class="label">ประกันสังคม</span><span class="${drug.socialSecurity && drug.socialSecurity.toLowerCase() !== 'เบิกไม่ได้' ? 'reimburse-yes' : 'reimburse-no'}">${drug.socialSecurity || '-'}</span></div>
+                                <div class="bg-slate-50 rounded-md p-3 text-center"><span class="label">สปสช.</span><span class="${drug.nhso && drug.nhso.toLowerCase() !== 'เบิกไม่ได้' ? 'reimburse-yes' : 'reimburse-no'}">${drug.nhso || '-'}</span></div>
+                                <div class="bg-slate-50 rounded-md p-3 text-center"><span class="label">ใน/นอก DRG</span><span class="${drug.drg && drug.drg.toLowerCase() !== 'เบิกไม่ได้' ? 'reimburse-yes' : 'reimburse-no'}">${drug.drg || '-'}</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="md:col-span-5 space-y-4">
+                        <div class="bg-slate-50 rounded-md p-3 h-full flex flex-col">
+                            <div class="mb-4"><span class="label">บริษัทผู้ผลิต/จัดจำหน่าย</span><span class="value">${drug.manufacturer || '-'}</span></div>
+                            <div class="mb-4">
+                                <span class="label">แพทย์ผู้เสนอ</span>
+                                <ul class="value list-none m-0 p-0" style="color: #1a202c; font-size: 1.125rem;">
+                                    ${renderList(drug.proposingPhysician)}
+                                </ul>
+                            </div>
+                            <div class="mb-4"><span class="label">บัญชียา</span><span class="value font-bold text-xl ${accountColorClass}">${drug.account || '-'}</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 pt-0">
+                    <span class="label">รูปภาพผลิตภัณฑ์</span>
+                    <div class="mt-2">
+                        ${imagesHtml}
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-header bg-green-700"><i class="fa-solid fa-user-doctor"></i><span>เหตุผลของแพทย์ผู้เสนอ</span></div>
+                <div class="p-4">
+                    <ul class="list-disc list-inside text-xl font-bold">${renderList(drug.physicianReason)}</ul>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-header bg-[#5a189a]"><i class="fa-solid fa-code-compare"></i><span>ยาใกล้เคียงในบัญชี</span></div>
+                <div class="p-4">
+                    <ul class="list-disc list-inside text-xl font-bold">${renderList(drug.competitor)}</ul>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-header bg-gray-600"><i class="fa-solid fa-hospital"></i><span>โรงพยาบาลโรงเรียนแพทย์ที่มียา</span></div>
+                <div class="p-4">
+                    <ul class="list-disc list-inside text-xl font-bold columns-1 md:columns-2">
+                        ${renderList(Array.isArray(drug.hospitals) ? drug.hospitals.join(', ') : drug.hospitals)}
+                    </ul>
+                </div>
+            </div>
+
+            ${drug.pap && drug.pap !== 'ไม่มี' ? `
+            <div class="info-card pap-card">
+                <div class="info-header bg-[#fbaf00] text-gray-800"><i class="fa-solid fa-hand-holding-medical"></i><span>โครงการช่วยเหลือผู้ป่วย (PAP)</span></div>
+                <div class="p-4"><p class="text-xl font-bold">${papFullHtml || '-'}</p></div>
+            </div>` : ''}
+            
+            <div class="info-card">
+                <div class="info-header bg-[#0077b6]"><i class="fa-solid fa-clipboard-check"></i><span>ข้อเสนอฝ่ายเภสัชกรรม</span></div>
+                <div class="p-4"><p class="text-3xl font-bold">${proposalHtml || '-'}</p></div>
+            </div>
+        </div>
+        `;
+        detailsContainer.style.opacity = '1';
+        stickyHeader.style.opacity = '1';
+    }, 150);
+}
     </script>
 
 </body>
