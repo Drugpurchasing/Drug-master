@@ -420,7 +420,7 @@ function parseCsv(csvText) {
                     <div class="md:col-span-5 space-y-4">
                         <div class="bg-slate-50 rounded-md p-3 h-full flex flex-col">
                             <div class="mb-4"><span class="label">บริษัทผู้ผลิต/จัดจำหน่าย</span><span class="value">${drug.manufacturer || '-'}</span></div>
-                            <div class="mb-4"><span class="label">แพทย์ผู้เสนอ</span><span class="value">${drug.proposingPhysician || '-'}</span></div>
+                            <div class="mb-4"><span class="label">แพทย์ผู้เสนอ</span><span class="value">${renderList(drug.proposingPhysician)</span></div>
                             <div class="mb-4"><span class="label">บัญชียา</span><span class="value font-bold text-xl ${accountColorClass}">${drug.account || '-'}</span></div>
                         </div>
                     </div>
