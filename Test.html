@@ -191,31 +191,64 @@
          * @param {string} csvText - The CSV data as a string.
          * @returns {Array<Object>} - An array of drug data objects.
          */
-        function parseCsv(csvText) {
-            const lines = csvText.trim().split('\n');
-            if (lines.length < 2) return [];
+        /**
+ * Parses CSV text into an array of objects robustly.
+ * This version correctly handles commas and quotes within fields.
+ * @param {string} csvText - The CSV data as a string.
+ * @returns {Array<Object>} - An array of drug data objects.
+ */
+function parseCsv(csvText) {
+    const lines = csvText.trim().split('\n');
+    if (lines.length < 2) return [];
 
-            const headers = lines[0].trim().split(',').map(h => h.trim());
-            const data = [];
+    // Extract headers from the first line
+    const headers = lines[0].trim().split(',').map(h => h.trim());
+    const data = [];
 
-            for (let i = 1; i < lines.length; i++) {
-                const values = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                const entry = {};
-                headers.forEach((header, j) => {
-                    let value = (values[j] || '').trim().replace(/^"|"$/g, '').replace(/""/g, '"');
-                    
-                    if (header === 'salePrice' || header === 'costPrice') {
-                        entry[header] = parseFloat(value) || 0;
-                    } else if (header === 'hospitals') {
-                        entry[header] = value.split(';').map(h => h.trim()).filter(h => h);
-                    } else {
-                        entry[header] = value;
-                    }
-                });
-                data.push(entry);
+    // Regex to properly match CSV fields, handling quoted values containing commas
+    const csvRegex = /("((?:[^"]|"")*)"|([^,]*))(,|$)/g;
+
+    for (let i = 1; i < lines.length; i++) {
+        const line = lines[i];
+        if (!line.trim()) continue; // Skip empty lines
+
+        const values = [];
+        let match;
+        // Reset regex state for each line
+        csvRegex.lastIndex = 0; 
+        
+        while (match = csvRegex.exec(line)) {
+            let value = match[2] !== undefined ? match[2].replace(/""/g, '"') : match[3];
+            values.push(value.trim());
+
+            if (match[4] === '') {
+                 // Handles case where line ends without a comma
+                 // and ensures we capture all fields even if some are empty at the end.
+                 let remainingFields = headers.length - values.length;
+                 while(csvRegex.lastIndex === line.length && remainingFields > 0) {
+                     values.push('');
+                     remainingFields--;
+                 }
+                 break;
             }
-            return data;
         }
+
+        const entry = {};
+        headers.forEach((header, j) => {
+            let value = values[j] || ''; // Use empty string for missing values
+
+            if (header === 'salePrice' || header === 'costPrice') {
+                entry[header] = parseFloat(value) || 0;
+            } else if (header === 'hospitals') {
+                entry[header] = value.split(';').map(h => h.trim()).filter(h => h);
+            } else {
+                entry[header] = value;
+            }
+        });
+        data.push(entry);
+    }
+    return data;
+}
 
         /**
          * Fetches and processes drug data from the Google Sheet.
