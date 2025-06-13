@@ -390,7 +390,6 @@ function parseCsv(csvText) {
 
         detailsContainer.innerHTML = `
         <div class="space-y-6">
-            <!-- CARD 1: Main Info -->
             <div class="info-card">
                 <div class="info-header bg-[#03045e]">
                     <i class="fa-solid fa-pills"></i>
@@ -420,7 +419,13 @@ function parseCsv(csvText) {
                     <div class="md:col-span-5 space-y-4">
                         <div class="bg-slate-50 rounded-md p-3 h-full flex flex-col">
                             <div class="mb-4"><span class="label">บริษัทผู้ผลิต/จัดจำหน่าย</span><span class="value">${drug.manufacturer || '-'}</span></div>
-                            <div class="mb-4"><span class="label">แพทย์ผู้เสนอ</span><span class="value">${renderList(drug.proposingPhysician)</span></div>
+                            
+                            <div class="mb-4">
+                                <span class="label">แพทย์ผู้เสนอ</span>
+                                <ul class="value list-none m-0 p-0" style="color: #1a202c; font-size: 1.125rem;">
+                                    ${renderList(drug.proposingPhysician)}
+                                </ul>
+                            </div>
                             <div class="mb-4"><span class="label">บัญชียา</span><span class="value font-bold text-xl ${accountColorClass}">${drug.account || '-'}</span></div>
                         </div>
                     </div>
@@ -433,7 +438,6 @@ function parseCsv(csvText) {
                 </div>
             </div>
 
-            <!-- CARD: Physician's Reason -->
             <div class="info-card">
                 <div class="info-header bg-green-700"><i class="fa-solid fa-user-doctor"></i><span>เหตุผลของแพทย์ผู้เสนอ</span></div>
                 <div class="p-4">
@@ -441,7 +445,6 @@ function parseCsv(csvText) {
                 </div>
             </div>
 
-            <!-- CARD: Competitor -->
             <div class="info-card">
                 <div class="info-header bg-[#5a189a]"><i class="fa-solid fa-code-compare"></i><span>ยาใกล้เคียงในบัญชี</span></div>
                 <div class="p-4">
@@ -449,8 +452,7 @@ function parseCsv(csvText) {
                 </div>
             </div>
 
-            <!-- CARD: Hospitals -->
-           <div class="info-card">
+            <div class="info-card">
                 <div class="info-header bg-gray-600"><i class="fa-solid fa-hospital"></i><span>โรงพยาบาลโรงเรียนแพทย์ที่มียา</span></div>
                 <div class="p-4">
                     <ul class="list-disc list-inside text-xl font-bold columns-1 md:columns-2">
@@ -459,14 +461,12 @@ function parseCsv(csvText) {
                 </div>
             </div>
 
-            <!-- CARD: PAP -->
             ${drug.pap && drug.pap !== 'ไม่มี' ? `
             <div class="info-card pap-card">
                 <div class="info-header bg-[#fbaf00] text-gray-800"><i class="fa-solid fa-hand-holding-medical"></i><span>โครงการช่วยเหลือผู้ป่วย (PAP)</span></div>
                 <div class="p-4"><p class="text-xl font-bold">${papFullHtml || '-'}</p></div>
             </div>` : ''}
             
-            <!-- CARD: Proposal (Last) -->
             <div class="info-card">
                 <div class="info-header bg-[#0077b6]"><i class="fa-solid fa-clipboard-check"></i><span>ข้อเสนอฝ่ายเภสัชกรรม</span></div>
                 <div class="p-4"><p class="text-3xl font-bold">${proposalHtml || '-'}</p></div>
