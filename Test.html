@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ฐานข้อมูลยารายการ</title>
     <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -349,7 +353,10 @@ function parseCsv(csvText) {
             document.getElementById('details-view-btn').onclick = () => switchView('details');
             document.getElementById('table-view-btn').onclick = () => switchView('table');
         });
-
+    function renderList(text) {
+    if (!text) return '<li>-</li>';
+    return text.split(/,|\n/).map(s => s.trim()).filter(Boolean).map(s => `<li>${s}</li>`).join('');
+}
         function displayDrugDetails(index) {
     if (index >= drugDatabase.length) return;
     const drug = drugDatabase[index];
@@ -426,19 +433,27 @@ function parseCsv(csvText) {
             <!-- CARD: Physician's Reason -->
             <div class="info-card">
                 <div class="info-header bg-green-700"><i class="fa-solid fa-user-doctor"></i><span>เหตุผลของแพทย์ผู้เสนอ</span></div>
-                <div class="p-4"><p class="text-xl font-bold">${physicianReasonHtml || '-'}</p></div>
+                <div class="p-4">
+                    <ul class="list-disc list-inside text-xl font-bold">${renderList(drug.physicianReason)}</ul>
+                </div>
             </div>
 
             <!-- CARD: Competitor -->
             <div class="info-card">
                 <div class="info-header bg-[#5a189a]"><i class="fa-solid fa-code-compare"></i><span>ยาใกล้เคียงในบัญชี</span></div>
-                <div class="p-4"><p class="text-xl font-bold">${competitorHtml || '-'}</p></div>
+                <div class="p-4">
+                    <ul class="list-disc list-inside text-xl font-bold">${renderList(drug.competitor)}</ul>
+                </div>
             </div>
 
             <!-- CARD: Hospitals -->
-            <div class="info-card">
+           <div class="info-card">
                 <div class="info-header bg-gray-600"><i class="fa-solid fa-hospital"></i><span>โรงพยาบาลโรงเรียนแพทย์ที่มียา</span></div>
-                <div class="p-4"><ul class="list-disc list-inside text-xl font-bold columns-1 md:columns-2">${hospitalsHtml || '<li>-</li>'}</ul></div>
+                <div class="p-4">
+                    <ul class="list-disc list-inside text-xl font-bold columns-1 md:columns-2">
+                        ${renderList(Array.isArray(drug.hospitals) ? drug.hospitals.join(', ') : drug.hospitals)}
+                    </ul>
+                </div>
             </div>
 
             <!-- CARD: PAP -->
