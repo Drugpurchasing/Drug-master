@@ -15,6 +15,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <style>
+        html {
+    font-size: 20px; /* Default is 16px, 16 * 1.25 = 20px */
+}
         body {
             font-family: 'Sarabun', sans-serif;
             background-color: #f4f7f9;
@@ -160,7 +163,7 @@
         <aside id="sidebar" class="bg-[#001d3d] text-gray-200 flex-shrink-0 flex flex-col h-screen w-20 hover:w-72 transition-all duration-300 ease-in-out group overflow-x-hidden">
             <div class="p-4 text-center border-b border-gray-700 flex items-center justify-center space-x-4">
                 <i class="fa-solid fa-bars text-xl text-white flex-shrink-0"></i>
-                <h1 class="text-xl font-bold text-white opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">รายการยาเข้าใหม่ มิ.ย.68</h1>
+                <h1 class="text-xl font-bold text-white opacity-0 group-hover:opacity-100 break-words transition-opacity duration-200">รายการยาเข้าใหม่ มิ.ย.68</h1>
             </div>
             <nav id="drug-nav" class="p-2 space-y-1 flex-1 overflow-y-auto">
                 <div class="text-center p-4 text-gray-400">
@@ -298,6 +301,7 @@
                     document.querySelector('.nav-item').classList.add('active');
                 } else {
                     document.getElementById('drug-details').innerHTML = '<div class="loader">ไม่พบข้อมูลยา</div>';
+                    
                 }
             } catch (error) {
                 console.error('Failed to load drug data:', error);
@@ -314,7 +318,8 @@
                 const navItem = document.createElement('a');
                 navItem.href = '#';
                 // Add classes to hide text when sidebar is collapsed (via group-hover)
-                navItem.className = 'block p-3 rounded-md nav-item hover:bg-[#003566] hover:text-white whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200';
+                // Corrected navItem.className
+                navItem.className = 'block p-3 rounded-md nav-item hover:bg-[#003566] hover:text-white break-words opacity-0 group-hover:opacity-100 transition-opacity duration-200';
                 navItem.textContent = drug.name;
                 navItem.onclick = (e) => {
                     e.preventDefault();
