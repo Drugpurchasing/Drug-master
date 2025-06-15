@@ -160,10 +160,10 @@
 <body class="bg-gray-100">
 
     <div class="flex h-screen">
-        <aside id="sidebar" class="bg-[#001d3d] text-gray-200 flex-shrink-0 flex flex-col h-screen w-20 hover:w-72 transition-all duration-300 ease-in-out group overflow-x-hidden">
+        <aside id="sidebar" class="bg-[#001d3d] text-gray-200 flex-shrink-0 flex flex-col h-screen w-20 transition-all duration-300 ease-in-out overflow-x-hidden">
             <div class="p-4 text-center border-b border-gray-700 flex items-center justify-center space-x-4">
-                <i class="fa-solid fa-bars text-xl text-white flex-shrink-0"></i>
-                <h1 class="text-xl font-bold text-white opacity-0 group-hover:opacity-100 break-words transition-opacity duration-200">รายการยาเข้าใหม่ มิ.ย.68</h1>
+                <i id="sidebar-toggle" class="fa-solid fa-bars text-xl text-white flex-shrink-0 cursor-pointer"></i>
+                <h1 class="text-xl font-bold text-white opacity-0 sidebar-text break-words transition-opacity duration-200">รายการยาเข้าใหม่ มิ.ย.68</h1>
             </div>
             <nav id="drug-nav" class="p-2 space-y-1 flex-1 overflow-y-auto">
                 <div class="text-center p-4 text-gray-400">
@@ -317,9 +317,11 @@
             drugDatabase.forEach((drug, index) => {
                 const navItem = document.createElement('a');
                 navItem.href = '#';
-                // Add classes to hide text when sidebar is collapsed (via group-hover)
-                // Corrected navItem.className
-                navItem.className = 'block p-3 rounded-md nav-item hover:bg-[#003566] hover:text-white break-words opacity-0 group-hover:opacity-100 transition-opacity duration-200';
+                
+                // 1. ลบ `group-hover:opacity-100`
+                // 2. เพิ่ม `sidebar-text` เพื่อให้ JS ควบคุมได้
+                navItem.className = 'block p-3 rounded-md nav-item hover:bg-[#003566] hover:text-white break-words opacity-0 sidebar-text transition-opacity duration-200';
+                
                 navItem.textContent = drug.name;
                 navItem.onclick = (e) => {
                     e.preventDefault();
@@ -332,7 +334,25 @@
             });
         }
 
-        // Corrected Function
+                    // เพิ่มโค้ดส่วนนี้เข้าไป
+            document.addEventListener('DOMContentLoaded', () => {
+                const sidebar = document.getElementById('sidebar');
+                const toggleButton = document.getElementById('sidebar-toggle');
+                const textElements = document.querySelectorAll('.sidebar-text');
+            
+                toggleButton.addEventListener('click', () => {
+                    // สลับความกว้างของ sidebar ระหว่าง w-20 และ w-72
+                    sidebar.classList.toggle('w-20');
+                    sidebar.classList.toggle('w-72');
+            
+                    // สลับการแสดงผลของข้อความทั้งหมด
+                    textElements.forEach(el => {
+                        el.classList.toggle('opacity-0');
+                        el.classList.toggle('opacity-100');
+                    });
+                });
+            });
+                    // Corrected Function
         function renderSummaryTable() {
             const tableBody = document.querySelector('#summary-table tbody');
             tableBody.innerHTML = ''; // Clear loader
