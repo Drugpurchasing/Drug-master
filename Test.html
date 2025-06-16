@@ -184,7 +184,7 @@
             </div>
 
             <div id="summary-table-view" class="hidden">
-                 <div id="decision-summary-card" class="info-card mb-6">
+                <div id="decision-summary-card" class="info-card mb-6">
                     <div class="info-header bg-[#4a4e69]">
                         <i class="fa-solid fa-chart-pie"></i>
                         <span>สรุปผลการพิจารณา</span>
@@ -261,7 +261,7 @@
                 const entry = {};
                 headers.forEach((header, j) => {
                     let value = values[j] || '';
-                    if (header === 'salePrice' || header === 'costPrice') {
+                    if (header === 'salePrice' || header === 'costPrice' || header === 'cyclePrice' || header === 'monthlyPrice') {
                         entry[header] = parseFloat(value) || 0;
                     } else if (header === 'hospitals') {
                         entry[header] = value.split(';').map(h => h.trim()).filter(h => h);
@@ -366,7 +366,6 @@
             });
         }
 
-        // ADDED: Function to calculate and render the decision summary
         function renderDecisionSummary() {
             const summaryContainer = document.getElementById('decision-summary-container');
             if (!summaryContainer) return;
@@ -440,7 +439,6 @@
                 tableBtn.classList.add('active');
                 sidebar.classList.add('hidden');
                 stickyHeader.classList.add('hidden');
-                // MODIFIED: Render summary when switching to table view
                 renderDecisionSummary();
             }
         }
@@ -482,8 +480,23 @@
                 const papFullHtml = (drug.papFull || '').replace(/\n/g, '<br>');
                 const proposalHtml = (drug.proposal || '').replace(/\n/g, '<br>');
                 
-                // MODIFIED: Default decision is now an empty string
                 const currentDecision = drug.pharmacyDecision || '';
+
+                let extraPricesHtml = '';
+                if (drug.cyclePrice) {
+                    extraPricesHtml += `
+                        <div class="bg-purple-50 rounded-md p-3">
+                            <span class="label">ราคาขายต่อรอบการรักษา</span>
+                            <span class="value text-lg font-bold text-purple-600">${drug.cyclePrice.toLocaleString('th-TH', { style: 'currency', currency: 'THB' })}</span>
+                        </div>`;
+                }
+                if (drug.monthlyPrice) {
+                    extraPricesHtml += `
+                         <div class="bg-sky-50 rounded-md p-3">
+                            <span class="label">ราคาขาย (เดือน)</span>
+                            <span class="value text-lg font-bold text-sky-600">${drug.monthlyPrice.toLocaleString('th-TH', { style: 'currency', currency: 'THB' })}</span>
+                        </div>`;
+                }
 
                 stickyHeader.innerHTML = `<div class="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-md mb-6"><h2 class="text-2xl font-bold text-slate-800">${drug.name || '-'}</h2></div>`;
 
@@ -499,9 +512,10 @@
                                     <div class="bg-slate-50 rounded-md p-3"><span class="label">ขนาดบรรจุ</span><span class="value">${drug.packSize || '-'}</span></div>
                                 </div>
                                 <div class="grid grid-cols-2 gap-4">
-                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">ราคาขาย (หน่วยย่อย)</span><span class="value text-lg font-bold text-green-600">${drug.salePrice ? drug.salePrice.toLocaleString('th-TH', { style: 'currency', currency: 'THB' }) : '-'}</span></div>
-                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">ราคาทุน (หน่วยย่อย)</span><span class="value text-lg font-bold text-orange-600">${drug.costPrice ? drug.costPrice.toLocaleString('th-TH', { style: 'currency', currency: 'THB' }) : '-'}</span></div>
+                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">ราคาขาย</span><span class="value text-lg font-bold text-green-600">${drug.salePrice ? drug.salePrice.toLocaleString('th-TH', { style: 'currency', currency: 'THB' }) : '-'} ${drug.baseUnit ? ` / ${drug.baseUnit}` : ''}</span></div>
+                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">ราคาทุน</span><span class="value text-lg font-bold text-orange-600">${drug.costPrice ? drug.costPrice.toLocaleString('th-TH', { style: 'currency', currency: 'THB' }) : '-'} ${drug.baseUnit ? ` / ${drug.baseUnit}` : ''}</span></div>
                                 </div>
+                                ${extraPricesHtml ? `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${extraPricesHtml}</div>` : ''}
                                 <div>
                                     <h3 class="font-semibold text-lg mb-2 text-[#001d3d]">สถานะการเบิกจ่าย</h3>
                                     <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
