@@ -304,11 +304,7 @@
                 const navItem = document.createElement('a');
                 navItem.href = '#';
                 
-                // START: NAVITEM CHANGES
-                // 1. เปลี่ยน opacity-0 เป็น opacity-100 เพื่อให้แสดงเป็นค่าเริ่มต้น
-                // 2. เพิ่ม text-sm เพื่อลดขนาดฟอนต์
                 navItem.className = 'block p-3 rounded-md nav-item hover:bg-[#003566] hover:text-white break-words opacity-100 sidebar-text transition-opacity duration-200 text-sm';
-                // END: NAVITEM CHANGES
 
                 navItem.textContent = drug.name;
                 navItem.onclick = (e) => {
@@ -322,21 +318,14 @@
             });
         }
         
-        // START: TOGGLE LOGIC CHANGE
-        // แก้ไขโค้ดการสลับ sidebar
         document.addEventListener('DOMContentLoaded', () => {
             const sidebar = document.getElementById('sidebar');
             const toggleButton = document.getElementById('sidebar-toggle');
             
-            // ไม่ต้อง query textElements ที่นี่แล้ว
-            // const textElements = document.querySelectorAll('.sidebar-text'); 
-
             toggleButton.addEventListener('click', () => {
                 sidebar.classList.toggle('w-20');
                 sidebar.classList.toggle('w-72');
 
-                // ให้ queryหา textElements "ทุกครั้ง" ที่มีการคลิก
-                // เพื่อให้เจอ element ที่สร้างขึ้นมาทีหลัง (เช่น รายการยา)
                 const textElements = document.querySelectorAll('.sidebar-text');
                 
                 textElements.forEach(el => {
@@ -345,12 +334,10 @@
                 });
             });
 
-            // ย้ายโค้ดเริ่มต้นแอปมาไว้ที่นี่
             loadAndInitializeApp();
             document.getElementById('details-view-btn').onclick = () => switchView('details');
             document.getElementById('table-view-btn').onclick = () => switchView('table');
         });
-        // END: TOGGLE LOGIC CHANGE
 
         function renderSummaryTable() {
             const tableBody = document.querySelector('#summary-table tbody');
@@ -360,8 +347,9 @@
                 return;
             }
             drugDatabase.forEach((drug, index) => {
+                 // MODIFIED: Use // as a delimiter
                 const physicianHtml = (drug.proposingPhysician || '')
-                    .split(/,|\n/)
+                    .split(/,|\n|\/\//) 
                     .map(s => s.trim())
                     .filter(Boolean)
                     .join('<br>');
@@ -405,9 +393,10 @@
             }
         }
         
+        // MODIFIED: Use // as a delimiter
         function renderList(text) {
             if (!text) return '<li>-</li>';
-            return text.split(/,|\n/).map(s => s.trim()).filter(Boolean).map(s => `<li>${s}</li>`).join('');
+            return text.split(/,|\n|\/\//).map(s => s.trim()).filter(Boolean).map(s => `<li>${s}</li>`).join('');
         }
 
         function displayDrugDetails(index) {
@@ -510,7 +499,18 @@
                     </div>` : ''}
                     <div class="info-card">
                         <div class="info-header bg-[#0077b6]"><i class="fa-solid fa-clipboard-check"></i><span>ข้อเสนอฝ่ายเภสัชกรรม</span></div>
-                        <div class="p-4"><p class="text-3xl font-bold">${proposalHtml || '-'}</p></div>
+                        <div class="p-4">
+                            <p class="text-3xl font-bold">${proposalHtml || '-'}</p>
+                            
+                            <div class="mt-6">
+                                <label for="pharmacy-decision" class="label text-lg">สถานะการพิจารณา:</label>
+                                <select id="pharmacy-decision" name="pharmacy-decision" class="w-full mt-2 p-3 border border-gray-300 rounded-lg text-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="approve">เสนอรับเข้าบัญชี</option>
+                                    <option value="approve_nonstock">เสนอรับเข้าบัญชี ไม่สำรองคงคลัง (Non-stock)</option>
+                                    <option value="reject">เสนอไม่รับเข้าบัญชี</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 `;
@@ -521,7 +521,5 @@
     </script>
 
 </body>
-
-</html>
 
 </html>
