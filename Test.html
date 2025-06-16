@@ -16,7 +16,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <style>
          html {
-    font-size: 20px; /* Default is 16px, 16 * 1.25 = 20px */
+    font-size: 20px;
 }
         body {
             font-family: 'Sarabun', sans-serif;
@@ -184,6 +184,16 @@
             </div>
 
             <div id="summary-table-view" class="hidden">
+                 <div id="decision-summary-card" class="info-card mb-6">
+                    <div class="info-header bg-[#4a4e69]">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        <span>สรุปผลการพิจารณา</span>
+                    </div>
+                    <div id="decision-summary-container" class="p-4 text-xl">
+                        <div class="loader">กำลังรวบรวมข้อมูล...</div>
+                    </div>
+                </div>
+
                 <div class="info-card">
                     <div class="info-header bg-[#03045e]">
                         <i class="fa-solid fa-table-list"></i>
@@ -336,7 +346,6 @@
                 return;
             }
             drugDatabase.forEach((drug, index) => {
-                // MODIFIED: Use only // as a delimiter
                 const physicianHtml = (drug.proposingPhysician || '')
                     .split('//') 
                     .map(s => s.trim())
@@ -356,6 +365,58 @@
                 tableBody.innerHTML += row;
             });
         }
+
+        // ADDED: Function to calculate and render the decision summary
+        function renderDecisionSummary() {
+            const summaryContainer = document.getElementById('decision-summary-container');
+            if (!summaryContainer) return;
+
+            const counts = {
+                approve: 0,
+                approve_nonstock: 0,
+                reject: 0,
+                undecided: 0
+            };
+
+            drugDatabase.forEach(drug => {
+                switch (drug.pharmacyDecision) {
+                    case 'approve':
+                        counts.approve++;
+                        break;
+                    case 'approve_nonstock':
+                        counts.approve_nonstock++;
+                        break;
+                    case 'reject':
+                        counts.reject++;
+                        break;
+                    default:
+                        counts.undecided++;
+                        break;
+                }
+            });
+
+            summaryContainer.innerHTML = `
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                    <div class="bg-green-100 p-4 rounded-lg">
+                        <div class="text-4xl font-bold text-green-700">${counts.approve}</div>
+                        <div class="text-green-800 font-semibold">เสนอรับเข้าบัญชี</div>
+                    </div>
+                    <div class="bg-blue-100 p-4 rounded-lg">
+                        <div class="text-4xl font-bold text-blue-700">${counts.approve_nonstock}</div>
+                        <div class="text-blue-800 font-semibold">เสนอรับ (Non-Stock)</div>
+                    </div>
+                    <div class="bg-red-100 p-4 rounded-lg">
+                        <div class="text-4xl font-bold text-red-700">${counts.reject}</div>
+                        <div class="text-red-800 font-semibold">เสนอไม่รับเข้าบัญชี</div>
+                    </div>
+                     <div class="bg-gray-200 p-4 rounded-lg">
+                        <div class="text-4xl font-bold text-gray-700">${counts.undecided}</div>
+                        <div class="text-gray-800 font-semibold">ยังไม่พิจารณา</div>
+                    </div>
+                </div>
+            `;
+        }
+
 
         function switchView(view) {
             const detailsView = document.getElementById('drug-details-view');
@@ -379,10 +440,11 @@
                 tableBtn.classList.add('active');
                 sidebar.classList.add('hidden');
                 stickyHeader.classList.add('hidden');
+                // MODIFIED: Render summary when switching to table view
+                renderDecisionSummary();
             }
         }
         
-        // MODIFIED: Use only // as a delimiter
         function renderList(text) {
             if (!text) return '<li>-</li>';
             return text.split('//').map(s => s.trim()).filter(Boolean).map(s => `<li>${s}</li>`).join('');
@@ -420,8 +482,8 @@
                 const papFullHtml = (drug.papFull || '').replace(/\n/g, '<br>');
                 const proposalHtml = (drug.proposal || '').replace(/\n/g, '<br>');
                 
-                // ADDED: Logic to get the saved decision or set a default
-                const currentDecision = drug.pharmacyDecision || 'approve';
+                // MODIFIED: Default decision is now an empty string
+                const currentDecision = drug.pharmacyDecision || '';
 
                 stickyHeader.innerHTML = `<div class="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-md mb-6"><h2 class="text-2xl font-bold text-slate-800">${drug.name || '-'}</h2></div>`;
 
@@ -492,7 +554,8 @@
                     <div class="info-card">
                         <div class="info-header bg-[#c9184a]"><i class="fa-solid fa-gavel"></i><span>สถานะการพิจารณา</span></div>
                         <div class="p-4">
-                             <select id="pharmacy-decision-${index}" class="w-full mt-2 p-3 border border-gray-300 rounded-lg text-xl bg-gray-50 focus:ring-blue-500 focus:border-blue-500">
+                             <select id="pharmacy-decision-${index}" class="w-full mt-2 p-3 border border-gray-300 rounded-lg text-2xl bg-gray-50 focus:ring-blue-500 focus:border-blue-500">
+                                <option value="" disabled ${currentDecision === '' ? 'selected' : ''}>--- กรุณาเลือกสถานะ ---</option>
                                 <option value="approve" ${currentDecision === 'approve' ? 'selected' : ''}>เสนอรับเข้าบัญชี</option>
                                 <option value="approve_nonstock" ${currentDecision === 'approve_nonstock' ? 'selected' : ''}>เสนอรับเข้าบัญชี ไม่สำรองคงคลัง (Non-stock)</option>
                                 <option value="reject" ${currentDecision === 'reject' ? 'selected' : ''}>เสนอไม่รับเข้าบัญชี</option>
@@ -504,7 +567,6 @@
                 detailsContainer.style.opacity = '1';
                 stickyHeader.style.opacity = '1';
 
-                // ADDED: Event listener to save the decision when it changes
                 const decisionDropdown = document.getElementById(`pharmacy-decision-${index}`);
                 if (decisionDropdown) {
                     decisionDropdown.onchange = (e) => {
