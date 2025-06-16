@@ -209,11 +209,12 @@
                                     <th>รูปแบบยา</th>
                                     <th>บริษัทผู้ผลิต</th>
                                     <th>แพทย์ผู้เสนอ</th>
+                                    <th>สรุปผลการพิจารณา</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td colspan="6" class="text-center p-4">กำลังโหลดข้อมูล...</td>
+                                    <td colspan="7" class="text-center p-4">กำลังโหลดข้อมูล...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -261,9 +262,8 @@
                 const entry = {};
                 headers.forEach((header, j) => {
                     let value = values[j] || '';
-                    if (header === 'salePrice' || header === 'costPrice' || header === 'cyclePrice' || header === 'monthlyPrice') {
-                        entry[header] = parseFloat(value) || 0;
-                    } else if (header === 'hospitals') {
+                    // MODIFIED: Removed special parsing for prices. All fields are now treated as text.
+                    if (header === 'hospitals') {
                         entry[header] = value.split(';').map(h => h.trim()).filter(h => h);
                     } else {
                         entry[header] = value;
@@ -338,11 +338,12 @@
             document.getElementById('table-view-btn').onclick = () => switchView('table');
         });
 
+        // MODIFIED: Function updated to include decision column
         function renderSummaryTable() {
             const tableBody = document.querySelector('#summary-table tbody');
             tableBody.innerHTML = '';
             if (drugDatabase.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="6" class="text-center p-4">ไม่พบข้อมูล</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="7" class="text-center p-4">ไม่พบข้อมูล</td></tr>';
                 return;
             }
             drugDatabase.forEach((drug, index) => {
@@ -352,6 +353,24 @@
                     .filter(Boolean)
                     .join('<br>');
 
+                // Logic to determine decision text and color
+                let decisionText = 'ยังไม่พิจารณา';
+                let decisionColorClass = 'text-gray-500';
+                switch(drug.pharmacyDecision) {
+                    case 'approve':
+                        decisionText = 'เสนอรับเข้าบัญชี';
+                        decisionColorClass = 'text-green-700 font-semibold';
+                        break;
+                    case 'approve_nonstock':
+                        decisionText = 'เสนอรับ (Non-Stock)';
+                        decisionColorClass = 'text-blue-700 font-semibold';
+                        break;
+                    case 'reject':
+                        decisionText = 'เสนอไม่รับเข้าบัญชี';
+                        decisionColorClass = 'text-red-700 font-semibold';
+                        break;
+                }
+
                 const row = `
                     <tr>
                         <td>${index + 1}</td>
@@ -360,6 +379,7 @@
                         <td>${drug.form}</td>
                         <td>${drug.manufacturer}</td>
                         <td>${physicianHtml || '-'}</td>
+                        <td class="${decisionColorClass}">${decisionText}</td>
                     </tr>
                 `;
                 tableBody.innerHTML += row;
@@ -440,6 +460,8 @@
                 sidebar.classList.add('hidden');
                 stickyHeader.classList.add('hidden');
                 renderDecisionSummary();
+                // ADDED: Re-render the summary table to reflect latest decisions
+                renderSummaryTable();
             }
         }
         
@@ -483,18 +505,19 @@
                 const currentDecision = drug.pharmacyDecision || '';
 
                 let extraPricesHtml = '';
+                // MODIFIED: No longer use toLocaleString as prices are text
                 if (drug.cyclePrice) {
                     extraPricesHtml += `
                         <div class="bg-purple-50 rounded-md p-3">
                             <span class="label">ราคาขายต่อรอบการรักษา</span>
-                            <span class="value text-lg font-bold text-purple-600">${drug.cyclePrice.toLocaleString('th-TH', { style: 'currency', currency: 'THB' })}</span>
+                            <span class="value text-lg font-bold text-purple-600">${drug.cyclePrice}</span>
                         </div>`;
                 }
                 if (drug.monthlyPrice) {
                     extraPricesHtml += `
                          <div class="bg-sky-50 rounded-md p-3">
                             <span class="label">ราคาขาย (เดือน)</span>
-                            <span class="value text-lg font-bold text-sky-600">${drug.monthlyPrice.toLocaleString('th-TH', { style: 'currency', currency: 'THB' })}</span>
+                            <span class="value text-lg font-bold text-sky-600">${drug.monthlyPrice}</span>
                         </div>`;
                 }
 
@@ -512,8 +535,8 @@
                                     <div class="bg-slate-50 rounded-md p-3"><span class="label">ขนาดบรรจุ</span><span class="value">${drug.packSize || '-'}</span></div>
                                 </div>
                                 <div class="grid grid-cols-2 gap-4">
-                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">ราคาขาย</span><span class="value text-lg font-bold text-green-600">${drug.salePrice ? drug.salePrice.toLocaleString('th-TH', { style: 'currency', currency: 'THB' }) : '-'} ${drug.baseUnit ? ` / ${drug.baseUnit}` : ''}</span></div>
-                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">ราคาทุน</span><span class="value text-lg font-bold text-orange-600">${drug.costPrice ? drug.costPrice.toLocaleString('th-TH', { style: 'currency', currency: 'THB' }) : '-'} ${drug.baseUnit ? ` / ${drug.baseUnit}` : ''}</span></div>
+                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">ราคาขาย</span><span class="value text-lg font-bold text-green-600">${drug.salePrice || '-'} ${drug.baseUnit ? ` / ${drug.baseUnit}` : ''}</span></div>
+                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">ราคาทุน</span><span class="value text-lg font-bold text-orange-600">${drug.costPrice || '-'} ${drug.baseUnit ? ` / ${drug.baseUnit}` : ''}</span></div>
                                 </div>
                                 ${extraPricesHtml ? `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${extraPricesHtml}</div>` : ''}
                                 <div>
@@ -592,7 +615,5 @@
     </script>
 
 </body>
-
-</html>
 
 </html>
