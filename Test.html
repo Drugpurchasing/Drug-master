@@ -262,7 +262,6 @@
                 const entry = {};
                 headers.forEach((header, j) => {
                     let value = values[j] || '';
-                    // MODIFIED: Removed special parsing for prices. All fields are now treated as text.
                     if (header === 'hospitals') {
                         entry[header] = value.split(';').map(h => h.trim()).filter(h => h);
                     } else {
@@ -338,7 +337,6 @@
             document.getElementById('table-view-btn').onclick = () => switchView('table');
         });
 
-        // MODIFIED: Function updated to include decision column
         function renderSummaryTable() {
             const tableBody = document.querySelector('#summary-table tbody');
             tableBody.innerHTML = '';
@@ -353,7 +351,6 @@
                     .filter(Boolean)
                     .join('<br>');
 
-                // Logic to determine decision text and color
                 let decisionText = 'ยังไม่พิจารณา';
                 let decisionColorClass = 'text-gray-500';
                 switch(drug.pharmacyDecision) {
@@ -460,7 +457,6 @@
                 sidebar.classList.add('hidden');
                 stickyHeader.classList.add('hidden');
                 renderDecisionSummary();
-                // ADDED: Re-render the summary table to reflect latest decisions
                 renderSummaryTable();
             }
         }
@@ -505,7 +501,6 @@
                 const currentDecision = drug.pharmacyDecision || '';
 
                 let extraPricesHtml = '';
-                // MODIFIED: No longer use toLocaleString as prices are text
                 if (drug.cyclePrice) {
                     extraPricesHtml += `
                         <div class="bg-purple-50 rounded-md p-3">
@@ -559,6 +554,13 @@
                                         </ul>
                                     </div>
                                     <div class="mb-4"><span class="label">บัญชียา</span><span class="value font-bold text-xl ${accountColorClass}">${drug.account || '-'}</span></div>
+                                    
+                                    <div class="mt-4">
+                                        <span class="label">ข้อบ่งชี้ที่ได้รับการขึ้นทะเบียน</span>
+                                        <ul class="value list-disc list-inside mt-1" style="font-size: 1.125rem;">
+                                            ${renderList(drug.indications)}
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
