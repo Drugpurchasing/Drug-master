@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>เสนอยาเข้าใหม่ คณะทำงาน มิ.ย. 68</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
@@ -184,7 +185,7 @@
             </div>
 
             <div id="summary-table-view" class="hidden">
-                <div id="decision-summary-card" class="info-card mb-6">
+                 <div id="decision-summary-card" class="info-card mb-6">
                     <div class="info-header bg-[#4a4e69]">
                         <i class="fa-solid fa-chart-pie"></i>
                         <span>สรุปผลการพิจารณา</span>
@@ -195,9 +196,15 @@
                 </div>
 
                 <div class="info-card">
-                    <div class="info-header bg-[#03045e]">
-                        <i class="fa-solid fa-table-list"></i>
-                        <span>ตารางสรุปรายการยาทั้งหมด</span>
+                    <div class="info-header bg-[#03045e] justify-between">
+                        <div class="flex items-center">
+                           <i class="fa-solid fa-table-list"></i>
+                           <span>ตารางสรุปรายการยาทั้งหมด</span>
+                        </div>
+                         <button id="export-excel-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-3 rounded-lg text-base flex items-center transition-colors duration-200">
+                           <i class="fa-solid fa-file-excel mr-2"></i>
+                           <span>Export</span>
+                        </button>
                     </div>
                     <div class="overflow-x-auto">
                         <table id="summary-table" class="w-full text-sm">
@@ -209,12 +216,11 @@
                                     <th>รูปแบบยา</th>
                                     <th>บริษัทผู้ผลิต</th>
                                     <th>แพทย์ผู้เสนอ</th>
-                                    <th>สรุปผลการพิจารณา</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td colspan="7" class="text-center p-4">กำลังโหลดข้อมูล...</td>
+                                    <td colspan="6" class="text-center p-4">กำลังโหลดข้อมูล...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -262,7 +268,9 @@
                 const entry = {};
                 headers.forEach((header, j) => {
                     let value = values[j] || '';
-                    if (header === 'hospitals') {
+                    if (header === 'salePrice' || header === 'costPrice') {
+                        entry[header] = parseFloat(value) || 0;
+                    } else if (header === 'hospitals') {
                         entry[header] = value.split(';').map(h => h.trim()).filter(h => h);
                     } else {
                         entry[header] = value;
@@ -335,38 +343,24 @@
             loadAndInitializeApp();
             document.getElementById('details-view-btn').onclick = () => switchView('details');
             document.getElementById('table-view-btn').onclick = () => switchView('table');
+            
+            // ADDED: Event listener for the new export button
+            document.getElementById('export-excel-btn').addEventListener('click', exportToExcel);
         });
 
         function renderSummaryTable() {
             const tableBody = document.querySelector('#summary-table tbody');
             tableBody.innerHTML = '';
             if (drugDatabase.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="7" class="text-center p-4">ไม่พบข้อมูล</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="6" class="text-center p-4">ไม่พบข้อมูล</td></tr>';
                 return;
             }
             drugDatabase.forEach((drug, index) => {
-                const physicianHtml = (drug.proposingPhysician || '')
+                const physicianHtml = (drug.proposingPhysician || '') 
                     .split('//') 
                     .map(s => s.trim())
                     .filter(Boolean)
                     .join('<br>');
-
-                let decisionText = 'ยังไม่พิจารณา';
-                let decisionColorClass = 'text-gray-500';
-                switch(drug.pharmacyDecision) {
-                    case 'approve':
-                        decisionText = 'เสนอรับเข้าบัญชี';
-                        decisionColorClass = 'text-green-700 font-semibold';
-                        break;
-                    case 'approve_nonstock':
-                        decisionText = 'เสนอรับ (Non-Stock)';
-                        decisionColorClass = 'text-blue-700 font-semibold';
-                        break;
-                    case 'reject':
-                        decisionText = 'เสนอไม่รับเข้าบัญชี';
-                        decisionColorClass = 'text-red-700 font-semibold';
-                        break;
-                }
 
                 const row = `
                     <tr>
@@ -376,13 +370,12 @@
                         <td>${drug.form}</td>
                         <td>${drug.manufacturer}</td>
                         <td>${physicianHtml || '-'}</td>
-                        <td class="${decisionColorClass}">${decisionText}</td>
                     </tr>
                 `;
                 tableBody.innerHTML += row;
             });
         }
-
+        
         function renderDecisionSummary() {
             const summaryContainer = document.getElementById('decision-summary-container');
             if (!summaryContainer) return;
@@ -419,7 +412,7 @@
                     </div>
                     <div class="bg-blue-100 p-4 rounded-lg">
                         <div class="text-4xl font-bold text-blue-700">${counts.approve_nonstock}</div>
-                        <div class="text-blue-800 font-semibold">เสนอรับเข้าบัญชี (Non-Stock)</div>
+                        <div class="text-blue-800 font-semibold">เสนอรับ (Non-Stock)</div>
                     </div>
                     <div class="bg-red-100 p-4 rounded-lg">
                         <div class="text-4xl font-bold text-red-700">${counts.reject}</div>
@@ -457,7 +450,6 @@
                 sidebar.classList.add('hidden');
                 stickyHeader.classList.add('hidden');
                 renderDecisionSummary();
-                renderSummaryTable();
             }
         }
         
@@ -500,22 +492,6 @@
                 
                 const currentDecision = drug.pharmacyDecision || '';
 
-                let extraPricesHtml = '';
-                if (drug.cyclePrice) {
-                    extraPricesHtml += `
-                        <div class="bg-purple-50 rounded-md p-3">
-                            <span class="label">ราคาขายต่อรอบการรักษา</span>
-                            <span class="value text-lg font-bold text-purple-600">${drug.cyclePrice}</span>
-                        </div>`;
-                }
-                if (drug.monthlyPrice) {
-                    extraPricesHtml += `
-                         <div class="bg-sky-50 rounded-md p-3">
-                            <span class="label">ราคาขาย (เดือน)</span>
-                            <span class="value text-lg font-bold text-sky-600">${drug.monthlyPrice}</span>
-                        </div>`;
-                }
-
                 stickyHeader.innerHTML = `<div class="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-md mb-6"><h2 class="text-2xl font-bold text-slate-800">${drug.name || '-'}</h2></div>`;
 
                 detailsContainer.innerHTML = `
@@ -530,10 +506,9 @@
                                     <div class="bg-slate-50 rounded-md p-3"><span class="label">ขนาดบรรจุ</span><span class="value">${drug.packSize || '-'}</span></div>
                                 </div>
                                 <div class="grid grid-cols-2 gap-4">
-                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">ราคาขาย</span><span class="value text-lg font-bold text-green-600">${drug.salePrice || '-'} ${drug.baseUnit ? ` / ${drug.baseUnit}` : ''}</span></div>
-                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">ราคาทุน</span><span class="value text-lg font-bold text-orange-600">${drug.costPrice || '-'} ${drug.baseUnit ? ` / ${drug.baseUnit}` : ''}</span></div>
+                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">ราคาขาย (หน่วยย่อย)</span><span class="value text-lg font-bold text-green-600">${drug.salePrice ? drug.salePrice.toLocaleString('th-TH', { style: 'currency', currency: 'THB' }) : '-'}</span></div>
+                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">ราคาทุน (หน่วยย่อย)</span><span class="value text-lg font-bold text-orange-600">${drug.costPrice ? drug.costPrice.toLocaleString('th-TH', { style: 'currency', currency: 'THB' }) : '-'}</span></div>
                                 </div>
-                                ${extraPricesHtml ? `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${extraPricesHtml}</div>` : ''}
                                 <div>
                                     <h3 class="font-semibold text-lg mb-2 text-[#001d3d]">สถานะการเบิกจ่าย</h3>
                                     <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -554,13 +529,6 @@
                                         </ul>
                                     </div>
                                     <div class="mb-4"><span class="label">บัญชียา</span><span class="value font-bold text-xl ${accountColorClass}">${drug.account || '-'}</span></div>
-                                    
-                                    <div class="mt-4">
-                                        <span class="label">ข้อบ่งชี้ที่ได้รับการขึ้นทะเบียน</span>
-                                        <ul class="value list-disc list-inside mt-1" style="font-size: 1.125rem;">
-                                            ${renderList(drug.indications)}
-                                        </ul>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -614,6 +582,63 @@
                 }
             }, 150);
         }
+
+        // ADDED: Function to handle the Excel export
+        function exportToExcel() {
+            if (drugDatabase.length === 0) {
+                alert('ไม่มีข้อมูลสำหรับ Export');
+                return;
+            }
+
+            // Map internal decision values to human-readable Thai text
+            const decisionMap = {
+                'approve': 'เสนอรับเข้าบัญชี',
+                'approve_nonstock': 'เสนอรับเข้าบัญชี (Non-stock)',
+                'reject': 'เสนอไม่รับเข้าบัญชี',
+                '': 'ยังไม่พิจารณา' // Handle empty/undecided status
+            };
+
+            // Prepare data for the Excel sheet
+            const exportData = drugDatabase.map((drug, index) => {
+                const physicianText = (drug.proposingPhysician || '')
+                    .split('//')
+                    .map(s => s.trim())
+                    .filter(Boolean)
+                    .join(', '); // Use a comma for a cleaner look in a single Excel cell
+
+                return {
+                    'ลำดับ': index + 1,
+                    'รายการยา': drug.name || '-',
+                    'ความแรง': drug.strength || '-',
+                    'รูปแบบยา': drug.form || '-',
+                    'บริษัทผู้ผลิต': drug.manufacturer || '-',
+                    'แพทย์ผู้เสนอ': physicianText || '-',
+                    'สถานะการพิจารณา': decisionMap[drug.pharmacyDecision || '']
+                };
+            });
+
+            // Create a worksheet from the prepared data
+            const ws = XLSX.utils.json_to_sheet(exportData);
+
+            // Set column widths for better readability (optional but recommended)
+            ws['!cols'] = [
+                { wch: 5 },   // A: ลำดับ
+                { wch: 45 },  // B: รายการยา
+                { wch: 25 },  // C: ความแรง
+                { wch: 20 },  // D: รูปแบบยา
+                { wch: 35 },  // E: บริษัทผู้ผลิต
+                { wch: 40 },  // F: แพทย์ผู้เสนอ
+                { wch: 30 }   // G: สถานะการพิจารณา
+            ];
+            
+            // Create a new workbook and append the worksheet
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'สรุปรายการยา');
+
+            // Trigger the file download
+            XLSX.writeFile(wb, 'สรุปรายการยาเสนอเข้าใหม่-มิย68.xlsx');
+        }
+
     </script>
 
 </body>
