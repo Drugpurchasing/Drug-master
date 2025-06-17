@@ -233,7 +233,8 @@
         const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTv6yIfVLrXZ76oqef80u3iZbheswq3h-igusVAjNryZYucvVhnXc35I2HDNvEZr-4FYf4rwIu9EHn-/pub?gid=463569560&single=true&output=csv';
 
         let drugDatabase = [];
-
+        
+        // MODIFIED: Replaced with the new parseCsv function
         function parseCsv(csvText) {
             const lines = csvText.trim().split('\n');
             if (lines.length < 2) return [];
@@ -267,9 +268,7 @@
                 const entry = {};
                 headers.forEach((header, j) => {
                     let value = values[j] || '';
-                    if (header === 'salePrice' || header === 'costPrice') {
-                        entry[header] = parseFloat(value) || 0;
-                    } else if (header === 'hospitals') {
+                    if (header === 'hospitals') {
                         entry[header] = value.split(';').map(h => h.trim()).filter(h => h);
                     } else {
                         entry[header] = value;
@@ -474,7 +473,8 @@
             if (!text) return '<li>-</li>';
             return text.split('//').map(s => s.trim()).filter(Boolean).map(s => `<li>${s}</li>`).join('');
         }
-
+        
+        // MODIFIED: Replaced with the new displayDrugDetails function
         function displayDrugDetails(index) {
             if (index >= drugDatabase.length) return;
             const drug = drugDatabase[index];
@@ -508,6 +508,22 @@
                 const proposalHtml = (drug.proposal || '').replace(/\n/g, '<br>');
                 
                 const currentDecision = drug.pharmacyDecision || '';
+                
+                let extraPricesHtml = '';
+                if (drug.cyclePrice) {
+                    extraPricesHtml += `
+                        <div class="bg-purple-50 rounded-md p-3">
+                            <span class="label">ราคาขายต่อรอบการรักษา</span>
+                            <span class="value text-lg font-bold text-purple-600">${drug.cyclePrice}</span>
+                        </div>`;
+                }
+                if (drug.monthlyPrice) {
+                    extraPricesHtml += `
+                         <div class="bg-sky-50 rounded-md p-3">
+                            <span class="label">ราคาขาย (เดือน)</span>
+                            <span class="value text-lg font-bold text-sky-600">${drug.monthlyPrice}</span>
+                        </div>`;
+                }
 
                 stickyHeader.innerHTML = `<div class="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-md mb-6"><h2 class="text-2xl font-bold text-slate-800">${drug.name || '-'}</h2></div>`;
 
@@ -523,9 +539,10 @@
                                     <div class="bg-slate-50 rounded-md p-3"><span class="label">ขนาดบรรจุ</span><span class="value">${drug.packSize || '-'}</span></div>
                                 </div>
                                 <div class="grid grid-cols-2 gap-4">
-                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">ราคาขาย (หน่วยย่อย)</span><span class="value text-lg font-bold text-green-600">${drug.salePrice ? drug.salePrice.toLocaleString('th-TH', { style: 'currency', currency: 'THB' }) : '-'}</span></div>
-                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">ราคาทุน (หน่วยย่อย)</span><span class="value text-lg font-bold text-orange-600">${drug.costPrice ? drug.costPrice.toLocaleString('th-TH', { style: 'currency', currency: 'THB' }) : '-'}</span></div>
+                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">ราคาขาย</span><span class="value text-lg font-bold text-green-600">${drug.salePrice || '-'} ${drug.baseUnit ? ` / ${drug.baseUnit}` : ''}</span></div>
+                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">ราคาทุน</span><span class="value text-lg font-bold text-orange-600">${drug.costPrice || '-'} ${drug.baseUnit ? ` / ${drug.baseUnit}` : ''}</span></div>
                                 </div>
+                                ${extraPricesHtml ? `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${extraPricesHtml}</div>` : ''}
                                 <div>
                                     <h3 class="font-semibold text-lg mb-2 text-[#001d3d]">สถานะการเบิกจ่าย</h3>
                                     <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -546,6 +563,13 @@
                                         </ul>
                                     </div>
                                     <div class="mb-4"><span class="label">บัญชียา</span><span class="value font-bold text-xl ${accountColorClass}">${drug.account || '-'}</span></div>
+                                    
+                                    <div class="mt-4">
+                                        <span class="label">ข้อบ่งชี้ที่ได้รับการขึ้นทะเบียน</span>
+                                        <ul class="value list-disc list-inside mt-1" style="font-size: 1.125rem;">
+                                            ${renderList(drug.indications)}
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -631,7 +655,6 @@
 
             const ws = XLSX.utils.json_to_sheet(exportData);
             
-            // MODIFIED: Increased width for the drug name column
             ws['!cols'] = [
                 { wch: 5 },   // ลำดับ
                 { wch: 90 },  // รายการยา
@@ -649,5 +672,7 @@
     </script>
 
 </body>
+
+</html>
 
 </html>
