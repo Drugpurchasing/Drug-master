@@ -201,7 +201,7 @@
                            <i class="fa-solid fa-table-list"></i>
                            <span>ตารางสรุปรายการยาทั้งหมด</span>
                         </div>
-                         <button id="export-excel-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-3 rounded-lg text-base flex items-center transition-colors duration-200">
+                        <button id="export-excel-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-3 rounded-lg text-base flex items-center transition-colors duration-200">
                            <i class="fa-solid fa-file-excel mr-2"></i>
                            <span>Export</span>
                         </button>
@@ -212,15 +212,14 @@
                                 <tr>
                                     <th>ลำดับ</th>
                                     <th>รายการยา</th>
-                                    <th>ความแรง</th>
-                                    <th>รูปแบบยา</th>
                                     <th>บริษัทผู้ผลิต</th>
                                     <th>แพทย์ผู้เสนอ</th>
+                                    <th>สถานะการพิจารณา</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td colspan="6" class="text-center p-4">กำลังโหลดข้อมูล...</td>
+                                    <td colspan="5" class="text-center p-4">กำลังโหลดข้อมูล...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -344,32 +343,51 @@
             document.getElementById('details-view-btn').onclick = () => switchView('details');
             document.getElementById('table-view-btn').onclick = () => switchView('table');
             
-            // ADDED: Event listener for the new export button
             document.getElementById('export-excel-btn').addEventListener('click', exportToExcel);
         });
-
+        
+        // MODIFIED: This function is completely updated
         function renderSummaryTable() {
             const tableBody = document.querySelector('#summary-table tbody');
             tableBody.innerHTML = '';
+
             if (drugDatabase.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="6" class="text-center p-4">ไม่พบข้อมูล</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="5" class="text-center p-4">ไม่พบข้อมูล</td></tr>';
                 return;
             }
+
+            const decisionMap = {
+                'approve': 'เสนอรับเข้าบัญชี',
+                'approve_nonstock': 'เสนอรับ (Non-Stock)',
+                'reject': 'เสนอไม่รับเข้าบัญชี',
+                '': 'ยังไม่พิจารณา'
+            };
+
+            const decisionClassMap = {
+                'approve': 'text-green-700 font-semibold',
+                'approve_nonstock': 'text-blue-700 font-semibold',
+                'reject': 'text-red-700 font-semibold',
+                '': 'text-gray-500'
+            };
+
             drugDatabase.forEach((drug, index) => {
                 const physicianHtml = (drug.proposingPhysician || '') 
                     .split('//') 
                     .map(s => s.trim())
                     .filter(Boolean)
                     .join('<br>');
+                
+                const decisionKey = drug.pharmacyDecision || '';
+                const decisionText = decisionMap[decisionKey];
+                const decisionClass = decisionClassMap[decisionKey];
 
                 const row = `
                     <tr>
                         <td>${index + 1}</td>
-                        <td>${drug.name}</td>
-                        <td>${drug.strength}</td>
-                        <td>${drug.form}</td>
-                        <td>${drug.manufacturer}</td>
+                        <td>${drug.name || '-'}</td>
+                        <td>${drug.manufacturer || '-'}</td>
                         <td>${physicianHtml || '-'}</td>
+                        <td><span class="${decisionClass}">${decisionText}</span></td>
                     </tr>
                 `;
                 tableBody.innerHTML += row;
@@ -426,7 +444,6 @@
             `;
         }
 
-
         function switchView(view) {
             const detailsView = document.getElementById('drug-details-view');
             const tableView = document.getElementById('summary-table-view');
@@ -450,6 +467,8 @@
                 sidebar.classList.add('hidden');
                 stickyHeader.classList.add('hidden');
                 renderDecisionSummary();
+                // Re-render summary table every time view is switched to ensure it's up to date
+                renderSummaryTable();
             }
         }
         
@@ -583,59 +602,49 @@
             }, 150);
         }
 
-        // ADDED: Function to handle the Excel export
+        // MODIFIED: This function is updated to match the new table structure
         function exportToExcel() {
             if (drugDatabase.length === 0) {
                 alert('ไม่มีข้อมูลสำหรับ Export');
                 return;
             }
 
-            // Map internal decision values to human-readable Thai text
             const decisionMap = {
                 'approve': 'เสนอรับเข้าบัญชี',
                 'approve_nonstock': 'เสนอรับเข้าบัญชี (Non-stock)',
                 'reject': 'เสนอไม่รับเข้าบัญชี',
-                '': 'ยังไม่พิจารณา' // Handle empty/undecided status
+                '': 'ยังไม่พิจารณา'
             };
 
-            // Prepare data for the Excel sheet
             const exportData = drugDatabase.map((drug, index) => {
                 const physicianText = (drug.proposingPhysician || '')
                     .split('//')
                     .map(s => s.trim())
                     .filter(Boolean)
-                    .join(', '); // Use a comma for a cleaner look in a single Excel cell
+                    .join(', ');
 
                 return {
                     'ลำดับ': index + 1,
                     'รายการยา': drug.name || '-',
-                    'ความแรง': drug.strength || '-',
-                    'รูปแบบยา': drug.form || '-',
                     'บริษัทผู้ผลิต': drug.manufacturer || '-',
                     'แพทย์ผู้เสนอ': physicianText || '-',
                     'สถานะการพิจารณา': decisionMap[drug.pharmacyDecision || '']
                 };
             });
 
-            // Create a worksheet from the prepared data
             const ws = XLSX.utils.json_to_sheet(exportData);
 
-            // Set column widths for better readability (optional but recommended)
             ws['!cols'] = [
-                { wch: 5 },   // A: ลำดับ
-                { wch: 45 },  // B: รายการยา
-                { wch: 25 },  // C: ความแรง
-                { wch: 20 },  // D: รูปแบบยา
-                { wch: 35 },  // E: บริษัทผู้ผลิต
-                { wch: 40 },  // F: แพทย์ผู้เสนอ
-                { wch: 30 }   // G: สถานะการพิจารณา
+                { wch: 5 },   // ลำดับ
+                { wch: 45 },  // รายการยา
+                { wch: 35 },  // บริษัทผู้ผลิต
+                { wch: 40 },  // แพทย์ผู้เสนอ
+                { wch: 30 }   // สถานะการพิจารณา
             ];
             
-            // Create a new workbook and append the worksheet
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'สรุปรายการยา');
 
-            // Trigger the file download
             XLSX.writeFile(wb, 'สรุปรายการยาเสนอเข้าใหม่-มิย68.xlsx');
         }
 
