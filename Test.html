@@ -214,7 +214,7 @@
                                     <th>รายการยา</th>
                                     <th>บริษัทผู้ผลิต</th>
                                     <th class="w-2/5">แพทย์ผู้เสนอ</th>
-                                    <th>สถานะการพิจารณา</th>
+                                    <th class="whitespace-nowrap">สถานะการพิจารณา</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -631,13 +631,13 @@
 
             const ws = XLSX.utils.json_to_sheet(exportData);
             
-            // MODIFIED: Increased width for the "แพทย์ผู้เสนอ" column
+            // MODIFIED: Increased width for the status column
             ws['!cols'] = [
                 { wch: 5 },   // ลำดับ
                 { wch: 45 },  // รายการยา
                 { wch: 35 },  // บริษัทผู้ผลิต
-                { wch: 40 },  // แพทย์ผู้เสนอ
-                { wch: 30 }   // สถานะการพิจารณา
+                { wch: 55 },  // แพทย์ผู้เสนอ
+                { wch: 35 }   // สถานะการพิจารณา
             ];
             
             const wb = XLSX.utils.book_new();
