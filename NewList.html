@@ -1,586 +1,193 @@
 <!DOCTYPE html>
 <html lang="th">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เสนอยาเข้าใหม่ คณะทำงาน มิ.ย. 68</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-    <style>
-         html {
-    font-size: 20px;
-}
-        body {
-            font-family: 'Sarabun', sans-serif;
-            background-color: #f4f7f9;
-        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <title>สรุปข้อมูลยาเข้าใหม่ มิย. 68</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <style>
+        body { font-family: 'Kanit', sans-serif; }
+        .card-category { border-left: 4px solid; }
 
-        .main-content {
-            transition: opacity 0.3s ease-in-out;
-        }
+        /* --- CATEGORY COLORS --- */
+        .category-1 { border-color: #FCA5A5; } .tag-1 { background-color: #FCA5A5; color: #7F1D1D; }
+        .category-2 { border-color: #C4B5FD; } .tag-2 { background-color: #C4B5FD; color: #4C1D95; }
+        .category-3 { border-color: #FED7AA; } .tag-3 { background-color: #FED7AA; color: #7C2D12; }
+        .category-4 { border-color: #60A5FA; } .tag-4 { background-color: #60A5FA; color: #1E3A8A; }
+        .category-misc { border-color: #A3A3A3; } .tag-misc { background-color: #A3A3A3; color: white; }
 
-        .nav-item {
-            transition: all 0.2s ease;
-        }
-
-        .nav-item.active {
-            background-color: #0077b6;
-            color: white;
-            border-right: 4px solid #fbaf00;
-        }
-
-        .info-card {
-            background-color: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-        }
-
-        .info-header {
-            color: white;
-            padding: 0.75rem 1.25rem;
-            font-weight: 700;
-            font-size: 1.3rem;
-            display: flex;
-            align-items: center;
-        }
-
-        .info-header .fa-solid {
-            margin-right: 0.75rem;
-            font-size: 1.65rem;
-        }
-
-        .label {
-            font-weight: 600;
-            color: #4a5568;
-            display: block;
-            font-size: 1.125rem;
-        }
-
-        .value {
-            color: #1a202c;
-            font-size: 1.125rem;
-        }
-
-        .reimburse-no {
-            color: #d90429;
-            font-weight: 700;
-            background-color: #fee2e2;
-            border-radius: 4px;
-            padding: 0.25rem 0.5rem;
-            display: inline-block;
-        }
-
-        .reimburse-yes {
-            color: #028a0f;
-            font-weight: 700;
-            background-color: #dcfce7;
-            border-radius: 4px;
-            padding: 0.25rem 0.5rem;
-            display: inline-block;
-        }
-        
-        .reimburse-advance {
-            color: #1d4ed8; /* Tailwind blue-700 */
-            font-weight: 700;
-            background-color: #dbeafe; /* Tailwind blue-100 */
-            border-radius: 4px;
-            padding: 0.25rem 0.5rem;
-            display: inline-block;
-        }
-
-        .pap-card {
-            border-top: 4px solid #fbaf00;
-        }
-
-        .view-switcher {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-            padding: 0.5rem;
-            background-color: #e2e8f0;
-            border-radius: 8px;
-        }
-
-        .view-switcher-btn {
-            flex: 1;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            border: none;
-            background-color: transparent;
-            color: #475569;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 1rem;
-        }
-
-        .view-switcher-btn.active {
-            background-color: #ffffff;
-            color: #0077b6;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        #summary-table th {
-            background-color: #f1f5f9;
-            padding: 0.75rem;
-            text-align: left;
-            font-weight: 600;
-            color: #1e293b;
-            font-size: 1.2rem;
-        }
-
-        #summary-table td {
-            padding: 0.75rem;
-            border-bottom: 1px solid #e2e8f0;
-            font-size: 1.2rem;
-        }
-
-        #summary-table tbody tr:hover {
-            background-color: #f8fafc;
-        }
-
-        #sticky-drug-header {
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            transition: opacity 0.3s ease-in-out;
-        }
-
-        .loader {
-            text-align: center;
-            padding: 2rem;
-            font-size: 1.45rem;
-            color: #475569;
-        }
-    </style>
+        .category-tag { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
+        #loader { border: 8px solid #f3f3f3; border-top: 8px solid #3498db; border-radius: 50%; width: 60px; height: 60px; animation: spin 2s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
 </head>
+<body class="bg-gray-50 text-gray-800">
 
-<body class="bg-gray-100">
+<div class="container mx-auto p-4 md:p-8">
+    <header class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-800">สรุปข้อมูลยาเข้าใหม่ มิย. 68</h1>
+    </header>
 
-    <div class="flex h-screen">
-        <aside id="sidebar" class="bg-[#001d3d] text-gray-200 flex-shrink-0 flex flex-col h-screen w-72 transition-all duration-300 ease-in-out overflow-x-hidden">
-            <div class="p-4 text-center border-b border-gray-700 flex items-center justify-center space-x-4">
-                <i id="sidebar-toggle" class="fa-solid fa-bars text-xl text-white flex-shrink-0 cursor-pointer"></i>
-                <h1 class="text-lg font-bold text-white opacity-100 sidebar-text break-words transition-opacity duration-200">รายการยาเข้าใหม่ มิ.ย.68</h1>
-            </div>
-            <nav id="drug-nav" class="p-2 space-y-1 flex-1 overflow-y-auto">
-                <div class="text-center p-4 text-gray-400">
-                    <i class="fa-solid fa-spinner fa-spin"></i>
-                </div>
-            </nav>
-        </aside>
-        <main class="flex-1 p-4 md:p-8 overflow-y-auto transition-all duration-300 ease-in-out">
-            <div class="view-switcher">
-                <button id="details-view-btn" class="view-switcher-btn active">รายละเอียดยา</button>
-                <button id="table-view-btn" class="view-switcher-btn">ตารางสรุป</button>
-            </div>
+    <div id="loading-container" class="flex flex-col items-center justify-center p-10">
+        <div id="loader"></div>
+        <p class="text-gray-600 mt-4">กำลังโหลดข้อมูล กรุณารอสักครู่</p>
+    </div>
+    
+    <div id="drug-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8"></div>
+</div>
 
-            <div id="drug-details-view">
-                <div id="sticky-drug-header" class="opacity-0"></div>
-                <div id="drug-details" class="main-content opacity-100">
-                    <div class="loader">กำลังโหลดข้อมูลยา...</div>
-                </div>
-            </div>
+<script>
+const googleSheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTv6yIfVLrXZ76oqef80u3iZbheswq3h-igusVAjNryZYucvVhnXc35I2HDNvEZr-4FYf4rwIu9EHn-/pub?gid=0&single=true&output=csv';
 
-            <div id="summary-table-view" class="hidden">
-                 <div id="decision-summary-card" class="info-card mb-6">
-                    <div class="info-header bg-[#4a4e69]">
-                        <i class="fa-solid fa-chart-pie"></i>
-                        <span>สรุปผลการพิจารณา</span>
-                    </div>
-                    <div id="decision-summary-container" class="p-4 text-xl">
-                        <div class="loader">กำลังรวบรวมข้อมูล...</div>
-                    </div>
-                </div>
+const grid = document.getElementById('drug-grid');
+const loadingContainer = document.getElementById('loading-container');
 
-                <div class="info-card">
-                    <div class="info-header bg-[#03045e] justify-between">
-                        <div class="flex items-center">
-                           <i class="fa-solid fa-table-list"></i>
-                           <span>ตารางสรุปรายการยาทั้งหมด</span>
-                        </div>
-                        <button id="export-excel-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-3 rounded-lg text-base flex items-center transition-colors duration-200">
-                           <i class="fa-solid fa-file-excel mr-2"></i>
-                           <span>Export</span>
-                        </button>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table id="summary-table" class="w-full text-sm">
-                            <thead>
-                                <tr>
-                                    <th>ลำดับ</th>
-                                    <th class="w-4/12">รายการยา</th>
-                                    <th class="w-2/12">บริษัทผู้ผลิต</th>
-                                    <th class="w-3/12">แพทย์ผู้เสนอ</th>
-                                    <th class="w-3/12">สถานะการพิจารณา</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td colspan="5" class="text-center p-4">กำลังโหลดข้อมูล...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
+function safeCode(code) {
+    if (['1', '2', '3', '4'].includes(String(code))) return String(code);
+    return 'misc';
+}
 
-    <script>
-        const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTv6yIfVLrXZ76oqef80u3iZbheswq3h-igusVAjNryZYucvVhnXc35I2HDNvEZr-4FYf4rwIu9EHn-/pub?gid=463569560&single=true&output=csv';
+async function loadDrugData() {
+    if (!googleSheetUrl || googleSheetUrl.trim() === '') {
+        loadingContainer.innerHTML = '<p class="text-red-600 font-bold text-center">!! ข้อผิดพลาด: กรุณาตั้งค่า URL ของ Google Sheet ในโค้ดก่อน</p>';
+        return;
+    }
+    try {
+        const response = await fetch(googleSheetUrl);
+        if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+        const csvText = await response.text();
+        Papa.parse(csvText, {
+            header: true, 
+            skipEmptyLines: true,
+            trimHeaders: true, // NEW: Helps prevent errors from spaces in column names
+            complete: function(results) {
+                loadingContainer.style.display = 'none';
+                if (results.errors.length > 0) {
+                     console.error("CSV Parsing Errors:", results.errors);
+                }
+                const validDrugData = results.data.filter(row => row.sapCode && row.sapCode.trim() !== '');
+                if(validDrugData.length === 0) {
+                    grid.innerHTML = '<div class="col-span-1 md:col-span-2 xl:col-span-3 text-center text-red-500 font-semibold">ไม่มีข้อมูลที่จะแสดง กรุณาตรวจสอบชีตหรือรีเฟรช</div>';
+                    return;
+                }
+                renderCards(validDrugData);
+            },
+            error: function(error) {
+                loadingContainer.innerHTML = `<p class="text-red-600 font-bold">ไม่สามารถประมวลผลข้อมูล CSV ได้: ${error.message}</p>`;
+            }
+        });
+    } catch (error) {
+        loadingContainer.innerHTML = `<p class="text-red-600 font-bold">ไม่สามารถโหลดข้อมูลได้ ตรวจสอบ URL และการตั้งค่าการเผยแพร่ (Publish to the web): ${error.message}</p>`;
+    }
+}
 
-        let drugDatabase = [];
-       
-        // REMOVED: Old custom parseCsv function is no longer needed.
+function renderCards(drugData) {
+    grid.innerHTML = '';
+    const drugGroups = drugData.reduce((acc, drug) => {
+        const groupName = (drug.group || 'ไม่มีกลุ่ม').trim();
+        if (!acc[groupName]) acc[groupName] = [];
+        acc[groupName].push(drug);
+        return acc;
+    }, {});
 
-        // NEW: Replaced loading logic with PapaParse for reliability
-        function loadAndInitializeApp() {
-            Papa.parse(GOOGLE_SHEET_CSV_URL, {
-                download: true,
-                header: true,
-                skipEmptyLines: true,
-                trimHeaders: true,
-                complete: function(results) {
-                    // Filter out any rows that might be completely empty
-                    drugDatabase = results.data.filter(row => row.name && row.name.trim() !== '');
+    const sortedGroupNames = Object.keys(drugGroups).sort((a, b) => parseInt(drugGroups[a][0]?.groupOrder || 99, 10) - parseInt(drugGroups[b][0]?.groupOrder || 99, 10));
 
-                    renderNav();
-                    renderSummaryTable();
-                    if (drugDatabase.length > 0) {
-                        displayDrugDetails(0);
-                        const firstNavItem = document.querySelector('.nav-item');
-                        if(firstNavItem) firstNavItem.classList.add('active');
-                    } else {
-                        document.getElementById('drug-details').innerHTML = '<div class="loader">ไม่พบข้อมูลยา</div>';
-                    }
-                },
-                error: function(error) {
-                    console.error('Failed to load or parse drug data:', error);
-                    document.getElementById('drug-nav').innerHTML = '<div class="text-center p-4 text-red-400">ไม่สามารถโหลดข้อมูลได้</div>';
-                    document.getElementById('drug-details').innerHTML = `<div class="loader text-red-500">เกิดข้อผิดพลาดในการโหลดข้อมูล: ${error.message}</div>`;
-                }
-            });
-        }
+    const iconColorMap = { '1': 'text-red-500', '2': 'text-purple-500', '3': 'text-orange-500', '4': 'text-blue-500', 'misc': 'text-gray-500' };
 
-        function renderNav() {
-            const navContainer = document.getElementById('drug-nav');
-            navContainer.innerHTML = '';
-            drugDatabase.forEach((drug, index) => {
-                const navItem = document.createElement('a');
-                navItem.href = '#';
-                navItem.className = 'block p-3 rounded-md nav-item hover:bg-[#003566] hover:text-white break-words opacity-100 sidebar-text transition-opacity duration-200 text-sm';
-                navItem.textContent = drug.name || `รายการที่ ${index + 1}`;
-                navItem.onclick = (e) => {
-                    e.preventDefault();
-                    switchView('details');
-                    displayDrugDetails(index);
-                    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-                    navItem.classList.add('active');
-                };
-                navContainer.appendChild(navItem);
-            });
-        }
-       
-        document.addEventListener('DOMContentLoaded', () => {
-            const sidebar = document.getElementById('sidebar');
-            const toggleButton = document.getElementById('sidebar-toggle');
-            toggleButton.addEventListener('click', () => {
-                sidebar.classList.toggle('w-20');
-                sidebar.classList.toggle('w-72');
-                const textElements = document.querySelectorAll('.sidebar-text');
-                textElements.forEach(el => {
-                    el.classList.toggle('opacity-0');
-                    el.classList.toggle('opacity-100');
-                });
-            });
+    sortedGroupNames.forEach(groupName => {
+        const header = document.createElement('div');
+        header.className = 'col-span-1 md:col-span-2 xl:col-span-3 mt-8 mb-4';
+        header.innerHTML = `<h2 class="text-3xl font-bold border-b-4 border-gray-300 pb-3 text-gray-700">${groupName}</h2>`;
+        grid.appendChild(header);
 
-            loadAndInitializeApp();
-            document.getElementById('details-view-btn').onclick = () => switchView('details');
-            document.getElementById('table-view-btn').onclick = () => switchView('table');
-            document.getElementById('export-excel-btn').addEventListener('click', exportToExcel);
-        });
-       
-        function renderSummaryTable() {
-            const tableBody = document.querySelector('#summary-table tbody');
-            tableBody.innerHTML = '';
+        const drugsInGroup = drugGroups[groupName].sort((a, b) => parseInt(a.itemOrder || 99, 10) - parseInt(b.itemOrder || 99, 10));
 
-            if (drugDatabase.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="5" class="text-center p-4">ไม่พบข้อมูล</td></tr>';
-                return;
-            }
+        drugsInGroup.forEach((drug, index) => {
+            const code = safeCode(drug.code);
+            const iconColor = iconColorMap[code];
+            
+            // --- DATA FORMATTING ---
+            const formatContent = (text) => (text || '-').replace(/\\n|\n/g, '<br>');
+            const formatNotes = (text) => formatContent(text).replace(/เบิกไม่ได้/g, '<strong class="text-red-600">เบิกไม่ได้</strong>');
 
-            const decisionMap = {
-                'approve': 'เสนอรับเข้าบัญชี',
-                'approve_nonstock': 'เสนอรับ (Non-Stock)',
-                'reject': 'เสนอไม่รับเข้าบัญชี',
-                '': 'ยังไม่พิจารณา'
-            };
+            const stockInfo = formatContent(drug.stock);
+            const unitInfo = formatContent(drug.unit);
+            const proposerInfo = formatContent(drug.proposer);
+            const notesInfo = formatNotes(drug.notes);
+            const dose = formatContent(drug.dose);
+            const indication = formatContent(drug.indication);
+            const storage = formatContent(drug.storage);
+            const food = formatContent(drug.food);
 
-            const decisionClassMap = {
-                'approve': 'text-green-700 font-semibold',
-                'approve_nonstock': 'text-blue-700 font-semibold',
-                'reject': 'text-red-700 font-semibold',
-                '': 'text-gray-500'
-            };
+            // --- DYNAMIC FOOD INTERACTION SECTION ---
+            let foodInteractionHtml = '';
+            if (food && food.trim() !== '-') {
+                foodInteractionHtml = `<div class="flex items-start">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 ${iconColor} flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 14.95a1 1 0 001.414 1.414l.707-.707a1 1 0 00-1.414-1.414l-.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1zM4.343 5.757a1 1 0 001.414-1.414l-.707-.707a1 1 0 10-1.414 1.414l.707.707z" /></svg>
+                    <div><strong class="font-semibold">Food interaction:</strong><div class="mt-1">${food}</div></div>
+                </div>`;
+            }
 
-            drugDatabase.forEach((drug, index) => {
-                const physicianHtml = (drug.proposingPhysician || '')
-                    .split('\n')
-                    .map(s => s.trim())
-                    .filter(Boolean)
-                    .join('<br>');
-               
-                const decisionKey = drug.pharmacyDecision || '';
-                const decisionText = decisionMap[decisionKey];
-                const decisionClass = decisionClassMap[decisionKey];
+            // --- DYNAMIC IMAGE CONTAINER (1 or 2 images) ---
+            const imageUrl = drug.image && drug.image.trim() !== '' ? drug.image : '';
+            const imageUrl2 = drug.image2 && drug.image2.trim() !== '' ? drug.image2 : '';
+            
+            let imageContainerHtml = '';
+            if (imageUrl2) {
+                imageContainerHtml = `<div class="h-48 w-full bg-gray-100 flex flex-col items-center justify-center">
+                    <div class="h-1/2 w-full flex-1 border-b border-gray-200 p-1 flex items-center justify-center">
+                        <img class="max-h-full max-w-full object-contain" src="${imageUrl || 'https://placehold.co/600x200/E2E8F0/4A5568?text=Image+1'}" alt="รูปยา ${drug.name || ''} (1)" onerror="this.onerror=null;this.src='https://placehold.co/600x200/E2E8F0/4A5568?text=Image+Error';">
+                    </div>
+                    <div class="h-1/2 w-full flex-1 p-1 flex items-center justify-center">
+                        <img class="max-h-full max-w-full object-contain" src="${imageUrl2}" alt="รูปยา ${drug.name || ''} (2)" onerror="this.onerror=null;this.src='https://placehold.co/600x200/E2E8F0/4A5568?text=Image+Error';">
+                    </div>
+                </div>`;
+            } else {
+                imageContainerHtml = `<div class="h-48 w-full bg-gray-100 flex items-center justify-center">
+                    <img class="max-h-full max-w-full object-contain" src="${imageUrl || 'https://placehold.co/600x400/E2E8F0/4A5568?text=Image+Not+Found'}" alt="รูปยา ${drug.name || ''}" onerror="this.onerror=null;this.src='httpshttps://placehold.co/600x400/E2E8F0/4A5568?text=Image+Not+Found';">
+                </div>`;
+            }
 
-                const row = `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${drug.name || '-'}</td>
-                        <td>${drug.manufacturer || '-'}</td>
-                        <td>${physicianHtml || '-'}</td>
-                        <td><span class="${decisionClass}">${decisionText}</span></td>
-                    </tr>
-                `;
-                tableBody.innerHTML += row;
-            });
-        }
-       
-        function renderDecisionSummary() {
-            const summaryContainer = document.getElementById('decision-summary-container');
-            if (!summaryContainer) return;
+            const card = document.createElement('div');
+            card.className = `bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col card-category category-${code}`;
+            card.innerHTML = `
+                ${imageContainerHtml}
+                <div class="p-6 flex-grow flex flex-col">
+                    <div class="flex justify-between items-start">
+                        <div class="w-full pr-2">
+                            <div class="flex items-center mb-1"><span class="text-gray-400 font-bold text-lg mr-3">${index + 1}.</span><p class="text-sm font-semibold text-gray-500">${drug.generic || '-'}</p></div>
+                            <h3 class="text-xl font-bold text-gray-900 mt-1 ml-6">${drug.name || '-'}</h3>
+                            <p class="text-sm text-gray-500 font-mono mt-1 ml-6">รหัสยา: ${drug.sapCode || '-'}</p>
+                        </div>
+                        <span class="category-tag tag-${code} whitespace-nowrap">${drug.type || '-'}</span>
+                    </div>
+                    <div class="mt-4 space-y-4 text-sm text-gray-700 overflow-auto">
+                        <div class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-400 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 9a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1zm1 4a1 1 0 100 2h2a1 1 0 100-2H9z" clip-rule="evenodd" /></svg><div><strong class="font-semibold">หน่วยเบิก:</strong><div class="mt-1">${unitInfo}</div></div></div>
+                        <div class="flex items-start text-blue-800"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-blue-600 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path d="M2 4a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V4zm2 2v10h12V6H4zm3 2h6a1 1 0 010 2H7a1 1 0 010-2z" /></svg><div><strong class="font-semibold">จำนวนที่ควรสต๊อค:</strong><div class="mt-1">${stockInfo}</div></div></div>
+                        <div class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-purple-600 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg><div><strong class="font-semibold">แพทย์ผู้เสนอ:</strong><div class="mt-1">${proposerInfo}</div></div></div>
+                        <div class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 ${iconColor} flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" /></svg><div><strong class="font-semibold">ข้อบ่งใช้:</strong><div class="mt-1">${indication}</div></div></div>
+                        <div class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 ${iconColor} flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" /></svg><div><strong class="font-semibold">ขนาดใช้ยา:</strong><div class="mt-1">${dose}</div></div></div>
+                        <div class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 ${iconColor} flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.993.883L4 8v9a1 1 0 001 1h10a1 1 0 001-1V8l-.007-.117A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4z" /></svg><div><strong class="font-semibold">การจัดเก็บ:</strong><div class="mt-1">${storage}</div></div></div>
+                        ${foodInteractionHtml} 
+                    </div>
+                </div>
+                <div class="bg-gray-100 px-6 py-4 border-t border-gray-200">
+                    <div><strong class="font-semibold text-gray-800">หมายเหตุ:</strong><div class="mt-1 text-base text-gray-800">${notesInfo}</div></div>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    });
+}
 
-            const counts = {
-                approve: 0,
-                approve_nonstock: 0,
-                reject: 0,
-                undecided: 0
-            };
-
-            drugDatabase.forEach(drug => {
-                switch (drug.pharmacyDecision) {
-                    case 'approve': counts.approve++; break;
-                    case 'approve_nonstock': counts.approve_nonstock++; break;
-                    case 'reject': counts.reject++; break;
-                    default: counts.undecided++; break;
-                }
-            });
-
-            summaryContainer.innerHTML = `
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                    <div class="bg-green-100 p-4 rounded-lg"><div class="text-4xl font-bold text-green-700">${counts.approve}</div><div class="text-green-800 font-semibold">เสนอรับเข้าบัญชี</div></div>
-                    <div class="bg-blue-100 p-4 rounded-lg"><div class="text-4xl font-bold text-blue-700">${counts.approve_nonstock}</div><div class="text-blue-800 font-semibold">เสนอรับ (Non-Stock)</div></div>
-                    <div class="bg-red-100 p-4 rounded-lg"><div class="text-4xl font-bold text-red-700">${counts.reject}</div><div class="text-red-800 font-semibold">เสนอไม่รับเข้าบัญชี</div></div>
-                    <div class="bg-gray-200 p-4 rounded-lg"><div class="text-4xl font-bold text-gray-700">${counts.undecided}</div><div class="text-gray-800 font-semibold">ยังไม่พิจารณา</div></div>
-                </div>
-            `;
-        }
-
-        function switchView(view) {
-            const detailsView = document.getElementById('drug-details-view');
-            const tableView = document.getElementById('summary-table-view');
-            const detailsBtn = document.getElementById('details-view-btn');
-            const tableBtn = document.getElementById('table-view-btn');
-            const sidebar = document.getElementById('sidebar');
-            const stickyHeader = document.getElementById('sticky-drug-header');
-
-            if (view === 'details') {
-                detailsView.classList.remove('hidden');
-                tableView.classList.add('hidden');
-                detailsBtn.classList.add('active');
-                tableBtn.classList.remove('active');
-                sidebar.classList.remove('hidden');
-                stickyHeader.classList.remove('hidden');
-            } else {
-                detailsView.classList.add('hidden');
-                tableView.classList.remove('hidden');
-                detailsBtn.classList.remove('active');
-                tableBtn.classList.add('active');
-                sidebar.classList.add('hidden');
-                stickyHeader.classList.add('hidden');
-                renderDecisionSummary();
-                renderSummaryTable();
-            }
-        }
-       
-        // This function correctly handles newline-separated strings, which PapaParse provides.
-        function renderList(text) {
-            if (!text || typeof text !== 'string') return '<li>-</li>';
-            
-            const items = text.split('\n')
-                .map(s => s.trim())
-                .filter(Boolean);
-
-            if (items.length === 0) return '<li>-</li>';
-            
-            return items.map(s => `<li>${s}</li>`).join('');
-        }
-       
-        function renderCompetitorTable(drug) {
-            let competitors = [];
-            for (let i = 1; i <= 5; i++) {
-                const name = drug[`competitor${i}_name`];
-                if (name && name.trim() !== '') {
-                    competitors.push({
-                        name: name,
-                        reimbursement: drug[`competitor${i}_reimbursement`] || '-',
-                        price: drug[`competitor${i}_price`] || '-',
-                        usage: drug[`competitor${i}_usage`] || '-',
-                    });
-                }
-            }
-
-            let tableHtml = `<div class="overflow-x-auto p-2"><table class="w-full text-left border-collapse text-xl"><thead><tr class="border-b-2 border-slate-300 bg-slate-100"><th class="p-3 font-semibold text-slate-700 w-2/5">รายการยา</th><th class="p-3 font-semibold text-slate-700">การเบิกจ่าย กรมบัญชีกลาง</th><th class="p-3 font-semibold text-slate-700">ราคาขายต่อรอบการรักษา/ราคาขาย (เดือน)</th><th class="p-3 font-semibold text-slate-700">อัตราการใช้ยา (ถ้ามี)</th></tr></thead><tbody>`;
-            const currentDrugPrice = drug.cyclePrice || drug.monthlyPrice || drug.salePrice || '-';
-            tableHtml += `<tr class="border-b border-slate-200 bg-blue-50"><td class="p-3 font-bold text-blue-800">${drug.name || '-'} <span class="font-normal text-sm">(ยาเสนอใหม่)</span></td><td class="p-3">${drug.govReimburse || '-'}</td><td class="p-3 font-bold">${currentDrugPrice}</td><td class="p-3">-</td></tr>`;
-
-            if (competitors.length > 0) {
-                competitors.forEach(comp => {
-                    tableHtml += `<tr class="border-b border-slate-200 hover:bg-slate-50"><td class="p-3">${comp.name}</td><td class="p-3">${comp.reimbursement}</td><td class="p-3">${comp.price}</td><td class="p-3">${comp.usage}</td></tr>`;
-                });
-            } else {
-                 if(drug.competitor && drug.competitor.trim() !== '' && drug.competitor.trim().toLowerCase() !== 'ไม่มี') {
-                    tableHtml += `<tr><td colspan="4" class="p-4 text-slate-500 italic">ข้อมูลยาเปรียบเทียบ (เดิม): ${drug.competitor}</td></tr>`
-                } else {
-                    tableHtml += `<tr><td colspan="4" class="p-4 text-center text-slate-500">ไม่มียาใกล้เคียงในบัญชีโรงพยาบาล</td></tr>`
-                }
-            }
-            tableHtml += `</tbody></table></div>`;
-            return tableHtml;
-        }
-
-        function getReimbursementClass(status) {
-            if (!status) return 'reimburse-no';
-            const s = status.toLowerCase().trim();
-            if (s === 'เบิกไม่ได้' || s.includes('co-pay')) return 'reimburse-no';
-            if (s === 'สำรองจ่าย') return 'reimburse-advance';
-            if (s === 'เบิกได้' || s === 'ocpa') return 'reimburse-yes';
-            return 'reimburse-yes'; 
-        }
-
-        function displayDrugDetails(index) {
-            if (index >= drugDatabase.length) return;
-            const drug = drugDatabase[index];
-            const detailsContainer = document.getElementById('drug-details');
-            const stickyHeader = document.getElementById('sticky-drug-header');
-
-            stickyHeader.style.opacity = '0';
-            detailsContainer.style.opacity = '0';
-
-            setTimeout(() => {
-                const accountColorClass = drug.account === 'NED' ? 'text-red-600' : (drug.account === 'ED' ? 'text-green-600' : 'text-blue-800');
-                const hasImage1 = drug.imageUrl && drug.imageUrl.trim() !== '';
-                const hasImage2 = drug.imageUrl2 && drug.imageUrl2.trim() !== '';
-                let imagesHtml;
-                const imageContainerClasses = "w-full h-72 bg-gray-200 rounded-md flex items-center justify-center overflow-hidden";
-                const imageClasses = "w-full h-full object-contain";
-                const placeholderUrl = "https://placehold.co/400x225/e2e8f0/adb5bd?text=No+Image";
-                if (hasImage1 && hasImage2) {
-                    imagesHtml = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="${imageContainerClasses}"><img src="${drug.imageUrl}" alt="รูปภาพผลิตภัณฑ์ 1" class="${imageClasses}"></div><div class="${imageContainerClasses}"><img src="${drug.imageUrl2}" alt="รูปภาพผลิตภัณฑ์ 2" class="${imageClasses}"></div></div>`;
-                } else if (hasImage1) {
-                    imagesHtml = `<div class="${imageContainerClasses}"><img src="${drug.imageUrl}" alt="รูปภาพผลิตภัณฑ์" class="${imageClasses}"></div>`;
-                } else if (hasImage2) {
-                    imagesHtml = `<div class="${imageContainerClasses}"><img src="${drug.imageUrl2}" alt="รูปภาพผลิตภัณฑ์" class="${imageClasses}"></div>`;
-                } else {
-                    imagesHtml = `<div class="${imageContainerClasses}"><img src="${placeholderUrl}" alt="ไม่มีรูปภาพ" class="${imageClasses}"></div>`;
-                }
-
-                const papFullHtml = (drug.papFull || '').replace(/\n/g, '<br>');
-                const proposalHtml = (drug.proposal || '').replace(/\n/g, '<br>');
-                const currentDecision = drug.pharmacyDecision || '';
-                let extraPricesHtml = '';
-                if (drug.cyclePrice) extraPricesHtml += `<div class="bg-purple-50 rounded-md p-3"><span class="label">ราคาขายต่อรอบการรักษา</span><span class="value text-lg font-bold text-purple-600">${drug.cyclePrice}</span></div>`;
-                if (drug.monthlyPrice) extraPricesHtml += `<div class="bg-sky-50 rounded-md p-3"><span class="label">ราคาขาย (เดือน)</span><span class="value text-lg font-bold text-sky-600">${drug.monthlyPrice}</span></div>`;
-                
-                let specialNoteHtml = '';
-                if (drug.specialNote && drug.specialNote.trim() !== '') {
-                    const noteContent = drug.specialNote.replace(/\n/g, '<br>');
-                    specialNoteHtml = `<div class="info-card border-t-4 border-red-500"><div class="info-header bg-red-600"><i class="fa-solid fa-triangle-exclamation"></i><span>โน้ตพิเศษ</span></div><div class="p-4"><p class="text-xl font-bold text-red-700">${noteContent}</p></div></div>`;
-                }
-
-                stickyHeader.innerHTML = `<div class="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-md mb-6"><h2 class="text-2xl font-bold text-slate-800">${drug.name || '-'}</h2></div>`;
-                detailsContainer.innerHTML = `
-                <div class="space-y-6">
-                    <div class="info-card">
-                        <div class="info-header bg-[#03045e]"><i class="fa-solid fa-pills"></i><span>ข้อมูลทั่วไปและราคา</span></div>
-                        <div class="p-4 grid grid-cols-1 md:grid-cols-12 gap-6">
-                            <div class="md:col-span-7 space-y-4">
-                                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">ความแรง</span><span class="value font-semibold">${drug.strength || '-'}</span></div>
-                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">รูปแบบยา</span><span class="value">${drug.form || '-'}</span></div>
-                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">ขนาดบรรจุ</span><span class="value">${drug.packSize || '-'}</span></div>
-                                </div>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">ราคาขาย</span><span class="value text-lg font-bold text-green-600">${drug.salePrice || '-'} ${drug.baseUnit ? ` / ${drug.baseUnit}` : ''}</span></div>
-                                    <div class="bg-slate-50 rounded-md p-3"><span class="label">ราคาทุน</span><span class="value text-lg font-bold text-orange-600">${drug.costPrice || '-'} ${drug.baseUnit ? ` / ${drug.baseUnit}` : ''}</span></div>
-                                </div>
-                                ${extraPricesHtml ? `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${extraPricesHtml}</div>` : ''}
-                                <div>
-                                    <h3 class="font-semibold text-lg mb-2 text-[#001d3d]">สถานะการเบิกจ่าย</h3>
-                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-                                        <div class="bg-slate-50 rounded-md p-3 text-center"><span class="label">กรมบัญชีกลาง</span><span class="${getReimbursementClass(drug.govReimburse)}">${drug.govReimburse || '-'}</span></div>
-                                        <div class="bg-slate-50 rounded-md p-3 text-center"><span class="label">ประกันสังคม</span><span class="${getReimbursementClass(drug.socialSecurity)}">${drug.socialSecurity || '-'}</span></div>
-                                        <div class="bg-slate-50 rounded-md p-3 text-center"><span class="label">สปสช.</span><span class="${getReimbursementClass(drug.nhso)}">${drug.nhso || '-'}</span></div>
-                                        <div class="bg-slate-50 rounded-md p-3 text-center"><span class="label">ใน/นอก DRG</span><span class="${getReimbursementClass(drug.drg)}">${drug.drg || '-'}</span></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="md:col-span-5 space-y-4">
-                                <div class="bg-slate-50 rounded-md p-3 h-full flex flex-col">
-                                    <div class="mb-4"><span class="label">บริษัทผู้ผลิต/จัดจำหน่าย</span><span class="value">${drug.manufacturer || '-'}</span></div>
-                                    <div class="mb-4"><span class="label">แพทย์ผู้เสนอ</span><ul class="value list-none m-0 p-0" style="color: #1a202c; font-size: 1.125rem;">${renderList(drug.proposingPhysician)}</ul></div>
-                                    <div class="mb-4"><span class="label">บัญชียา</span><span class="value font-bold text-xl ${accountColorClass}">${drug.account || '-'}</span></div>
-                                    <div class="mt-4"><span class="label">ข้อบ่งชี้</span><ul class="value list-disc list-inside mt-1" style="font-size: 1.125rem;">${renderList(drug.indications)}</ul></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="p-4 pt-0"><span class="label">รูปภาพผลิตภัณฑ์</span><div class="mt-2">${imagesHtml}</div></div>
-                    </div>
-                    ${specialNoteHtml}
-                    <div class="info-card"><div class="info-header bg-green-700"><i class="fa-solid fa-user-doctor"></i><span>เหตุผลของแพทย์ผู้เสนอ</span></div><div class="p-4"><ul class="list-disc list-inside text-xl font-bold">${renderList(drug.physicianReason)}</ul></div></div>
-                    <div class="info-card"><div class="info-header bg-[#5a189a]"><i class="fa-solid fa-code-compare"></i><span>ยาใกล้เคียงในบัญชี</span></div>${renderCompetitorTable(drug)}</div>
-                    <div class="info-card"><div class="info-header bg-gray-600"><i class="fa-solid fa-hospital"></i><span>รพ. ที่มียา</span></div><div class="p-4"><ul class="list-disc list-inside text-xl font-bold columns-1 md:columns-2">${renderList(drug.hospitals)}</ul></div></div>
-                    ${drug.pap && drug.pap !== 'ไม่มี' ? `<div class="info-card pap-card"><div class="info-header bg-[#fbaf00] text-gray-800"><i class="fa-solid fa-hand-holding-medical"></i><span>โครงการช่วยเหลือผู้ป่วย (PAP)</span></div><div class="p-4"><p class="text-xl font-bold">${papFullHtml || '-'}</p></div></div>` : ''}
-                    <div class="info-card"><div class="info-header bg-[#0077b6]"><i class="fa-solid fa-clipboard-check"></i><span>ข้อเสนอฝ่ายเภสัชกรรม</span></div><div class="p-4"><p class="text-3xl font-bold">${proposalHtml || '-'}</p></div></div>
-                    <div class="info-card"><div class="info-header bg-[#c9184a]"><i class="fa-solid fa-gavel"></i><span>สถานะการพิจารณา</span></div><div class="p-4"><select id="pharmacy-decision-${index}" class="w-full mt-2 p-3 border border-gray-300 rounded-lg text-2xl bg-gray-50 focus:ring-blue-500 focus:border-blue-500"><option value="" disabled ${currentDecision === '' ? 'selected' : ''}>--- กรุณาเลือกสถานะ ---</option><option value="approve" ${currentDecision === 'approve' ? 'selected' : ''}>เสนอรับเข้าบัญชี</option><option value="approve_nonstock" ${currentDecision === 'approve_nonstock' ? 'selected' : ''}>เสนอรับเข้าบัญชี ไม่สำรองคงคลัง (Non-stock)</option><option value="reject" ${currentDecision === 'reject' ? 'selected' : ''}>เสนอไม่รับเข้าบัญชี</option></select></div></div>
-                </div>`;
-                detailsContainer.style.opacity = '1';
-                stickyHeader.style.opacity = '1';
-                const decisionDropdown = document.getElementById(`pharmacy-decision-${index}`);
-                if (decisionDropdown) {
-                    decisionDropdown.onchange = (e) => { drugDatabase[index].pharmacyDecision = e.target.value; };
-                }
-            }, 150);
-        }
-
-        function exportToExcel() {
-            if (drugDatabase.length === 0) { alert('ไม่มีข้อมูลสำหรับ Export'); return; }
-            const decisionMap = { 'approve': 'เสนอรับเข้าบัญชี', 'approve_nonstock': 'เสนอรับเข้าบัญชี (Non-stock)', 'reject': 'เสนอไม่รับเข้าบัญชี', '': 'ยังไม่พิจารณา' };
-            const exportData = drugDatabase.map((drug, index) => {
-                const physicianText = (drug.proposingPhysician || '').split('\n').map(s => s.trim()).filter(Boolean).join(', ');
-                return { 'ลำดับ': index + 1, 'รายการยา': drug.name || '-', 'บริษัทผู้ผลิต': drug.manufacturer || '-', 'แพทย์ผู้เสนอ': physicianText || '-', 'สถานะการพิจารณา': decisionMap[drug.pharmacyDecision || ''] };
-            });
-            const ws = XLSX.utils.json_to_sheet(exportData);
-            ws['!cols'] = [ { wch: 5 }, { wch: 90 }, { wch: 44 }, { wch: 55 }, { wch: 35 } ];
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'สรุปรายการยา');
-            XLSX.writeFile(wb, 'สรุปรายการยาเสนอเข้าใหม่-มิย68.xlsx');
-        }
-    </script>
+// Initial load
+loadDrugData();
+</script>
 </body>
 </html>
 
