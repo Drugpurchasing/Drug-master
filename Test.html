@@ -429,7 +429,7 @@
             if (s === 'เบิกไม่ได้' || s === 'OCPA Co-pay') {
                 return `<span class="text-red-600 font-bold">${s}</span>`;
             }
-            if (s === 'OCPA' || s === 'เบิกได้' || === 'เบิกได้ ตามเงื่อนไข' ) {
+            if (s === 'OCPA' || s === 'เบิกได้' || s === 'เบิกได้ ตามเงื่อนไข' ) {
                 return `<span class="text-green-600 font-bold">${s}</span>`;
             }
             if (s === 'สำรองจ่าย') {
@@ -527,7 +527,7 @@
                 let specialNoteHtml = '';
                 if (drug.specialNote && drug.specialNote.trim() !== '') {
                     const noteContent = drug.specialNote.replace(/\n/g, '<br>');
-                    specialNoteHtml = `<div class="info-card border-t-4 border-red-500"><div class="info-header bg-red-600"><i class="fa-solid fa-triangle-exclamation"></i><span>ปัญหาที่พบ</span></div><div class="p-4"><p class="text-xl font-bold text-red-700">${noteContent}</p></div></div>`;
+                    specialNoteHtml = `<div class="info-card border-t-4 border-red-500"><div class="info-header bg-red-600"><i class="fa-solid fa-triangle-exclamation"></i><span>ประเด็นสำคัญ</span></div><div class="p-4"><p class="text-xl font-bold text-red-700">${noteContent}</p></div></div>`;
                 }
 
                 let papBlockHtml = '';
