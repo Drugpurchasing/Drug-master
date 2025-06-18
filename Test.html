@@ -7,6 +7,7 @@
     <title>เสนอยาเข้าใหม่ คณะทำงาน มิ.ย. 68</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
@@ -243,84 +244,35 @@
 
         let drugDatabase = [];
        
-        // MODIFIED: Improved parsing for `hospitals` and sanitization for backticks (`)
-        function parseCsv(csvText) {
-            const lines = csvText.trim().split('\n');
-            if (lines.length < 2) return [];
+        // REMOVED: Old custom parseCsv function is no longer needed.
 
-            const headers = lines[0].trim().split(',').map(h => h.trim());
-            const data = [];
-            const csvRegex = /("((?:[^"]|"")*)"|([^,]*))(,|$)/g;
+        // NEW: Replaced loading logic with PapaParse for reliability
+        function loadAndInitializeApp() {
+            Papa.parse(GOOGLE_SHEET_CSV_URL, {
+                download: true,
+                header: true,
+                skipEmptyLines: true,
+                trimHeaders: true,
+                complete: function(results) {
+                    // Filter out any rows that might be completely empty
+                    drugDatabase = results.data.filter(row => row.name && row.name.trim() !== '');
 
-            for (let i = 1; i < lines.length; i++) {
-                const line = lines[i];
-                if (!line.trim()) continue;
-
-                const values = [];
-                let match;
-                csvRegex.lastIndex = 0;
-
-                while (match = csvRegex.exec(line)) {
-                    let value = match[2] !== undefined ? match[2].replace(/""/g, '"') : match[3];
-                    values.push(value.trim());
-
-                    if (match[4] === '') {
-                        let remainingFields = headers.length - values.length;
-                        while (csvRegex.lastIndex === line.length && remainingFields > 0) {
-                            values.push('');
-                            remainingFields--;
-                        }
-                        break;
-                    }
-                }
-
-                const entry = {};
-                headers.forEach((header, j) => {
-                    let value = values[j] || '';
-                    if (typeof value === 'string') {
-                        value = value.replace(/`/g, "'");
-                    }
-                    
-                    if (header === 'hospitals') {
-                        // Correctly parse newline-separated hospital lists and clean up quotes
-                        entry[header] = value.split('\n').map(h => {
-                            let trimmed = h.trim();
-                            if (trimmed.startsWith('"') && trimmed.endsWith('"')) {
-                                trimmed = trimmed.substring(1, trimmed.length - 1).trim();
-                            }
-                            return trimmed;
-                        }).filter(Boolean);
+                    renderNav();
+                    renderSummaryTable();
+                    if (drugDatabase.length > 0) {
+                        displayDrugDetails(0);
+                        const firstNavItem = document.querySelector('.nav-item');
+                        if(firstNavItem) firstNavItem.classList.add('active');
                     } else {
-                        entry[header] = value;
+                        document.getElementById('drug-details').innerHTML = '<div class="loader">ไม่พบข้อมูลยา</div>';
                     }
-                });
-                data.push(entry);
-            }
-            return data;
-        }
-
-        async function loadAndInitializeApp() {
-            try {
-                const response = await fetch(GOOGLE_SHEET_CSV_URL);
-                if (!response.ok) {
-                    throw new Error(`Network response was not ok: ${response.statusText}`);
+                },
+                error: function(error) {
+                    console.error('Failed to load or parse drug data:', error);
+                    document.getElementById('drug-nav').innerHTML = '<div class="text-center p-4 text-red-400">ไม่สามารถโหลดข้อมูลได้</div>';
+                    document.getElementById('drug-details').innerHTML = `<div class="loader text-red-500">เกิดข้อผิดพลาดในการโหลดข้อมูล: ${error.message}</div>`;
                 }
-                const csvText = await response.text();
-                drugDatabase = parseCsv(csvText);
-
-                renderNav();
-                renderSummaryTable();
-                if (drugDatabase.length > 0) {
-                    displayDrugDetails(0);
-                    document.querySelector('.nav-item').classList.add('active');
-                } else {
-                    document.getElementById('drug-details').innerHTML = '<div class="loader">ไม่พบข้อมูลยา</div>';
-                }
-            } catch (error) {
-                console.error('Failed to load or render drug data:', error);
-                document.getElementById('drug-nav').innerHTML = '<div class="text-center p-4 text-red-400">ไม่สามารถโหลดข้อมูลได้</div>';
-                document.getElementById('drug-details').innerHTML = `<div class="loader text-red-500">เกิดข้อผิดพลาดในการแสดงผลข้อมูลยา: ${error.message}</div>`;
-            }
+            });
         }
 
         function renderNav() {
@@ -329,10 +281,8 @@
             drugDatabase.forEach((drug, index) => {
                 const navItem = document.createElement('a');
                 navItem.href = '#';
-               
                 navItem.className = 'block p-3 rounded-md nav-item hover:bg-[#003566] hover:text-white break-words opacity-100 sidebar-text transition-opacity duration-200 text-sm';
-
-                navItem.textContent = drug.name;
+                navItem.textContent = drug.name || `รายการที่ ${index + 1}`;
                 navItem.onclick = (e) => {
                     e.preventDefault();
                     switchView('details');
@@ -347,7 +297,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             const sidebar = document.getElementById('sidebar');
             const toggleButton = document.getElementById('sidebar-toggle');
-           
             toggleButton.addEventListener('click', () => {
                 sidebar.classList.toggle('w-20');
                 sidebar.classList.toggle('w-72');
@@ -361,7 +310,6 @@
             loadAndInitializeApp();
             document.getElementById('details-view-btn').onclick = () => switchView('details');
             document.getElementById('table-view-btn').onclick = () => switchView('table');
-           
             document.getElementById('export-excel-btn').addEventListener('click', exportToExcel);
         });
        
@@ -425,39 +373,19 @@
 
             drugDatabase.forEach(drug => {
                 switch (drug.pharmacyDecision) {
-                    case 'approve':
-                        counts.approve++;
-                        break;
-                    case 'approve_nonstock':
-                        counts.approve_nonstock++;
-                        break;
-                    case 'reject':
-                        counts.reject++;
-                        break;
-                    default:
-                        counts.undecided++;
-                        break;
+                    case 'approve': counts.approve++; break;
+                    case 'approve_nonstock': counts.approve_nonstock++; break;
+                    case 'reject': counts.reject++; break;
+                    default: counts.undecided++; break;
                 }
             });
 
             summaryContainer.innerHTML = `
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                    <div class="bg-green-100 p-4 rounded-lg">
-                        <div class="text-4xl font-bold text-green-700">${counts.approve}</div>
-                        <div class="text-green-800 font-semibold">เสนอรับเข้าบัญชี</div>
-                    </div>
-                    <div class="bg-blue-100 p-4 rounded-lg">
-                        <div class="text-4xl font-bold text-blue-700">${counts.approve_nonstock}</div>
-                        <div class="text-blue-800 font-semibold">เสนอรับ (Non-Stock)</div>
-                    </div>
-                    <div class="bg-red-100 p-4 rounded-lg">
-                        <div class="text-4xl font-bold text-red-700">${counts.reject}</div>
-                        <div class="text-red-800 font-semibold">เสนอไม่รับเข้าบัญชี</div>
-                    </div>
-                     <div class="bg-gray-200 p-4 rounded-lg">
-                        <div class="text-4xl font-bold text-gray-700">${counts.undecided}</div>
-                        <div class="text-gray-800 font-semibold">ยังไม่พิจารณา</div>
-                    </div>
+                    <div class="bg-green-100 p-4 rounded-lg"><div class="text-4xl font-bold text-green-700">${counts.approve}</div><div class="text-green-800 font-semibold">เสนอรับเข้าบัญชี</div></div>
+                    <div class="bg-blue-100 p-4 rounded-lg"><div class="text-4xl font-bold text-blue-700">${counts.approve_nonstock}</div><div class="text-blue-800 font-semibold">เสนอรับ (Non-Stock)</div></div>
+                    <div class="bg-red-100 p-4 rounded-lg"><div class="text-4xl font-bold text-red-700">${counts.reject}</div><div class="text-red-800 font-semibold">เสนอไม่รับเข้าบัญชี</div></div>
+                    <div class="bg-gray-200 p-4 rounded-lg"><div class="text-4xl font-bold text-gray-700">${counts.undecided}</div><div class="text-gray-800 font-semibold">ยังไม่พิจารณา</div></div>
                 </div>
             `;
         }
@@ -489,24 +417,17 @@
             }
         }
        
-        // MODIFIED: Now handles both string and array inputs robustly
-        function renderList(data) {
-            if (!data) return '<li>-</li>';
+        // This function correctly handles newline-separated strings, which PapaParse provides.
+        function renderList(text) {
+            if (!text || typeof text !== 'string') return '<li>-</li>';
+            
+            const items = text.split('\n')
+                .map(s => s.trim())
+                .filter(Boolean);
 
-            let items = [];
-            if (Array.isArray(data)) {
-                items = data;
-            } else if (typeof data === 'string') {
-                items = data.split('\n');
-            }
-
-            if (items.length === 0 || (items.length === 1 && items[0].trim() === '')) return '<li>-</li>';
-
-            return items
-                .map(s => String(s).trim())
-                .filter(Boolean)
-                .map(s => `<li>${s}</li>`)
-                .join('');
+            if (items.length === 0) return '<li>-</li>';
+            
+            return items.map(s => `<li>${s}</li>`).join('');
         }
        
         function renderCompetitorTable(drug) {
@@ -523,37 +444,13 @@
                 }
             }
 
-            let tableHtml = `
-                <div class="overflow-x-auto p-2">
-                    <table class="w-full text-left border-collapse text-xl">
-                        <thead>
-                            <tr class="border-b-2 border-slate-300 bg-slate-100">
-                                <th class="p-3 font-semibold text-slate-700 w-2/5">รายการยา</th>
-                                <th class="p-3 font-semibold text-slate-700">การเบิกจ่าย กรมบัญชีกลาง</th>
-                                <th class="p-3 font-semibold text-slate-700">ราคาขายต่อรอบการรักษา/ราคาขาย (เดือน)</th>
-                                <th class="p-3 font-semibold text-slate-700">จำนวนเคส</th>
-                            </tr>
-                        </thead>
-                        <tbody>`;
-
+            let tableHtml = `<div class="overflow-x-auto p-2"><table class="w-full text-left border-collapse text-xl"><thead><tr class="border-b-2 border-slate-300 bg-slate-100"><th class="p-3 font-semibold text-slate-700 w-2/5">รายการยา</th><th class="p-3 font-semibold text-slate-700">การเบิกจ่าย กรมบัญชีกลาง</th><th class="p-3 font-semibold text-slate-700">ราคาขายต่อรอบการรักษา/ราคาขาย (เดือน)</th><th class="p-3 font-semibold text-slate-700">อัตราการใช้ยา (ถ้ามี)</th></tr></thead><tbody>`;
             const currentDrugPrice = drug.cyclePrice || drug.monthlyPrice || drug.salePrice || '-';
-            tableHtml += `
-                <tr class="border-b border-slate-200 bg-blue-50">
-                    <td class="p-3 font-bold text-blue-800">${drug.name || '-'} <span class="font-normal text-sm">(ยาเสนอใหม่)</span></td>
-                    <td class="p-3">${drug.govReimburse || '-'}</td>
-                    <td class="p-3 font-bold">${currentDrugPrice}</td>
-                    <td class="p-3">-</td>
-                </tr>`;
+            tableHtml += `<tr class="border-b border-slate-200 bg-blue-50"><td class="p-3 font-bold text-blue-800">${drug.name || '-'} <span class="font-normal text-sm">(ยาเสนอใหม่)</span></td><td class="p-3">${drug.govReimburse || '-'}</td><td class="p-3 font-bold">${currentDrugPrice}</td><td class="p-3">-</td></tr>`;
 
             if (competitors.length > 0) {
                 competitors.forEach(comp => {
-                    tableHtml += `
-                        <tr class="border-b border-slate-200 hover:bg-slate-50">
-                            <td class="p-3">${comp.name}</td>
-                            <td class="p-3">${comp.reimbursement}</td>
-                            <td class="p-3">${comp.price}</td>
-                            <td class="p-3">${comp.usage}</td>
-                        </tr>`;
+                    tableHtml += `<tr class="border-b border-slate-200 hover:bg-slate-50"><td class="p-3">${comp.name}</td><td class="p-3">${comp.reimbursement}</td><td class="p-3">${comp.price}</td><td class="p-3">${comp.usage}</td></tr>`;
                 });
             } else {
                  if(drug.competitor && drug.competitor.trim() !== '' && drug.competitor.trim().toLowerCase() !== 'ไม่มี') {
@@ -562,7 +459,6 @@
                     tableHtml += `<tr><td colspan="4" class="p-4 text-center text-slate-500">ไม่มียาใกล้เคียงในบัญชีโรงพยาบาล</td></tr>`
                 }
             }
-
             tableHtml += `</tbody></table></div>`;
             return tableHtml;
         }
@@ -570,15 +466,9 @@
         function getReimbursementClass(status) {
             if (!status) return 'reimburse-no';
             const s = status.toLowerCase().trim();
-
-            if (s === 'เบิกไม่ได้' || s.includes('co-pay')) {
-                return 'reimburse-no'; // Red
-            } else if (s === 'สำรองจ่าย') {
-                return 'reimburse-advance'; // Blue
-            } else if (s === 'เบิกได้' || s === 'ocpa') {
-                return 'reimburse-yes'; // Green
-            }
-            
+            if (s === 'เบิกไม่ได้' || s.includes('co-pay')) return 'reimburse-no';
+            if (s === 'สำรองจ่าย') return 'reimburse-advance';
+            if (s === 'เบิกได้' || s === 'ocpa') return 'reimburse-yes';
             return 'reimburse-yes'; 
         }
 
@@ -595,60 +485,34 @@
                 const accountColorClass = drug.account === 'NED' ? 'text-red-600' : (drug.account === 'ED' ? 'text-green-600' : 'text-blue-800');
                 const hasImage1 = drug.imageUrl && drug.imageUrl.trim() !== '';
                 const hasImage2 = drug.imageUrl2 && drug.imageUrl2.trim() !== '';
-
                 let imagesHtml;
                 const imageContainerClasses = "w-full h-72 bg-gray-200 rounded-md flex items-center justify-center overflow-hidden";
                 const imageClasses = "w-full h-full object-contain";
                 const placeholderUrl = "https://placehold.co/400x225/e2e8f0/adb5bd?text=No+Image";
-
                 if (hasImage1 && hasImage2) {
-                    imagesHtml = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="${imageContainerClasses}"><img src="${drug.imageUrl}" alt="รูปภาพผลิตภัณฑ์ 1 ${drug.name || ''}" class="${imageClasses}"></div><div class="${imageContainerClasses}"><img src="${drug.imageUrl2}" alt="รูปภาพผลิตภัณฑ์ 2 ${drug.name || ''}" class="${imageClasses}"></div></div>`;
+                    imagesHtml = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="${imageContainerClasses}"><img src="${drug.imageUrl}" alt="รูปภาพผลิตภัณฑ์ 1" class="${imageClasses}"></div><div class="${imageContainerClasses}"><img src="${drug.imageUrl2}" alt="รูปภาพผลิตภัณฑ์ 2" class="${imageClasses}"></div></div>`;
                 } else if (hasImage1) {
-                    imagesHtml = `<div class="${imageContainerClasses}"><img src="${drug.imageUrl}" alt="รูปภาพผลิตภัณฑ์ ${drug.name || ''}" class="${imageClasses}"></div>`;
+                    imagesHtml = `<div class="${imageContainerClasses}"><img src="${drug.imageUrl}" alt="รูปภาพผลิตภัณฑ์" class="${imageClasses}"></div>`;
                 } else if (hasImage2) {
-                    imagesHtml = `<div class="${imageContainerClasses}"><img src="${drug.imageUrl2}" alt="รูปภาพผลิตภัณฑ์ ${drug.name || ''}" class="${imageClasses}"></div>`;
+                    imagesHtml = `<div class="${imageContainerClasses}"><img src="${drug.imageUrl2}" alt="รูปภาพผลิตภัณฑ์" class="${imageClasses}"></div>`;
                 } else {
                     imagesHtml = `<div class="${imageContainerClasses}"><img src="${placeholderUrl}" alt="ไม่มีรูปภาพ" class="${imageClasses}"></div>`;
                 }
 
                 const papFullHtml = (drug.papFull || '').replace(/\n/g, '<br>');
                 const proposalHtml = (drug.proposal || '').replace(/\n/g, '<br>');
-               
                 const currentDecision = drug.pharmacyDecision || '';
-               
                 let extraPricesHtml = '';
-                if (drug.cyclePrice) {
-                    extraPricesHtml += `
-                        <div class="bg-purple-50 rounded-md p-3">
-                            <span class="label">ราคาขายต่อรอบการรักษา</span>
-                            <span class="value text-lg font-bold text-purple-600">${drug.cyclePrice}</span>
-                        </div>`;
-                }
-                if (drug.monthlyPrice) {
-                    extraPricesHtml += `
-                          <div class="bg-sky-50 rounded-md p-3">
-                            <span class="label">ราคาขาย (เดือน)</span>
-                            <span class="value text-lg font-bold text-sky-600">${drug.monthlyPrice}</span>
-                        </div>`;
-                }
+                if (drug.cyclePrice) extraPricesHtml += `<div class="bg-purple-50 rounded-md p-3"><span class="label">ราคาขายต่อรอบการรักษา</span><span class="value text-lg font-bold text-purple-600">${drug.cyclePrice}</span></div>`;
+                if (drug.monthlyPrice) extraPricesHtml += `<div class="bg-sky-50 rounded-md p-3"><span class="label">ราคาขาย (เดือน)</span><span class="value text-lg font-bold text-sky-600">${drug.monthlyPrice}</span></div>`;
                 
                 let specialNoteHtml = '';
                 if (drug.specialNote && drug.specialNote.trim() !== '') {
                     const noteContent = drug.specialNote.replace(/\n/g, '<br>');
-                    specialNoteHtml = `
-                        <div class="info-card border-t-4 border-red-500">
-                            <div class="info-header bg-red-600">
-                                <i class="fa-solid fa-triangle-exclamation"></i>
-                                <span>โน้ตพิเศษ</span>
-                            </div>
-                            <div class="p-4">
-                                <p class="text-xl font-bold text-red-700">${noteContent}</p>
-                            </div>
-                        </div>`;
+                    specialNoteHtml = `<div class="info-card border-t-4 border-red-500"><div class="info-header bg-red-600"><i class="fa-solid fa-triangle-exclamation"></i><span>โน้ตพิเศษ</span></div><div class="p-4"><p class="text-xl font-bold text-red-700">${noteContent}</p></div></div>`;
                 }
 
                 stickyHeader.innerHTML = `<div class="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-md mb-6"><h2 class="text-2xl font-bold text-slate-800">${drug.name || '-'}</h2></div>`;
-
                 detailsContainer.innerHTML = `
                 <div class="space-y-6">
                     <div class="info-card">
@@ -678,122 +542,46 @@
                             <div class="md:col-span-5 space-y-4">
                                 <div class="bg-slate-50 rounded-md p-3 h-full flex flex-col">
                                     <div class="mb-4"><span class="label">บริษัทผู้ผลิต/จัดจำหน่าย</span><span class="value">${drug.manufacturer || '-'}</span></div>
-                                    <div class="mb-4">
-                                        <span class="label">แพทย์ผู้เสนอ</span>
-                                        <ul class="value list-none m-0 p-0" style="color: #1a202c; font-size: 1.125rem;">
-                                            ${renderList(drug.proposingPhysician)}
-                                        </ul>
-                                    </div>
+                                    <div class="mb-4"><span class="label">แพทย์ผู้เสนอ</span><ul class="value list-none m-0 p-0" style="color: #1a202c; font-size: 1.125rem;">${renderList(drug.proposingPhysician)}</ul></div>
                                     <div class="mb-4"><span class="label">บัญชียา</span><span class="value font-bold text-xl ${accountColorClass}">${drug.account || '-'}</span></div>
-                                   
-                                    <div class="mt-4">
-                                        <span class="label">ข้อบ่งชี้ที่ได้รับการขึ้นทะเบียน</span>
-                                        <ul class="value list-disc list-inside mt-1" style="font-size: 1.125rem;">
-                                            ${renderList(drug.indications)}
-                                        </ul>
-                                    </div>
+                                    <div class="mt-4"><span class="label">ข้อบ่งชี้</span><ul class="value list-disc list-inside mt-1" style="font-size: 1.125rem;">${renderList(drug.indications)}</ul></div>
                                 </div>
                             </div>
                         </div>
-                        <div class="p-4 pt-0">
-                            <span class="label">รูปภาพผลิตภัณฑ์</span>
-                            <div class="mt-2">${imagesHtml}</div>
-                        </div>
+                        <div class="p-4 pt-0"><span class="label">รูปภาพผลิตภัณฑ์</span><div class="mt-2">${imagesHtml}</div></div>
                     </div>
                     ${specialNoteHtml}
-                    <div class="info-card">
-                        <div class="info-header bg-green-700"><i class="fa-solid fa-user-doctor"></i><span>เหตุผลของแพทย์ผู้เสนอ</span></div>
-                        <div class="p-4"><ul class="list-disc list-inside text-xl font-bold">${renderList(drug.physicianReason)}</ul></div>
-                    </div>
-                    <div class="info-card">
-                        <div class="info-header bg-[#5a189a]"><i class="fa-solid fa-code-compare"></i><span>ยาใกล้เคียงในบัญชี</span></div>
-                        ${renderCompetitorTable(drug)}
-                    </div>
-                    <div class="info-card">
-                        <div class="info-header bg-gray-600"><i class="fa-solid fa-hospital"></i><span>โรงพยาบาลโรงเรียนแพทย์ที่มียา</span></div>
-                        <div class="p-4"><ul class="list-disc list-inside text-xl font-bold columns-1 md:columns-2">${renderList(drug.hospitals)}</ul></div>
-                    </div>
-                    ${drug.pap && drug.pap !== 'ไม่มี' ? `
-                    <div class="info-card pap-card">
-                        <div class="info-header bg-[#fbaf00] text-gray-800"><i class="fa-solid fa-hand-holding-medical"></i><span>โครงการช่วยเหลือผู้ป่วย (PAP)</span></div>
-                        <div class="p-4"><p class="text-xl font-bold">${papFullHtml || '-'}</p></div>
-                    </div>` : ''}
-                    <div class="info-card">
-                        <div class="info-header bg-[#0077b6]"><i class="fa-solid fa-clipboard-check"></i><span>ข้อเสนอฝ่ายเภสัชกรรม</span></div>
-                        <div class="p-4"><p class="text-3xl font-bold">${proposalHtml || '-'}</p></div>
-                    </div>
-                    <div class="info-card">
-                        <div class="info-header bg-[#c9184a]"><i class="fa-solid fa-gavel"></i><span>สถานะการพิจารณา</span></div>
-                        <div class="p-4">
-                             <select id="pharmacy-decision-${index}" class="w-full mt-2 p-3 border border-gray-300 rounded-lg text-2xl bg-gray-50 focus:ring-blue-500 focus:border-blue-500">
-                                <option value="" disabled ${currentDecision === '' ? 'selected' : ''}>--- กรุณาเลือกสถานะ ---</option>
-                                <option value="approve" ${currentDecision === 'approve' ? 'selected' : ''}>เสนอรับเข้าบัญชี</option>
-                                <option value="approve_nonstock" ${currentDecision === 'approve_nonstock' ? 'selected' : ''}>เสนอรับเข้าบัญชี ไม่สำรองคงคลัง (Non-stock)</option>
-                                <option value="reject" ${currentDecision === 'reject' ? 'selected' : ''}>เสนอไม่รับเข้าบัญชี</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                `;
+                    <div class="info-card"><div class="info-header bg-green-700"><i class="fa-solid fa-user-doctor"></i><span>เหตุผลของแพทย์ผู้เสนอ</span></div><div class="p-4"><ul class="list-disc list-inside text-xl font-bold">${renderList(drug.physicianReason)}</ul></div></div>
+                    <div class="info-card"><div class="info-header bg-[#5a189a]"><i class="fa-solid fa-code-compare"></i><span>ยาใกล้เคียงในบัญชี</span></div>${renderCompetitorTable(drug)}</div>
+                    <div class="info-card"><div class="info-header bg-gray-600"><i class="fa-solid fa-hospital"></i><span>รพ. ที่มียา</span></div><div class="p-4"><ul class="list-disc list-inside text-xl font-bold columns-1 md:columns-2">${renderList(drug.hospitals)}</ul></div></div>
+                    ${drug.pap && drug.pap !== 'ไม่มี' ? `<div class="info-card pap-card"><div class="info-header bg-[#fbaf00] text-gray-800"><i class="fa-solid fa-hand-holding-medical"></i><span>โครงการช่วยเหลือผู้ป่วย (PAP)</span></div><div class="p-4"><p class="text-xl font-bold">${papFullHtml || '-'}</p></div></div>` : ''}
+                    <div class="info-card"><div class="info-header bg-[#0077b6]"><i class="fa-solid fa-clipboard-check"></i><span>ข้อเสนอฝ่ายเภสัชกรรม</span></div><div class="p-4"><p class="text-3xl font-bold">${proposalHtml || '-'}</p></div></div>
+                    <div class="info-card"><div class="info-header bg-[#c9184a]"><i class="fa-solid fa-gavel"></i><span>สถานะการพิจารณา</span></div><div class="p-4"><select id="pharmacy-decision-${index}" class="w-full mt-2 p-3 border border-gray-300 rounded-lg text-2xl bg-gray-50 focus:ring-blue-500 focus:border-blue-500"><option value="" disabled ${currentDecision === '' ? 'selected' : ''}>--- กรุณาเลือกสถานะ ---</option><option value="approve" ${currentDecision === 'approve' ? 'selected' : ''}>เสนอรับเข้าบัญชี</option><option value="approve_nonstock" ${currentDecision === 'approve_nonstock' ? 'selected' : ''}>เสนอรับเข้าบัญชี ไม่สำรองคงคลัง (Non-stock)</option><option value="reject" ${currentDecision === 'reject' ? 'selected' : ''}>เสนอไม่รับเข้าบัญชี</option></select></div></div>
+                </div>`;
                 detailsContainer.style.opacity = '1';
                 stickyHeader.style.opacity = '1';
-
                 const decisionDropdown = document.getElementById(`pharmacy-decision-${index}`);
                 if (decisionDropdown) {
-                    decisionDropdown.onchange = (e) => {
-                        drugDatabase[index].pharmacyDecision = e.target.value;
-                    };
+                    decisionDropdown.onchange = (e) => { drugDatabase[index].pharmacyDecision = e.target.value; };
                 }
             }, 150);
         }
 
         function exportToExcel() {
-            if (drugDatabase.length === 0) {
-                alert('ไม่มีข้อมูลสำหรับ Export');
-                return;
-            }
-
-            const decisionMap = {
-                'approve': 'เสนอรับเข้าบัญชี',
-                'approve_nonstock': 'เสนอรับเข้าบัญชี (Non-stock)',
-                'reject': 'เสนอไม่รับเข้าบัญชี',
-                '': 'ยังไม่พิจารณา'
-            };
-
+            if (drugDatabase.length === 0) { alert('ไม่มีข้อมูลสำหรับ Export'); return; }
+            const decisionMap = { 'approve': 'เสนอรับเข้าบัญชี', 'approve_nonstock': 'เสนอรับเข้าบัญชี (Non-stock)', 'reject': 'เสนอไม่รับเข้าบัญชี', '': 'ยังไม่พิจารณา' };
             const exportData = drugDatabase.map((drug, index) => {
-                 const physicianText = (drug.proposingPhysician || '')
-                    .split('\n')
-                    .map(s => s.trim())
-                    .filter(Boolean)
-                    .join(', ');
-
-                return {
-                    'ลำดับ': index + 1,
-                    'รายการยา': drug.name || '-',
-                    'บริษัทผู้ผลิต': drug.manufacturer || '-',
-                    'แพทย์ผู้เสนอ': physicianText || '-',
-                    'สถานะการพิจารณา': decisionMap[drug.pharmacyDecision || '']
-                };
+                const physicianText = (drug.proposingPhysician || '').split('\n').map(s => s.trim()).filter(Boolean).join(', ');
+                return { 'ลำดับ': index + 1, 'รายการยา': drug.name || '-', 'บริษัทผู้ผลิต': drug.manufacturer || '-', 'แพทย์ผู้เสนอ': physicianText || '-', 'สถานะการพิจารณา': decisionMap[drug.pharmacyDecision || ''] };
             });
-
             const ws = XLSX.utils.json_to_sheet(exportData);
-           
-            ws['!cols'] = [
-                { wch: 5 },   // ลำดับ
-                { wch: 90 },  // รายการยา
-                { wch: 44 },  // บริษัทผู้ผลิต
-                { wch: 55 },  // แพทย์ผู้เสนอ
-                { wch: 35 }   // สถานะการพิจารณา
-            ];
-           
+            ws['!cols'] = [ { wch: 5 }, { wch: 90 }, { wch: 44 }, { wch: 55 }, { wch: 35 } ];
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'สรุปรายการยา');
-
             XLSX.writeFile(wb, 'สรุปรายการยาเสนอเข้าใหม่-มิย68.xlsx');
         }
-
     </script>
-
 </body>
+</html>
 
 </html>
