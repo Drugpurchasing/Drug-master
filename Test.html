@@ -89,6 +89,15 @@
             padding: 0.25rem 0.5rem;
             display: inline-block;
         }
+        
+        .reimburse-advance {
+            color: #1d4ed8; /* Tailwind blue-700 */
+            font-weight: 700;
+            background-color: #dbeafe; /* Tailwind blue-100 */
+            border-radius: 4px;
+            padding: 0.25rem 0.5rem;
+            display: inline-block;
+        }
 
         .pap-card {
             border-top: 4px solid #fbaf00;
@@ -368,8 +377,8 @@
             };
 
             drugDatabase.forEach((drug, index) => {
-                const physicianHtml = (drug.proposingPhysician || '') 
-                    .split('//') 
+                const physicianHtml = (drug.proposingPhysician || '')
+                    .split('\n') // MODIFIED: Use newline instead of //
                     .map(s => s.trim())
                     .filter(Boolean)
                     .join('<br>');
@@ -468,12 +477,12 @@
             }
         }
        
+        // MODIFIED: This function now splits by newline to create list items.
         function renderList(text) {
             if (!text) return '<li>-</li>';
-            return text.split('//').map(s => s.trim()).filter(Boolean).map(s => `<li>${s}</li>`).join('');
+            return text.split('\n').map(s => s.trim()).filter(Boolean).map(s => `<li>${s}</li>`).join('');
         }
        
-        // NEW: Function to render the competitor comparison table
         function renderCompetitorTable(drug) {
             let competitors = [];
             for (let i = 1; i <= 5; i++) {
@@ -501,7 +510,6 @@
                         </thead>
                         <tbody>`;
 
-            // Row for the current drug being proposed
             const currentDrugPrice = drug.cyclePrice || drug.monthlyPrice || drug.salePrice || '-';
             tableHtml += `
                 <tr class="border-b border-slate-200 bg-blue-50">
@@ -533,7 +541,21 @@
             return tableHtml;
         }
 
-        // MODIFIED: Updated to include Special Note and Competitor Table
+        function getReimbursementClass(status) {
+            if (!status) return 'reimburse-no';
+            const s = status.toLowerCase().trim();
+
+            if (s === 'เบิกไม่ได้' || s.includes('co-pay')) {
+                return 'reimburse-no'; // Red
+            } else if (s === 'สำรองจ่าย') {
+                return 'reimburse-advance'; // Blue
+            } else if (s === 'เบิกได้' || s === 'ocpa') {
+                return 'reimburse-yes'; // Green
+            }
+            
+            return 'reimburse-yes'; 
+        }
+
         function displayDrugDetails(index) {
             if (index >= drugDatabase.length) return;
             const drug = drugDatabase[index];
@@ -584,7 +606,6 @@
                         </div>`;
                 }
                 
-                // NEW: Generate HTML for the special note card if data exists
                 let specialNoteHtml = '';
                 if (drug.specialNote && drug.specialNote.trim() !== '') {
                     const noteContent = drug.specialNote.replace(/\n/g, '<br>');
@@ -621,10 +642,10 @@
                                 <div>
                                     <h3 class="font-semibold text-lg mb-2 text-[#001d3d]">สถานะการเบิกจ่าย</h3>
                                     <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-                                        <div class="bg-slate-50 rounded-md p-3 text-center"><span class="label">กรมบัญชีกลาง</span><span class="${drug.govReimburse && drug.govReimburse.toLowerCase() !== 'เบิกไม่ได้' ? 'reimburse-yes' : 'reimburse-no'}">${drug.govReimburse || '-'}</span></div>
-                                        <div class="bg-slate-50 rounded-md p-3 text-center"><span class="label">ประกันสังคม</span><span class="${drug.socialSecurity && drug.socialSecurity.toLowerCase() !== 'เบิกไม่ได้' ? 'reimburse-yes' : 'reimburse-no'}">${drug.socialSecurity || '-'}</span></div>
-                                        <div class="bg-slate-50 rounded-md p-3 text-center"><span class="label">สปสช.</span><span class="${drug.nhso && drug.nhso.toLowerCase() !== 'เบิกไม่ได้' ? 'reimburse-yes' : 'reimburse-no'}">${drug.nhso || '-'}</span></div>
-                                        <div class="bg-slate-50 rounded-md p-3 text-center"><span class="label">ใน/นอก DRG</span><span class="${drug.drg && drug.drg.toLowerCase() !== 'เบิกไม่ได้' ? 'reimburse-yes' : 'reimburse-no'}">${drug.drg || '-'}</span></div>
+                                        <div class="bg-slate-50 rounded-md p-3 text-center"><span class="label">กรมบัญชีกลาง</span><span class="${getReimbursementClass(drug.govReimburse)}">${drug.govReimburse || 'เบิกไม่ได้'}</span></div>
+                                        <div class="bg-slate-50 rounded-md p-3 text-center"><span class="label">ประกันสังคม</span><span class="${getReimbursementClass(drug.socialSecurity)}">${drug.socialSecurity || 'เบิกไม่ได้'}</span></div>
+                                        <div class="bg-slate-50 rounded-md p-3 text-center"><span class="label">สปสช.</span><span class="${getReimbursementClass(drug.nhso)}">${drug.nhso || 'เบิกไม่ได้'}</span></div>
+                                        <div class="bg-slate-50 rounded-md p-3 text-center"><span class="label">ใน/นอก DRG</span><span class="${getReimbursementClass(drug.drg)}">${drug.drg || 'เบิกไม่ได้'}</span></div>
                                     </div>
                                 </div>
                             </div>
@@ -664,7 +685,7 @@
                     </div>
                     <div class="info-card">
                         <div class="info-header bg-gray-600"><i class="fa-solid fa-hospital"></i><span>โรงพยาบาลโรงเรียนแพทย์ที่มียา</span></div>
-                        <div class="p-4"><ul class="list-disc list-inside text-xl font-bold columns-1 md:columns-2">${renderList(Array.isArray(drug.hospitals) ? drug.hospitals.join('//') : drug.hospitals)}</ul></div>
+                        <div class="p-4"><ul class="list-disc list-inside text-xl font-bold columns-1 md:columns-2">${renderList(drug.hospitals)}</ul></div>
                     </div>
                     ${drug.pap && drug.pap !== 'ไม่มี' ? `
                     <div class="info-card pap-card">
@@ -714,8 +735,8 @@
             };
 
             const exportData = drugDatabase.map((drug, index) => {
-                const physicianText = (drug.proposingPhysician || '')
-                    .split('//')
+                 const physicianText = (drug.proposingPhysician || '')
+                    .split('\n') // MODIFIED: Use newline here as well for consistency
                     .map(s => s.trim())
                     .filter(Boolean)
                     .join(', ');
@@ -748,7 +769,5 @@
     </script>
 
 </body>
-
-</html>
 
 </html>
