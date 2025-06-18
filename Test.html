@@ -243,7 +243,7 @@
 
         let drugDatabase = [];
        
-        // MODIFIED: Added sanitization for backticks (`) to prevent JS errors
+        // MODIFIED: Improved parsing for `hospitals` and sanitization for backticks (`)
         function parseCsv(csvText) {
             const lines = csvText.trim().split('\n');
             if (lines.length < 2) return [];
@@ -277,14 +277,19 @@
                 const entry = {};
                 headers.forEach((header, j) => {
                     let value = values[j] || '';
-                    // Sanitize all string values to prevent template literal errors
                     if (typeof value === 'string') {
-                        value = value.replace(/`/g, "'"); // Replace backticks with single quotes
+                        value = value.replace(/`/g, "'");
                     }
                     
                     if (header === 'hospitals') {
-                        // value is a string here, split it into an array
-                        entry[header] = value.split(';').map(h => h.trim()).filter(Boolean);
+                        // Correctly parse newline-separated hospital lists and clean up quotes
+                        entry[header] = value.split('\n').map(h => {
+                            let trimmed = h.trim();
+                            if (trimmed.startsWith('"') && trimmed.endsWith('"')) {
+                                trimmed = trimmed.substring(1, trimmed.length - 1).trim();
+                            }
+                            return trimmed;
+                        }).filter(Boolean);
                     } else {
                         entry[header] = value;
                     }
@@ -484,9 +489,24 @@
             }
         }
        
-        function renderList(text) {
-            if (!text) return '<li>-</li>';
-            return text.split('\n').map(s => s.trim()).filter(Boolean).map(s => `<li>${s}</li>`).join('');
+        // MODIFIED: Now handles both string and array inputs robustly
+        function renderList(data) {
+            if (!data) return '<li>-</li>';
+
+            let items = [];
+            if (Array.isArray(data)) {
+                items = data;
+            } else if (typeof data === 'string') {
+                items = data.split('\n');
+            }
+
+            if (items.length === 0 || (items.length === 1 && items[0].trim() === '')) return '<li>-</li>';
+
+            return items
+                .map(s => String(s).trim())
+                .filter(Boolean)
+                .map(s => `<li>${s}</li>`)
+                .join('');
         }
        
         function renderCompetitorTable(drug) {
@@ -691,7 +711,7 @@
                     </div>
                     <div class="info-card">
                         <div class="info-header bg-gray-600"><i class="fa-solid fa-hospital"></i><span>โรงพยาบาลโรงเรียนแพทย์ที่มียา</span></div>
-                        <div class="p-4"><ul class="list-disc list-inside text-xl font-bold columns-1 md:columns-2">${renderList(Array.isArray(drug.hospitals) ? drug.hospitals.join('\n') : drug.hospitals)}</ul></div>
+                        <div class="p-4"><ul class="list-disc list-inside text-xl font-bold columns-1 md:columns-2">${renderList(drug.hospitals)}</ul></div>
                     </div>
                     ${drug.pap && drug.pap !== 'ไม่มี' ? `
                     <div class="info-card pap-card">
