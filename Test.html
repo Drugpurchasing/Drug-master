@@ -429,7 +429,7 @@
             if (s === 'เบิกไม่ได้' || s === 'OCPA Co-pay') {
                 return `<span class="text-red-600 font-bold">${s}</span>`;
             }
-            if (s === 'OCPA' || s === 'เบิกได้') {
+            if (s === 'OCPA' || s === 'เบิกได้' || === 'เบิกได้ ตามเงื่อนไข' ) {
                 return `<span class="text-green-600 font-bold">${s}</span>`;
             }
             if (s === 'สำรองจ่าย') {
@@ -454,7 +454,7 @@
                 }
             }
 
-            let tableHtml = `<div class="overflow-x-auto p-2"><table class="w-full text-left border-collapse text-xl"><thead><tr class="border-b-2 border-slate-300 bg-slate-100"><th class="p-3 font-semibold text-slate-700 w-2/5">รายการยา</th><th class="p-3 font-semibold text-slate-700">การเบิกจ่าย</th><th class="p-3 font-semibold text-slate-700">ราคาขายต่อรอบการรักษา/ต่อเดือน</th><th class="p-3 font-semibold text-slate-700">อัตราการใช้ยา (เคส)</th></tr></thead><tbody>`;
+            let tableHtml = `<div class="overflow-x-auto p-2"><table class="w-full text-left border-collapse text-xl"><thead><tr class="border-b-2 border-slate-300 bg-slate-100"><th class="p-3 font-semibold text-slate-700 w-2/5">รายการยา</th><th class="p-3 font-semibold text-slate-700">การเบิกจ่าย</th><th class="p-3 font-semibold text-slate-700">ราคาขายต่อรอบการรักษา/ต่อเดือน</th><th class="p-3 font-semibold text-slate-700">จำนวนเคสที่ใช้ยา</th></tr></thead><tbody>`;
             
             // *** START CHANGE: Apply color formatting to proposed drug's reimbursement ***
             const currentDrugReimbursement = formatCompetitorReimbursement(drug.govReimburse);
@@ -527,7 +527,7 @@
                 let specialNoteHtml = '';
                 if (drug.specialNote && drug.specialNote.trim() !== '') {
                     const noteContent = drug.specialNote.replace(/\n/g, '<br>');
-                    specialNoteHtml = `<div class="info-card border-t-4 border-red-500"><div class="info-header bg-red-600"><i class="fa-solid fa-triangle-exclamation"></i><span>โน้ตพิเศษ</span></div><div class="p-4"><p class="text-xl font-bold text-red-700">${noteContent}</p></div></div>`;
+                    specialNoteHtml = `<div class="info-card border-t-4 border-red-500"><div class="info-header bg-red-600"><i class="fa-solid fa-triangle-exclamation"></i><span>ปัญหาที่พบ</span></div><div class="p-4"><p class="text-xl font-bold text-red-700">${noteContent}</p></div></div>`;
                 }
 
                 let papBlockHtml = '';
