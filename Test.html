@@ -233,8 +233,7 @@
         const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTv6yIfVLrXZ76oqef80u3iZbheswq3h-igusVAjNryZYucvVhnXc35I2HDNvEZr-4FYf4rwIu9EHn-/pub?gid=463569560&single=true&output=csv';
 
         let drugDatabase = [];
-        
-        // MODIFIED: Replaced with the new parseCsv function
+       
         function parseCsv(csvText) {
             const lines = csvText.trim().split('\n');
             if (lines.length < 2) return [];
@@ -309,7 +308,7 @@
             drugDatabase.forEach((drug, index) => {
                 const navItem = document.createElement('a');
                 navItem.href = '#';
-                
+               
                 navItem.className = 'block p-3 rounded-md nav-item hover:bg-[#003566] hover:text-white break-words opacity-100 sidebar-text transition-opacity duration-200 text-sm';
 
                 navItem.textContent = drug.name;
@@ -323,11 +322,11 @@
                 navContainer.appendChild(navItem);
             });
         }
-        
+       
         document.addEventListener('DOMContentLoaded', () => {
             const sidebar = document.getElementById('sidebar');
             const toggleButton = document.getElementById('sidebar-toggle');
-            
+           
             toggleButton.addEventListener('click', () => {
                 sidebar.classList.toggle('w-20');
                 sidebar.classList.toggle('w-72');
@@ -341,10 +340,10 @@
             loadAndInitializeApp();
             document.getElementById('details-view-btn').onclick = () => switchView('details');
             document.getElementById('table-view-btn').onclick = () => switchView('table');
-            
+           
             document.getElementById('export-excel-btn').addEventListener('click', exportToExcel);
         });
-        
+       
         function renderSummaryTable() {
             const tableBody = document.querySelector('#summary-table tbody');
             tableBody.innerHTML = '';
@@ -374,7 +373,7 @@
                     .map(s => s.trim())
                     .filter(Boolean)
                     .join('<br>');
-                
+               
                 const decisionKey = drug.pharmacyDecision || '';
                 const decisionText = decisionMap[decisionKey];
                 const decisionClass = decisionClassMap[decisionKey];
@@ -391,7 +390,7 @@
                 tableBody.innerHTML += row;
             });
         }
-        
+       
         function renderDecisionSummary() {
             const summaryContainer = document.getElementById('decision-summary-container');
             if (!summaryContainer) return;
@@ -468,13 +467,73 @@
                 renderSummaryTable();
             }
         }
-        
+       
         function renderList(text) {
             if (!text) return '<li>-</li>';
             return text.split('//').map(s => s.trim()).filter(Boolean).map(s => `<li>${s}</li>`).join('');
         }
-        
-        // MODIFIED: Replaced with the new displayDrugDetails function
+       
+        // NEW: Function to render the competitor comparison table
+        function renderCompetitorTable(drug) {
+            let competitors = [];
+            for (let i = 1; i <= 5; i++) {
+                const name = drug[`competitor${i}_name`];
+                if (name && name.trim() !== '') {
+                    competitors.push({
+                        name: name,
+                        reimbursement: drug[`competitor${i}_reimbursement`] || '-',
+                        price: drug[`competitor${i}_price`] || '-',
+                        usage: drug[`competitor${i}_usage`] || '-',
+                    });
+                }
+            }
+
+            let tableHtml = `
+                <div class="overflow-x-auto p-2">
+                    <table class="w-full text-left border-collapse text-xl">
+                        <thead>
+                            <tr class="border-b-2 border-slate-300 bg-slate-100">
+                                <th class="p-3 font-semibold text-slate-700 w-2/5">รายการยา</th>
+                                <th class="p-3 font-semibold text-slate-700">การเบิกจ่าย กรมบัญชีกลาง</th>
+                                <th class="p-3 font-semibold text-slate-700">ราคาขายต่อรอบการรักษา/ราคาขาย (เดือน)</th>
+                                <th class="p-3 font-semibold text-slate-700">อัตราการใช้ยา (ถ้ามี)</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+
+            // Row for the current drug being proposed
+            const currentDrugPrice = drug.cyclePrice || drug.monthlyPrice || drug.salePrice || '-';
+            tableHtml += `
+                <tr class="border-b border-slate-200 bg-blue-50">
+                    <td class="p-3 font-bold text-blue-800">${drug.name || '-'} <span class="font-normal text-sm">(ยาเสนอใหม่)</span></td>
+                    <td class="p-3">${drug.govReimburse || '-'}</td>
+                    <td class="p-3 font-bold">${currentDrugPrice}</td>
+                    <td class="p-3">-</td>
+                </tr>`;
+
+            if (competitors.length > 0) {
+                competitors.forEach(comp => {
+                    tableHtml += `
+                        <tr class="border-b border-slate-200 hover:bg-slate-50">
+                            <td class="p-3">${comp.name}</td>
+                            <td class="p-3">${comp.reimbursement}</td>
+                            <td class="p-3">${comp.price}</td>
+                            <td class="p-3">${comp.usage}</td>
+                        </tr>`;
+                });
+            } else {
+                 if(drug.competitor && drug.competitor.trim() !== '' && drug.competitor.trim().toLowerCase() !== 'ไม่มี') {
+                    tableHtml += `<tr><td colspan="4" class="p-4 text-slate-500 italic">ข้อมูลยาเปรียบเทียบ (เดิม): ${drug.competitor}</td></tr>`
+                } else {
+                    tableHtml += `<tr><td colspan="4" class="p-4 text-center text-slate-500">ไม่มียาใกล้เคียงในบัญชีโรงพยาบาล</td></tr>`
+                }
+            }
+
+            tableHtml += `</tbody></table></div>`;
+            return tableHtml;
+        }
+
+        // MODIFIED: Updated to include Special Note and Competitor Table
         function displayDrugDetails(index) {
             if (index >= drugDatabase.length) return;
             const drug = drugDatabase[index];
@@ -506,9 +565,9 @@
 
                 const papFullHtml = (drug.papFull || '').replace(/\n/g, '<br>');
                 const proposalHtml = (drug.proposal || '').replace(/\n/g, '<br>');
-                
+               
                 const currentDecision = drug.pharmacyDecision || '';
-                
+               
                 let extraPricesHtml = '';
                 if (drug.cyclePrice) {
                     extraPricesHtml += `
@@ -519,9 +578,25 @@
                 }
                 if (drug.monthlyPrice) {
                     extraPricesHtml += `
-                         <div class="bg-sky-50 rounded-md p-3">
+                          <div class="bg-sky-50 rounded-md p-3">
                             <span class="label">ราคาขาย (เดือน)</span>
                             <span class="value text-lg font-bold text-sky-600">${drug.monthlyPrice}</span>
+                        </div>`;
+                }
+                
+                // NEW: Generate HTML for the special note card if data exists
+                let specialNoteHtml = '';
+                if (drug.specialNote && drug.specialNote.trim() !== '') {
+                    const noteContent = drug.specialNote.replace(/\n/g, '<br>');
+                    specialNoteHtml = `
+                        <div class="info-card border-t-4 border-red-500">
+                            <div class="info-header bg-red-600">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                                <span>โน้ตพิเศษ</span>
+                            </div>
+                            <div class="p-4">
+                                <p class="text-xl font-bold text-red-700">${noteContent}</p>
+                            </div>
                         </div>`;
                 }
 
@@ -563,7 +638,7 @@
                                         </ul>
                                     </div>
                                     <div class="mb-4"><span class="label">บัญชียา</span><span class="value font-bold text-xl ${accountColorClass}">${drug.account || '-'}</span></div>
-                                    
+                                   
                                     <div class="mt-4">
                                         <span class="label">ข้อบ่งชี้ที่ได้รับการขึ้นทะเบียน</span>
                                         <ul class="value list-disc list-inside mt-1" style="font-size: 1.125rem;">
@@ -578,13 +653,14 @@
                             <div class="mt-2">${imagesHtml}</div>
                         </div>
                     </div>
+                    ${specialNoteHtml}
                     <div class="info-card">
                         <div class="info-header bg-green-700"><i class="fa-solid fa-user-doctor"></i><span>เหตุผลของแพทย์ผู้เสนอ</span></div>
                         <div class="p-4"><ul class="list-disc list-inside text-xl font-bold">${renderList(drug.physicianReason)}</ul></div>
                     </div>
                     <div class="info-card">
                         <div class="info-header bg-[#5a189a]"><i class="fa-solid fa-code-compare"></i><span>ยาใกล้เคียงในบัญชี</span></div>
-                        <div class="p-4"><ul class="list-disc list-inside text-xl font-bold">${renderList(drug.competitor)}</ul></div>
+                        ${renderCompetitorTable(drug)}
                     </div>
                     <div class="info-card">
                         <div class="info-header bg-gray-600"><i class="fa-solid fa-hospital"></i><span>โรงพยาบาลโรงเรียนแพทย์ที่มียา</span></div>
@@ -654,7 +730,7 @@
             });
 
             const ws = XLSX.utils.json_to_sheet(exportData);
-            
+           
             ws['!cols'] = [
                 { wch: 5 },   // ลำดับ
                 { wch: 90 },  // รายการยา
@@ -662,7 +738,7 @@
                 { wch: 55 },  // แพทย์ผู้เสนอ
                 { wch: 35 }   // สถานะการพิจารณา
             ];
-            
+           
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'สรุปรายการยา');
 
