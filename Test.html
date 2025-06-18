@@ -444,7 +444,7 @@
                 }
             }
 
-            let tableHtml = `<div class="overflow-x-auto p-2"><table class="w-full text-left border-collapse text-xl"><thead><tr class="border-b-2 border-slate-300 bg-slate-100"><th class="p-3 font-semibold text-slate-700 w-2/5">รายการยา</th><th class="p-3 font-semibold text-slate-700">การเบิกจ่าย กรมบัญชีกลาง</th><th class="p-3 font-semibold text-slate-700">ราคาขายต่อรอบการรักษา/ราคาขาย (เดือน)</th><th class="p-3 font-semibold text-slate-700">อัตราการใช้ยา (ถ้ามี)</th></tr></thead><tbody>`;
+            let tableHtml = `<div class="overflow-x-auto p-2"><table class="w-full text-left border-collapse text-xl"><thead><tr class="border-b-2 border-slate-300 bg-slate-100"><th class="p-3 font-semibold text-slate-700 w-2/5">รายการยา</th><th class="p-3 font-semibold text-slate-700">การเบิกจ่าย กรมบัญชีกลาง</th><th class="p-3 font-semibold text-slate-700">ราคาขายต่อรอบการรักษา/ต่อเดือน</th><th class="p-3 font-semibold text-slate-700">อัตราการใช้ยา (ถ้ามี)</th></tr></thead><tbody>`;
             const currentDrugPrice = drug.cyclePrice || drug.monthlyPrice || drug.salePrice || '-';
             tableHtml += `<tr class="border-b border-slate-200 bg-blue-50"><td class="p-3 font-bold text-blue-800">${drug.name || '-'} <span class="font-normal text-sm">(ยาเสนอใหม่)</span></td><td class="p-3">${drug.govReimburse || '-'}</td><td class="p-3 font-bold">${currentDrugPrice}</td><td class="p-3">-</td></tr>`;
 
@@ -530,7 +530,7 @@
                                 </div>
                                 ${extraPricesHtml ? `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${extraPricesHtml}</div>` : ''}
                                 <div>
-                                    <h3 class="font-semibold text-lg mb-2 text-[#001d3d]">สถานะการเบิกจ่าย</h3>
+                                    <h3 class="font-semibold text-lg mb-2 text-[#001d3d]">การเบิกจ่าย</h3>
                                     <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
                                         <div class="bg-slate-50 rounded-md p-3 text-center"><span class="label">กรมบัญชีกลาง</span><span class="${getReimbursementClass(drug.govReimburse)}">${drug.govReimburse || '-'}</span></div>
                                         <div class="bg-slate-50 rounded-md p-3 text-center"><span class="label">ประกันสังคม</span><span class="${getReimbursementClass(drug.socialSecurity)}">${drug.socialSecurity || '-'}</span></div>
