@@ -419,6 +419,27 @@
             return items.map(s => `<li>${s}</li>`).join('');
         }
         
+        // *** START CHANGE: New function to format reimbursement text color ***
+        function formatCompetitorReimbursement(status) {
+            if (!status || typeof status !== 'string' || status.trim() === '') {
+                return '-';
+            }
+            const s = status.trim();
+
+            if (s === 'เบิกไม่ได้' || s === 'OCPA Co-pay') {
+                return `<span class="text-red-600 font-bold">${s}</span>`;
+            }
+            if (s === 'OCPA' || s === 'เบิกได้') {
+                return `<span class="text-green-600 font-bold">${s}</span>`;
+            }
+            if (s === 'สำรองจ่าย') {
+                return `<span class="text-blue-600 font-bold">${s}</span>`;
+            }
+            
+            return s; // Return text as-is if no rule matches
+        }
+        // *** END CHANGE ***
+
         function renderCompetitorTable(drug) {
             let competitors = [];
             for (let i = 1; i <= 5; i++) {
@@ -434,12 +455,19 @@
             }
 
             let tableHtml = `<div class="overflow-x-auto p-2"><table class="w-full text-left border-collapse text-xl"><thead><tr class="border-b-2 border-slate-300 bg-slate-100"><th class="p-3 font-semibold text-slate-700 w-2/5">รายการยา</th><th class="p-3 font-semibold text-slate-700">การเบิกจ่าย</th><th class="p-3 font-semibold text-slate-700">ราคาขายต่อรอบการรักษา/ต่อเดือน</th><th class="p-3 font-semibold text-slate-700">อัตราการใช้ยา (ถ้ามี)</th></tr></thead><tbody>`;
+            
+            // *** START CHANGE: Apply color formatting to proposed drug's reimbursement ***
+            const currentDrugReimbursement = formatCompetitorReimbursement(drug.govReimburse);
             const currentDrugPrice = drug.cyclePrice || drug.monthlyPrice || drug.salePrice || '-';
-            tableHtml += `<tr class="border-b border-slate-200 bg-blue-50"><td class="p-3 font-bold text-blue-800">${drug.name || '-'} <span class="font-normal text-sm">(ยาเสนอใหม่)</span></td><td class="p-3">${drug.govReimburse || '-'}</td><td class="p-3 font-bold">${currentDrugPrice}</td><td class="p-3">-</td></tr>`;
+            tableHtml += `<tr class="border-b border-slate-200 bg-blue-50"><td class="p-3 font-bold text-blue-800">${drug.name || '-'} <span class="font-normal text-sm">(ยาเสนอใหม่)</span></td><td class="p-3">${currentDrugReimbursement}</td><td class="p-3 font-bold">${currentDrugPrice}</td><td class="p-3">-</td></tr>`;
+            // *** END CHANGE ***
 
             if (competitors.length > 0) {
                 competitors.forEach(comp => {
-                    tableHtml += `<tr class="border-b border-slate-200 hover:bg-slate-50"><td class="p-3">${comp.name}</td><td class="p-3">${comp.reimbursement}</td><td class="p-3">${comp.price}</td><td class="p-3">${comp.usage}</td></tr>`;
+                    // *** START CHANGE: Apply color formatting to competitor's reimbursement ***
+                    const formattedReimbursement = formatCompetitorReimbursement(comp.reimbursement);
+                    tableHtml += `<tr class="border-b border-slate-200 hover:bg-slate-50"><td class="p-3">${comp.name}</td><td class="p-3">${formattedReimbursement}</td><td class="p-3">${comp.price}</td><td class="p-3">${comp.usage}</td></tr>`;
+                    // *** END CHANGE ***
                 });
             } else {
                  if(drug.competitor && drug.competitor.trim() !== '' && drug.competitor.trim().toLowerCase() !== 'ไม่มี') {
@@ -502,7 +530,6 @@
                     specialNoteHtml = `<div class="info-card border-t-4 border-red-500"><div class="info-header bg-red-600"><i class="fa-solid fa-triangle-exclamation"></i><span>โน้ตพิเศษ</span></div><div class="p-4"><p class="text-xl font-bold text-red-700">${noteContent}</p></div></div>`;
                 }
 
-                // *** START CHANGE: Create PAP HTML block to be injected inside the card ***
                 let papBlockHtml = '';
                 if (drug.pap && drug.pap.trim().toLowerCase() !== 'ไม่มี') {
                     papBlockHtml = `
@@ -513,7 +540,6 @@
                             <p class="value font-semibold text-lg text-gray-800">${papFullHtml || '-'}</p>
                         </div>`;
                 }
-                // *** END CHANGE ***
 
                 stickyHeader.innerHTML = `<div class="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-md mb-6"><h2 class="text-2xl font-bold text-slate-800">${drug.name || '-'}</h2></div>`;
                 detailsContainer.innerHTML = `
@@ -534,6 +560,7 @@
                                 ${extraPricesHtml ? `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${extraPricesHtml}</div>` : ''}
                                 
                                 ${papBlockHtml}
+
                                 <div>
                                     <h3 class="font-semibold text-lg mb-2 text-[#001d3d]">การเบิกจ่าย</h3>
                                     <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
