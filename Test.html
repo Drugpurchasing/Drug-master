@@ -244,9 +244,6 @@
 
         let drugDatabase = [];
         
-        // REMOVED: Old custom parseCsv function is no longer needed.
-
-        // NEW: Replaced loading logic with PapaParse for reliability
         function loadAndInitializeApp() {
             Papa.parse(GOOGLE_SHEET_CSV_URL, {
                 download: true,
@@ -254,9 +251,7 @@
                 skipEmptyLines: true,
                 trimHeaders: true,
                 complete: function(results) {
-                    // Filter out any rows that might be completely empty
                     drugDatabase = results.data.filter(row => row.name && row.name.trim() !== '');
-
                     renderNav();
                     renderSummaryTable();
                     if (drugDatabase.length > 0) {
@@ -417,16 +412,10 @@
             }
         }
         
-        // This function correctly handles newline-separated strings, which PapaParse provides.
         function renderList(text) {
             if (!text || typeof text !== 'string') return '<li>-</li>';
-            
-            const items = text.split('\n')
-                .map(s => s.trim())
-                .filter(Boolean);
-
+            const items = text.split('\n').map(s => s.trim()).filter(Boolean);
             if (items.length === 0) return '<li>-</li>';
-            
             return items.map(s => `<li>${s}</li>`).join('');
         }
         
@@ -502,6 +491,7 @@
                 const papFullHtml = (drug.papFull || '').replace(/\n/g, '<br>');
                 const proposalHtml = (drug.proposal || '').replace(/\n/g, '<br>');
                 const currentDecision = drug.pharmacyDecision || '';
+                
                 let extraPricesHtml = '';
                 if (drug.cyclePrice) extraPricesHtml += `<div class="bg-purple-50 rounded-md p-3"><span class="label">ราคาขายต่อรอบการรักษา</span><span class="value text-lg font-bold text-purple-600">${drug.cyclePrice}</span></div>`;
                 if (drug.monthlyPrice) extraPricesHtml += `<div class="bg-sky-50 rounded-md p-3"><span class="label">ราคาขาย (เดือน)</span><span class="value text-lg font-bold text-sky-600">${drug.monthlyPrice}</span></div>`;
@@ -512,18 +502,15 @@
                     specialNoteHtml = `<div class="info-card border-t-4 border-red-500"><div class="info-header bg-red-600"><i class="fa-solid fa-triangle-exclamation"></i><span>โน้ตพิเศษ</span></div><div class="p-4"><p class="text-xl font-bold text-red-700">${noteContent}</p></div></div>`;
                 }
 
-                // *** START CHANGE: Create PAP Card HTML variable ***
-                let papCardHtml = '';
+                // *** START CHANGE: Create PAP HTML block to be injected inside the card ***
+                let papBlockHtml = '';
                 if (drug.pap && drug.pap.trim().toLowerCase() !== 'ไม่มี') {
-                    papCardHtml = `
-                        <div class="info-card pap-card">
-                            <div class="info-header bg-[#fbaf00] text-gray-800">
-                                <i class="fa-solid fa-hand-holding-medical"></i>
-                                <span>โครงการช่วยเหลือผู้ป่วย (PAP)</span>
-                            </div>
-                            <div class="p-4">
-                                <p class="text-xl font-bold">${papFullHtml || '-'}</p>
-                            </div>
+                    papBlockHtml = `
+                        <div class="pt-4 mt-4 border-t-2 border-amber-300">
+                            <span class="label flex items-center font-bold text-amber-700">
+                                <i class="fa-solid fa-hand-holding-medical mr-2"></i>โครงการช่วยเหลือผู้ป่วย (PAP)
+                            </span>
+                            <p class="value font-semibold text-lg text-gray-800">${papFullHtml || '-'}</p>
                         </div>`;
                 }
                 // *** END CHANGE ***
@@ -545,6 +532,8 @@
                                     <div class="bg-slate-50 rounded-md p-3"><span class="label">ราคาทุน</span><span class="value text-lg font-bold text-orange-600">${drug.costPrice || '-'} ${drug.baseUnit ? ` / ${drug.baseUnit}` : ''}</span></div>
                                 </div>
                                 ${extraPricesHtml ? `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${extraPricesHtml}</div>` : ''}
+                                
+                                ${papBlockHtml}
                                 <div>
                                     <h3 class="font-semibold text-lg mb-2 text-[#001d3d]">การเบิกจ่าย</h3>
                                     <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -567,12 +556,10 @@
                         <div class="p-4 pt-0"><span class="label">รูปภาพผลิตภัณฑ์</span><div class="mt-2">${imagesHtml}</div></div>
                     </div>
                     
-                    ${papCardHtml}
                     ${specialNoteHtml}
                     <div class="info-card"><div class="info-header bg-green-700"><i class="fa-solid fa-user-doctor"></i><span>เหตุผลของแพทย์ผู้เสนอ</span></div><div class="p-4"><ul class="list-disc list-inside text-xl font-bold">${renderList(drug.physicianReason)}</ul></div></div>
                     <div class="info-card"><div class="info-header bg-[#5a189a]"><i class="fa-solid fa-code-compare"></i><span>ยาใกล้เคียงในบัญชี</span></div>${renderCompetitorTable(drug)}</div>
                     <div class="info-card"><div class="info-header bg-gray-600"><i class="fa-solid fa-hospital"></i><span>รพ.โรงเรียนแพทย์ที่มียาในบัญชี</span></div><div class="p-4"><ul class="list-disc list-inside text-xl font-bold columns-1 md:columns-2">${renderList(drug.hospitals)}</ul></div></div>
-                    
                     <div class="info-card"><div class="info-header bg-[#0077b6]"><i class="fa-solid fa-clipboard-check"></i><span>ข้อเสนอฝ่ายเภสัชกรรม</span></div><div class="p-4"><p class="text-3xl font-bold">${proposalHtml || '-'}</p></div></div>
                     <div class="info-card"><div class="info-header bg-[#c9184a]"><i class="fa-solid fa-gavel"></i><span>สถานะการพิจารณา</span></div><div class="p-4"><select id="pharmacy-decision-${index}" class="w-full mt-2 p-3 border border-gray-300 rounded-lg text-2xl bg-gray-50 focus:ring-blue-500 focus:border-blue-500"><option value="" disabled ${currentDecision === '' ? 'selected' : ''}>--- กรุณาเลือกสถานะ ---</option><option value="approve" ${currentDecision === 'approve' ? 'selected' : ''}>เสนอรับเข้าบัญชี</option><option value="approve_nonstock" ${currentDecision === 'approve_nonstock' ? 'selected' : ''}>เสนอรับเข้าบัญชี ไม่สำรองคงคลัง (Non-stock)</option><option value="reject" ${currentDecision === 'reject' ? 'selected' : ''}>เสนอไม่รับเข้าบัญชี</option></select></div></div>
                 </div>`;
