@@ -33,10 +33,10 @@
         /* --- ED/NED/NON-STOCK TAG COLORS --- */
         .tag-ed { background-color: #D1FAE5; color: #047857; }
         .tag-ned { background-color: #DC2626; color: white; }
-        .tag-nonstock { background-color: #DBEAFE; color: #1E40AF; } /* New class for Non-stock */
+        .tag-nonstock { background-color: #DBEAFE; color: #1E40AF; } 
         .tag-default { background-color: #E5E7EB; color: #374151; }
 
-        .category-tag { padding: 0.25rem 0.75rem; border-radius: 9999px; font-weight: 600; font-size: 0.75rem; /* Standardized size for tags */ }
+        .category-tag { padding: 0.25rem 0.75rem; border-radius: 9999px; font-weight: 600; font-size: 0.75rem; }
         
         #loader { border: 8px solid #f3f3f3; border-top: 8px solid #3498db; border-radius: 50%; width: 60px; height: 60px; animation: spin 2s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -46,12 +46,12 @@
         .filter-btn:not(.active) { background-color: #fff; color: #4A5568; border-color: #E2E8F0; }
 
         /* --- LABEL COLORS --- */
-        .label-indication { color: #2563EB; } /* Blue-600 */
-        .label-dose       { color: #16A34A; } /* Green-600 */
-        .label-unit       { color: #9333EA; } /* Purple-600 */
-        .label-proposer   { color: #64748B; } /* Slate-500 */
-        .label-storage    { color: #0891B2; } /* Cyan-600 */
-        .label-food       { color: #D97706; } /* Amber-600 */
+        .label-indication { color: #2563EB; }
+        .label-dose       { color: #16A34A; }
+        .label-unit       { color: #9333EA; }
+        .label-proposer   { color: #64748B; }
+        .label-storage    { color: #0891B2; }
+        .label-food       { color: #D97706; }
     </style>
 </head>
 <body class="text-gray-800">
@@ -89,7 +89,6 @@ const filterContainer = document.getElementById('filter-container');
 
 let allDrugData = [];
 
-// --- UTILITY & FORMATTING FUNCTIONS ---
 function sanitizeHTML(text) {
     if (!text) return '';
     const temp = document.createElement('div');
@@ -118,15 +117,12 @@ function formatNotesAdvanced(text) {
         }
         return processedLine;
     }).join('<br />');
-
     finalHtml = finalHtml.replace(/เบิกไม่ได้/g, '<strong class="text-red-600 px-2 py-1 bg-red-100 rounded">$&</strong>');
     finalHtml = finalHtml.replace(/Non-stock/g, '<strong class="text-blue-600 px-2 py-1 bg-blue-100 rounded">$&</strong>');
     finalHtml = finalHtml.replace(/เข้าทดแทน/g, '<strong class="text-purple-600 px-2 py-1 bg-purple-100 rounded">$&</strong>');
-    
     return finalHtml;
 }
 
-// --- DATA PROCESSING & RENDERING ---
 async function loadDrugData() {
     try {
         const response = await fetch(googleSheetUrl);
@@ -163,12 +159,10 @@ function renderGroupedCards(drugData) {
         return acc;
     }, {});
     const sortedGroupNames = Object.keys(drugGroups).sort((a, b) => getOrder(drugGroups[a][0]?.groupOrder) - getOrder(drugGroups[b][0]?.groupOrder));
-    
     if (drugData.length === 0) {
         drugListContainer.innerHTML = '<p class="text-center text-gray-500 font-semibold mt-8">ไม่พบข้อมูลที่ตรงกับเงื่อนไข</p>';
         return;
     }
-
     sortedGroupNames.forEach(groupName => {
         const drugsInGroup = drugGroups[groupName].filter(d => drugData.includes(d)).sort((a, b) => getOrder(a.itemOrder) - getOrder(b.itemOrder));
         if (drugsInGroup.length > 0) {
@@ -180,9 +174,7 @@ function renderGroupedCards(drugData) {
 }
 
 function createGroupHeaderHTML(groupName) {
-    return `<div class="mt-10 mb-4">
-                <h2 class="text-3xl font-bold text-gray-900 border-b-2 border-gray-800 pb-2">${sanitizeHTML(groupName)}</h2>
-            </div>`;
+    return `<div class="mt-10 mb-4"><h2 class="text-3xl font-bold text-gray-900 border-b-2 border-gray-800 pb-2">${sanitizeHTML(groupName)}</h2></div>`;
 }
 
 function createDrugCardHTML(drug) {
@@ -196,18 +188,17 @@ function createDrugCardHTML(drug) {
     const storage = formatContent(drug.storage);
     const food = formatContent(drug.food);
     const sanitizedName = sanitizeHTML(drug.name || '');
-    
-    // --- NEW LOGIC for Type Tag ---
+
+    // --- REVISED LOGIC for Type Tag: Prioritize NED check ---
     let drugTypeTagClass = 'tag-default';
     const drugTypeOriginal = drug.type || '';
     const drugTypeUpper = drugTypeOriginal.toUpperCase();
-    if (drugTypeUpper.includes('ED')) {
-        drugTypeTagClass = 'tag-ed';
-    } else if (drugTypeUpper.includes('NED') || drugTypeOriginal.includes('เบิกไม่ได้')) {
+    if (drugTypeUpper.includes('NED') || drugTypeOriginal.includes('เบิกไม่ได้')) {
         drugTypeTagClass = 'tag-ned';
+    } else if (drugTypeUpper.includes('ED')) {
+        drugTypeTagClass = 'tag-ed';
     }
 
-    // --- NEW LOGIC for Non-stock tag ---
     const isNonStock = (drug.name || '').toLowerCase().includes('non-stock');
     const nonStockTag = isNonStock ? `<span class="category-tag tag-nonstock">Non-stock</span>` : '';
 
@@ -243,12 +234,10 @@ function createDrugCardHTML(drug) {
                         ${nonStockTag}
                     </div>
                 </div>
-                
                 <hr class="my-4">
-
                 <div class="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-5 text-lg leading-relaxed">
                     <div class="flex items-start">
-                        <span class="label-indication"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 mt-1" viewBox="0 0 24 24" fill="currentColor"><path d="M13.25,2.008a7.5,7.5,0,0,0-10.5,0,7.49,7.49,0,0,0,0,10.5L12,21.758l9.25-9.25a7.5,7.5,0,0,0-10.5-10.5h0Zm7.75,7.75L12,18.258,3,9.258a5,5,0,0,1,7-7,4.989,4.989,0,0,1,3.5,1.5,4.989,4.989,0,0,1,3.5-1.5,5,5,0,0,1,3.5,8.5Z"/></svg></span>
+                        <span class="label-indication"><svg class="h-6 w-6 mr-3 flex-shrink-0 mt-1" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M18.889 3.323c-1.23-1.063-2.862-1.548-4.5-1.48-2.07.085-3.94.94-5.312 2.313-1.373 1.373-2.228 3.243-2.313 5.313-.068 1.638.417 3.27 1.48 4.5l8.322 8.323a.75.75 0 001.06 0l8.323-8.323c1.063-1.23 1.548-2.862 1.48-4.5-.085-2.07-.94-3.94-2.313-5.313-1.344-1.344-3.19-2.204-5.227-2.312z"/></svg></span>
                         <div><strong class="font-semibold label-indication">ข้อบ่งใช้:</strong><div class="mt-1 text-black">${indication}</div></div>
                     </div>
                     <div class="flex items-start">
@@ -280,7 +269,6 @@ function createDrugCardHTML(drug) {
     </div>`;
 }
 
-// --- INTERACTIVITY SETUP ---
 function setupEventListeners() {
     searchInput.addEventListener('input', filterAndRender);
     filterContainer.addEventListener('click', (e) => {
@@ -321,7 +309,6 @@ function filterAndRender() {
     renderGroupedCards(filteredData);
 }
 
-// --- INITIAL LOAD ---
 loadDrugData();
 </script>
 </body>
