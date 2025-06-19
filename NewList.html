@@ -16,13 +16,13 @@
             line-height: 1.7; 
         }
 
-        /* --- CATEGORY BORDER COLORS --- */
-        .card-category { border-left-width: 5px; }
-        .card-category-1 { border-left-color: #FCA5A5; } /* red-300 */
-        .card-category-2 { border-left-color: #C4B5FD; } /* violet-300 */
-        .card-category-3 { border-left-color: #FED7AA; } /* orange-200 */
-        .card-category-4 { border-left-color: #60A5FA; } /* blue-400 */
-        .card-category-misc { border-left-color: #A3A3A3; } /* neutral-400 */
+        /* --- DRUG GROUP BORDER COLORS --- */
+        .card-druggroup { border-left-width: 5px; }
+        .card-druggroup-1 { border-left-color: #FCA5A5; } /* red-300 */
+        .card-druggroup-2 { border-left-color: #C4B5FD; } /* violet-300 */
+        .card-druggroup-3 { border-left-color: #FED7AA; } /* orange-200 */
+        .card-druggroup-4 { border-left-color: #60A5FA; } /* blue-400 */
+        .card-druggroup-misc { border-left-color: #A3A3A3; } /* neutral-400 */
 
         /* --- FILTER BUTTON TAG COLORS --- */
         .tag-filter-1 { background-color: #FECACA; color: #991B1B; }
@@ -89,7 +89,7 @@ function sanitizeHTML(text) {
     return temp.innerHTML;
 }
 
-function safeCode(code) {
+function getDrugGroupCode(code) {
     return ['1', '2', '3', '4'].includes(String(code)) ? String(code) : 'misc';
 }
 
@@ -110,8 +110,12 @@ function formatNotesAdvanced(text) {
         }
         return processedLine;
     });
+    
     let finalHtml = processedLines.join('<br />');
     finalHtml = finalHtml.replace(/เบิกไม่ได้/g, '<strong class="text-red-600 px-2 py-1 bg-red-100 rounded">$&</strong>');
+    finalHtml = finalHtml.replace(/Non-stock/g, '<strong class="text-blue-600 px-2 py-1 bg-blue-100 rounded">$&</strong>');
+    finalHtml = finalHtml.replace(/เข้าทดแทน/g, '<strong class="text-purple-600 px-2 py-1 bg-purple-100 rounded">$&</strong>');
+    
     return finalHtml;
 }
 
@@ -174,21 +178,27 @@ function createGroupHeaderHTML(groupName) {
 
 function createDrugCardHTML(drug) {
     const formatContent = (text) => (sanitizeHTML(text) || '-').replace(/\\n|\n/g, '<br>');
-    const code = safeCode(drug.code);
+    const druggroup = getDrugGroupCode(drug.code);
     const notesInfo = formatNotesAdvanced(drug.notes);
     const indication = formatContent(drug.indication);
     const dose = formatContent(drug.dose);
     const proposerInfo = formatContent(drug.proposer);
     const unitInfo = formatContent(drug.unit);
     const sanitizedName = sanitizeHTML(drug.name || '');
+    
+    // --- RE-ADDED: Storage and Food Interaction data processing ---
+    const storage = formatContent(drug.storage);
+    const food = formatContent(drug.food);
 
-    // --- NEW: Non-stock Bullet Logic ---
-    let nonStockHtml = '';
-    if ((drug.stockStatus || '').trim().toLowerCase() === 'non-stock') {
-        nonStockHtml = `<div class="mb-2"><span class="inline-block bg-yellow-200 text-yellow-800 text-xs font-semibold px-2.5 py-1 rounded-full">• Non-stock</span></div>`;
+    let foodInteractionHtml = '';
+    if (food && food.trim() !== '-') {
+        foodInteractionHtml = `
+        <div class="flex items-start">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-400 flex-shrink-0 mt-1.5" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 14.95a1 1 0 001.414 1.414l.707-.707a1 1 0 00-1.414-1.414l-.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1zM4.343 5.757a1 1 0 001.414-1.414l-.707-.707a1 1 0 10-1.414 1.414l.707.707z" /></svg>
+            <div><strong class="font-semibold text-gray-800">Food interaction:</strong><div class="mt-1">${food}</div></div>
+        </div>`;
     }
 
-    // --- NEW: ED/NED Tag Coloring Logic ---
     let drugTypeTagClass = 'tag-default';
     const drugTypeUpper = (drug.type || '').trim().toUpperCase();
     if (drugTypeUpper === 'ED') {
@@ -203,12 +213,11 @@ function createDrugCardHTML(drug) {
     const imageContainerHtml = `<div class="h-48 w-full bg-gray-200 flex items-center justify-center"><img class="max-h-full max-w-full object-contain" src="${imageUrl || placeholderNotFound}" alt="รูปยา ${sanitizedName}" onerror="${placeholderError}"></div>`;
 
     return `
-    <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col card-category card-category-${code}">
+    <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col card-druggroup card-druggroup-${druggroup}" data-druggroup="${druggroup}">
         ${imageContainerHtml}
         <div class="p-6 flex-grow flex flex-col">
             <div class="flex justify-between items-start mb-2">
                 <div class="flex-grow pr-2">
-                    ${nonStockHtml}
                     <p class="text-sm font-semibold text-gray-500">${formatContent(drug.generic)}</p>
                     <h3 class="text-xl font-bold text-gray-900 mt-1">${formatContent(drug.name)}</h3>
                     <p class="text-sm text-gray-500 font-mono mt-1">SAP Code: ${formatContent(drug.sapCode)}</p>
@@ -219,15 +228,13 @@ function createDrugCardHTML(drug) {
             <div class="mt-4 space-y-4 text-base text-gray-700 leading-relaxed">
                 <div class="flex items-start"><svg class="h-5 w-5 mr-3 text-gray-400 flex-shrink-0 mt-1.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" /></svg><div><strong class="font-semibold text-gray-800">ข้อบ่งใช้:</strong><div class="mt-1">${indication}</div></div></div>
                 <div class="flex items-start"><svg class="h-5 w-5 mr-3 text-gray-400 flex-shrink-0 mt-1.5" viewBox="0 0 20 20" fill="currentColor"><path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" /></svg><div><strong class="font-semibold text-gray-800">ขนาดใช้ยา:</strong><div class="mt-1">${dose}</div></div></div>
+                <div class="flex items-start"><svg class="h-5 w-5 mr-3 text-gray-400 flex-shrink-0 mt-1.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 9a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1zm1 4a1 1 0 100 2h2a1 1 0 100-2H9z" clip-rule="evenodd" /></svg><div><strong class="font-semibold text-gray-800">หน่วยเบิก:</strong><div class="mt-1">${unitInfo}</div></div></div>
+                <div class="flex items-start"><svg class="h-5 w-5 mr-3 text-gray-400 flex-shrink-0 mt-1.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg><div><strong class="font-semibold text-gray-800">แพทย์ผู้เสนอ:</strong><div class="mt-1">${proposerInfo}</div></div></div>
+                
+                <div class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-400 flex-shrink-0 mt-1.5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.993.883L4 8v9a1 1 0 001 1h10a1 1 0 001-1V8l-.007-.117A1 1 0 0015 7h-1V6a2 2 0 10-4 0v1h4z" /></svg><div><strong class="font-semibold text-gray-800">การจัดเก็บ:</strong><div class="mt-1">${storage}</div></div></div>
+
+                ${foodInteractionHtml}
             </div>
-            
-            <details class="mt-4 text-base">
-                <summary class="font-semibold text-blue-600 cursor-pointer hover:underline focus:outline-none">ดูข้อมูลเพิ่มเติม...</summary>
-                <div class="mt-3 pt-4 border-t border-gray-200 space-y-4 text-gray-700 leading-relaxed">
-                    <div class="flex items-start"><svg class="h-5 w-5 mr-3 text-gray-400 flex-shrink-0 mt-1.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 9a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1zm1 4a1 1 0 100 2h2a1 1 0 100-2H9z" clip-rule="evenodd" /></svg><div><strong class="font-semibold text-gray-800">หน่วยเบิก:</strong><div class="mt-1">${unitInfo}</div></div></div>
-                    <div class="flex items-start"><svg class="h-5 w-5 mr-3 text-gray-400 flex-shrink-0 mt-1.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg><div><strong class="font-semibold text-gray-800">แพทย์ผู้เสนอ:</strong><div class="mt-1">${proposerInfo}</div></div></div>
-                </div>
-            </details>
         </div>
         
         <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 mt-auto">
@@ -250,11 +257,10 @@ function setupEventListeners() {
 
 function setupFilters() {
     const categories = allDrugData.reduce((acc, drug) => {
-        const code = safeCode(drug.code);
-        // NEW: Use "ยา กลุ่ม" as filter button text
-        const name = drug.categoryName || `ยา กลุ่ม ${code}`;
-        if (!acc[code]) {
-            acc[code] = { name: name.trim(), code: code };
+        const druggroup = getDrugGroupCode(drug.code);
+        const name = drug.druggroupName || `ยา กลุ่ม ${druggroup}`;
+        if (!acc[druggroup]) {
+            acc[druggroup] = { name: name.trim(), code: druggroup };
         }
         return acc;
     }, {});
@@ -272,7 +278,7 @@ function filterAndRender() {
     const filteredData = allDrugData.filter(drug => {
         const searchableContent = (drug.name + ' ' + drug.generic + ' ' + drug.sapCode).toLowerCase();
         const matchesSearch = searchTerm === '' || searchableContent.includes(searchTerm);
-        const matchesFilter = activeFilter === 'all' || safeCode(drug.code) === activeFilter;
+        const matchesFilter = activeFilter === 'all' || getDrugGroupCode(drug.code) === activeFilter;
         return matchesSearch && matchesFilter;
     });
     renderGroupedCards(filteredData);
