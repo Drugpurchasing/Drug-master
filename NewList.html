@@ -23,13 +23,6 @@
         .card-druggroup-4 { border-left-color: #60A5FA; }
         .card-druggroup-misc { border-left-color: #A3A3A3; }
 
-        /* --- DRUG GROUP HEADER COLORS --- */
-        .group-header-1 { border-color: #FCA5A5; color: #991B1B; }
-        .group-header-2 { border-color: #C4B5FD; color: #581C87; }
-        .group-header-3 { border-color: #FED7AA; color: #9A3412; }
-        .group-header-4 { border-color: #93C5FD; color: #1E3A8A; }
-        .group-header-misc { border-color: #D1D5DB; color: #1F2937; }
-
         /* --- FILTER BUTTON TAG COLORS --- */
         .tag-filter-1 { background-color: #FECACA; color: #991B1B; }
         .tag-filter-2 { background-color: #D8B4FE; color: #581C87; }
@@ -39,7 +32,8 @@
 
         /* --- ED/NED TAG COLORS (TOP-RIGHT) --- */
         .tag-ed { background-color: #D1FAE5; color: #047857; }
-        .tag-ned { background-color: #FEE2E2; color: #B91C1C; }
+        /* NEW: Enhanced NED tag style */
+        .tag-ned { background-color: #DC2626; color: white; } /* Red-600 background, white text */
         .tag-default { background-color: #E5E7EB; color: #374151; }
 
         .category-tag { padding: 0.25rem 0.75rem; border-radius: 9999px; font-weight: 600; }
@@ -51,7 +45,7 @@
         .filter-btn.active { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .filter-btn:not(.active) { background-color: #fff; color: #4A5568; border-color: #E2E8F0; }
 
-        /* --- NEW: LABEL COLORS --- */
+        /* --- LABEL COLORS --- */
         .label-indication { color: #2563EB; } /* Blue-600 */
         .label-dose       { color: #16A34A; } /* Green-600 */
         .label-unit       { color: #9333EA; } /* Purple-600 */
@@ -64,8 +58,8 @@
 <body class="text-gray-800">
 
 <div class="container mx-auto p-4 md:p-8">
-    <header class="text-center mb-8">
-        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 inline-block border-b-4 border-gray-800 pb-3 px-4">ยาเข้าบัญชี รอบ มิย. 2568</h1>
+    <header class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-800">สรุปข้อมูลยาเข้าใหม่</h1>
     </header>
 
     <div id="controls" class="py-4 mb-8">
@@ -179,16 +173,18 @@ function renderGroupedCards(drugData) {
     sortedGroupNames.forEach(groupName => {
         const drugsInGroup = drugGroups[groupName].filter(d => drugData.includes(d)).sort((a, b) => getOrder(a.itemOrder) - getOrder(b.itemOrder));
         if (drugsInGroup.length > 0) {
-            fragment.appendChild(document.createRange().createContextualFragment(createGroupHeaderHTML(groupName, drugsInGroup[0])));
+            fragment.appendChild(document.createRange().createContextualFragment(createGroupHeaderHTML(groupName)));
             drugsInGroup.forEach(drug => fragment.appendChild(document.createRange().createContextualFragment(createDrugCardHTML(drug))));
         }
     });
     drugListContainer.appendChild(fragment);
 }
 
-function createGroupHeaderHTML(groupName, representativeDrug) {
-    const groupCode = getDrugGroupCode(representativeDrug.code);
-    return `<div class="mt-10 mb-4"><h2 class="text-3xl font-bold border-b-4 pb-3 group-header-${groupCode}">${sanitizeHTML(groupName)}</h2></div>`;
+// NEW: Updated group header style to be black and underlined
+function createGroupHeaderHTML(groupName) {
+    return `<div class="mt-10 mb-4">
+                <h2 class="text-3xl font-bold text-gray-900 border-b-2 border-gray-800 pb-2">${"ยาเข้าบัญชี รอบ " + sanitizeHTML(groupName)}</h2>
+            </div>`;
 }
 
 function createDrugCardHTML(drug) {
@@ -249,29 +245,29 @@ function createDrugCardHTML(drug) {
                 <hr class="my-4">
 
                 <div class="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-5 text-lg text-gray-700 leading-relaxed">
-                    <div class="flex items-start">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 mr-3 text-gray-400 flex-shrink-0 mt-1"><path d="M10.21,4.21a5.5,5.5,0,0,0-7.78,0l-1.22,1.22a5.5,5.5,0,0,0,7.78,7.78l1.22-1.22a5.5,5.5,0,0,0,0-7.78ZM5.28,10.59a4,4,0,0,1,0-5.66l.51-.51L11.45,10l-.51.51a4,4,0,0,1-5.66,0Z"/></svg>
-                        <div><strong class="font-semibold label-indication">ข้อบ่งใช้:</strong><div class="mt-1">${indication}</div></div>
+                    <div class="flex items-start label-indication">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 mt-1" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5.002v.01" /><path d="M12 19.002v.01" /><path d="M5 12.002v.01" /><path d="M19 12.002v.01" /><path d="M8.5 8.5v.01" /><path d="M15.5 8.5v.01" /><path d="M8.5 15.5v.01" /><path d="M15.5 15.5v.01" /></svg>
+                        <div><strong class="font-semibold">ข้อบ่งใช้:</strong><div class="mt-1">${indication}</div></div>
                     </div>
-                    <div class="flex items-start">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 mr-3 text-gray-400 flex-shrink-0 mt-1"><path d="M14 2H6a1 1 0 00-1 1v1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1V5a1 1 0 00-1-1h-1V3a1 1 0 00-1-1zM6 4h8v1H6V4zm8 11H6V6h8v9z"/><path d="M8 8h4v1H8zM8 11h4v1H8z"/></svg>
-                        <div><strong class="font-semibold label-dose">ขนาดใช้ยา:</strong><div class="mt-1">${dose}</div></div>
+                    <div class="flex items-start label-dose">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 mt-1" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6.1 15h11.8" /><path d="M14 3v7.345a1 1 0 0 1 -.346 .75l-2.308 2.308a1 1 0 0 0 -.346 .75v5.847" /><path d="M10 3v7.345a1 1 0 0 0 .346 .75l2.308 2.308a1 1 0 0 1 .346 .75v5.847" /><path d="M3 15h1v-1a2 2 0 0 1 4 0v1h12v-1a2 2 0 0 1 4 0v1h1" /></svg>
+                        <div><strong class="font-semibold">ขนาดใช้ยา:</strong><div class="mt-1">${dose}</div></div>
                     </div>
-                    <div class="flex items-start">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 mr-3 text-gray-400 flex-shrink-0 mt-1"><path d="M5.5 3a.5.5 0 000 1h9a.5.5 0 000-1h-9zM3.5 5a.5.5 0 00-.5.5v10a.5.5 0 00.5.5h13a.5.5 0 00.5-.5V5.5a.5.5 0 00-.5-.5h-13zM4 6h12v9H4V6z"/></svg>
-                        <div><strong class="font-semibold label-unit">หน่วยเบิก:</strong><div class="mt-1">${unitInfo}</div></div>
+                    <div class="flex items-start label-unit">
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 mt-1" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 3l8 4.5v9l-8 4.5l-8 -4.5v-9l8 -4.5" /><path d="M12 12l8 -4.5" /><path d="M12 12v9" /><path d="M12 12l-8 -4.5" /><path d="M16 5.25l-8 4.5" /></svg>
+                        <div><strong class="font-semibold">หน่วยเบิก:</strong><div class="mt-1">${unitInfo}</div></div>
                     </div>
-                    <div class="flex items-start">
-                        <svg class="h-5 w-5 mr-3 text-gray-400 flex-shrink-0 mt-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg>
-                        <div><strong class="font-semibold label-proposer">แพทย์ผู้เสนอ:</strong><div class="mt-1">${proposerInfo}</div></div>
+                    <div class="flex items-start label-proposer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 mt-1" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 10m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" /><path d="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855" /></svg>
+                        <div><strong class="font-semibold">แพทย์ผู้เสนอ:</strong><div class="mt-1">${proposerInfo}</div></div>
                     </div>
-                    <div class="flex items-start">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 mr-3 text-gray-400 flex-shrink-0 mt-1"><path fill-rule="evenodd" d="M10 5.5a.5.5 0 01.5.5v2.5h2.5a.5.5 0 010 1h-2.5v2.5a.5.5 0 01-1 0v-2.5H7a.5.5 0 010-1h2.5V6a.5.5 0 01.5-.5zM10 2a8 8 0 100 16 8 8 0 000-16zM3.5 10a6.5 6.5 0 1113 0 6.5 6.5 0 01-13 0z" clip-rule="evenodd"/></svg>
-                        <div><strong class="font-semibold label-storage">การจัดเก็บ:</strong><div class="mt-1">${storage}</div></div>
+                    <div class="flex items-start label-storage">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 mt-1" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 4h4v2.5l-2 2.5l2 2.5v2.5h-4v-2.5l2 -2.5l-2 -2.5z" /><path d="M12 4v-1" /><path d="M12 15v1" /><path d="M16.5 6.5l.5 -.5" /><path d="M16.5 13.5l.5 .5" /><path d="M7.5 6.5l-.5 -.5" /><path d="M7.5 13.5l-.5 .5" /></svg>
+                        <div><strong class="font-semibold">การจัดเก็บ:</strong><div class="mt-1">${storage}</div></div>
                     </div>
-                     ${food && food !== '-' ? `<div class="flex items-start">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 mr-3 text-gray-400 flex-shrink-0 mt-1"><path d="M18.783 11.043A1 1 0 0018 10h-2V7a1 1 0 00-1-1H5a1 1 0 00-1 1v3H2a1 1 0 00-.783 1.628l7 9A1 1 0 009 21h2a1 1 0 00.783-.372l7-9a1 1 0 00-.001-.585zM13 12H7v-2h6v2z"/></svg>
-                        <div><strong class="font-semibold label-food">Food interaction:</strong><div class="mt-1">${food}</div></div>
+                     ${food && food !== '-' ? `<div class="flex items-start label-food">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 mt-1" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 12h18" /><path d="M3 6h18" /><path d="M3 18h18" /></svg>
+                        <div><strong class="font-semibold">Food interaction:</strong><div class="mt-1">${food}</div></div>
                     </div>` : ''}
                 </div>
             </div>
