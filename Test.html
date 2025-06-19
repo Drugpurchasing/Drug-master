@@ -209,7 +209,7 @@
                     <div class="info-header bg-[#03045e] justify-between">
                         <div class="flex items-center">
                            <i class="fa-solid fa-table-list"></i>
-                           <span>ตารางสรุปรายการยาทั้งหมด</span>
+                           <span>ตารางสรุปรายการยาทั้งหมด (ไม่รวมกลุ่ม)</span>
                         </div>
                         <button id="export-excel-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-3 rounded-lg text-base flex items-center transition-colors duration-200">
                             <i class="fa-solid fa-file-excel mr-2"></i>
@@ -243,71 +243,52 @@
         const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTv6yIfVLrXZ76oqef80u3iZbheswq3h-igusVAjNryZYucvVhnXc35I2HDNvEZr-4FYf4rwIu9EHn-/pub?gid=463569560&single=true&output=csv';
 
         let drugDatabase = [];
+        let rawDrugData = [];
 
-        // *** START CHANGE: New function to group drugs by name ***
-        function groupDrugData(rawData) {
+        function groupDrugData(data) {
             const drugGroups = new Map();
 
-            // First, group all drugs by a common base name
-            rawData.forEach(drug => {
+            data.forEach(drug => {
                 if (!drug.name || !drug.name.trim()) return;
-                // Extract base name, e.g., "Semaglutide" from "Semaglutide (Wegovy...)"
-                const baseName = (drug.name.split('(')[0] || '').trim();
-                if (!drugGroups.has(baseName)) {
-                    drugGroups.set(baseName, []);
+                
+                let groupName = drug.name.trim();
+                const match = drug.name.match(/^([^\(]+)\s*\(([^\s\d]+)/);
+                if (match && match[1] && match[2]) {
+                    groupName = `${match[1].trim()} (${match[2].trim()})`;
                 }
-                drugGroups.get(baseName).push(drug);
+
+                if (!drugGroups.has(groupName)) {
+                    drugGroups.set(groupName, []);
+                }
+                drugGroups.get(groupName).push(drug);
             });
 
-            // Now, create the final database structure
             const finalDatabase = [];
-            for (const [baseName, variants] of drugGroups.entries()) {
+            for (const [groupName, variants] of drugGroups.entries()) {
                 const primaryDrug = variants[0];
                 if (variants.length > 1) {
                     finalDatabase.push({
                         isGroup: true,
-                        groupName: baseName, // The common name, e.g., "Semaglutide"
-                        name: primaryDrug.name, // Keep the first full name for reference
-                        variants: variants, // Array of all drug objects in the group
-                        // Copy common properties from the first drug in the group
-                        manufacturer: primaryDrug.manufacturer,
-                        proposingPhysician: primaryDrug.proposingPhysician,
-                        account: primaryDrug.account,
-                        indications: primaryDrug.indications,
-                        physicianReason: primaryDrug.physicianReason,
-                        hospitals: primaryDrug.hospitals,
-                        proposal: primaryDrug.proposal,
+                        groupName: groupName,
+                        variants: variants,
+                        ...Object.fromEntries(
+                           Object.keys(primaryDrug)
+                           .filter(key => !['name', 'strength', 'packSize', 'salePrice', 'costPrice', 'cyclePrice', 'monthlyPrice', 'baseUnit'].includes(key))
+                           .map(key => [key, primaryDrug[key]])
+                        ),
                         pharmacyDecision: primaryDrug.pharmacyDecision,
-                        govReimburse: primaryDrug.govReimburse,
-                        socialSecurity: primaryDrug.socialSecurity,
-                        nhso: primaryDrug.nhso,
-                        drg: primaryDrug.drg,
-                        pap: primaryDrug.pap,
-                        papFull: primaryDrug.papFull,
-                        specialNote: primaryDrug.specialNote,
-                        imageUrl: primaryDrug.imageUrl,
-                        imageUrl2: primaryDrug.imageUrl2,
-                        // Add competitors from the primary drug
-                        ...Object.fromEntries(Array.from({ length: 5 }, (_, i) => [
-                            [`competitor${i+1}_name`, primaryDrug[`competitor${i+1}_name`]],
-                            [`competitor${i+1}_reimbursement`, primaryDrug[`competitor${i+1}_reimbursement`]],
-                            [`competitor${i+1}_price`, primaryDrug[`competitor${i+1}_price`]],
-                            [`competitor${i+1}_usage`, primaryDrug[`competitor${i+1}_usage`]],
-                        ]).flat())
                     });
                 } else {
-                    // It's a single drug, not a group
                     finalDatabase.push({
                         ...primaryDrug,
                         isGroup: false,
                         groupName: primaryDrug.name,
-                        variants: [primaryDrug] // Still put it in a variants array for consistency
+                        variants: [primaryDrug]
                     });
                 }
             }
             return finalDatabase;
         }
-        // *** END CHANGE ***
 
         function loadAndInitializeApp() {
             Papa.parse(GOOGLE_SHEET_CSV_URL, {
@@ -316,10 +297,8 @@
                 skipEmptyLines: true,
                 trimHeaders: true,
                 complete: function(results) {
-                    const rawData = results.data.filter(row => row.name && row.name.trim() !== '');
-                    // *** START CHANGE: Use the grouping function ***
-                    drugDatabase = groupDrugData(rawData);
-                    // *** END CHANGE ***
+                    rawDrugData = results.data.filter(row => row.name && row.name.trim() !== '');
+                    drugDatabase = groupDrugData(rawDrugData);
                     
                     renderNav();
                     renderSummaryTable();
@@ -346,9 +325,7 @@
                 const navItem = document.createElement('a');
                 navItem.href = '#';
                 navItem.className = 'block p-3 rounded-md nav-item hover:bg-[#003566] hover:text-white break-words opacity-100 sidebar-text transition-opacity duration-200 text-sm';
-                // *** START CHANGE: Use groupName for navigation text ***
                 navItem.textContent = drug.groupName || `รายการที่ ${index + 1}`;
-                // *** END CHANGE ***
                 navItem.onclick = (e) => {
                     e.preventDefault();
                     switchView('details');
@@ -383,7 +360,9 @@
             const tableBody = document.querySelector('#summary-table tbody');
             tableBody.innerHTML = '';
 
-            if (drugDatabase.length === 0) {
+            const dataToRender = rawDrugData;
+
+            if (dataToRender.length === 0) {
                 tableBody.innerHTML = '<tr><td colspan="5" class="text-center p-4">ไม่พบข้อมูล</td></tr>';
                 return;
             }
@@ -402,7 +381,7 @@
                 '': 'text-gray-500'
             };
 
-            drugDatabase.forEach((drug, index) => {
+            dataToRender.forEach((drug, index) => {
                 const physicianHtml = (drug.proposingPhysician || '')
                     .split('\n')
                     .map(s => s.trim())
@@ -416,7 +395,7 @@
                 const row = `
                     <tr>
                         <td>${index + 1}</td>
-                        <td>${drug.groupName || '-'}</td>
+                        <td>${drug.name || '-'}</td>
                         <td>${drug.manufacturer || '-'}</td>
                         <td>${physicianHtml || '-'}</td>
                         <td><span class="${decisionClass}">${decisionText}</span></td>
@@ -506,45 +485,75 @@
                 return `<span class="text-blue-600 font-bold">${s}</span>`;
             }
             
-            return s; // Return text as-is if no rule matches
+            return s;
         }
 
-        function renderCompetitorTable(drug) {
-            // Note: `drug` here is the group object. We'll use the primary drug for competitor info.
-            let competitors = [];
-            for (let i = 1; i <= 5; i++) {
-                const name = drug[`competitor${i}_name`];
-                if (name && name.trim() !== '') {
-                    competitors.push({
-                        name: name,
-                        reimbursement: drug[`competitor${i}_reimbursement`] || '-',
-                        price: drug[`competitor${i}_price`] || '-',
-                        usage: drug[`competitor${i}_usage`] || '-',
-                    });
+        // *** START CHANGE: Reworked function to show competitor tables for each variant ***
+        function renderCompetitorTable(drugGroup) {
+            let contentHtml = '';
+            let hasAnyCompetitors = false;
+
+            drugGroup.variants.forEach(variant => {
+                let competitors = [];
+                for (let i = 1; i <= 5; i++) {
+                    const name = variant[`competitor${i}_name`];
+                    if (name && name.trim() !== '') {
+                        hasAnyCompetitors = true;
+                        competitors.push({
+                            name: name,
+                            reimbursement: variant[`competitor${i}_reimbursement`] || '-',
+                            price: variant[`competitor${i}_price`] || '-',
+                            usage: variant[`competitor${i}_usage`] || '-',
+                        });
+                    }
+                }
+
+                if (competitors.length > 0) {
+                    let sectionHtml = '';
+                    
+                    // Add a sub-header for the specific variant only if it's a grouped item
+                    if (drugGroup.isGroup) {
+                       sectionHtml += `<div class="border-t first:border-t-0 border-gray-200"><h4 class="p-3 font-semibold text-xl bg-sky-50 text-sky-800">${variant.name}</h4>`;
+                    }
+
+                    let tableRows = competitors.map(comp => {
+                         const formattedReimbursement = formatCompetitorReimbursement(comp.reimbursement);
+                         return `<tr class="border-b border-slate-200 hover:bg-slate-50"><td class="p-3">${comp.name}</td><td class="p-3">${formattedReimbursement}</td><td class="p-3">${comp.price}</td><td class="p-3">${comp.usage}</td></tr>`;
+                    }).join('');
+
+                    sectionHtml += `<div class="overflow-x-auto p-2">
+                        <table class="w-full text-left border-collapse text-xl">
+                            <thead>
+                                <tr class="border-b-2 border-slate-300 bg-slate-100">
+                                    <th class="p-3 font-semibold text-slate-700 w-2/5">รายการยา</th>
+                                    <th class="p-3 font-semibold text-slate-700">การเบิกจ่าย</th>
+                                    <th class="p-3 font-semibold text-slate-700">ราคาขายต่อรอบการรักษา/ต่อเดือน</th>
+                                    <th class="p-3 font-semibold text-slate-700">จำนวนเคสที่ใช้ยา</th>
+                                </tr>
+                            </thead>
+                            <tbody>${tableRows}</tbody>
+                        </table>
+                    </div>`;
+
+                    if (drugGroup.isGroup) {
+                        sectionHtml += `</div>`;
+                    }
+                    contentHtml += sectionHtml;
+                }
+            });
+
+            if (!hasAnyCompetitors) {
+                const primaryDrug = drugGroup.variants[0];
+                if(primaryDrug.competitor && primaryDrug.competitor.trim() !== '' && primaryDrug.competitor.trim().toLowerCase() !== 'ไม่มี') {
+                    return `<div class="p-4 text-slate-500 italic">ข้อมูลยาเปรียบเทียบ (เดิม): ${primaryDrug.competitor}</div>`;
+                } else {
+                    return `<div class="p-4 text-center text-slate-500">ไม่มียาใกล้เคียงในบัญชีโรงพยาบาล</div>`;
                 }
             }
 
-            let tableHtml = `<div class="overflow-x-auto p-2"><table class="w-full text-left border-collapse text-xl"><thead><tr class="border-b-2 border-slate-300 bg-slate-100"><th class="p-3 font-semibold text-slate-700 w-2/5">รายการยา</th><th class="p-3 font-semibold text-slate-700">การเบิกจ่าย</th><th class="p-3 font-semibold text-slate-700">ราคาขายต่อรอบการรักษา/ต่อเดือน</th><th class="p-3 font-semibold text-slate-700">จำนวนเคสที่ใช้ยา</th></tr></thead><tbody>`;
-            
-            // For the proposed drug, we show the group name and N/A for price since it's detailed elsewhere.
-            const currentDrugReimbursement = formatCompetitorReimbursement(drug.govReimburse);
-            tableHtml += `<tr class="border-b border-slate-200 bg-blue-50"><td class="p-3 font-bold text-blue-800">${drug.groupName || '-'} <span class="font-normal text-sm">(ยาเสนอใหม่)</span></td><td class="p-3">${currentDrugReimbursement}</td><td class="p-3 font-bold">ดูในตารางราคา</td><td class="p-3">-</td></tr>`;
-
-            if (competitors.length > 0) {
-                competitors.forEach(comp => {
-                    const formattedReimbursement = formatCompetitorReimbursement(comp.reimbursement);
-                    tableHtml += `<tr class="border-b border-slate-200 hover:bg-slate-50"><td class="p-3">${comp.name}</td><td class="p-3">${formattedReimbursement}</td><td class="p-3">${comp.price}</td><td class="p-3">${comp.usage}</td></tr>`;
-                });
-            } else {
-                 if(drug.competitor && drug.competitor.trim() !== '' && drug.competitor.trim().toLowerCase() !== 'ไม่มี') {
-                     tableHtml += `<tr><td colspan="4" class="p-4 text-slate-500 italic">ข้อมูลยาเปรียบเทียบ (เดิม): ${drug.competitor}</td></tr>`
-                 } else {
-                     tableHtml += `<tr><td colspan="4" class="p-4 text-center text-slate-500">ไม่มียาใกล้เคียงในบัญชีโรงพยาบาล</td></tr>`
-                 }
-            }
-            tableHtml += `</tbody></table></div>`;
-            return tableHtml;
+            return contentHtml;
         }
+        // *** END CHANGE ***
 
         function getReimbursementClass(status) {
             if (!status) return 'reimburse-no';
@@ -555,11 +564,9 @@
             return 'reimburse-yes'; 
         }
 
-        // *** START CHANGE: New function to render the price table for grouped drugs ***
         function renderPriceStrengthTable(variants) {
             if (!variants || variants.length === 0) return '';
             
-            // If only one variant, show the simple price format
             if (variants.length === 1) {
                 const drug = variants[0];
                  let extraPricesHtml = '';
@@ -575,7 +582,6 @@
                 `;
             }
 
-            // If multiple variants, build a detailed table
             let tableRows = variants.map(v => `
                 <tr class="border-b border-slate-200">
                     <td class="p-2">
@@ -607,14 +613,11 @@
                 </div>
             `;
         }
-        // *** END CHANGE ***
 
         function displayDrugDetails(index) {
             if (index >= drugDatabase.length) return;
-            // *** START CHANGE: Work with the drug group object ***
             const drugGroup = drugDatabase[index];
-            const primaryDrug = drugGroup.variants[0]; // Use first variant for common data
-            // *** END CHANGE ***
+            const primaryDrug = drugGroup.variants[0];
             
             const detailsContainer = document.getElementById('drug-details');
             const stickyHeader = document.getElementById('sticky-drug-header');
@@ -644,10 +647,7 @@
                 const papFullHtml = (primaryDrug.papFull || '').replace(/\n/g, '<br>');
                 const proposalHtml = (primaryDrug.proposal || '').replace(/\n/g, '<br>');
                 const currentDecision = drugGroup.pharmacyDecision || '';
-                
-                // *** START CHANGE: Use the new price rendering function ***
                 const priceBlockHtml = renderPriceStrengthTable(drugGroup.variants);
-                // *** END CHANGE ***
                 
                 let specialNoteHtml = '';
                 if (primaryDrug.specialNote && primaryDrug.specialNote.trim() !== '') {
@@ -665,6 +665,16 @@
                             <p class="value font-semibold text-lg text-gray-800">${papFullHtml || '-'}</p>
                         </div>`;
                 }
+                
+                // *** START CHANGE: Call the new competitor table rendering function ***
+                const competitorBlockHtml = `<div class="info-card">
+                    <div class="info-header bg-[#5a189a]">
+                        <i class="fa-solid fa-code-compare"></i>
+                        <span>ยาใกล้เคียงในบัญชี</span>
+                    </div>
+                    ${renderCompetitorTable(drugGroup)}
+                </div>`;
+                // *** END CHANGE ***
 
                 stickyHeader.innerHTML = `<div class="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-md mb-6"><h2 class="text-2xl font-bold text-slate-800">${drugGroup.groupName || '-'}</h2></div>`;
                 detailsContainer.innerHTML = `
@@ -675,7 +685,6 @@
                             <div class="md:col-span-7 space-y-4">
                                 ${priceBlockHtml}
                                 ${papBlockHtml}
-
                                 <div>
                                     <h3 class="font-semibold text-lg mb-2 text-[#001d3d]">การเบิกจ่าย</h3>
                                     <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -700,7 +709,7 @@
                     
                     ${specialNoteHtml}
                     <div class="info-card"><div class="info-header bg-green-700"><i class="fa-solid fa-user-doctor"></i><span>เหตุผลของแพทย์ผู้เสนอ</span></div><div class="p-4"><ul class="list-disc list-inside text-xl font-bold">${renderList(primaryDrug.physicianReason)}</ul></div></div>
-                    <div class="info-card"><div class="info-header bg-[#5a189a]"><i class="fa-solid fa-code-compare"></i><span>ยาใกล้เคียงในบัญชี</span></div>${renderCompetitorTable(drugGroup)}</div>
+                    ${competitorBlockHtml}
                     <div class="info-card"><div class="info-header bg-gray-600"><i class="fa-solid fa-hospital"></i><span>รพ.โรงเรียนแพทย์ที่มียาในบัญชี</span></div><div class="p-4"><ul class="list-disc list-inside text-xl font-bold columns-1 md:columns-2">${renderList(primaryDrug.hospitals)}</ul></div></div>
                     <div class="info-card"><div class="info-header bg-[#0077b6]"><i class="fa-solid fa-clipboard-check"></i><span>ข้อเสนอฝ่ายเภสัชกรรม</span></div><div class="p-4"><p class="text-3xl font-bold">${proposalHtml || '-'}</p></div></div>
                     <div class="info-card"><div class="info-header bg-[#c9184a]"><i class="fa-solid fa-gavel"></i><span>สถานะการพิจารณา</span></div><div class="p-4"><select id="pharmacy-decision-${index}" class="w-full mt-2 p-3 border border-gray-300 rounded-lg text-2xl bg-gray-50 focus:ring-blue-500 focus:border-blue-500"><option value="" disabled ${currentDecision === '' ? 'selected' : ''}>--- กรุณาเลือกสถานะ ---</option><option value="approve" ${currentDecision === 'approve' ? 'selected' : ''}>เสนอรับเข้าบัญชี</option><option value="approve_nonstock" ${currentDecision === 'approve_nonstock' ? 'selected' : ''}>เสนอรับเข้าบัญชี ไม่สำรองคงคลัง (Non-stock)</option><option value="reject" ${currentDecision === 'reject' ? 'selected' : ''}>เสนอไม่รับเข้าบัญชี</option></select></div></div>
@@ -711,10 +720,13 @@
                 const decisionDropdown = document.getElementById(`pharmacy-decision-${index}`);
                 if (decisionDropdown) {
                     decisionDropdown.onchange = (e) => { 
-                        // When a decision is made for a group, apply it to all variants
-                        drugDatabase[index].pharmacyDecision = e.target.value;
-                        drugDatabase[index].variants.forEach(v => {
-                            v.pharmacyDecision = e.target.value;
+                        const newDecision = e.target.value;
+                        drugDatabase[index].pharmacyDecision = newDecision;
+                        const variantNames = drugDatabase[index].variants.map(v => v.name);
+                        rawDrugData.forEach(drug => {
+                            if (variantNames.includes(drug.name)) {
+                                drug.pharmacyDecision = newDecision;
+                            }
                         });
                     };
                 }
@@ -722,18 +734,10 @@
         }
 
         function exportToExcel() {
-            if (drugDatabase.length === 0) { alert('ไม่มีข้อมูลสำหรับ Export'); return; }
+            if (rawDrugData.length === 0) { alert('ไม่มีข้อมูลสำหรับ Export'); return; }
             const decisionMap = { 'approve': 'เสนอรับเข้าบัญชี', 'approve_nonstock': 'เสนอรับเข้าบัญชี (Non-stock)', 'reject': 'เสนอไม่รับเข้าบัญชี', '': 'ยังไม่พิจารณา' };
             
-            // Flatten the database for export to show all individual items
-            const flattenedData = [];
-            drugDatabase.forEach(group => {
-                group.variants.forEach(variant => {
-                    flattenedData.push(variant);
-                });
-            });
-
-            const exportData = flattenedData.map((drug, index) => {
+            const exportData = rawDrugData.map((drug, index) => {
                 const physicianText = (drug.proposingPhysician || '').split('\n').map(s => s.trim()).filter(Boolean).join(', ');
                 return { 
                     'ลำดับ': index + 1, 
@@ -743,6 +747,7 @@
                     'สถานะการพิจารณา': decisionMap[drug.pharmacyDecision || ''] 
                 };
             });
+
             const ws = XLSX.utils.json_to_sheet(exportData);
             ws['!cols'] = [ { wch: 5 }, { wch: 90 }, { wch: 44 }, { wch: 55 }, { wch: 35 } ];
             const wb = XLSX.utils.book_new();
