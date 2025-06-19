@@ -488,17 +488,29 @@
             return s;
         }
 
-        // *** START CHANGE: Reworked function to show competitor tables for each variant ***
+        // *** START CHANGE: Reworked function to re-add the proposed drug to the table ***
         function renderCompetitorTable(drugGroup) {
             let contentHtml = '';
-            let hasAnyCompetitors = false;
+            let hasAnyData = false;
 
             drugGroup.variants.forEach(variant => {
+                // Always create the row for the proposed drug variant first
+                const proposedReimbursement = formatCompetitorReimbursement(variant.govReimburse);
+                const proposedPrice = variant.cyclePrice || variant.monthlyPrice || variant.salePrice || 'ดูในตารางราคา';
+                const proposedDrugRow = `
+                    <tr class="border-b border-slate-200 bg-blue-50">
+                        <td class="p-3 font-bold text-blue-800">${variant.name} <span class="font-normal text-sm">(ยาเสนอใหม่)</span></td>
+                        <td class="p-3">${proposedReimbursement}</td>
+                        <td class="p-3 font-bold">${proposedPrice}</td>
+                        <td class="p-3">-</td>
+                    </tr>
+                `;
+
+                // Then, gather its competitors
                 let competitors = [];
                 for (let i = 1; i <= 5; i++) {
                     const name = variant[`competitor${i}_name`];
                     if (name && name.trim() !== '') {
-                        hasAnyCompetitors = true;
                         competitors.push({
                             name: name,
                             reimbursement: variant[`competitor${i}_reimbursement`] || '-',
@@ -507,44 +519,45 @@
                         });
                     }
                 }
+                
+                hasAnyData = true; // We always have at least the proposed drug to show
+                let sectionHtml = '';
 
-                if (competitors.length > 0) {
-                    let sectionHtml = '';
-                    
-                    // Add a sub-header for the specific variant only if it's a grouped item
-                    if (drugGroup.isGroup) {
-                       sectionHtml += `<div class="border-t first:border-t-0 border-gray-200"><h4 class="p-3 font-semibold text-xl bg-sky-50 text-sky-800">${variant.name}</h4>`;
-                    }
-
-                    let tableRows = competitors.map(comp => {
-                         const formattedReimbursement = formatCompetitorReimbursement(comp.reimbursement);
-                         return `<tr class="border-b border-slate-200 hover:bg-slate-50"><td class="p-3">${comp.name}</td><td class="p-3">${formattedReimbursement}</td><td class="p-3">${comp.price}</td><td class="p-3">${comp.usage}</td></tr>`;
-                    }).join('');
-
-                    sectionHtml += `<div class="overflow-x-auto p-2">
-                        <table class="w-full text-left border-collapse text-xl">
-                            <thead>
-                                <tr class="border-b-2 border-slate-300 bg-slate-100">
-                                    <th class="p-3 font-semibold text-slate-700 w-2/5">รายการยา</th>
-                                    <th class="p-3 font-semibold text-slate-700">การเบิกจ่าย</th>
-                                    <th class="p-3 font-semibold text-slate-700">ราคาขายต่อรอบการรักษา/ต่อเดือน</th>
-                                    <th class="p-3 font-semibold text-slate-700">จำนวนเคสที่ใช้ยา</th>
-                                </tr>
-                            </thead>
-                            <tbody>${tableRows}</tbody>
-                        </table>
-                    </div>`;
-
-                    if (drugGroup.isGroup) {
-                        sectionHtml += `</div>`;
-                    }
-                    contentHtml += sectionHtml;
+                if (drugGroup.isGroup) {
+                    sectionHtml += `<div class="border-t first:border-t-0 border-gray-200"><h4 class="p-3 font-semibold text-xl bg-sky-50 text-sky-800">${variant.name}</h4>`;
                 }
+
+                let competitorRows = competitors.map(comp => {
+                    const formattedReimbursement = formatCompetitorReimbursement(comp.reimbursement);
+                    return `<tr class="border-b border-slate-200 hover:bg-slate-50"><td class="p-3">${comp.name}</td><td class="p-3">${formattedReimbursement}</td><td class="p-3">${comp.price}</td><td class="p-3">${comp.usage}</td></tr>`;
+                }).join('');
+
+                sectionHtml += `<div class="overflow-x-auto p-2">
+                    <table class="w-full text-left border-collapse text-xl">
+                        <thead>
+                            <tr class="border-b-2 border-slate-300 bg-slate-100">
+                                <th class="p-3 font-semibold text-slate-700 w-2/5">รายการยา</th>
+                                <th class="p-3 font-semibold text-slate-700">การเบิกจ่าย</th>
+                                <th class="p-3 font-semibold text-slate-700">ราคาขายต่อรอบการรักษา/ต่อเดือน</th>
+                                <th class="p-3 font-semibold text-slate-700">จำนวนเคสที่ใช้ยา</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${proposedDrugRow}
+                            ${competitorRows}
+                        </tbody>
+                    </table>
+                </div>`;
+
+                if (drugGroup.isGroup) {
+                    sectionHtml += `</div>`;
+                }
+                contentHtml += sectionHtml;
             });
 
-            if (!hasAnyCompetitors) {
+            if (!hasAnyData) {
                 const primaryDrug = drugGroup.variants[0];
-                if(primaryDrug.competitor && primaryDrug.competitor.trim() !== '' && primaryDrug.competitor.trim().toLowerCase() !== 'ไม่มี') {
+                 if(primaryDrug.competitor && primaryDrug.competitor.trim() !== '' && primaryDrug.competitor.trim().toLowerCase() !== 'ไม่มี') {
                     return `<div class="p-4 text-slate-500 italic">ข้อมูลยาเปรียบเทียบ (เดิม): ${primaryDrug.competitor}</div>`;
                 } else {
                     return `<div class="p-4 text-center text-slate-500">ไม่มียาใกล้เคียงในบัญชีโรงพยาบาล</div>`;
@@ -666,7 +679,6 @@
                         </div>`;
                 }
                 
-                // *** START CHANGE: Call the new competitor table rendering function ***
                 const competitorBlockHtml = `<div class="info-card">
                     <div class="info-header bg-[#5a189a]">
                         <i class="fa-solid fa-code-compare"></i>
@@ -674,7 +686,6 @@
                     </div>
                     ${renderCompetitorTable(drugGroup)}
                 </div>`;
-                // *** END CHANGE ***
 
                 stickyHeader.innerHTML = `<div class="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-md mb-6"><h2 class="text-2xl font-bold text-slate-800">${drugGroup.groupName || '-'}</h2></div>`;
                 detailsContainer.innerHTML = `
