@@ -488,16 +488,18 @@
             return s;
         }
 
-        // *** START CHANGE: Reworked function to re-add the proposed drug to the table ***
+        // *** START CHANGE: Reworked function to show a single, consolidated competitor table ***
         function renderCompetitorTable(drugGroup) {
-            let contentHtml = '';
+            let allTableRows = '';
             let hasAnyData = false;
 
             drugGroup.variants.forEach(variant => {
-                // Always create the row for the proposed drug variant first
+                hasAnyData = true;
+
+                // Create the row for the proposed drug variant (blue row)
                 const proposedReimbursement = formatCompetitorReimbursement(variant.govReimburse);
                 const proposedPrice = variant.cyclePrice || variant.monthlyPrice || variant.salePrice || 'ดูในตารางราคา';
-                const proposedDrugRow = `
+                allTableRows += `
                     <tr class="border-b border-slate-200 bg-blue-50">
                         <td class="p-3 font-bold text-blue-800">${variant.name} <span class="font-normal text-sm">(ยาเสนอใหม่)</span></td>
                         <td class="p-3">${proposedReimbursement}</td>
@@ -506,53 +508,23 @@
                     </tr>
                 `;
 
-                // Then, gather its competitors
-                let competitors = [];
+                // Gather and add rows for its competitors
                 for (let i = 1; i <= 5; i++) {
                     const name = variant[`competitor${i}_name`];
                     if (name && name.trim() !== '') {
-                        competitors.push({
-                            name: name,
-                            reimbursement: variant[`competitor${i}_reimbursement`] || '-',
-                            price: variant[`competitor${i}_price`] || '-',
-                            usage: variant[`competitor${i}_usage`] || '-',
-                        });
+                        const compReimbursement = formatCompetitorReimbursement(variant[`competitor${i}_reimbursement`] || '-');
+                        const compPrice = variant[`competitor${i}_price`] || '-';
+                        const compUsage = variant[`competitor${i}_usage`] || '-';
+                        allTableRows += `
+                            <tr class="border-b border-slate-200 hover:bg-slate-50">
+                                <td class="p-3">${name}</td>
+                                <td class="p-3">${compReimbursement}</td>
+                                <td class="p-3">${compPrice}</td>
+                                <td class="p-3">${compUsage}</td>
+                            </tr>
+                        `;
                     }
                 }
-                
-                hasAnyData = true; // We always have at least the proposed drug to show
-                let sectionHtml = '';
-
-                if (drugGroup.isGroup) {
-                    sectionHtml += `<div class="border-t first:border-t-0 border-gray-200"><h4 class="p-3 font-semibold text-xl bg-sky-50 text-sky-800">${variant.name}</h4>`;
-                }
-
-                let competitorRows = competitors.map(comp => {
-                    const formattedReimbursement = formatCompetitorReimbursement(comp.reimbursement);
-                    return `<tr class="border-b border-slate-200 hover:bg-slate-50"><td class="p-3">${comp.name}</td><td class="p-3">${formattedReimbursement}</td><td class="p-3">${comp.price}</td><td class="p-3">${comp.usage}</td></tr>`;
-                }).join('');
-
-                sectionHtml += `<div class="overflow-x-auto p-2">
-                    <table class="w-full text-left border-collapse text-xl">
-                        <thead>
-                            <tr class="border-b-2 border-slate-300 bg-slate-100">
-                                <th class="p-3 font-semibold text-slate-700 w-2/5">รายการยา</th>
-                                <th class="p-3 font-semibold text-slate-700">การเบิกจ่าย</th>
-                                <th class="p-3 font-semibold text-slate-700">ราคาขายต่อรอบการรักษา/ต่อเดือน</th>
-                                <th class="p-3 font-semibold text-slate-700">จำนวนเคสที่ใช้ยา</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${proposedDrugRow}
-                            ${competitorRows}
-                        </tbody>
-                    </table>
-                </div>`;
-
-                if (drugGroup.isGroup) {
-                    sectionHtml += `</div>`;
-                }
-                contentHtml += sectionHtml;
             });
 
             if (!hasAnyData) {
@@ -563,8 +535,23 @@
                     return `<div class="p-4 text-center text-slate-500">ไม่มียาใกล้เคียงในบัญชีโรงพยาบาล</div>`;
                 }
             }
-
-            return contentHtml;
+            
+            // Wrap all generated rows in a single table structure
+            return `<div class="overflow-x-auto p-2">
+                <table class="w-full text-left border-collapse text-xl">
+                    <thead>
+                        <tr class="border-b-2 border-slate-300 bg-slate-100">
+                            <th class="p-3 font-semibold text-slate-700 w-2/5">รายการยา</th>
+                            <th class="p-3 font-semibold text-slate-700">การเบิกจ่าย</th>
+                            <th class="p-3 font-semibold text-slate-700">ราคาขายต่อรอบการรักษา/ต่อเดือน</th>
+                            <th class="p-3 font-semibold text-slate-700">จำนวนเคสที่ใช้ยา</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${allTableRows}
+                    </tbody>
+                </table>
+            </div>`;
         }
         // *** END CHANGE ***
 
