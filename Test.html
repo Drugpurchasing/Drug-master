@@ -272,9 +272,9 @@
                         groupName: groupName,
                         variants: variants,
                         ...Object.fromEntries(
-                           Object.keys(primaryDrug)
-                           .filter(key => !['name', 'strength', 'packSize', 'salePrice', 'costPrice', 'cyclePrice', 'monthlyPrice', 'baseUnit'].includes(key))
-                           .map(key => [key, primaryDrug[key]])
+                            Object.keys(primaryDrug)
+                            .filter(key => !['name', 'strength', 'packSize', 'salePrice', 'costPrice', 'cyclePrice', 'monthlyPrice', 'baseUnit'].includes(key))
+                            .map(key => [key, primaryDrug[key]])
                         ),
                         pharmacyDecision: primaryDrug.pharmacyDecision,
                     });
@@ -416,7 +416,8 @@
                 undecided: 0
             };
 
-            drugDatabase.forEach(drug => {
+            // MODIFICATION START: Count from rawDrugData instead of drugDatabase
+            rawDrugData.forEach(drug => {
                 switch (drug.pharmacyDecision) {
                     case 'approve': counts.approve++; break;
                     case 'approve_nonstock': counts.approve_nonstock++; break;
@@ -424,6 +425,7 @@
                     default: counts.undecided++; break;
                 }
             });
+            // MODIFICATION END
 
             summaryContainer.innerHTML = `
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
@@ -488,7 +490,6 @@
             return s;
         }
 
-        // *** START CHANGE: Reworked function to show a single, consolidated competitor table ***
         function renderCompetitorTable(drugGroup) {
             let allTableRows = '';
             let hasAnyData = false;
@@ -508,8 +509,8 @@
                     </tr>
                 `;
 
-                // Gather and add rows for its competitors
-                for (let i = 1; i <= 5; i++) {
+                // MODIFICATION START: Loop up to 10 competitors instead of 5
+                for (let i = 1; i <= 10; i++) {
                     const name = variant[`competitor${i}_name`];
                     if (name && name.trim() !== '') {
                         const compReimbursement = formatCompetitorReimbursement(variant[`competitor${i}_reimbursement`] || '-');
@@ -525,15 +526,16 @@
                         `;
                     }
                 }
+                // MODIFICATION END
             });
 
             if (!hasAnyData) {
                 const primaryDrug = drugGroup.variants[0];
                  if(primaryDrug.competitor && primaryDrug.competitor.trim() !== '' && primaryDrug.competitor.trim().toLowerCase() !== 'ไม่มี') {
                     return `<div class="p-4 text-slate-500 italic">ข้อมูลยาเปรียบเทียบ (เดิม): ${primaryDrug.competitor}</div>`;
-                } else {
+                 } else {
                     return `<div class="p-4 text-center text-slate-500">ไม่มียาใกล้เคียงในบัญชีโรงพยาบาล</div>`;
-                }
+                 }
             }
             
             // Wrap all generated rows in a single table structure
@@ -553,7 +555,6 @@
                 </table>
             </div>`;
         }
-        // *** END CHANGE ***
 
         function getReimbursementClass(status) {
             if (!status) return 'reimburse-no';
@@ -575,8 +576,8 @@
 
                 return `
                      <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-slate-50 rounded-md p-3"><span class="label">ราคาขาย</span><span class="value text-lg font-bold text-green-600">${drug.salePrice || '-'} ${drug.baseUnit ? ` / ${drug.baseUnit}` : ''}</span></div>
-                        <div class="bg-slate-50 rounded-md p-3"><span class="label">ราคาทุน</span><span class="value text-lg font-bold text-orange-600">${drug.costPrice || '-'} ${drug.baseUnit ? ` / ${drug.baseUnit}` : ''}</span></div>
+                         <div class="bg-slate-50 rounded-md p-3"><span class="label">ราคาขาย</span><span class="value text-lg font-bold text-green-600">${drug.salePrice || '-'} ${drug.baseUnit ? ` / ${drug.baseUnit}` : ''}</span></div>
+                         <div class="bg-slate-50 rounded-md p-3"><span class="label">ราคาทุน</span><span class="value text-lg font-bold text-orange-600">${drug.costPrice || '-'} ${drug.baseUnit ? ` / ${drug.baseUnit}` : ''}</span></div>
                     </div>
                     ${extraPricesHtml ? `<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">${extraPricesHtml}</div>` : ''}
                 `;
@@ -587,7 +588,7 @@
                     <td class="p-2">
                         <div class="font-semibold">${v.name}</div>
                         <div class="text-sm text-gray-600">
-                           <span class="font-medium">ความแรง:</span> ${v.strength || '-'} | <span class="font-medium">ขนาดบรรจุ:</span> ${v.packSize || '-'}
+                            <span class="font-medium">ความแรง:</span> ${v.strength || '-'} | <span class="font-medium">ขนาดบรรจุ:</span> ${v.packSize || '-'}
                         </div>
                     </td>
                     <td class="p-2 text-lg font-bold text-green-600">${v.salePrice || '-'}</td>
