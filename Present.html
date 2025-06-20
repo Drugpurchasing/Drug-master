@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เปรียบเทียบราคายา Bevacizumab</title>
+    <title>เปรียบเทียบราคาการใช้ Wegovy</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,114 +12,99 @@
         body {
             font-family: 'Sarabun', sans-serif;
         }
-        /* Style for table headers */
-        .th-custom-blue { background-color: #EBF8FF; color: #2C5282; }
-        .th-custom-red { background-color: #FFF5F5; color: #9B2C2C; }
-        .th-custom-green { background-color: #F0FFF4; color: #276749; }
-        .th-custom-purple { background-color: #FAF5FF; color: #553C9A; }
-        .th-custom-orange { background-color: #FFFBEB; color: #B45309; }
+        th, td {
+            border: 1px solid #e2e3e5;
+            padding: 0.75rem;
+            text-align: center;
+            vertical-align: middle;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: 700;
+        }
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
     </style>
 </head>
-<body class="bg-gray-100 p-4 sm:p-6 md:p-8">
-    <div class="max-w-7xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
-        <header class="bg-gradient-to-r from-teal-500 to-cyan-600 p-6 sm:p-8 text-white">
-            <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center">เปรียบเทียบราคายา Bevacizumab</h1>
-            <p class="text-center mt-2 text-lg sm:text-xl font-light">Mvasi vs. Avastin ในขนาดใช้ยาต่างๆ</p>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">เปรียบเทียบราคาการใช้ Wegovy ขนาดต่างๆ</h1>
+            <p class="text-md text-gray-600 mt-2">ตารางเปรียบเทียบต้นทุนการรักษา 3 เดือน (12 สัปดาห์) ตามทฤษฎี</p>
         </header>
 
-        <main class="p-6 md:p-8">
-            <!-- Price Key Section -->
-            <div class="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <h2 class="text-xl font-semibold text-gray-700 mb-3">ราคาตั้งต้น (ต่อ 1 ขวด)</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-                    <div class="p-3 bg-blue-100 rounded-lg">
-                        <p class="font-semibold text-blue-800">Bevacizumab (Mvasi)</p>
-                        <p class="text-lg font-bold text-blue-900">2,768.00 ฿</p>
-                        <p class="text-sm text-blue-700">100 mg / 4 mL</p>
-                    </div>
-                    <div class="p-3 bg-red-100 rounded-lg">
-                        <p class="font-semibold text-red-800">Avastin (Bevacizumab)</p>
-                        <p class="text-lg font-bold text-red-900">7,764.00 ฿</p>
-                        <p class="text-sm text-red-700">100 mg / 4 mL</p>
-                    </div>
-                    <div class="p-3 bg-green-100 rounded-lg">
-                        <p class="font-semibold text-green-800">Avastin (Bevacizumab)</p>
-                        <p class="text-lg font-bold text-green-900">14,715.00 ฿</p>
-                        <p class="text-sm text-green-700">400 mg / 16 mL</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Table Section -->
-            <div class="mb-8">
-                <h2 class="text-xl sm:text-2xl font-bold text-gray-800 text-center mb-6">ตารางเปรียบเทียบค่าใช้จ่ายตามขนาดใช้ยา (บาท)</h2>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
+        <main>
+            <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6">
+                <div class="table-container">
+                    <table class="w-full min-w-[1200px] border-collapse">
+                        <thead class="bg-gray-100">
                             <tr>
-                                <th scope="col" class="px-4 py-4 text-left text-sm font-bold text-gray-600 uppercase tracking-wider">ขนาดใช้ยา (mg)</th>
-                                <th scope="col" class="px-4 py-4 text-right text-sm font-bold uppercase tracking-wider th-custom-blue">กลุ่ม 1: Mvasi 100mg</th>
-                                <th scope="col" class="px-4 py-4 text-right text-sm font-bold uppercase tracking-wider th-custom-red">กลุ่ม 2: Avastin 100mg</th>
-                                <th scope="col" class="px-4 py-4 text-right text-sm font-bold uppercase tracking-wider th-custom-green">กลุ่ม 3: Avastin (ผสม)</th>
-                                <th scope="col" class="px-4 py-4 text-center text-sm font-bold uppercase tracking-wider th-custom-orange">รายละเอียดการผสมยา (กลุ่ม 3)</th>
-                                <th scope="col" class="px-4 py-4 text-center text-sm font-bold uppercase tracking-wider th-custom-purple">% ส่วนลด</th>
+                                <th class="w-1/12">ขนาดที่ต้องการฉีด<br>(mg/สัปดาห์)</th>
+                                <th class="w-1/6">ใช้ด้าม 0.25 mg<br>(ราคาทุน 5,885)</th>
+                                <th class="w-1/6">ใช้ด้าม 0.5 mg<br>(ราคาทุน 5,885)</th>
+                                <th class="w-1/6">ใช้ด้าม 1.0 mg<br>(ราคาทุน 6,420)</th>
+                                <th class="w-1/6">ใช้ด้าม 1.7 mg<br>(ราคาทุน 10,700)</th>
+                                <th class="w-1/6">ใช้ด้าม 2.4 mg<br>(ราคาทุน 13,589)</th>
+                                <th class="w-1/12">คุ้มค่าที่สุด<br>(อันดับ 1)</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            <!-- Data rows will be inserted here by script -->
+                        <tbody>
+                            <tr>
+                                <td class="font-bold">0.25 mg</td>
+                                <td><p class="bg-[#fff3cd] p-2 rounded-md">17,655 บาท<br>(3 ด้าม)</p></td>
+                                <td><p class="bg-[#d4edda] p-2 rounded-md font-bold">11,770 บาท<br>(2 ด้าม)</p></td>
+                                <td><p class="bg-[#fff3cd] p-2 rounded-md">12,840 บาท<br>(2 ด้าม)</p></td>
+                                <td><p class="bg-[#fff3cd] p-2 rounded-md">21,400 บาท<br>(2 ด้าม)</p></td>
+                                <td><p class="bg-[#fff3cd] p-2 rounded-md">27,178 บาท<br>(2 ด้าม)</p></td>
+                                <td class="font-bold">0.5 mg</td>
+                            </tr>
+                            <tr>
+                                <td class="font-bold">0.5 mg</td>
+                                <td><p class="bg-[#e2e3e5] p-2 rounded-md">ทำไม่ได้</p></td>
+                                <td><p class="bg-[#fff3cd] p-2 rounded-md">17,655 บาท<br>(3 ด้าม)</p></td>
+                                <td><p class="bg-[#d4edda] p-2 rounded-md font-bold">12,840 บาท<br>(2 ด้าม)</p></td>
+                                <td><p class="bg-[#fff3cd] p-2 rounded-md">21,400 บาท<br>(2 ด้าม)</p></td>
+                                <td><p class="bg-[#fff3cd] p-2 rounded-md">27,178 บาท<br>(2 ด้าม)</p></td>
+                                <td class="font-bold">1.0 mg</td>
+                            </tr>
+                            <tr>
+                                <td class="font-bold">1.0 mg</td>
+                                <td><p class="bg-[#e2e3e5] p-2 rounded-md">ทำไม่ได้</p></td>
+                                <td><p class="bg-[#e2e3e5] p-2 rounded-md">ทำไม่ได้</p></td>
+                                <td><p class="bg-[#d4edda] p-2 rounded-md font-bold">19,260 บาท<br>(3 ด้าม)</p></td>
+                                <td><p class="bg-[#fff3cd] p-2 rounded-md">21,400 บาท<br>(2 ด้าม)</p></td>
+                                <td><p class="bg-[#fff3cd] p-2 rounded-md">27,178 บาท<br>(2 ด้าม)</p></td>
+                                <td class="font-bold">1.0 mg</td>
+                            </tr>
+                             <tr>
+                                <td class="font-bold">1.7 mg</td>
+                                <td><p class="bg-[#e2e3e5] p-2 rounded-md">ทำไม่ได้</p></td>
+                                <td><p class="bg-[#e2e3e5] p-2 rounded-md">ทำไม่ได้</p></td>
+                                <td><p class="bg-[#e2e3e5] p-2 rounded-md">ทำไม่ได้</p></td>
+                                <td><p class="bg-[#fff3cd] p-2 rounded-md">32,100 บาท<br>(3 ด้าม)</p></td>
+                                <td><p class="bg-[#d4edda] p-2 rounded-md font-bold">27,178 บาท<br>(2 ด้าม)</p></td>
+                                <td class="font-bold">2.4 mg</td>
+                            </tr>
+                             <tr>
+                                <td class="font-bold">2.4 mg</td>
+                                <td><p class="bg-[#e2e3e5] p-2 rounded-md">ทำไม่ได้</p></td>
+                                <td><p class="bg-[#e2e3e5] p-2 rounded-md">ทำไม่ได้</p></td>
+                                <td><p class="bg-[#e2e3e5] p-2 rounded-md">ทำไม่ได้</p></td>
+                                <td><p class="bg-[#e2e3e5] p-2 rounded-md">ทำไม่ได้</p></td>
+                                <td><p class="bg-[#d4edda] p-2 rounded-md font-bold">40,767 บาท<br>(3 ด้าม)</p></td>
+                                <td class="font-bold">2.4 mg</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
+
             </div>
+        </main>
 
+    </div>
 
-    <script>
-        const data = [
-            { dosage: 100, mvasi: 2768, avastin100: 7764, avastinCombo: 7764, comboDetail: "1 x 100mg" },
-            { dosage: 200, mvasi: 5536, avastin100: 15528, avastinCombo: 14715, comboDetail: "1 x 400mg" },
-            { dosage: 300, mvasi: 8304, avastin100: 23292, avastinCombo: 14715, comboDetail: "1 x 400mg" },
-            { dosage: 400, mvasi: 11072, avastin100: 31056, avastinCombo: 14715, comboDetail: "1 x 400mg" },
-            { dosage: 500, mvasi: 13840, avastin100: 38820, avastinCombo: 22479, comboDetail: "1 x 400mg + 1 x 100mg" },
-            { dosage: 600, mvasi: 16608, avastin100: 46584, avastinCombo: 29430, comboDetail: "2 x 400mg" },
-            { dosage: 700, mvasi: 19376, avastin100: 54348, avastinCombo: 29430, comboDetail: "2 x 400mg" },
-            { dosage: 800, mvasi: 22144, avastin100: 62112, avastinCombo: 29430, comboDetail: "2 x 400mg" },
-            { dosage: 900, mvasi: 24912, avastin100: 69876, avastinCombo: 37194, comboDetail: "2 x 400mg + 1 x 100mg" },
-            { dosage: 1000, mvasi: 27680, avastin100: 77640, avastinCombo: 44145, comboDetail: "3 x 400mg" }
-        ];
-
-        // Calculate savings percentage
-        const processedData = data.map(row => {
-            const savings = row.avastin100 > 0 ? ((row.avastin100 - row.avastinCombo) / row.avastin100) * 100 : 0;
-            return { ...row, savings: savings };
-        });
-
-        const tableBody = document.querySelector('tbody');
-
-        function formatCurrency(number) {
-            return new Intl.NumberFormat('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(number);
-        }
-
-        processedData.forEach((row, index) => {
-            const tr = document.createElement('tr');
-            if (index % 2 !== 0) {
-                tr.className = 'bg-gray-50';
-            }
-            tr.innerHTML = `
-                <td class="px-4 py-4 whitespace-nowrap text-base font-medium text-gray-900">${row.dosage}</td>
-                <td class="px-4 py-4 whitespace-nowrap text-base text-gray-700 text-right">${formatCurrency(row.mvasi)}</td>
-                <td class="px-4 py-4 whitespace-nowrap text-base text-gray-700 text-right">${formatCurrency(row.avastin100)}</td>
-                <td class="px-4 py-4 whitespace-nowrap text-base text-gray-700 text-right font-semibold">${formatCurrency(row.avastinCombo)}</td>
-                <td class="px-4 py-4 whitespace-nowrap text-base text-gray-800 text-left">${row.comboDetail}</td>
-                <td class="px-4 py-4 whitespace-nowrap text-base text-center">
-                    ${row.savings > 0 ? 
-                    `<span class="font-bold text-green-600">
-                        ↓ ${row.savings.toFixed(2)}%
-                    </span>` : 
-                    `<span class="text-gray-500">-</span>`}
-                </td>
-            `;
-            tableBody.appendChild(tr);
-        });
-    </script>
 </body>
 </html>
