@@ -416,7 +416,6 @@
                 undecided: 0
             };
 
-            // MODIFICATION START: Count from rawDrugData instead of drugDatabase
             rawDrugData.forEach(drug => {
                 switch (drug.pharmacyDecision) {
                     case 'approve': counts.approve++; break;
@@ -425,7 +424,6 @@
                     default: counts.undecided++; break;
                 }
             });
-            // MODIFICATION END
 
             summaryContainer.innerHTML = `
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
@@ -497,7 +495,6 @@
             drugGroup.variants.forEach(variant => {
                 hasAnyData = true;
 
-                // Create the row for the proposed drug variant (blue row)
                 const proposedReimbursement = formatCompetitorReimbursement(variant.govReimburse);
                 const proposedPrice = variant.cyclePrice || variant.monthlyPrice || variant.salePrice || 'ดูในตารางราคา';
                 allTableRows += `
@@ -509,7 +506,6 @@
                     </tr>
                 `;
 
-                // MODIFICATION START: Loop up to 10 competitors instead of 5
                 for (let i = 1; i <= 10; i++) {
                     const name = variant[`competitor${i}_name`];
                     if (name && name.trim() !== '') {
@@ -526,7 +522,6 @@
                         `;
                     }
                 }
-                // MODIFICATION END
             });
 
             if (!hasAnyData) {
@@ -538,7 +533,7 @@
                  }
             }
             
-            // Wrap all generated rows in a single table structure
+            // MODIFICATION START: Adjust competitor table header text
             return `<div class="overflow-x-auto p-2">
                 <table class="w-full text-left border-collapse text-xl">
                     <thead>
@@ -554,6 +549,7 @@
                     </tbody>
                 </table>
             </div>`;
+            // MODIFICATION END
         }
 
         function getReimbursementClass(status) {
@@ -674,6 +670,22 @@
                     </div>
                     ${renderCompetitorTable(drugGroup)}
                 </div>`;
+                
+                // MODIFICATION START: Add new "condition" card
+                let conditionBlockHtml = '';
+                if (primaryDrug.condition && primaryDrug.condition.trim() !== '') {
+                    conditionBlockHtml = `
+                    <div class="info-card">
+                        <div class="info-header bg-orange-600">
+                            <i class="fa-solid fa-file-contract"></i>
+                            <span>เงื่อนไขการใช้ที่เสนอ</span>
+                        </div>
+                        <div class="p-4">
+                            <ul class="list-disc list-inside text-xl font-bold text-orange-700">${renderList(primaryDrug.condition)}</ul>
+                        </div>
+                    </div>`;
+                }
+                // MODIFICATION END
 
                 stickyHeader.innerHTML = `<div class="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-md mb-6"><h2 class="text-2xl font-bold text-slate-800">${drugGroup.groupName || '-'}</h2></div>`;
                 detailsContainer.innerHTML = `
@@ -711,6 +723,7 @@
                     ${competitorBlockHtml}
                     <div class="info-card"><div class="info-header bg-gray-600"><i class="fa-solid fa-hospital"></i><span>รพ.โรงเรียนแพทย์ที่มียาในบัญชี</span></div><div class="p-4"><ul class="list-disc list-inside text-xl font-bold columns-1 md:columns-2">${renderList(primaryDrug.hospitals)}</ul></div></div>
                     <div class="info-card"><div class="info-header bg-[#0077b6]"><i class="fa-solid fa-clipboard-check"></i><span>ข้อเสนอฝ่ายเภสัชกรรม</span></div><div class="p-4"><p class="text-3xl font-bold">${proposalHtml || '-'}</p></div></div>
+                    ${conditionBlockHtml}
                     <div class="info-card"><div class="info-header bg-[#c9184a]"><i class="fa-solid fa-gavel"></i><span>สถานะการพิจารณา</span></div><div class="p-4"><select id="pharmacy-decision-${index}" class="w-full mt-2 p-3 border border-gray-300 rounded-lg text-2xl bg-gray-50 focus:ring-blue-500 focus:border-blue-500"><option value="" disabled ${currentDecision === '' ? 'selected' : ''}>--- กรุณาเลือกสถานะ ---</option><option value="approve" ${currentDecision === 'approve' ? 'selected' : ''}>เสนอรับเข้าบัญชี</option><option value="approve_nonstock" ${currentDecision === 'approve_nonstock' ? 'selected' : ''}>เสนอรับเข้าบัญชี ไม่สำรองคงคลัง (Non-stock)</option><option value="reject" ${currentDecision === 'reject' ? 'selected' : ''}>เสนอไม่รับเข้าบัญชี</option></select></div></div>
                 </div>`;
                 detailsContainer.style.opacity = '1';
