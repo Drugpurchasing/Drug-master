@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="utf-8">
+    <title>Drug master CRA V3.02 (06/2025)</title>
+    <base target="_top">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <style>
+        :root {
+            --primary-color: #005ba1;
+            --secondary-color: #003366;
+            --accent-color: #e5a12a;
+            --light-bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --text-light: #6c757d;
+        }
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+        }
+        .container-fluid {
+            padding: 20px;
+            width: 100%;
+            max-width: 100%;
+        }
+        .card {
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            background-color: var(--card-bg);
+            width: 100%;
+        }
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 5px 5px 0 0 !important;
+            padding: 12px 20px;
+            font-weight: 600;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 15px;
+            flex-wrap: wrap;
+            background-color: var(--secondary-color);
+            padding: 15px;
+            border-radius: 5px;
+            color: white;
+        }
+        .logo-container img {
+            height: 70px;
+        }
+        .app-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            margin: 0;
+        }
+        .filter-section {
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #dee2e6;
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            font-weight: 500;
+        }
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+        .dataTables_wrapper .dataTables_filter input {
+            border-radius: 4px;
+            padding: 5px 10px;
+            border: 1px solid #ced4da;
+        }
+        table.dataTable thead th {
+            border-bottom: 2px solid var(--primary-color);
+            font-weight: 600;
+            background-color: #f1f1f1;
+        }
+        .badge {
+            font-weight: 500;
+            padding: 4px 8px;
+            font-size: 0.85em;
+        }
+        .version-info {
+            font-size: 14px;
+            color: #e5a12a;
+            text-align: right;
+        }
+        footer {
+            font-size: 12px;
+            color: var(--text-light);
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #dee2e6;
+        }
+        .high-value {
+            background-color: rgba(229, 161, 42, 0.1);
+            font-weight: 500;
+        }
+        .medium-value {
+            background-color: rgba(0, 91, 161, 0.1);
+        }
+        .low-value {
+            background-color: rgba(0, 51, 102, 0.1);
+        }
+        .rate-high {
+            color: #d9534f;
+            font-weight: 600;
+        }
+        .rate-medium {
+            color: var(--primary-color);
+        }
+        .rate-low {
+            color: var(--secondary-color);
+        }
+        #drugTable th,
+        #drugTable td {
+            font-size: 1rem;
+        }
+        @media (max-width: 768px) {
+            body, #drugTable_wrapper, #drugTable_wrapper *, button, input, select, label {
+                font-size: 0.6875rem !important;
+            }
+        }
+        @media (max-width: 480px) {
+            body, #drugTable_wrapper, #drugTable_wrapper *, button, input, select, label {
+                font-size: 0.625rem !important;
+            }
+        }
+        .view-toggle.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-color);
+        }
+        .dataTables_filter {
+            display: none;
+        }
+        .withdrawal-condition {
+            white-space: normal !important;
+            word-wrap: break-word;
+        }
+        .badge.text-wrap {
+            white-space: normal;
+            text-align: left;
+            display: inline-block;
+            max-width: 100%;
+            margin: 2px 0;
+            line-height: 1.3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="logo-container">
+            <img src="CRAlogo.png" alt="Logo" class="img-fluid">
+            <div>
+                <h1 class="app-title">Drug master CRA</h1>
+                <p class="version-info mb-0 fw-bold">Latest update
+                    06/06/2025 | Version 3.02</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="filter-section">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="text" id="globalSearch" class="form-control"
+                                    placeholder="Search across all columns...">
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <button id="exportButton" class="btn btn-success me-2">
+                                <i class="fas fa-file-excel me-1"></i>Export Excel
+                            </button>
+                            <button id="exportJPEGButton" class="btn btn-danger me-2">
+                                <i class="fas fa-camera me-1"></i>Screenshot
+                            </button>
+                            <button id="defaultView" class="btn btn-outline-primary view-toggle">
+                                <i class="fas fa-eye me-1"></i>Essential View
+                            </button>
+                            <button id="purchasingView" class="btn btn-outline-primary view-toggle">
+                                <i class="fas fa-shopping-cart me-1"></i>Purchasing View
+                            </button>
+                            <button id="rateView" class="btn btn-outline-primary view-toggle">
+                                <i class="fas fa-chart-line me-1"></i>Rates View
+                            </button>
+                            <button id="allView" class="btn btn-outline-primary view-toggle">
+                                <i class="fas fa-th-list me-1"></i>View all
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table id="drugTable" class="table table-hover table-striped w-100">
+                        <thead>
+                            <tr>
+                                <th>Material No.</th>
+                                <th>SAP Name</th>
+                                <th>Generic Name</th>
+                                <th>TPU</th>
+                                <th>GPU</th>
+                                <th>Special rules</th>
+                                <th>ED/NED</th>
+                                <th>Purchasing Unit</th>
+                                <th>Sale Price</th>
+                                <th>Sale Unit</th>
+                                <th class="cost-column">Cost Price</th>
+                                <th>Base Unit</th>
+                                <th>Status</th>
+                                <th class="rate-column">04/67</th>
+                                <th class="rate-column">05/67</th>
+                                <th class="rate-column">06/67</th>
+                                <th class="rate-column">07/67</th>
+                                <th class="rate-column">08/67</th>
+                                <th class="rate-column">09/67</th>
+                                <th class="rate-column">10/67</th>
+                                <th class="rate-column">11/67</th>
+                                <th class="rate-column">12/67</th>
+                                <th class="rate-column">01/68</th>
+                                <th class="rate-column">02/68</th>
+                                <th class="rate-column">03/68</th>
+                                <th>Drug Group</th>
+                                <th>ราคากลาง</th>
+                                <th>FS</th>
+                                <th>รหัสยาทดแทน</th>
+                                <th>วันที่ยาเข้าบัญชี</th>
+                                <th>Distributor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <hr>
+            <p>The Unofficial Drug Master Data for RxCCC, created by BG X
+                Deepseek AI</p>
+        </footer>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script>
+        $(document).ready(function () {
+            const dataUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRLINAaP8__l9w12oPXECXFmIdJ43EqALwLCMeRtAKr5g_MjoSolh_2osrQLP4zIHQc0E0Ir3H-A-tX/pub?gid=0&single=true&output=csv';
+
+            // Function to fetch and parse CSV data
+            async function loadDataAndInitTable() {
+                try {
+                    const response = await fetch(dataUrl);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const csvData = await response.text();
+                    
+                    // Parse CSV to an array of arrays
+                    // We split by newline, then by comma. We also remove the header row (the first row) from the CSV.
+                    const parsedData = csvData.trim().split('\n').slice(1).map(row => row.split(','));
+
+                    // Now initialize the DataTable with the fetched data
+                    initializeDataTable(parsedData);
+
+                } catch (error) {
+                    console.error("Failed to load or parse data:", error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Failed to load data from Google Sheets. Please check the console for more details.',
+                    });
+                }
+            }
+            
+            // Function to initialize the DataTable
+            function initializeDataTable(data) {
+                var table = $('#drugTable').DataTable({
+                    data: data,
+                    columns: [
+                        { data: 0, title: 'Material No.', className: 'default-column material-column', width: "7%" },
+                        {
+                            data: 1, title: 'SAP Name', width: "20%", className: 'default-column sapname-column',
+                            render: function (data, type) { if (type === 'display') return `<span style="color: var(--primary-color)" class="fw-bold">${data}</span>`; return data; }
+                        },
+                        {
+                            data: 2, title: 'Generic Name', width: "20%", className: 'default-column',
+                            render: function (data, type) { if (type === 'display') return `<span class="fw-medium">${data}</span>`; return data; }
+                        },
+                        { data: 3, title: 'TPU', className: 'default-column', width: "5%" },
+                        { data: 4, title: 'GPU', className: 'default-column', width: "5%" },
+                        {
+                            data: 5, title: 'เงื่อนไขการเบิกจ่าย', className: 'default-column withdrawal-condition', width: "10%",
+                            render: function (data, type) {
+                                if (type === 'display' && data) {
+                                    const status = data.toLowerCase().trim();
+                                    const statusMap = { 'สำรองจ่าย': 'bg-primary', 'OCPA': 'bg-success', 'ned': 'bg-danger', 'ขรก เบิกไม่ได้': 'bg-danger', 'วัคซีน': 'bg-danger', 'เบิกนอก': 'bg-success', 'เบิกได้': 'bg-success' };
+                                    const statusClass = Object.entries(statusMap).find(([key]) => status.includes(key))?.[1] || 'bg-secondary';
+                                    return `<span class="badge ${statusClass} text-wrap">${data}</span>`;
+                                }
+                                return data;
+                            }
+                        },
+                        {
+                            data: 6, title: 'บัญชียา', className: 'default-column', width: "6%",
+                            render: function (data, type) {
+                                if (type === 'display' && data) {
+                                    const status = data.toLowerCase().trim();
+                                    const statusMap = { 'promotion': 'bg-warning', 'ในบัญชี(วถ)': 'bg-info', 'ned': 'bg-danger', 'ed': 'bg-success', 'เบิกไม่ได้': 'bg-danger', 'วัคซีน': 'bg-danger', 'ค่าสารทึบ': 'bg-primary' };
+                                    const statusClass = Object.entries(statusMap).find(([key]) => status.includes(key))?.[1] || 'bg-secondary';
+                                    return `<span class="badge ${statusClass}">${data}</span>`;
+                                }
+                                return data;
+                            }
+                        },
+                        { data: 7, title: 'Purchasing Unit', className: 'default-column purchasing-column', width: "5%" },
+                        { data: 8, title: 'Sale Price', className: 'default-column purchasing-column', width: "5%" },
+                        { data: 9, title: 'Sale Unit', className: 'default-column rate-column purchasing-column saleunit-column', width: "5%" },
+                        { data: 10, title: 'Cost Price', className: 'purchasing-column cost-column', width: "5%", visible: false },
+                        { data: 11, title: 'Base Unit', className: 'default-column purchasing-column', width: "5%" },
+                        {
+                            data: 12, title: 'Status', className: 'default-column status-column',
+                            render: function (data, type) {
+                                if (type === 'display' && data) {
+                                    const status = data.toLowerCase().trim();
+                                    const statusMap = { 'promotion': 'bg-warning', 'ในบัญชี(วถ)': 'bg-info', 'ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary' };
+                                    const statusClass = Object.entries(statusMap).find(([key]) => status.includes(key))?.[1] || 'bg-secondary';
+                                    return `<span class="badge ${statusClass}">${data}</span>`;
+                                }
+                                return data;
+                            }
+                        },
+                        { data: 13, title: '06/67', className: 'rate-column', visible: false },
+                        { data: 14, title: '07/67', className: 'rate-column', visible: false },
+                        { data: 15, title: '08/67', className: 'rate-column', visible: false },
+                        { data: 16, title: '09/67', className: 'rate-column', visible: false },
+                        { data: 17, title: '10/67', className: 'rate-column', visible: false },
+                        { data: 18, title: '11/67', className: 'rate-column', visible: false },
+                        { data: 19, title: '12/67', className: 'rate-column', visible: false },
+                        { data: 20, title: '01/68', className: 'rate-column', visible: false },
+                        { data: 21, title: '02/68', className: 'rate-column', visible: false },
+                        { data: 22, title: '03/68', className: 'rate-column', visible: false },
+                        { data: 23, title: '04/68', className: 'rate-column', visible: false },
+                        { data: 24, title: '05/68', className: 'rate-column', visible: false },
+                        { data: 25, title: 'Drug Group', className: 'all-column' },
+                        { data: 26, title: 'ราคากลาง', width: "5%", className: 'purchasing-column' },
+                        { data: 27, title: 'Fee Schedule', width: "5%", className: 'purchasing-column' },
+                        { data: 28, title: 'รหัสยาทดแทน', width: "10%", className: 'purchasing-column', visible: false },
+                        { data: 29, title: 'การรับเข้าบัญชี', width: "10%", className: 'purchasing-column', visible: false },
+                        { data: 30, title: 'Distributor', width: "15%,", className: 'purchasing-column' }
+                    ],
+                    dom: 'rt<"bottom"lip>',
+                    pageLength: 10,
+                    lengthMenu: [10, 25, 50, 100],
+                    scrollX: true,
+                    responsive: true,
+                    initComplete: function () {
+                        this.api().columns().every(function () {
+                            var column = this;
+                            var header = $(column.header());
+                            if (header.find('input.filter-input').length > 0) return;
+                            $('<input type="text" class="form-control form-control-sm filter-input" placeholder="Search...">')
+                                .appendTo(header)
+                                .on('click', function (e) { e.stopPropagation(); })
+                                .on('keyup change clear', function () {
+                                    if (column.search() !== this.value) column.search(this.value).draw();
+                                });
+                        });
+                        $('#globalSearch').on('keyup', function () {
+                            table.search(this.value).draw();
+                        });
+                    }
+                });
+
+                // --- All other functions (views, exports, password) remain the same ---
+                 // View mode buttons
+                $('#defaultView').on('click', function () {
+                    resetActiveButton();
+                    $(this).addClass('active');
+                    table.columns().visible(false);
+                    table.columns('.default-column').visible(true);
+                    table.columns('.rate-column').visible(false);
+                    table.columns('.purchasing-column:not(.default-column)').visible(false);
+                });
+
+                $('#rateView').on('click', function () {
+                    resetActiveButton();
+                    $(this).addClass('active');
+                    table.columns().visible(false);
+                    table.columns('.material-column, .sapname-column, .saleunit-column,.status-column').visible(true);
+                    table.columns('.rate-column').visible(true);
+                });
+
+                $('#purchasingView').on('click', function () {
+                    const button = $(this);
+                    promptPassword(function () {
+                        resetActiveButton();
+                        button.addClass('active');
+                        table.columns().visible(false);
+                        table.columns('.material-column, .sapname-column, .tpu-column, .purchasing-column,.status-column').visible(true);
+                    });
+                });
+
+                $('#allView').on('click', function () {
+                    const button = $(this);
+                    promptPassword(function () {
+                        resetActiveButton();
+                        button.addClass('active');
+                        table.columns().visible(true);
+                    });
+                });
+                
+                $('#defaultView').trigger('click');
+
+                function resetActiveButton() {
+                    $('.view-toggle').removeClass('active');
+                }
+
+                $('#exportButton').on('click', function () {
+                    promptPassword(function () {
+                        var visibleColumns = table.columns().visible();
+                        var headers = [];
+                        var data = [];
+                        table.columns().every(function (index) {
+                            if (visibleColumns[index]) {
+                                headers.push(table.column(index).header().textContent);
+                            }
+                        });
+                        data.push(headers);
+                        table.rows({ search: 'applied' }).every(function () {
+                            var rowData = this.data();
+                            var visibleRowData = [];
+                            table.columns().every(function (index) {
+                                if (visibleColumns[index]) {
+                                    visibleRowData.push(rowData[index]);
+                                }
+                            });
+                            data.push(visibleRowData);
+                        });
+                        var wb = XLSX.utils.book_new();
+                        var ws = XLSX.utils.aoa_to_sheet(data);
+                        XLSX.utils.book_append_sheet(wb, ws, "Drug Master Data");
+                        XLSX.writeFile(wb, 'drug_master_data.xlsx');
+                        showSwalSuccess('Excel exported successfully!');
+                    });
+                });
+
+                $('#exportJPEGButton').on('click', function () {
+                    html2canvas($('#drugTable')[0], { scale: 2, logging: true, useCORS: true })
+                        .then(function (canvas) {
+                            var link = document.createElement('a');
+                            link.download = 'drug_master_data.jpg';
+                            link.href = canvas.toDataURL('image/jpeg', 0.9);
+                            link.click();
+                            showSwalSuccess('Screenshot saved successfully!');
+                        });
+                });
+
+            } // End of initializeDataTable function
+
+            // --- Password and Success message functions ---
+            var passwordVerified = false;
+            function promptPassword(callback) {
+                if (passwordVerified) {
+                    callback();
+                    return;
+                }
+                Swal.fire({
+                    title: 'Authentication Required',
+                    text: 'Please enter your password to continue:',
+                    input: 'password',
+                    inputAttributes: { autocapitalize: 'off', autocorrect: 'off' },
+                    showCancelButton: true,
+                    confirmButtonText: 'Submit',
+                    cancelButtonText: 'Cancel',
+                    showLoaderOnConfirm: true,
+                    preConfirm: (password) => {
+                        if (password !== 'rxccc') {
+                            Swal.showValidationMessage('Incorrect password');
+                        } else {
+                            passwordVerified = true;
+                        }
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                }).then((result) => {
+                    if (result.isConfirmed && passwordVerified) {
+                        callback();
+                    }
+                });
+            }
+
+            function showSwalSuccess(message) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: message,
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            }
+
+            // Start the process
+            loadDataAndInitTable();
+
+        });
+    </script>
+</body>
+
+</html>
