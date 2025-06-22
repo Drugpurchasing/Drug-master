@@ -321,7 +321,7 @@
                 row2Html += createDetailCard({ title: 'GPU', value: rowData[4], itemClass: 'compact-card' });
                 row2Html += createDetailCard({ title: 'เงื่อนไขการเบิกจ่าย', value: renderBadge(rowData[5], 'display', {'สำรองจ่าย': 'bg-primary', 'ocpa': 'bg-success', 'เบิกได้': 'bg-success', 'ขรก เบิกไม่ได้': 'bg-danger', 'เบิกนอก': 'bg-info text-dark', 'วัคซีน': 'bg-warning text-dark'}, true), itemClass: 'status-card' });
                 row2Html += createDetailCard({ title: 'บัญชียา', value: renderBadge(rowData[6], 'display', {'ned': 'bg-danger', 'ed': 'bg-success', 'ในบัญชี(วถ)': 'bg-info text-dark', 'ค่าสารทึบ': 'bg-primary', 'promotion': 'bg-warning text-dark'}), itemClass: 'status-card' });
-                row2Html += createDetailCard({ title: 'Status', value: renderBadge(rowData[12], 'display', {'ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}), itemClass: 'status-card' });
+                row2Html += createDetailCard({ title: 'Status', value: renderBadge(rowData[12], 'display', {'ในบัญชี(NS)':'bg-primary','ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}), itemClass: 'status-card' });
                 if (row2Html) detailsHtml += `<div class="detail-row">${row2Html}</div>`;
                 
                 let row3Html = '';
