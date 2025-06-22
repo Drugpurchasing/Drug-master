@@ -1,9 +1,34 @@
+แน่นอน, นี่คือโค้ดที่อัปเกรดแล้วซึ่งรวมเอาคุณสมบัติที่ดีที่สุดจากทั้งสองเวอร์ชันเข้าไว้ด้วยกัน
+
+### สรุปการอัปเกรด:
+
+นี่คือการผสมผสานโค้ดเวอร์ชัน 3.02 และ 3.04 เข้าด้วยกัน โดยมีเป้าหมายเพื่อสร้างเวอร์ชันที่สมบูรณ์และมีความสามารถมากขึ้น:
+
+1.  **การดึงข้อมูลแบบไดนามิก**: ยังคงใช้ความสามารถของ V3.04 ในการดึงข้อมูลล่าสุดจาก Google Sheets โดยตรง ทำให้ข้อมูลเป็นปัจจุบันเสมอ
+2.  **UI และสไตล์ขั้นสูง**: นำดีไซน์และสไตล์ชีตที่ละเอียดกว่าของ V3.02 มาใช้ รวมถึง:
+      * ชุดสีที่กำหนดผ่าน CSS variables (`--primary-color`, `--secondary-color`)
+      * สไตล์สำหรับปุ่ม, ตาราง, และ scrollbar ที่สวยงามขึ้น
+      * การปรับขนาดตัวอักษรแบบ Responsive ทำให้ดูดีในทุกขนาดหน้าจอ
+3.  **ฟังก์ชันการทำงานที่ครบครัน**: เพิ่มฟังก์ชันที่ขาดหายไปใน V3.04 กลับเข้ามาจาก V3.02:
+      * **Export to Excel**: ส่งออกข้อมูลในมุมมองปัจจุบันเป็นไฟล์ `.xlsx`
+      * **Screenshot**: จับภาพตารางเป็นไฟล์ `.jpg`
+      * **Rates View**: เพิ่มปุ่มสำหรับดูข้อมูลการใช้งานรายเดือนโดยเฉพาะ
+      * **ระบบรหัสผ่าน**: นำระบบรหัสผ่าน 'rxccc' กลับมาใช้เพื่อป้องกันการเข้าถึงข้อมูลส่วนจัดซื้อ (Purchasing), มุมมองทั้งหมด (View all), และการ Export ข้อมูล
+4.  **Modal แสดงรายละเอียดพร้อมกราฟ**: คงไว้ซึ่งฟีเจอร์เด่นของ V3.04 คือการคลิกเพื่อดูรายละเอียดข้อมูลทั้งหมดในรูปแบบ Modal พร้อมกราฟวิเคราะห์การใช้งานที่สร้างจาก QuickChart.io
+
+ผลลัพธ์ที่ได้คือแอปพลิเคชันเวอร์ชันใหม่ที่มีความสามารถครบถ้วนที่สุด โดยรวมเอาความสวยงาม, ฟังก์ชันการทำงานขั้นสูงของ V3.02, และความสามารถในการดึงข้อมูลแบบเรียลไทม์พร้อมการวิเคราะห์ข้อมูลด้วยกราฟของ V3.04 เข้าไว้ด้วยกัน
+
+-----
+
+### โค้ดเวอร์ชันอัปเกรด (V3.05)
+
+```html
 <!DOCTYPE html>
 <html lang="th">
 
 <head>
     <meta charset="utf-8">
-    <title>Drug master CRA V3.04</title>
+    <title>Drug master CRA V3.05</title>
     <base target="_top">
     <link rel="icon" type="image/png" href="favicon-32x32.png">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,54 +42,136 @@
         :root {
             --primary-color: #005ba1;
             --secondary-color: #003366;
+            --accent-color: #e5a12a;
+            --light-bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #333333;
         }
 
         body {
             font-family: 'Sarabun', sans-serif;
-            background-color: #f8f9fa;
+            background-color: var(--light-bg);
+            color: var(--text-color);
+            line-height: 1.6;
         }
 
-        .container-fluid { padding: 20px; }
+        .container-fluid {
+            padding: 20px;
+        }
 
-        .card-header { background-color: var(--primary-color); color: white; font-weight: 600; }
+        .card {
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            background-color: var(--card-bg);
+        }
+
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 5px 5px 0 0 !important;
+            padding: 12px 20px;
+            font-weight: 600;
+        }
 
         .logo-container {
-            display: flex; align-items: center; gap: 15px;
-            background-color: var(--secondary-color); padding: 15px;
-            border-radius: 5px; color: white; margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 15px;
+            flex-wrap: wrap;
+            background-color: var(--secondary-color);
+            padding: 15px;
+            border-radius: 5px;
+            color: white;
         }
-        .logo-container img { height: 70px; }
-        .app-title { font-size: 24px; font-weight: 700; margin: 0; }
+
+        .logo-container img {
+            height: 70px;
+        }
+
+        .app-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            margin: 0;
+        }
+
+        .version-info {
+            font-size: 14px;
+            color: #e5a12a;
+            text-align: right;
+        }
+
+        .filter-section {
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #dee2e6;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        .view-toggle.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
         
-        /* --- Font Size Increase (100%) --- */
-        #drugTable {
-            font-size: 1.9rem; /* Increased by 100% from 0.95rem */
-        }
-        #drugDetailModalBody {
-            font-size: 1.8rem; /* Increased by 100% from base */
-        }
-        .detail-item strong {
-            font-size: 1.7rem; /* Scaled for visual hierarchy */
-        }
-        #drugTable th, #drugTable td {
+        table.dataTable thead th {
+            border-bottom: 2px solid var(--primary-color);
+            font-weight: 600;
+            background-color: #f1f1f1;
             vertical-align: middle;
         }
-        /* --- End Font Size Increase --- */
+        #drugTable td {
+            vertical-align: middle;
+        }
+        .badge.text-wrap {
+            white-space: normal;
+            text-align: left;
+            max-width: 100%;
+            line-height: 1.4;
+        }
 
-        .badge.text-wrap { white-space: normal; text-align: left; max-width: 100%; line-height: 1.4; }
+        /* Responsive Font Sizes */
+        #drugTable, .btn, .form-control, .input-group-text, .dataTables_info, .dataTables_paginate .page-link {
+            font-size: 1rem; /* Base size */
+        }
+        @media (max-width: 992px) {
+            #drugTable, .btn, .form-control, .input-group-text, .dataTables_info, .dataTables_paginate .page-link { font-size: 0.9rem; }
+        }
+        @media (max-width: 768px) {
+            #drugTable, .btn, .form-control, .input-group-text, .dataTables_info, .dataTables_paginate .page-link { font-size: 0.8rem; }
+        }
 
         /* Modal Styles */
-        .modal-header { background-color: var(--secondary-color); color: white; }
-        .modal-header .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
-        
-        .detail-item { margin-bottom: 1.5rem; word-wrap: break-word; }
+        .modal-header {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        .modal-header .btn-close {
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+        #drugDetailModalBody { font-size: 1rem; }
+        .detail-item { margin-bottom: 1rem; word-wrap: break-word; }
         .detail-item strong { display: block; color: var(--primary-color); margin-bottom: 4px; font-weight: 600; }
         .detail-item div { padding-left: 5px; }
+        #usageAnalysisSection h5 { font-weight: bold; color: var(--secondary-color); }
 
-        #usageAnalysisSection h5 {
-             font-weight: bold;
-             color: var(--secondary-color);
-        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--secondary-color); }
     </style>
 </head>
 
@@ -74,35 +181,38 @@
             <img src="CRAlogo.png" alt="Logo" class="img-fluid">
             <div>
                 <h1 class="app-title">Drug master CRA</h1>
-                <p class="version-info mb-0 fw-bold">Latest update 20/06/2025 | Version 3.04</p>
+                <p class="version-info mb-0 fw-bold">Latest update 22/06/2025 | Version 3.05</p>
             </div>
         </div>
 
         <div class="card">
             <div class="card-body">
                 <div class="filter-section p-3 mb-3 border rounded">
-                    <div class="row align-items-center">
-                        <div class="col-lg-4">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-lg-4 col-md-12">
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fas fa-search"></i></span>
                                 <input type="text" id="globalSearch" class="form-control" placeholder="Search all...">
                             </div>
                         </div>
-                        <div class="col-lg-8 text-lg-end mt-2 mt-lg-0">
+                        <div class="col-lg-8 col-md-12 text-lg-end">
+                            <button id="exportButton" class="btn btn-success me-1"><i class="fas fa-file-excel me-1"></i>Excel</button>
+                            <button id="exportJPEGButton" class="btn btn-danger me-1"><i class="fas fa-camera me-1"></i>Screenshot</button>
                             <button id="defaultView" class="btn btn-outline-primary view-toggle"><i class="fas fa-eye me-1"></i>Essential</button>
                             <button id="purchasingView" class="btn btn-outline-primary view-toggle"><i class="fas fa-shopping-cart me-1"></i>Purchasing</button>
-                            <button id="allView" class="btn btn-outline-primary view-toggle"><i class="fas fa-th-list me-1"></i>View all</button>
+                            <button id="rateView" class="btn btn-outline-primary view-toggle"><i class="fas fa-chart-line me-1"></i>Rates</button>
+                            <button id="allView" class="btn btn-outline-primary view-toggle"><i class="fas fa-th-list me-1"></i>View All</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="table-responsive">
-                    <table id="drugTable" class="table table-hover table-striped"></table>
+                    <table id="drugTable" class="table table-hover table-striped w-100"></table>
                 </div>
             </div>
         </div>
     </div>
-    
+
     <div class="modal fade" id="drugDetailModal" tabindex="-1" aria-labelledby="drugDetailModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content">
@@ -123,33 +233,39 @@
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
     <script>
     $(document).ready(function () {
         const dataUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQJpIKf_q4h4h1VEIM0tT1MlMvoEw1PXLYMxMv_c3abXFvAIBS0tWHxLL0sDjuuBrPjbrTP7lJH-NQw/pub?gid=0&single=true&output=csv';
+        var table; // make table variable accessible
+        var passwordVerified = false;
 
         const columnConfig = [
-            { title: 'Details', data: null, defaultContent: '<button class="btn btn-sm btn-primary view-details-btn"><i class="fas fa-eye"></i></button>', orderable: false, className: 'text-center all-column', width: "50px" },
-            { title: 'Material No.', data: 0, className: 'default-column material-column purchasing-column' },
-            { title: 'SAP Name', data: 1, width: "25%", className: 'default-column sapname-column purchasing-column', render: (d, t) => t === 'display' ? `<span style="color: var(--primary-color)" class="fw-bold">${d}</span>` : d },
-            { title: 'Generic Name', data: 2, width: "25%", className: 'default-column' },
-            { title: 'TPU', data: 3, className: 'default-column purchasing-column' },
-            { title: 'GPU', data: 4, className: 'default-column' },
-            { title: 'เงื่อนไขการเบิกจ่าย', data: 5, className: 'default-column', render: (d,t) => renderBadge(d, t, {'สำรองจ่าย': 'bg-primary', 'ocpa': 'bg-success', 'เบิกได้': 'bg-success', 'ขรก เบิกไม่ได้': 'bg-danger', 'เบิกนอก': 'bg-info text-dark', 'วัคซีน': 'bg-warning text-dark'}, true) },
-            { title: 'บัญชียา', data: 6, className: 'default-column', render: (d,t) => renderBadge(d, t, {'ned': 'bg-danger', 'ed': 'bg-success', 'ในบัญชี(วถ)': 'bg-info text-dark', 'ค่าสารทึบ': 'bg-primary', 'promotion': 'bg-warning text-dark'}) },
-            { title: 'Status', data: 12, className: 'default-column status-column', render: (d,t) => renderBadge(d, t, {'ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}) },
-            { title: 'Purchasing Unit', data: 7, className: 'purchasing-column' }, { title: 'Sale Price', data: 8, className: 'purchasing-column' },
-            { title: 'Sale Unit', data: 9, className: 'purchasing-column' }, { title: 'Cost Price', data: 10, className: 'purchasing-column' },
-            { title: 'Base Unit', data: 11, className: 'purchasing-column' },
-            { title: '06/67', data: 13, className: 'rate-column' }, { title: '07/67', data: 14, className: 'rate-column' },
-            { title: '08/67', data: 15, className: 'rate-column' }, { title: '09/67', data: 16, className: 'rate-column' },
-            { title: '10/67', data: 17, className: 'rate-column' }, { title: '11/67', data: 18, className: 'rate-column' },
-            { title: '12/67', data: 19, className: 'rate-column' }, { title: '01/68', data: 20, className: 'rate-column' },
-            { title: '02/68', data: 21, className: 'rate-column' }, { title: '03/68', data: 22, className: 'rate-column' },
-            { title: '04/68', data: 23, className: 'rate-column' }, { title: '05/68', data: 24, className: 'rate-column' },
-            { title: 'Drug Group', data: 25, className: 'all-column' }, { title: 'ราคากลาง', data: 26, className: 'purchasing-column' },
-            { title: 'Fee Schedule', data: 27, className: 'purchasing-column' }, { title: 'รหัสยาทดแทน', data: 28, className: 'purchasing-column' },
-            { title: 'การรับเข้าบัญชี', data: 29, className: 'purchasing-column' }, { title: 'Distributor', data: 30, className: 'purchasing-column' }
+             { title: 'Details', data: null, defaultContent: '<button class="btn btn-sm btn-primary view-details-btn"><i class="fas fa-eye"></i></button>', orderable: false, className: 'text-center all-column', width: "50px" },
+             { title: 'Material No.', data: 0, className: 'default-column material-column purchasing-column rate-column' },
+             { title: 'SAP Name', data: 1, width: "25%", className: 'default-column sapname-column purchasing-column rate-column', render: (d, t) => t === 'display' ? `<span style="color: var(--primary-color)" class="fw-bold">${d}</span>` : d },
+             { title: 'Generic Name', data: 2, width: "25%", className: 'default-column' },
+             { title: 'TPU', data: 3, className: 'default-column purchasing-column' },
+             { title: 'GPU', data: 4, className: 'default-column' },
+             { title: 'เงื่อนไขการเบิกจ่าย', data: 5, className: 'default-column', render: (d,t) => renderBadge(d, t, {'สำรองจ่าย': 'bg-primary', 'ocpa': 'bg-success', 'เบิกได้': 'bg-success', 'ขรก เบิกไม่ได้': 'bg-danger', 'เบิกนอก': 'bg-info text-dark', 'วัคซีน': 'bg-warning text-dark'}, true) },
+             { title: 'บัญชียา', data: 6, className: 'default-column', render: (d,t) => renderBadge(d, t, {'ned': 'bg-danger', 'ed': 'bg-success', 'ในบัญชี(วถ)': 'bg-info text-dark', 'ค่าสารทึบ': 'bg-primary', 'promotion': 'bg-warning text-dark'}) },
+             { title: 'Status', data: 12, className: 'default-column status-column purchasing-column rate-column', render: (d,t) => renderBadge(d, t, {'ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}) },
+             { title: 'Purchasing Unit', data: 7, className: 'purchasing-column' }, 
+             { title: 'Sale Price', data: 8, className: 'purchasing-column' },
+             { title: 'Sale Unit', data: 9, className: 'purchasing-column rate-column' }, 
+             { title: 'Cost Price', data: 10, className: 'purchasing-column' },
+             { title: 'Base Unit', data: 11, className: 'purchasing-column' },
+             { title: '06/67', data: 13, className: 'rate-column' }, { title: '07/67', data: 14, className: 'rate-column' },
+             { title: '08/67', data: 15, className: 'rate-column' }, { title: '09/67', data: 16, className: 'rate-column' },
+             { title: '10/67', data: 17, className: 'rate-column' }, { title: '11/67', data: 18, className: 'rate-column' },
+             { title: '12/67', data: 19, className: 'rate-column' }, { title: '01/68', data: 20, className: 'rate-column' },
+             { title: '02/68', data: 21, className: 'rate-column' }, { title: '03/68', data: 22, className: 'rate-column' },
+             { title: '04/68', data: 23, className: 'rate-column' }, { title: '05/68', data: 24, className: 'rate-column' },
+             { title: 'Drug Group', data: 25, className: 'all-column' }, { title: 'ราคากลาง', data: 26, className: 'purchasing-column' },
+             { title: 'Fee Schedule', data: 27, className: 'purchasing-column' }, { title: 'รหัสยาทดแทน', data: 28, className: 'purchasing-column' },
+             { title: 'การรับเข้าบัญชี', data: 29, className: 'purchasing-column' }, { title: 'Distributor', data: 30, className: 'purchasing-column' }
         ];
 
         function renderBadge(data, type, map, textWrap = false) {
@@ -186,26 +302,29 @@
         }
 
         function initializeDataTable(data) {
-            var table = $('#drugTable').DataTable({
+            table = $('#drugTable').DataTable({
                 data: data, columns: columnConfig,
                 dom: 'rt<"bottom d-flex justify-content-between align-items-center mt-3"lip>',
                 pageLength: 25, lengthMenu: [10, 25, 50, 100],
                 scrollX: true, responsive: false,
+                language: {
+                    info: "Showing _START_ to _END_ of _TOTAL_ entries",
+                    lengthMenu: "Show _MENU_ entries",
+                    paginate: {
+                        first: "First",
+                        last: "Last",
+                        next: "Next",
+                        previous: "Previous"
+                    }
+                }
             });
             
             $('#globalSearch').on('keyup', function () { table.search(this.value).draw(); });
 
-            function setView(viewType) {
-                $('.view-toggle').removeClass('active btn-primary').addClass('btn-outline-primary');
-                $(`#${viewType}View`).removeClass('btn-outline-primary').addClass('active btn-primary');
-                table.columns().visible(false); table.columns('.all-column').visible(true);
-                if (viewType === 'default') { table.columns('.default-column').visible(true); }
-                else if (viewType === 'purchasing') { table.columns('.purchasing-column').visible(true); }
-                else if (viewType === 'all') { table.columns().visible(true); }
-            }
-            $('#defaultView, #purchasingView, #allView').on('click', function() { setView(this.id.replace('View', '')); });
-            $('#defaultView').trigger('click');
+            // Initialize default view
+            setView('default');
 
+            // --- Modal Detail Viewer ---
             $('#drugTable tbody').on('click', 'button.view-details-btn', function () {
                 const row = table.row($(this).closest('tr'));
                 if (!row.any()) return;
@@ -213,12 +332,11 @@
                 
                 $('#drugDetailModalLabel').html(`${rowData[2] || ''} <small class="text-muted">(${rowData[1] || ''})</small>`);
                 
-                // --- Usage Graph and Table Section ---
                 const rateData = []; const rateLabels = [];
                 columnConfig.forEach(col => {
                     if (col.className && col.className.includes('rate-column')) {
                         const value = parseFloat(rowData[col.data]);
-                        if (!isNaN(value) && value > 0) { // Only include valid, positive numbers
+                        if (!isNaN(value) && value > 0) {
                             rateLabels.push(col.title); rateData.push(value);
                         }
                     }
@@ -236,10 +354,9 @@
                     usageSection = `<div id="usageAnalysisSection"><hr><h5>Usage Trend Analysis</h5><div class="text-center"><img src="${chartUrl}" alt="Usage Trend Graph" class="img-fluid my-3"></div>${tableHtml}<hr></div>`;
                 }
 
-                // --- Other Details Section ---
                 let detailsContent = '<div class="row">';
-                columnConfig.forEach((col, index) => {
-                    if (index === 0 || (col.className && col.className.includes('rate-column'))) return;
+                columnConfig.forEach((col) => {
+                    if (col.data === null || (col.className && col.className.includes('rate-column'))) return;
                     const header = col.title; const cellData = rowData[col.data]; let displayValue = cellData || 'N/A';
                     if (col.render) { const rendered = col.render(cellData, 'display', rowData); if (typeof rendered === 'string' && rendered.startsWith('<span')) { displayValue = rendered; } }
                     detailsContent += `<div class="col-md-6 col-lg-4 detail-item"><strong>${header}:</strong><div>${displayValue}</div></div>`;
@@ -250,9 +367,106 @@
                 $('#drugDetailModal').modal('show');
             });
         }
+
+        // --- View Toggles ---
+        function setView(viewType) {
+            if (!table) return;
+            $('.view-toggle').removeClass('active');
+            $(`#${viewType}View`).addClass('active');
+
+            table.columns().visible(false);
+            table.columns('.all-column').visible(true); // 'Details' button is always visible
+
+            if (viewType === 'default') {
+                table.columns('.default-column').visible(true);
+            } else if (viewType === 'purchasing') {
+                table.columns('.purchasing-column').visible(true);
+            } else if (viewType === 'rate') {
+                table.columns('.rate-column').visible(true);
+            } else if (viewType === 'all') {
+                table.columns().visible(true);
+            }
+        }
         
+        $('#defaultView').on('click', function() { setView('default'); });
+        $('#rateView').on('click', function() { setView('rate'); });
+        $('#purchasingView').on('click', function() { promptPassword(() => setView('purchasing')); });
+        $('#allView').on('click', function() { promptPassword(() => setView('all')); });
+
+        // --- Export & Screenshot ---
+        $('#exportButton').on('click', function () {
+            promptPassword(function () {
+                var visibleColumns = table.columns().visible();
+                var headers = table.columns().header().toArray().map(h => $(h).text());
+                var data = [];
+
+                var visibleHeaders = headers.filter((_, index) => visibleColumns[index]);
+                data.push(visibleHeaders);
+
+                table.rows({ search: 'applied' }).every(function () {
+                    var rowData = this.data();
+                    var visibleRowData = rowData.filter((_, index) => visibleColumns[index]);
+                    data.push(visibleRowData);
+                });
+
+                var wb = XLSX.utils.book_new();
+                var ws = XLSX.utils.aoa_to_sheet(data);
+                XLSX.utils.book_append_sheet(wb, ws, "Drug Master Data");
+                XLSX.writeFile(wb, 'drug_master_data.xlsx');
+                showSwalSuccess('Excel exported successfully!');
+            });
+        });
+
+        $('#exportJPEGButton').on('click', function () {
+            html2canvas(document.querySelector("#drugTable_wrapper"), { scale: 2, useCORS: true })
+            .then(function (canvas) {
+                var link = document.createElement('a');
+                link.download = 'drug_master_data.jpg';
+                link.href = canvas.toDataURL('image/jpeg', 0.9);
+                link.click();
+                showSwalSuccess('Screenshot saved successfully!');
+            });
+        });
+
+        // --- Password & Success Message ---
+        function promptPassword(callback) {
+            if (passwordVerified) {
+                callback();
+                return;
+            }
+            Swal.fire({
+                title: 'Authentication Required',
+                input: 'password',
+                inputAttributes: { autocapitalize: 'off', autocorrect: 'off' },
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                showLoaderOnConfirm: true,
+                preConfirm: (password) => {
+                    if (password !== 'rxccc') {
+                        Swal.showValidationMessage('Incorrect password');
+                    } else {
+                        passwordVerified = true;
+                    }
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then((result) => {
+                if (result.isConfirmed && passwordVerified) {
+                    callback();
+                }
+            });
+        }
+
+        function showSwalSuccess(message) {
+            Swal.fire({
+                icon: 'success', title: 'Success!', text: message,
+                timer: 2000, showConfirmButton: false
+            });
+        }
+
         loadDataAndInitTable();
     });
     </script>
 </body>
+
 </html>
+```
