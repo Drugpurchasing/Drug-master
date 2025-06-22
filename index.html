@@ -194,7 +194,6 @@
         }
         
         const columnConfig = [
-             // MODIFIED: Column title changed
              { title: 'Detail View', data: null, defaultContent: '<button class="btn btn-sm btn-primary view-details-btn"><i class="fas fa-eye"></i></button>', orderable: false, className: 'text-center all-column', width: "50px" },
              { title: 'Material No.', data: 0, className: 'default-column material-column purchasing-column rate-column' },
              { title: 'SAP Name', data: 1, width: "25%", className: 'default-column sapname-column purchasing-column rate-column', render: (d, t) => t === 'display' && d ? `<span style="color: var(--primary-color)" class="fw-bold">${d}</span>` : d },
@@ -202,19 +201,24 @@
              { title: 'GPU', data: 4, className: 'default-column' }, { title: 'เงื่อนไขการเบิกจ่าย', data: 5, className: 'default-column', render: (d,t) => renderBadge(d, t, {'สำรองจ่าย': 'bg-primary', 'ocpa': 'bg-success', 'เบิกได้': 'bg-success', 'ขรก เบิกไม่ได้': 'bg-danger', 'เบิกนอก': 'bg-info text-dark', 'วัคซีน': 'bg-warning text-dark'}, true) },
              { title: 'บัญชียา', data: 6, className: 'default-column', render: (d,t) => renderBadge(d, t, {'ned': 'bg-danger', 'ed': 'bg-success', 'ในบัญชี(วถ)': 'bg-info text-dark', 'ค่าสารทึบ': 'bg-primary', 'promotion': 'bg-warning text-dark'}) },
              { title: 'Status', data: 12, className: 'default-column status-column purchasing-column rate-column', render: (d,t) => renderBadge(d, t, {'ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}) },
-             { title: 'Purchasing Unit', data: 7, className: 'purchasing-column' }, { title: 'Sale Price', data: 8, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
-             { title: 'Sale Unit', data: 9, className: 'purchasing-column rate-column' }, { title: 'Cost Price', data: 10, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
+             { title: 'Purchasing Unit', data: 7, className: 'purchasing-column' },
+             // MODIFIED: Added 'default-column' to show in Essential View
+             { title: 'Sale Price', data: 8, className: 'purchasing-column default-column', render: (data) => formatNumber(data, 2, 2) },
+             { title: 'Sale Unit', data: 9, className: 'purchasing-column rate-column default-column' }, 
+             { title: 'Cost Price', data: 10, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
              { title: 'Base Unit', data: 11, className: 'purchasing-column' }, { title: '06/67', data: 13, className: 'rate-column' }, { title: '07/67', data: 14, className: 'rate-column' },
              { title: '08/67', data: 15, className: 'rate-column' }, { title: '09/67', data: 16, className: 'rate-column' }, { title: '10/67', data: 17, className: 'rate-column' }, { title: '11/67', data: 18, className: 'rate-column' },
              { title: '12/67', data: 19, className: 'rate-column' }, { title: '01/68', data: 20, className: 'rate-column' }, { title: '02/68', data: 21, className: 'rate-column' }, { title: '03/68', data: 22, className: 'rate-column' },
              { title: '04/68', data: 23, className: 'rate-column' }, { title: '05/68', data: 24, className: 'rate-column' }, 
-             // MODIFIED: Drug group removed from 'all-column' to hide from essential view
-             { title: 'Drug Group', data: 25, className: 'purchasing-column' },
+             // MODIFIED: Removed 'purchasing-column' to hide from that view
+             { title: 'Drug Group', data: 25, className: '' },
              { title: 'ราคากลาง', data: 26, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) }, { title: 'Fee Schedule', data: 27, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
              { title: 'รหัสยาทดแทน', data: 28, className: 'purchasing-column' }, { title: 'การรับเข้าบัญชี', data: 29, className: 'purchasing-column' },
              { title: 'Distributor', data: 30, className: 'purchasing-column' },
              { title: 'Image 1', data: 31, visible: false, className: 'modal-only' }, { title: 'Image 2', data: 32, visible: false, className: 'modal-only' },
-             { title: 'เงื่อนไขบัญชียาหลัก', data: 33, visible: false, className: 'modal-only' }, { title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', data: 34, visible: false, className: 'modal-only' }
+             { title: 'เงื่อนไขบัญชียาหลัก', data: 33, visible: false, className: 'modal-only' }, { title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', data: 34, visible: false, className: 'modal-only' },
+             // MODIFIED: Added PAP column
+             { title: 'PAP', data: 35, visible: false, className: 'modal-only' }
         ];
 
         function renderBadge(data, type, map, textWrap = false) {
@@ -257,9 +261,7 @@
         function initializeDataTable(data) {
             table = $('#drugTable').DataTable({
                 data: data, columns: columnConfig, dom: 'rt<"bottom d-flex justify-content-between align-items-center mt-3"lip>',
-                // MODIFIED: Default page length set to 10
-                pageLength: 10, 
-                lengthMenu: [10, 25, 50, 100], scrollX: true, responsive: false,
+                pageLength: 10, lengthMenu: [10, 25, 50, 100], scrollX: true, responsive: false,
                 language: { info: "Showing _START_ to _END_ of _TOTAL_ entries", lengthMenu: "Show _MENU_ entries", paginate: { first: "First", last: "Last", next: "Next", previous: "Previous" } }
             });
             
@@ -335,7 +337,7 @@
                 });
                 if (row4Html) detailsHtml += `<div class="detail-row">${row4Html}</div>`;
                 
-                let row5Html = ''; // New Cards
+                let row5Html = '';
                 let conditions = rowData[colMap['เงื่อนไขบัญชียาหลัก']];
                 if (conditions) conditions = conditions.replace(/\n/g, '<br>');
                 row5Html += createDetailCard({ title: 'เงื่อนไขบัญชียาหลัก', value: conditions });
@@ -345,11 +347,18 @@
                 row5Html += createDetailCard({ title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', value: indications });
                 if (row5Html) detailsHtml += `<div class="detail-row">${row5Html}</div>`;
 
+                // MODIFIED: Added PAP card row
+                let row6Html = '';
+                let papValue = rowData[colMap['PAP']];
+                if (papValue) papValue = papValue.replace(/\n/g, '<br>');
+                row6Html += createDetailCard({ title: 'PAP', value: papValue });
+                if (row6Html) detailsHtml += `<div class="detail-row">${row6Html}</div>`;
+
+
                 let imageHtml = '';
                 if (rowData[31]) imageHtml += `<img src="${rowData[31]}" class="drug-image img-fluid" alt="Drug Image 1" onerror="this.style.display='none'">`;
                 if (rowData[32]) imageHtml += `<img src="${rowData[32]}" class="drug-image img-fluid" alt="Drug Image 2" onerror="this.style.display='none'">`;
                 
-                // --- MODIFIED: Usage table display logic ---
                 let usageTablesHtml = '';
                 const rateLabels = [], rateData = [], caseData = [];
                 columnConfig.forEach(col => {
@@ -360,19 +369,20 @@
                         rateLabels.push(col.title);
                     }
                 });
-
                 const allRatesAreZero = rateData.every(rate => rate === 0);
 
-                if (allRatesAreZero) {
-                    usageTablesHtml = '<h5>อัตราการใช้ยา</h5><p class="text-center text-muted mt-3">ไม่มีอัตราการใช้ย้อนหลัง 1 ปี</p>';
-                } else {
-                    let rateTable = '<h5>อัตราการใช้ยา (Usage Rate)</h5><div class="table-responsive"><table class="table table-sm table-bordered mt-3"><thead><tr>';
-                    rateLabels.forEach(label => rateTable += `<th>${label}</th>`);
-                    rateTable += `</tr></thead><tbody><tr>${rateData.map(d => `<td>${formatNumber(d, 0, 0)}</td>`).join('')}</tr></tbody></table></div>`;
-                    let caseTable = '<h5 class="mt-4">จำนวนเคส (Case Count)</h5><div class="table-responsive"><table class="table table-sm table-bordered mt-3"><thead><tr>';
-                    rateLabels.forEach(label => caseTable += `<th>${label}</th>`);
-                    caseTable += `</tr></thead><tbody><tr>${caseData.map(d => `<td>${formatNumber(d, 0, 0)}</td>`).join('')}</tr></tbody></table></div>`;
-                    usageTablesHtml = rateTable + caseTable;
+                if (rateLabels.length > 0) { // Only show section if rate columns exist
+                    if (allRatesAreZero) {
+                        usageTablesHtml = '<h5>อัตราการใช้ยา</h5><p class="text-center text-muted mt-3">ไม่มีอัตราการใช้ย้อนหลัง 1 ปี</p>';
+                    } else {
+                        let rateTable = '<h5>อัตราการใช้ยา (Usage Rate)</h5><div class="table-responsive"><table class="table table-sm table-bordered mt-3"><thead><tr>';
+                        rateLabels.forEach(label => rateTable += `<th>${label}</th>`);
+                        rateTable += `</tr></thead><tbody><tr>${rateData.map(d => `<td>${formatNumber(d, 0, 0)}</td>`).join('')}</tr></tbody></table></div>`;
+                        let caseTable = '<h5 class="mt-4">จำนวนเคส (Case Count)</h5><div class="table-responsive"><table class="table table-sm table-bordered mt-3"><thead><tr>';
+                        rateLabels.forEach(label => caseTable += `<th>${label}</th>`);
+                        caseTable += `</tr></thead><tbody><tr>${caseData.map(d => `<td>${formatNumber(d, 0, 0)}</td>`).join('')}</tr></tbody></table></div>`;
+                        usageTablesHtml = rateTable + caseTable;
+                    }
                 }
 
                 const finalModalHtml = `
@@ -466,7 +476,6 @@
             });
         });
 
-        // SweetAlert prompt for main buttons (not inline)
         function promptPassword(callback, forceReauth = false) {
             if (passwordVerified && !forceReauth) { callback(); return; }
             Swal.fire({
