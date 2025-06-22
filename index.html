@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Drug master CRA V3.08</title>
+    <title>Drug master CRA V4.00</title>
     <base target="_top">
     <link rel="icon" type="image/png" href="favicon-32x32.png">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -89,8 +89,6 @@
         .sale-price-value { color: var(--success-color); }
         .cost-price-value { color: var(--warning-color); }
 
-        .multiline-content { white-space: pre-line; }
-
         .unlock-cost-btn { cursor: pointer; color: var(--accent-color); font-size: 0.85em; margin-left: 8px; transition: color 0.2s; }
         .unlock-cost-btn:hover { color: #ffae00; }
         .inline-error-msg { color: var(--danger-color); font-size: 0.8rem; margin-top: 4px; }
@@ -108,86 +106,34 @@
         ::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--secondary-color); }
 
-        /* --- START: Responsive Design Section --- */
-
-        /* For Tablets and smaller desktops */
+        /* --- Responsive Design Section --- */
         @media (max-width: 992px) {
-            #drugTable, .btn, .form-control, .input-group-text, .dataTables_info, .dataTables_paginate .page-link { 
-                font-size: 0.9rem; 
-            }
+            #drugTable, .btn, .form-control, .input-group-text, .dataTables_info, .dataTables_paginate .page-link { font-size: 0.9rem; }
             .main-title-value { font-size: 1.15rem !important; }
             .sale-price-value, .cost-price-value { font-size: 1.25rem !important; }
         }
-
-        /* For Mobile Phones */
         @media (max-width: 768px) {
-            .container-fluid {
-                padding: 10px;
-            }
-
-            .logo-container {
-                flex-direction: column;
-                text-align: center;
-                gap: 5px;
-            }
-            .logo-container img {
-                height: 50px;
-            }
-            .app-title {
-                font-size: 1.25rem;
-            }
-            .version-info {
-                text-align: center;
-                font-size: 0.75rem;
-            }
-
-            .filter-section .btn {
-                padding: 0.25rem 0.5rem;
-                font-size: 0.75rem;
-            }
-
-            #drugTable, #drugTable th, #drugTable td, .btn, .form-control, .input-group-text, .dataTables_info, .dataTables_paginate .page-link { 
-                font-size: 0.75rem; 
-            }
-            .dataTables_wrapper .bottom {
-                flex-direction: column;
-                align-items: center;
-                gap: 10px;
-            }
-
-            /* Modal Responsiveness */
-            .modal-body {
-                font-size: 0.9rem;
-            }
+            .container-fluid { padding: 10px; }
+            .logo-container { flex-direction: column; text-align: center; gap: 5px; }
+            .logo-container img { height: 50px; }
+            .app-title { font-size: 1.25rem; }
+            .version-info { text-align: center; font-size: 0.75rem; }
+            .filter-section .btn { padding: 0.25rem 0.5rem; font-size: 0.75rem; }
+            #drugTable, #drugTable th, #drugTable td, .btn, .form-control, .input-group-text, .dataTables_info, .dataTables_paginate .page-link { font-size: 0.75rem; }
+            .dataTables_wrapper .bottom { flex-direction: column; align-items: center; gap: 10px; }
+            .modal-body { font-size: 0.9rem; }
             #drugDetailModalBody .details-section, 
-            #drugDetailModalBody .image-section {
-                min-width: 100%; /* Ensure they stack vertically */
-            }
-
-            .detail-item {
-                padding: 8px 10px;
-            }
-            .detail-item strong {
-                font-size: 0.8rem;
-            }
-            .detail-item div {
-                font-size: 0.95rem;
-            }
-
+            #drugDetailModalBody .image-section { min-width: 100%; }
+            .detail-item { padding: 8px 10px; }
+            .detail-item strong { font-size: 0.8rem; }
+            .detail-item div { font-size: 0.95rem; }
             .main-title-value { font-size: 1rem !important; }
             .sale-price-value, .cost-price-value { font-size: 1.1rem !important; }
             .status-card strong, .status-card .badge { font-size: 0.85rem !important; }
             .highlight-card strong { font-size: 0.9rem !important; }
-
-            #usage-section h5 {
-                font-size: 1.2rem;
-            }
-            #usage-section .table {
-                font-size: 0.8rem;
-            }
+            #usage-section h5 { font-size: 1.2rem; }
+            #usage-section .table { font-size: 0.8rem; }
         }
-        /* --- END: Responsive Design Section --- */
-
     </style>
 </head>
 
@@ -197,7 +143,7 @@
             <img src="CRAlogo.png" alt="Logo" class="img-fluid">
             <div>
                 <h1 class="app-title">Drug master CRA</h1>
-                <p class="version-info mb-0 fw-bold">Latest update 22/06/2025 | Version 3.08</p>
+                <p class="version-info mb-0 fw-bold">Latest update 23/06/2025 | Version 4.00</p>
             </div>
         </div>
         <div class="card">
@@ -248,7 +194,8 @@
         }
         
         const columnConfig = [
-             { title: 'Details', data: null, defaultContent: '<button class="btn btn-sm btn-primary view-details-btn"><i class="fas fa-eye"></i></button>', orderable: false, className: 'text-center all-column', width: "50px" },
+             // MODIFIED: Column title changed
+             { title: 'Detail View', data: null, defaultContent: '<button class="btn btn-sm btn-primary view-details-btn"><i class="fas fa-eye"></i></button>', orderable: false, className: 'text-center all-column', width: "50px" },
              { title: 'Material No.', data: 0, className: 'default-column material-column purchasing-column rate-column' },
              { title: 'SAP Name', data: 1, width: "25%", className: 'default-column sapname-column purchasing-column rate-column', render: (d, t) => t === 'display' && d ? `<span style="color: var(--primary-color)" class="fw-bold">${d}</span>` : d },
              { title: 'Generic Name', data: 2, width: "25%", className: 'default-column' }, { title: 'TPU', data: 3, className: 'default-column purchasing-column' },
@@ -260,7 +207,9 @@
              { title: 'Base Unit', data: 11, className: 'purchasing-column' }, { title: '06/67', data: 13, className: 'rate-column' }, { title: '07/67', data: 14, className: 'rate-column' },
              { title: '08/67', data: 15, className: 'rate-column' }, { title: '09/67', data: 16, className: 'rate-column' }, { title: '10/67', data: 17, className: 'rate-column' }, { title: '11/67', data: 18, className: 'rate-column' },
              { title: '12/67', data: 19, className: 'rate-column' }, { title: '01/68', data: 20, className: 'rate-column' }, { title: '02/68', data: 21, className: 'rate-column' }, { title: '03/68', data: 22, className: 'rate-column' },
-             { title: '04/68', data: 23, className: 'rate-column' }, { title: '05/68', data: 24, className: 'rate-column' }, { title: 'Drug Group', data: 25, className: 'all-column' },
+             { title: '04/68', data: 23, className: 'rate-column' }, { title: '05/68', data: 24, className: 'rate-column' }, 
+             // MODIFIED: Drug group removed from 'all-column' to hide from essential view
+             { title: 'Drug Group', data: 25, className: 'purchasing-column' },
              { title: 'ราคากลาง', data: 26, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) }, { title: 'Fee Schedule', data: 27, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
              { title: 'รหัสยาทดแทน', data: 28, className: 'purchasing-column' }, { title: 'การรับเข้าบัญชี', data: 29, className: 'purchasing-column' },
              { title: 'Distributor', data: 30, className: 'purchasing-column' },
@@ -273,49 +222,21 @@
         }
 
         function robustCsvParser(csvText) {
-            const rows = [];
-            let currentRow = [];
-            let currentField = '';
-            let inQuotes = false;
-            const text = csvText.trim().replace(/\r\n/g, '\n');
-
+            const rows = []; let currentRow = []; let currentField = ''; let inQuotes = false; const text = csvText.trim().replace(/\r\n/g, '\n');
             for (let i = 0; i < text.length; i++) {
                 const char = text[i];
                 if (inQuotes) {
-                    if (char === '"') {
-                        if (i + 1 < text.length && text[i + 1] === '"') {
-                            currentField += '"';
-                            i++;
-                        } else {
-                            inQuotes = false;
-                        }
-                    } else {
-                        currentField += char;
-                    }
+                    if (char === '"') { if (i + 1 < text.length && text[i + 1] === '"') { currentField += '"'; i++; } else { inQuotes = false; } } else { currentField += char; }
                 } else {
                     switch (char) {
-                        case '"':
-                            inQuotes = true;
-                            break;
-                        case ',':
-                            currentRow.push(currentField);
-                            currentField = '';
-                            break;
-                        case '\n':
-                            currentRow.push(currentField);
-                            rows.push(currentRow);
-                            currentRow = [];
-                            currentField = '';
-                            break;
-                        default:
-                            currentField += char;
+                        case '"': inQuotes = true; break;
+                        case ',': currentRow.push(currentField); currentField = ''; break;
+                        case '\n': currentRow.push(currentField); rows.push(currentRow); currentRow = []; currentField = ''; break;
+                        default: currentField += char;
                     }
                 }
             }
-            if (currentField || currentRow.length > 0) {
-                currentRow.push(currentField);
-                rows.push(currentRow);
-            }
+            if (currentField || currentRow.length > 0) { currentRow.push(currentField); rows.push(currentRow); }
             return rows;
         }
 
@@ -336,7 +257,9 @@
         function initializeDataTable(data) {
             table = $('#drugTable').DataTable({
                 data: data, columns: columnConfig, dom: 'rt<"bottom d-flex justify-content-between align-items-center mt-3"lip>',
-                pageLength: 25, lengthMenu: [10, 25, 50, 100], scrollX: true, responsive: false,
+                // MODIFIED: Default page length set to 10
+                pageLength: 10, 
+                lengthMenu: [10, 25, 50, 100], scrollX: true, responsive: false,
                 language: { info: "Showing _START_ to _END_ of _TOTAL_ entries", lengthMenu: "Show _MENU_ entries", paginate: { first: "First", last: "Last", next: "Next", previous: "Previous" } }
             });
             
@@ -425,6 +348,8 @@
                 let imageHtml = '';
                 if (rowData[31]) imageHtml += `<img src="${rowData[31]}" class="drug-image img-fluid" alt="Drug Image 1" onerror="this.style.display='none'">`;
                 if (rowData[32]) imageHtml += `<img src="${rowData[32]}" class="drug-image img-fluid" alt="Drug Image 2" onerror="this.style.display='none'">`;
+                
+                // --- MODIFIED: Usage table display logic ---
                 let usageTablesHtml = '';
                 const rateLabels = [], rateData = [], caseData = [];
                 columnConfig.forEach(col => {
@@ -435,7 +360,12 @@
                         rateLabels.push(col.title);
                     }
                 });
-                if (rateData.some(d => d > 0) || caseData.some(c => c > 0)) {
+
+                const allRatesAreZero = rateData.every(rate => rate === 0);
+
+                if (allRatesAreZero) {
+                    usageTablesHtml = '<h5>อัตราการใช้ยา</h5><p class="text-center text-muted mt-3">ไม่มีอัตราการใช้ย้อนหลัง 1 ปี</p>';
+                } else {
                     let rateTable = '<h5>อัตราการใช้ยา (Usage Rate)</h5><div class="table-responsive"><table class="table table-sm table-bordered mt-3"><thead><tr>';
                     rateLabels.forEach(label => rateTable += `<th>${label}</th>`);
                     rateTable += `</tr></thead><tbody><tr>${rateData.map(d => `<td>${formatNumber(d, 0, 0)}</td>`).join('')}</tr></tbody></table></div>`;
@@ -444,6 +374,7 @@
                     caseTable += `</tr></thead><tbody><tr>${caseData.map(d => `<td>${formatNumber(d, 0, 0)}</td>`).join('')}</tr></tbody></table></div>`;
                     usageTablesHtml = rateTable + caseTable;
                 }
+
                 const finalModalHtml = `
                     <div class="modal-main-layout">
                         <div class="details-section">
@@ -535,6 +466,7 @@
             });
         });
 
+        // SweetAlert prompt for main buttons (not inline)
         function promptPassword(callback, forceReauth = false) {
             if (passwordVerified && !forceReauth) { callback(); return; }
             Swal.fire({
