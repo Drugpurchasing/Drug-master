@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Drug master CRA V3.07</title>
+    <title>Drug master CRA V3.08</title>
     <base target="_top">
     <link rel="icon" type="image/png" href="favicon-32x32.png">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -169,7 +169,7 @@
             <img src="CRAlogo.png" alt="Logo" class="img-fluid">
             <div>
                 <h1 class="app-title">Drug master CRA</h1>
-                <p class="version-info mb-0 fw-bold">Latest update 22/06/2025 | Version 3.07</p>
+                <p class="version-info mb-0 fw-bold">Latest update 22/06/2025 | Version 3.08</p>
             </div>
         </div>
 
@@ -230,6 +230,18 @@
         var table; 
         var passwordVerified = false;
 
+        // --- Reusable Number Formatting Function ---
+        function formatNumber(data, minDecimals = 0, maxDecimals = 0) {
+            const number = parseFloat(data);
+            if (isNaN(number)) {
+                return data === null || data === '' ? '-' : data;
+            }
+            return number.toLocaleString('en-US', {
+                minimumFractionDigits: minDecimals,
+                maximumFractionDigits: maxDecimals
+            });
+        }
+        
         const columnConfig = [
              { title: 'Details', data: null, defaultContent: '<button class="btn btn-sm btn-primary view-details-btn"><i class="fas fa-eye"></i></button>', orderable: false, className: 'text-center all-column', width: "50px" },
              { title: 'Material No.', data: 0, className: 'default-column material-column purchasing-column rate-column' },
@@ -241,9 +253,10 @@
              { title: 'บัญชียา', data: 6, className: 'default-column', render: (d,t) => renderBadge(d, t, {'ned': 'bg-danger', 'ed': 'bg-success', 'ในบัญชี(วถ)': 'bg-info text-dark', 'ค่าสารทึบ': 'bg-primary', 'promotion': 'bg-warning text-dark'}) },
              { title: 'Status', data: 12, className: 'default-column status-column purchasing-column rate-column', render: (d,t) => renderBadge(d, t, {'ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}) },
              { title: 'Purchasing Unit', data: 7, className: 'purchasing-column' }, 
-             { title: 'Sale Price', data: 8, className: 'purchasing-column' },
+             // *** FIX: Added render function for number formatting ***
+             { title: 'Sale Price', data: 8, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
              { title: 'Sale Unit', data: 9, className: 'purchasing-column rate-column' }, 
-             { title: 'Cost Price', data: 10, className: 'purchasing-column' },
+             { title: 'Cost Price', data: 10, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
              { title: 'Base Unit', data: 11, className: 'purchasing-column' },
              { title: '06/67', data: 13, className: 'rate-column' }, { title: '07/67', data: 14, className: 'rate-column' },
              { title: '08/67', data: 15, className: 'rate-column' }, { title: '09/67', data: 16, className: 'rate-column' },
@@ -251,8 +264,10 @@
              { title: '12/67', data: 19, className: 'rate-column' }, { title: '01/68', data: 20, className: 'rate-column' },
              { title: '02/68', data: 21, className: 'rate-column' }, { title: '03/68', data: 22, className: 'rate-column' },
              { title: '04/68', data: 23, className: 'rate-column' }, { title: '05/68', data: 24, className: 'rate-column' },
-             { title: 'Drug Group', data: 25, className: 'all-column' }, { title: 'ราคากลาง', data: 26, className: 'purchasing-column' },
-             { title: 'Fee Schedule', data: 27, className: 'purchasing-column' }, { title: 'รหัสยาทดแทน', data: 28, className: 'purchasing-column' },
+             { title: 'Drug Group', data: 25, className: 'all-column' }, 
+             { title: 'ราคากลาง', data: 26, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
+             { title: 'Fee Schedule', data: 27, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) }, 
+             { title: 'รหัสยาทดแทน', data: 28, className: 'purchasing-column' },
              { title: 'การรับเข้าบัญชี', data: 29, className: 'purchasing-column' }, { title: 'Distributor', data: 30, className: 'purchasing-column' }
         ];
 
@@ -315,59 +330,64 @@
                 
                 let detailsContent = '<div class="row">';
                 columnConfig.forEach((col) => {
-                    if (col.data === null || (col.className && col.className.includes('rate-column'))) return;
+                    // *** FIX: Corrected logic to show Sale Unit and other fields ***
+                    if (col.data === null || (col.className && col.className.includes('rate-column') && /^\d{2}\/\d{2}$/.test(col.title))) {
+                        return; // Skip Details button and MM/YY columns
+                    }
+                    
                     const header = col.title; 
                     const cellData = rowData[col.data]; 
-                    let displayValue = cellData || '-';
-                    if (col.render) { 
-                        const rendered = col.render(cellData, 'display', rowData); 
-                        if (typeof rendered === 'string' && rendered.startsWith('<span')) { 
-                            displayValue = rendered; 
-                        }
+                    let displayValue;
+
+                    // Apply formatting for specific columns in the modal
+                    if (['Sale Price', 'Cost Price', 'ราคากลาง', 'Fee Schedule'].includes(header)) {
+                        displayValue = formatNumber(cellData, 2, 2);
+                    } else if (col.render && !col.render.toString().includes('formatNumber')) { 
+                        // Use existing render if it's not our number formatter (e.g., for badges)
+                        const rendered = col.render(cellData, 'display', rowData);
+                        displayValue = (typeof rendered === 'string' && rendered.startsWith('<span')) ? rendered : cellData || '-';
+                    } else {
+                        displayValue = cellData || '-';
                     }
+
                     detailsContent += `<div class="col-md-6 col-lg-4 detail-item"><strong>${header}:</strong><div>${displayValue}</div></div>`;
                 });
                 detailsContent += '</div>';
 
-                const rateLabels = [];
-                const rateData = [];
-                const caseData = [];
+                const rateLabels = [], rateData = [], caseData = [];
 
                 columnConfig.forEach(col => {
-                    // *** FIX: Only include columns with title format MM/YY ***
                     if (col.className && col.className.includes('rate-column') && /^\d{2}\/\d{2}$/.test(col.title)) {
                         const rawValue = rowData[col.data] || '';
                         const rateMatch = rawValue.match(/^[0-9.]+/);
                         rateData.push(rateMatch ? parseFloat(rateMatch[0]) : 0);
-
                         const caseMatch = rawValue.match(/\((\d+)\)/);
                         caseData.push(caseMatch ? parseInt(caseMatch[1], 10) : 0);
-                        
                         rateLabels.push(col.title);
                     }
                 });
 
                 let usageSection = '';
                 if (rateData.some(d => d > 0) || caseData.some(c => c > 0)) {
-                    // *** FIX: Changed graph size w=500&h=250 ***
                     const chartConfig = { type: 'line', data: { labels: rateLabels, datasets: [{ label: 'Usage Rate', data: rateData, fill: false, borderColor: '#005ba1', backgroundColor: '#003366', tension: 0.1 }] }, options: { responsive: true, title: { display: true, text: 'Monthly Usage Trend' }, legend: { display: false } } };
                     const chartUrl = 'https://quickchart.io/chart?w=500&h=250&c=' + encodeURIComponent(JSON.stringify(chartConfig));
                     
                     let usageTableHtml = '<h5>อัตราการใช้ยา (Usage Rate)</h5><div class="table-responsive"><table class="table table-sm table-bordered mt-3"><thead><tr>';
                     rateLabels.forEach(label => usageTableHtml += `<th>${label}</th>`);
                     usageTableHtml += '</tr></thead><tbody><tr>';
-                    rateData.forEach(data => usageTableHtml += `<td>${data}</td>`);
+                    // *** FIX: Apply integer formatting to usage rate data ***
+                    rateData.forEach(data => usageTableHtml += `<td>${formatNumber(data, 0, 0)}</td>`);
                     usageTableHtml += '</tr></tbody></table></div>';
                     
                     let caseTableHtml = '<h5 class="mt-4">จำนวนเคส (Case Count)</h5><div class="table-responsive"><table class="table table-sm table-bordered mt-3"><thead><tr>';
                     rateLabels.forEach(label => caseTableHtml += `<th>${label}</th>`);
                     caseTableHtml += '</tr></thead><tbody><tr>';
-                    caseData.forEach(data => caseTableHtml += `<td>${data}</td>`);
+                    // *** FIX: Apply integer formatting to case count data ***
+                    caseData.forEach(data => caseTableHtml += `<td>${formatNumber(data, 0, 0)}</td>`);
                     caseTableHtml += '</tr></tbody></table></div>';
                     
                     let graphHtml = `<div class="text-center mt-4"><img src="${chartUrl}" alt="Usage Trend Graph" class="img-fluid my-3"></div>`;
 
-                    // *** FIX: Reordered to show tables first, then graph ***
                     usageSection = `<div id="usageAnalysisSection"><hr>${usageTableHtml}${caseTableHtml}${graphHtml}<hr></div>`;
                 } else {
                     usageSection = `<div id="usageAnalysisSection"><hr><h5 class="mt-3">Usage Trend Analysis</h5><p class="text-center text-muted mt-3">ไม่มีข้อมูลการใช้งาน</p></div>`;
