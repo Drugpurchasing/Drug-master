@@ -58,7 +58,7 @@
         .modal-header { background-color: var(--secondary-color); color: white; }
         .modal-header .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
 
-        /* --- MODIFIED STYLES for Modal Body --- */
+        /* --- STYLES for Modal Body --- */
         #drugDetailModalBody .modal-main-layout { display: flex; flex-wrap: wrap; gap: 20px; }
         #drugDetailModalBody .details-section { flex: 2; min-width: 400px; }
         #drugDetailModalBody .image-section { flex: 1; min-width: 280px; }
@@ -185,14 +185,73 @@
              { title: 'เงื่อนไขบัญชียาหลัก', data: 33, visible: false, className: 'modal-only' }, { title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', data: 34, visible: false, className: 'modal-only' }
         ];
 
-        function renderBadge(data, type, map, textWrap = false) { /* ... (no changes) ... */
+        function renderBadge(data, type, map, textWrap = false) {
             if (type === 'display' && data) { const status = data.toLowerCase().trim(); const cls = Object.entries(map).find(([key]) => status.includes(key))?.[1] || 'bg-secondary'; return `<span class="badge ${cls} ${textWrap ? 'text-wrap' : ''}">${data}</span>`; } return data;
         }
-        function parseCsvLine(line) { /* ... (no changes) ... */
-            const fields = []; let currentField = ''; let inQuotes = false; for (let i = 0; i < line.length; i++) { const char = line[i]; if (char === '"') { if (inQuotes && line[i+1] === '"') { currentField += '"'; i++; } else { inQuotes = !inQuotes; } } else if (char === ',' && !inQuotes) { fields.push(currentField); currentField = ''; } else { currentField += char; } } fields.push(currentField); return fields;
+
+        // --- NEW: Robust CSV Parser to handle newlines within fields ---
+        function robustCsvParser(csvText) {
+            const rows = [];
+            let currentRow = [];
+            let currentField = '';
+            let inQuotes = false;
+            const text = csvText.trim().replace(/\r\n/g, '\n');
+
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                if (inQuotes) {
+                    if (char === '"') {
+                        if (i + 1 < text.length && text[i + 1] === '"') {
+                            currentField += '"';
+                            i++;
+                        } else {
+                            inQuotes = false;
+                        }
+                    } else {
+                        currentField += char;
+                    }
+                } else {
+                    switch (char) {
+                        case '"':
+                            inQuotes = true;
+                            break;
+                        case ',':
+                            currentRow.push(currentField);
+                            currentField = '';
+                            break;
+                        case '\n':
+                            currentRow.push(currentField);
+                            rows.push(currentRow);
+                            currentRow = [];
+                            currentField = '';
+                            break;
+                        default:
+                            currentField += char;
+                    }
+                }
+            }
+            if (currentField || currentRow.length > 0) {
+                currentRow.push(currentField);
+                rows.push(currentRow);
+            }
+            return rows;
         }
-        async function loadDataAndInitTable() { /* ... (no changes) ... */
-            try { const response = await fetch(dataUrl); if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`); const csvData = await response.text(); const parsedData = csvData.trim().split('\n').slice(1).map(row => parseCsvLine(row)); initializeDataTable(parsedData); } catch (error) { Swal.fire({ icon: 'error', title: 'Data Load Error', text: 'Failed to load or parse data.' }); }
+
+        async function loadDataAndInitTable() {
+            try {
+                const response = await fetch(dataUrl);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const csvData = await response.text();
+                
+                // --- Use the new robust parser ---
+                const parsedDataWithHeader = robustCsvParser(csvData);
+                const parsedData = parsedDataWithHeader.slice(1);
+
+                initializeDataTable(parsedData);
+            } catch (error) {
+                console.error("Data Load/Parse Error:", error);
+                Swal.fire({ icon: 'error', title: 'Data Load Error', text: 'Failed to load or parse data. See browser console for details.' });
+            }
         }
 
         function initializeDataTable(data) {
@@ -275,12 +334,13 @@
                 if (row4Html) detailsHtml += `<div class="detail-row">${row4Html}</div>`;
                 
                 let row5Html = ''; // New Cards
+                // --- FIX: Replace newline characters with <br> tags for HTML rendering ---
                 let conditions = rowData[colMap['เงื่อนไขบัญชียาหลัก']];
-                if (conditions) conditions = conditions.replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
+                if (conditions) conditions = conditions.replace(/\n/g, '<br>');
                 row5Html += createDetailCard({ title: 'เงื่อนไขบัญชียาหลัก', value: conditions });
 
                 let indications = rowData[colMap['ข้อบ่งชี้ที่ได้ขึ้นทะเบียน']];
-                if (indications) indications = indications.replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
+                if (indications) indications = indications.replace(/\n/g, '<br>');
                 row5Html += createDetailCard({ title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', value: indications });
                 if (row5Html) detailsHtml += `<div class="detail-row">${row5Html}</div>`;
 
@@ -318,7 +378,6 @@
                 $('#drugDetailModal').modal('show');
             });
 
-            // --- NEW: Inline password unlock flow ---
             $('#drugDetailModal').on('click', '.unlock-cost-btn', function(e) {
                 e.stopPropagation();
                 const unlockButton = $(this);
@@ -339,7 +398,7 @@
                 const submitButton = $(this);
                 const inputField = submitButton.siblings('.inline-password-input');
                 const valueContainer = submitButton.closest('.value-container');
-                const errorMsg = valueContainer.find('.inline-error-msg');
+                const errorMsg = submitButton.closest('.value-container').find('.inline-error-msg');
                 const password = inputField.val();
 
                 if (password === 'rxccc') {
@@ -353,7 +412,7 @@
             });
 
             $('#drugDetailModal').on('keypress', '.inline-password-input', function(e) {
-                if (e.which === 13) { // Enter key
+                if (e.which === 13) {
                     e.preventDefault();
                     $(this).siblings('.inline-submit-btn').click();
                 }
@@ -361,7 +420,7 @@
 
         }
         
-        function setView(viewType) { /* ... (no changes from previous version) ... */
+        function setView(viewType) {
             if (!table) return;
             $('.view-toggle').removeClass('active');
             $(`#${viewType}View`).addClass('active');
@@ -379,7 +438,7 @@
         }
         $('#defaultView').on('click', () => setView('default')); $('#rateView').on('click', () => setView('rate'));
         $('#purchasingView').on('click', () => promptPassword(() => setView('purchasing'))); $('#allView').on('click', () => promptPassword(() => setView('all')));
-        $('#exportButton').on('click', () => promptPassword(() => { /* ... (no changes) ... */
+        $('#exportButton').on('click', () => promptPassword(() => {
             const visibleColumns = table.columns(':visible').toArray()[0];
             const headers = table.columns(visibleColumns).header().toArray().map(h => $(h).text());
             const data = [headers];
@@ -391,7 +450,7 @@
             const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet(data); XLSX.utils.book_append_sheet(wb, ws, "Drug Master Data"); XLSX.writeFile(wb, 'drug_master_data.xlsx');
             showSwalSuccess('Excel exported successfully!');
         }));
-        $('#exportJPEGButton').on('click', () => { /* ... (no changes) ... */
+        $('#exportJPEGButton').on('click', () => {
             html2canvas(document.querySelector("#drugTable_wrapper"), { scale: 2, useCORS: true }).then(canvas => {
                 const link = document.createElement('a'); link.download = 'drug_master_data.jpg'; link.href = canvas.toDataURL('image/jpeg', 0.9); link.click();
                 showSwalSuccess('Screenshot saved successfully!');
