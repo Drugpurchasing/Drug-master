@@ -71,19 +71,24 @@
             border-radius: 5px; padding: 10px 15px; word-wrap: break-word;
             box-shadow: 0 1px 3px rgba(0,0,0,0.04);
         }
-        .detail-item.material-no-card { flex: 0 1 140px; }
         .detail-item strong { 
             display: block; color: var(--secondary-color); margin-bottom: 4px; 
             font-weight: 700; font-size: 0.9rem; text-transform: uppercase;
         }
         .detail-item div { font-size: 1.05rem; font-weight: 500; }
-        .detail-item .badge { font-size: 0.95rem; padding: .4em .6em; }
-
+        
+        /* Specific Card Styles */
+        .material-no-card { flex: 0 1 140px; }
+        .compact-card { flex: 0 1 120px !important; }
+        .status-card strong { font-size: 1rem !important; }
+        .status-card .badge { font-size: 1rem !important; padding: .5em .7em !important; }
+        .highlight-card strong { font-size: 1.05rem !important; }
+        
+        /* Specific Value Styles */
         .main-title-value { font-size: 1.25rem !important; font-weight: bold !important; }
         .sale-price-value, .cost-price-value { font-size: 1.35rem !important; font-weight: bold !important; }
         .sale-price-value { color: var(--success-color); }
         .cost-price-value { color: var(--warning-color); }
-        
 
         .unlock-cost-btn {
             cursor: pointer; color: var(--accent-color); font-size: 0.85em;
@@ -152,13 +157,6 @@
 
     <script>
     $(document).ready(function () {
-        // --- FIX: Prevent Bootstrap modal from stealing focus from SweetAlert2 ---
-        $(document).on('focusin', (e) => {
-            if ($(e.target).closest(".swal2-modal").length) {
-                e.stopImmediatePropagation();
-            }
-        });
-
         const dataUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQJpIKf_q4h4h1VEIM0tT1MlMvoEw1PXLYMxMv_c3abXFvAIBS0tWHxLL0sDjuuBrPjbrTP7lJH-NQw/pub?gid=0&single=true&output=csv';
         var table; 
         var passwordVerified = false;
@@ -185,7 +183,9 @@
              { title: '04/68', data: 23, className: 'rate-column' }, { title: '05/68', data: 24, className: 'rate-column' }, { title: 'Drug Group', data: 25, className: 'all-column' },
              { title: 'ราคากลาง', data: 26, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) }, { title: 'Fee Schedule', data: 27, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
              { title: 'รหัสยาทดแทน', data: 28, className: 'purchasing-column' }, { title: 'การรับเข้าบัญชี', data: 29, className: 'purchasing-column' },
-             { title: 'Distributor', data: 30, className: 'purchasing-column' }, { title: 'Image 1', data: 31, visible: false }, { title: 'Image 2', data: 32, visible: false }
+             { title: 'Distributor', data: 30, className: 'purchasing-column' }, { title: 'Image 1', data: 31, visible: false }, { title: 'Image 2', data: 32, visible: false },
+             // --- NEW: Added columns for new cards ---
+             { title: 'เงื่อนไขบัญชียาหลัก', data: 33, visible: false }, { title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', data: 34, visible: false }
         ];
 
         function renderBadge(data, type, map, textWrap = false) { /* ... (no changes) ... */
@@ -240,32 +240,34 @@
                 if (row1Html) detailsHtml += `<div class="detail-row">${row1Html}</div>`;
 
                 let row2Html = '';
-                ['TPU', 'GPU', 'เงื่อนไขการเบิกจ่าย', 'บัญชียา', 'Status'].forEach(title => {
+                row2Html += createDetailCard({ title: 'TPU', value: rowData[colMap['TPU']], itemClass: 'compact-card' });
+                row2Html += createDetailCard({ title: 'GPU', value: rowData[colMap['GPU']], itemClass: 'compact-card' });
+                ['เงื่อนไขการเบิกจ่าย', 'บัญชียา', 'Status'].forEach(title => {
                     const dataIndex = colMap[title];
                     const colCfg = columnConfig.find(c => c.data === dataIndex);
                     let displayValue = rowData[dataIndex];
                     if (colCfg && colCfg.render) displayValue = colCfg.render(displayValue, 'display', rowData) || '-';
-                    row2Html += createDetailCard({ title: title, value: displayValue });
+                    row2Html += createDetailCard({ title: title, value: displayValue, itemClass: 'status-card' });
                     usedIndices.add(dataIndex);
                 });
+                usedIndices.add(colMap['TPU']).add(colMap['GPU']);
                 if (row2Html) detailsHtml += `<div class="detail-row">${row2Html}</div>`;
                 
                 let row3Html = '';
                 const salePrice = formatNumber(rowData[colMap['Sale Price']], 2, 2);
                 const saleUnit = rowData[colMap['Sale Unit']];
-                row3Html += createDetailCard({ title: 'ราคาขาย', value: `${salePrice} / ${saleUnit || 'หน่วย'}`, valueClass: 'sale-price-value' });
+                row3Html += createDetailCard({ title: 'ราคาขาย', value: `${salePrice} / ${saleUnit || 'หน่วย'}`, valueClass: 'sale-price-value', itemClass: 'highlight-card' });
                 usedIndices.add(colMap['Sale Price']).add(colMap['Sale Unit']);
-
                 const costPrice = formatNumber(rowData[colMap['Cost Price']], 2, 2);
                 const baseUnit = rowData[colMap['Base Unit']];
                 const realCostValue = `${costPrice} / ${baseUnit || 'หน่วย'}`;
-                row3Html += createDetailCard({ title: 'ราคาทุน', value: realCostValue, valueClass: 'cost-price-value', isProtected: true, realValue: realCostValue });
+                row3Html += createDetailCard({ title: 'ราคาทุน', value: realCostValue, valueClass: 'cost-price-value', itemClass: 'highlight-card', isProtected: true, realValue: realCostValue });
                 usedIndices.add(colMap['Cost Price']).add(colMap['Base Unit']);
                 if (row3Html) detailsHtml += `<div class="detail-row">${row3Html}</div>`;
 
-                let row4Html = '';
+                let row4Html = ''; // The Rest
                 columnConfig.forEach(col => {
-                    if (col.data !== null && !usedIndices.has(col.data) && ![0, 31, 32].includes(col.data) && !/\d{2}\/\d{2}/.test(col.title)) {
+                    if (col.data !== null && !usedIndices.has(col.data) && ![0, 31, 32, 33, 34].includes(col.data) && !/\d{2}\/\d{2}/.test(col.title)) {
                         let displayValue = rowData[col.data];
                         if (['ราคากลาง', 'Fee Schedule'].includes(col.title)) displayValue = formatNumber(displayValue, 2, 2);
                         const card = createDetailCard({ title: col.title, value: displayValue });
@@ -274,6 +276,11 @@
                     }
                 });
                 if (row4Html) detailsHtml += `<div class="detail-row">${row4Html}</div>`;
+
+                let row5Html = ''; // New Cards
+                row5Html += createDetailCard({ title: 'เงื่อนไขบัญชียาหลัก', value: rowData[colMap['เงื่อนไขบัญชียาหลัก']] });
+                row5Html += createDetailCard({ title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', value: rowData[colMap['ข้อบ่งชี้ที่ได้ขึ้นทะเบียน']] });
+                if (row5Html) detailsHtml += `<div class="detail-row">${row5Html}</div>`;
 
                 let imageHtml = '';
                 if (rowData[31]) imageHtml += `<img src="${rowData[31]}" class="drug-image img-fluid" alt="Drug Image 1" onerror="this.style.display='none'">`;
@@ -346,6 +353,12 @@
 
         function promptPassword(callback, forceReauth = false) {
             if (passwordVerified && !forceReauth) { callback(); return; }
+            
+            // --- FIX for SweetAlert in Bootstrap Modal ---
+            const modalElement = document.getElementById('drugDetailModal');
+            const isModalOpen = modalElement.classList.contains('show');
+            if (isModalOpen) { $(modalElement).removeAttr('tabindex'); }
+
             Swal.fire({
                 title: 'Authentication Required', input: 'password', inputPlaceholder: 'Enter your password',
                 inputAttributes: { autocapitalize: 'off', autocorrect: 'off' },
@@ -356,6 +369,7 @@
                 },
                 allowOutsideClick: () => !Swal.isLoading()
             }).then((result) => {
+                if (isModalOpen) { $(modalElement).attr('tabindex', '-1'); } // Restore tabindex
                 if (result.isConfirmed) { passwordVerified = true; callback(); }
             });
         }
