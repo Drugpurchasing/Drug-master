@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Drug master CRA V3.09</title>
+    <title>Drug master CRA V3.08</title>
     <base target="_top">
     <link rel="icon" type="image/png" href="favicon-32x32.png">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -41,16 +41,94 @@
             margin-bottom: 20px;
             background-color: var(--card-bg);
         }
+
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 5px 5px 0 0 !important;
+            padding: 12px 20px;
+            font-weight: 600;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 15px;
+            flex-wrap: wrap;
+            background-color: var(--secondary-color);
+            padding: 15px;
+            border-radius: 5px;
+            color: white;
+        }
+
+        .logo-container img {
+            height: 70px;
+        }
+
+        .app-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            margin: 0;
+        }
+
+        .version-info {
+            font-size: 14px;
+            color: #e5a12a;
+            text-align: right;
+        }
+
+        .filter-section {
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #dee2e6;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        .view-toggle.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
         
         table.dataTable thead th {
             border-bottom: 2px solid var(--primary-color);
+            font-weight: 600;
+            background-color: #f1f1f1;
             vertical-align: middle;
         }
         #drugTable td {
             vertical-align: middle;
         }
-       
-        /* --- Modal Styles V3.09 --- */
+        .badge.text-wrap {
+            white-space: normal;
+            text-align: left;
+            max-width: 100%;
+            line-height: 1.4;
+        }
+
+        /* Responsive Font Sizes */
+        #drugTable, .btn, .form-control, .input-group-text, .dataTables_info, .dataTables_paginate .page-link {
+            font-size: 1rem; /* Base size */
+        }
+        @media (max-width: 992px) {
+            #drugTable, .btn, .form-control, .input-group-text, .dataTables_info, .dataTables_paginate .page-link { font-size: 0.9rem; }
+        }
+        @media (max-width: 768px) {
+            #drugTable, .btn, .form-control, .input-group-text, .dataTables_info, .dataTables_paginate .page-link { font-size: 0.8rem; }
+        }
+
+        /* Modal Styles */
         .modal-xl {
              max-width: 95%; 
         }
@@ -61,61 +139,75 @@
         .modal-header .btn-close {
             filter: invert(1) grayscale(100%) brightness(200%);
         }
-        #drugDetailModalBody { 
-            font-size: 1.1rem; 
-            background-color: #f1f1f1;
-        }
 
-        .detail-card {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            margin-bottom: 1.5rem;
-            height: 100%;
+        /* --- NEW/MODIFIED STYLES for Modal Body --- */
+        #drugDetailModalBody .modal-main-layout {
+            display: flex;
+            flex-wrap: wrap; /* Allows image section to wrap below on smaller screens */
+            gap: 15px;
         }
-
-        .detail-card-header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 0.5rem 1rem;
-            font-weight: 600;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
+        #drugDetailModalBody .details-section {
+            flex: 2;
+            min-width: 320px;
         }
-
-        .detail-card-body {
-            padding: 1rem;
+        #drugDetailModalBody .image-section {
+            flex: 1;
+            min-width: 280px;
         }
-
-        .detail-card-body .value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--secondary-color);
-        }
-        .detail-card-body .unit {
-            font-size: 1rem;
-            color: #6c757d;
-        }
-        .detail-list-item {
-            margin-bottom: 0.5rem;
-        }
-        .detail-list-item strong {
-            color: var(--secondary-color);
-        }
-
-        .reimbursement-grid {
+        .details-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 1rem;
         }
+        .detail-item {
+            background-color: #fdfdfd;
+            border: 1px solid #e9ecef;
+            border-left: 5px solid; /* Color will be set by nth-of-type rules */
+            border-radius: 5px;
+            padding: 12px 15px;
+            word-wrap: break-word;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .detail-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+        }
+        .detail-item strong { 
+            display: block; 
+            color: var(--secondary-color); 
+            margin-bottom: 6px; 
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        .detail-item div { padding-left: 5px; }
 
-        #drug-image-col img {
-            border: 3px solid white;
+        /* Color variations for detail items */
+        .detail-item:nth-of-type(6n+1) { border-left-color: #007bff; }
+        .detail-item:nth-of-type(6n+2) { border-left-color: #28a745; }
+        .detail-item:nth-of-type(6n+3) { border-left-color: #dc3545; }
+        .detail-item:nth-of-type(6n+4) { border-left-color: #ffc107; }
+        .detail-item:nth-of-type(6n+5) { border-left-color: #17a2b8; }
+        .detail-item:nth-of-type(6n+6) { border-left-color: #6c757d; }
+
+        .image-section h5 {
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-color);
+        }
+        .drug-image {
+            width: 100%;
+            border-radius: 5px;
+            margin-bottom: 1rem;
             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         }
-        
+        #usageAnalysisSection { margin-top: 20px; width: 100%; }
         #usageAnalysisSection h5 { font-weight: bold; color: var(--secondary-color); font-size: 1.4rem; }
-        #usageAnalysisSection .table { font-size: 1rem; background-color: white; }
+        #usageAnalysisSection .table { font-size: 1rem; }
+        #usageAnalysisSection img { border: 1px solid #ddd; border-radius: 5px; padding: 5px; }
+
 
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -127,16 +219,16 @@
 
 <body>
     <div class="container-fluid">
+        <div class="logo-container">
+            <img src="CRAlogo.png" alt="Logo" class="img-fluid">
+            <div>
+                <h1 class="app-title">Drug master CRA</h1>
+                <p class="version-info mb-0 fw-bold">Latest update 22/06/2025 | Version 3.08</p>
+            </div>
+        </div>
+
         <div class="card">
             <div class="card-body">
-                <div class="logo-container" style="background-color: var(--secondary-color); color: white; justify-content: center;">
-                    <img src="CRAlogo.png" alt="Logo" class="img-fluid" style="height: 70px;">
-                    <div>
-                        <h1 class="app-title" style="font-size: 24px; font-weight: 700;">Drug master CRA</h1>
-                        <p class="version-info mb-0 fw-bold" style="font-size: 14px; color: #e5a12a;">Latest update 22/06/2025 | Version 3.09</p>
-                    </div>
-                </div>
-
                 <div class="filter-section p-3 mb-3 border rounded">
                     <div class="row g-2 align-items-center">
                         <div class="col-lg-4 col-md-12">
@@ -210,10 +302,10 @@
              { title: 'Generic Name', data: 2, width: "25%", className: 'default-column' },
              { title: 'TPU', data: 3, className: 'default-column purchasing-column' },
              { title: 'GPU', data: 4, className: 'default-column' },
-             { title: 'เงื่อนไขการเบิกจ่าย', data: 5, className: 'default-column' },
-             { title: 'บัญชียา', data: 6, className: 'default-column' },
-             { title: 'Status', data: 12, className: 'default-column status-column purchasing-column rate-column' },
-             { title: 'Purchasing Unit', data: 7, className: 'purchasing-column' },
+             { title: 'เงื่อนไขการเบิกจ่าย', data: 5, className: 'default-column', render: (d,t) => renderBadge(d, t, {'สำรองจ่าย': 'bg-primary', 'ocpa': 'bg-success', 'เบิกได้': 'bg-success', 'ขรก เบิกไม่ได้': 'bg-danger', 'เบิกนอก': 'bg-info text-dark', 'วัคซีน': 'bg-warning text-dark'}, true) },
+             { title: 'บัญชียา', data: 6, className: 'default-column', render: (d,t) => renderBadge(d, t, {'ned': 'bg-danger', 'ed': 'bg-success', 'ในบัญชี(วถ)': 'bg-info text-dark', 'ค่าสารทึบ': 'bg-primary', 'promotion': 'bg-warning text-dark'}) },
+             { title: 'Status', data: 12, className: 'default-column status-column purchasing-column rate-column', render: (d,t) => renderBadge(d, t, {'ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}) },
+             { title: 'Purchasing Unit', data: 7, className: 'purchasing-column' }, 
              { title: 'Sale Price', data: 8, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
              { title: 'Sale Unit', data: 9, className: 'purchasing-column rate-column' }, 
              { title: 'Cost Price', data: 10, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
@@ -230,24 +322,30 @@
              { title: 'รหัสยาทดแทน', data: 28, className: 'purchasing-column' },
              { title: 'การรับเข้าบัญชี', data: 29, className: 'purchasing-column' }, 
              { title: 'Distributor', data: 30, className: 'purchasing-column' },
-             // *** FIX: Added columns for images, hidden from main table ***
-             { title: 'Image 1', data: 31, className: 'd-none' },
-             { title: 'Image 2', data: 32, className: 'd-none' }
+             // *** NEW: Added columns for images (not visible in table) ***
+             { title: 'Image 1', data: 31, visible: false },
+             { title: 'Image 2', data: 32, visible: false }
         ];
 
-        const badgeMaps = {
-            reimbursement: {'สำรองจ่าย': 'bg-primary', 'ocpa': 'bg-success', 'เบิกได้': 'bg-success', 'ขรก เบิกไม่ได้': 'bg-danger', 'เบิกนอก': 'bg-info text-dark', 'วัคซีน': 'bg-warning text-dark'},
-            drugAccount: {'ned': 'bg-danger', 'ed': 'bg-success', 'ในบัญชี(วถ)': 'bg-info text-dark', 'ค่าสารทึบ': 'bg-primary', 'promotion': 'bg-warning text-dark'},
-            status: {'ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}
-        };
-        
-        function renderBadge(data, map, textWrap = false) {
-            if (data) {
+        function renderBadge(data, type, map, textWrap = false) {
+            if (type === 'display' && data) {
                 const status = data.toLowerCase().trim();
                 const cls = Object.entries(map).find(([key]) => status.includes(key))?.[1] || 'bg-secondary';
                 return `<span class="badge ${cls} ${textWrap ? 'text-wrap' : ''}">${data}</span>`;
             }
-            return '-';
+            return data;
+        }
+
+        function parseCsvLine(line) {
+            const fields = []; let currentField = ''; let inQuotes = false;
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"') {
+                    if (inQuotes && line[i+1] === '"') { currentField += '"'; i++; } else { inQuotes = !inQuotes; }
+                } else if (char === ',' && !inQuotes) { fields.push(currentField); currentField = ''; } else { currentField += char; }
+            }
+            fields.push(currentField);
+            return fields;
         }
 
         async function loadDataAndInitTable() {
@@ -261,18 +359,6 @@
                 Swal.fire({ icon: 'error', title: 'Data Load Error', text: 'Failed to load or parse data.' });
             }
         }
-        
-        function parseCsvLine(line) {
-            const fields = []; let currentField = ''; let inQuotes = false;
-            for (let i = 0; i < line.length; i++) {
-                const char = line[i];
-                if (char === '"') {
-                    if (inQuotes && line[i+1] === '"') { currentField += '"'; i++; } else { inQuotes = !inQuotes; }
-                } else if (char === ',' && !inQuotes) { fields.push(currentField); currentField = ''; } else { currentField += char; }
-            }
-            fields.push(currentField);
-            return fields;
-        }
 
         function initializeDataTable(data) {
             table = $('#drugTable').DataTable({
@@ -280,132 +366,161 @@
                 dom: 'rt<"bottom d-flex justify-content-between align-items-center mt-3"lip>',
                 pageLength: 25, lengthMenu: [10, 25, 50, 100],
                 scrollX: true, responsive: false,
+                language: {
+                    info: "Showing _START_ to _END_ of _TOTAL_ entries",
+                    lengthMenu: "Show _MENU_ entries",
+                    paginate: { first: "First", last: "Last", next: "Next", previous: "Previous" }
+                }
             });
             
             $('#globalSearch').on('keyup', function () { table.search(this.value).draw(); });
             setView('default');
 
-            // --- Modal Detail Viewer ---
+            // --- MODIFIED: Modal Detail Viewer ---
             $('#drugTable tbody').on('click', 'button.view-details-btn', function () {
                 const row = table.row($(this).closest('tr'));
                 if (!row.any()) return;
                 const rowData = row.data();
                 
-                $('#drugDetailModalLabel').html(`${rowData[2] || 'Generic Name'} <small class="text-muted">(${rowData[1] || 'SAP Name'})</small>`);
+                $('#drugDetailModalLabel').html(`<strong>${rowData[1] || ''}</strong> <small class="text-white-50 fw-normal">(${rowData[2] || 'N/A'})</small>`);
                 
-                // --- CARD-BASED LAYOUT GENERATION ---
-                const createValueCard = (title, value, unit, size = 'col-md-6 col-lg-3') => {
-                    return `
-                        <div class="${size}">
-                            <div class="detail-card">
-                                <div class="detail-card-header">${title}</div>
-                                <div class="detail-card-body text-center">
-                                    <span class="value">${value || '-'}</span>
-                                    <span class="unit">${unit || ''}</span>
-                                </div>
-                            </div>
-                        </div>`;
-                };
+                // --- Part 1: Generate Details HTML ---
+                let detailsHtml = '';
+                const imageColIndices = [31, 32]; // Data indices for image columns
 
-                const createListCard = (title, items, size = 'col-md-6') => {
-                    let itemsHtml = items.map(item => `<div class="detail-list-item"><strong>${item.label}:</strong> ${item.value || '-'}</div>`).join('');
-                    return `
-                        <div class="${size}">
-                            <div class="detail-card">
-                                <div class="detail-card-header">${title}</div>
-                                <div class="detail-card-body">${itemsHtml}</div>
-                            </div>
-                        </div>`;
-                };
-                
-                // Main layout with image column
-                let modalHtml = '<div class="row g-4"><div class="col-lg-8"><div class="row">';
+                columnConfig.forEach((col) => {
+                    // Skip columns that shouldn't be in the details list
+                    if (col.data === null || imageColIndices.includes(col.data) || (col.className && col.className.includes('rate-column') && /^\d{2}\/\d{2}$/.test(col.title))) {
+                        return;
+                    }
+                    
+                    const header = col.title;  
+                    const cellData = rowData[col.data];  
+                    let displayValue;
 
-                // --- Row 1: Price Cards ---
-                modalHtml += createValueCard('ราคาขาย', formatNumber(rowData[8], 2, 2), ` / ${rowData[9] || ''}`);
-                modalHtml += createValueCard('ราคาทุน', formatNumber(rowData[10], 2, 2), ` / ${rowData[11] || ''}`);
-                modalHtml += createValueCard('ราคากลาง', formatNumber(rowData[26], 2, 2), '');
-                modalHtml += createValueCard('Fee Schedule', formatNumber(rowData[27], 2, 2), '');
-                
-                // --- Row 2: Reimbursement & General Info ---
-                const reimbursementHtml = `
-                    <div class="reimbursement-grid">
-                        <div class="text-center">${renderBadge(rowData[5], badgeMaps.reimbursement, true)}</div>
-                        <div class="text-center">${renderBadge(rowData[6], badgeMaps.drugAccount, true)}</div>
-                        <div class="text-center">${renderBadge(rowData[12], badgeMaps.status, true)}</div>
-                    </div>`;
-                modalHtml += `<div class="col-12"><div class="detail-card"><div class="detail-card-header">ข้อมูลการเบิกจ่าย & สถานะ</div><div class="detail-card-body">${reimbursementHtml}</div></div></div>`;
+                    if (['Sale Price', 'Cost Price', 'ราคากลาง', 'Fee Schedule'].includes(header)) {
+                        displayValue = formatNumber(cellData, 2, 2);
+                    } else if (col.render && !col.render.toString().includes('formatNumber')) {  
+                        const rendered = col.render(cellData, 'display', rowData);
+                        displayValue = (typeof rendered === 'string' && rendered.startsWith('<span')) ? rendered : (cellData || '-');
+                    } else {
+                        displayValue = cellData || '-';
+                    }
 
-                const generalInfoItems = [
-                    { label: 'Generic Name', value: rowData[2] },
-                    { label: 'Drug Group', value: rowData[25] },
-                    { label: 'Distributor', value: rowData[30] },
-                    { label: 'รหัสยาทดแทน', value: rowData[28] }
-                ];
-                modalHtml += createListCard('ข้อมูลทั่วไป', generalInfoItems, 'col-12');
+                    detailsHtml += `<div class="detail-item"><strong>${header}:</strong><div>${displayValue}</div></div>`;
+                });
 
-                modalHtml += '</div></div>'; // Close info column's row and the column itself
+                // --- Part 2: Generate Image Section HTML ---
+                let imageHtml = '';
+                const imageUrl1 = rowData[31]; // From 'image 1' column
+                const imageUrl2 = rowData[32]; // From 'image 2' column
 
-                // --- Image Column ---
-                const img1 = rowData[31];
-                const img2 = rowData[32];
-                modalHtml += '<div class="col-lg-4 d-flex flex-column justify-content-start" id="drug-image-col">';
-                if (img1) modalHtml += `<img src="${img1}" class="img-fluid rounded mb-3">`;
-                if (img2) modalHtml += `<img src="${img2}" class="img-fluid rounded">`;
-                modalHtml += '</div>';
+                if (imageUrl1) imageHtml += `<img src="${imageUrl1}" class="drug-image" alt="Drug Image 1" onerror="this.style.display='none'">`;
+                if (imageUrl2) imageHtml += `<img src="${imageUrl2}" class="drug-image" alt="Drug Image 2" onerror="this.style.display='none'">`;
 
-                modalHtml += '</div>'; // Close main layout row
-
-
-                // --- Usage Analysis Section ---
+                // --- Part 3: Generate Usage/Trend Section HTML (Existing Logic) ---
                 const rateLabels = [], rateData = [], caseData = [];
                 columnConfig.forEach(col => {
                     if (col.className && col.className.includes('rate-column') && /^\d{2}\/\d{2}$/.test(col.title)) {
                         const rawValue = rowData[col.data] || '';
-                        rateData.push(parseFloat(rawValue.match(/^[0-9.]+/)) || 0);
-                        caseData.push(parseInt(rawValue.match(/\((\d+)\)/)?.[1], 10) || 0);
+                        const rateMatch = rawValue.match(/^[0-9.]+/);
+                        rateData.push(rateMatch ? parseFloat(rateMatch[0]) : 0);
+                        const caseMatch = rawValue.match(/\((\d+)\)/);
+                        caseData.push(caseMatch ? parseInt(caseMatch[1], 10) : 0);
                         rateLabels.push(col.title);
                     }
                 });
 
+                let usageSection = '';
                 if (rateData.some(d => d > 0) || caseData.some(c => c > 0)) {
-                    const chartConfig = { type: 'line', data: { labels: rateLabels, datasets: [{ label: 'Usage Rate', data: rateData, fill: false, borderColor: '#005ba1', tension: 0.1 }] } };
-                    const chartUrl = `https://quickchart.io/chart?w=500&h=250&c=${encodeURIComponent(JSON.stringify(chartConfig))}`;
+                    const chartConfig = { type: 'line', data: { labels: rateLabels, datasets: [{ label: 'Usage Rate', data: rateData, fill: false, borderColor: 'var(--primary-color)', backgroundColor: 'var(--secondary-color)', tension: 0.1, yAxisID: 'y-axis-rate' }, { label: 'Case Count', data: caseData, fill: false, borderColor: 'var(--accent-color)', backgroundColor: '#c58a2a', tension: 0.1, yAxisID: 'y-axis-case' }] }, options: { responsive: true, title: { display: true, text: 'Monthly Usage Trend' }, legend: { display: true, position: 'top' }, scales: { 'y-axis-rate': { type: 'linear', display: true, position: 'left', title: {display: true, text: 'Usage Rate'} }, 'y-axis-case': { type: 'linear', display: true, position: 'right', title: {display: true, text: 'Case Count'}, grid: { drawOnChartArea: false } } } } };
+                    const chartUrl = 'https://quickchart.io/chart?w=600&h=300&c=' + encodeURIComponent(JSON.stringify(chartConfig));
                     
-                    const createTable = (title, labels, data) => {
-                        let table = `<h5 class="mt-4">${title}</h5><div class="table-responsive"><table class="table table-sm table-bordered mt-2"><thead><tr>${labels.map(l => `<th>${l}</th>`).join('')}</tr></thead><tbody><tr>${data.map(d => `<td>${formatNumber(d)}</td>`).join('')}</tr></tbody></table></div>`;
-                        return table;
-                    };
+                    let usageTableHtml = '<h5>อัตราการใช้ยา (Usage Rate)</h5><div class="table-responsive"><table class="table table-sm table-bordered mt-3"><thead><tr>';
+                    rateLabels.forEach(label => usageTableHtml += `<th>${label}</th>`);
+                    usageTableHtml += '</tr></thead><tbody><tr>';
+                    rateData.forEach(data => usageTableHtml += `<td>${formatNumber(data, 0, 0)}</td>`);
+                    usageTableHtml += '</tr></tbody></table></div>';
                     
-                    modalHtml += `<div id="usageAnalysisSection" class="mt-4 detail-card"><div class="detail-card-body">
-                                    ${createTable('อัตราการใช้ยา (Usage Rate)', rateLabels, rateData)}
-                                    ${createTable('จำนวนเคส (Case Count)', rateLabels, caseData)}
-                                    <div class="text-center mt-4"><img src="${chartUrl}" alt="Usage Trend Graph" class="img-fluid"></div>
-                                 </div></div>`;
-                }
+                    let caseTableHtml = '<h5 class="mt-4">จำนวนเคส (Case Count)</h5><div class="table-responsive"><table class="table table-sm table-bordered mt-3"><thead><tr>';
+                    rateLabels.forEach(label => caseTableHtml += `<th>${label}</th>`);
+                    caseTableHtml += '</tr></thead><tbody><tr>';
+                    caseData.forEach(data => caseTableHtml += `<td>${formatNumber(data, 0, 0)}</td>`);
+                    caseTableHtml += '</tr></tbody></table></div>';
+                    
+                    let graphHtml = `<div class="text-center mt-4"><img src="${chartUrl}" alt="Usage Trend Graph" class="img-fluid my-3"></div>`;
 
-                $('#drugDetailModalBody').html(modalHtml);
+                    usageSection = `<div id="usageAnalysisSection"><hr>${graphHtml}${usageTableHtml}${caseTableHtml}</div>`;
+                } else {
+                    usageSection = `<div id="usageAnalysisSection"><hr><h5 class="mt-3">Usage Trend Analysis</h5><p class="text-center text-muted mt-3">ไม่มีข้อมูลการใช้งาน</p></div>`;
+                }
+                
+                // --- Part 4: Assemble the final modal body HTML ---
+                const finalModalHtml = `
+                    <div class="modal-main-layout">
+                        <div class="details-section">
+                            <div class="details-grid">${detailsHtml}</div>
+                        </div>
+                        ${imageHtml ? `<div class="image-section"><h5>รูปภาพประกอบ</h5>${imageHtml}</div>` : ''}
+                    </div>
+                    ${usageSection}
+                `;
+
+                $('#drugDetailModalBody').html(finalModalHtml);
                 $('#drugDetailModal').modal('show');
             });
         }
-        
-        // --- Keep existing functions for view toggles, export, password, etc. ---
+
         function setView(viewType) {
             if (!table) return;
-            $('.view-toggle').removeClass('active'); $(`#${viewType}View`).addClass('active');
-            table.columns().visible(false); table.columns('.all-column').visible(true);
-            if (viewType === 'default') table.columns('.default-column').visible(true);
-            else if (viewType === 'purchasing') table.columns('.purchasing-column').visible(true);
-            else if (viewType === 'rate') table.columns('.rate-column').visible(true);
-            else if (viewType === 'all') table.columns().visible(true);
+            $('.view-toggle').removeClass('active');
+            $(`#${viewType}View`).addClass('active');
+
+            table.columns().visible(false);
+            table.columns('.all-column').visible(true);
+
+            if (viewType === 'default') {
+                table.columns('.default-column').visible(true);
+            } else if (viewType === 'purchasing') {
+                table.columns('.purchasing-column').visible(true);
+            } else if (viewType === 'rate') {
+                table.columns('.rate-column').visible(true);
+            } else if (viewType === 'all') {
+                table.columns().visible(true);
+            }
         }
+        
         $('#defaultView').on('click', function() { setView('default'); });
         $('#rateView').on('click', function() { setView('rate'); });
         $('#purchasingView').on('click', function() { promptPassword(() => setView('purchasing')); });
         $('#allView').on('click', function() { promptPassword(() => setView('all')); });
-        $('#exportButton').on('click', function () { promptPassword(exportExcel); });
+
+        $('#exportButton').on('click', function () {
+            promptPassword(function () {
+                var visibleColumns = table.columns().visible();
+                var headers = table.columns().header().toArray().map(h => $(h).text());
+                var data = [];
+
+                var visibleHeaders = headers.filter((_, index) => visibleColumns[index]);
+                data.push(visibleHeaders);
+
+                table.rows({ search: 'applied' }).every(function () {
+                    var rowData = this.data();
+                    var visibleRowData = rowData.filter((_, index) => visibleColumns[index]);
+                    data.push(visibleRowData);
+                });
+
+                var wb = XLSX.utils.book_new();
+                var ws = XLSX.utils.aoa_to_sheet(data);
+                XLSX.utils.book_append_sheet(wb, ws, "Drug Master Data");
+                XLSX.writeFile(wb, 'drug_master_data.xlsx');
+                showSwalSuccess('Excel exported successfully!');
+            });
+        });
+
         $('#exportJPEGButton').on('click', function () {
-            html2canvas(document.querySelector("#drugTable_wrapper"), { scale: 2, useCORS: true }).then(canvas => {
+            html2canvas(document.querySelector("#drugTable_wrapper"), { scale: 2, useCORS: true })
+            .then(function (canvas) {
                 var link = document.createElement('a');
                 link.download = 'drug_master_data.jpg';
                 link.href = canvas.toDataURL('image/jpeg', 0.9);
@@ -413,35 +528,39 @@
                 showSwalSuccess('Screenshot saved successfully!');
             });
         });
-        function exportExcel() {
-            var visibleColumns = table.columns().visible();
-            var headers = table.columns().header().toArray().map(h => $(h).text());
-            var data = [headers.filter((_, index) => visibleColumns[index])];
-            table.rows({ search: 'applied' }).every(function () {
-                var rowData = this.data();
-                data.push(rowData.filter((_, index) => visibleColumns[index]));
-            });
-            var wb = XLSX.utils.book_new();
-            var ws = XLSX.utils.aoa_to_sheet(data);
-            XLSX.utils.book_append_sheet(wb, ws, "Drug Master Data");
-            XLSX.writeFile(wb, 'drug_master_data.xlsx');
-            showSwalSuccess('Excel exported successfully!');
-        }
+
         function promptPassword(callback) {
-            if (passwordVerified) { callback(); return; }
+            if (passwordVerified) {
+                callback();
+                return;
+            }
             Swal.fire({
-                title: 'Authentication Required', input: 'password',
+                title: 'Authentication Required',
+                input: 'password',
                 inputAttributes: { autocapitalize: 'off', autocorrect: 'off' },
-                showCancelButton: true, confirmButtonText: 'Submit', showLoaderOnConfirm: true,
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                showLoaderOnConfirm: true,
                 preConfirm: (password) => {
-                    if (password !== 'rxccc') Swal.showValidationMessage('Incorrect password');
-                    else passwordVerified = true;
+                    if (password !== 'rxccc') {
+                        Swal.showValidationMessage('Incorrect password');
+                    } else {
+                        passwordVerified = true;
+                    }
                 },
                 allowOutsideClick: () => !Swal.isLoading()
-            }).then((result) => { if (result.isConfirmed && passwordVerified) callback(); });
+            }).then((result) => {
+                if (result.isConfirmed && passwordVerified) {
+                    callback();
+                }
+            });
         }
+
         function showSwalSuccess(message) {
-            Swal.fire({ icon: 'success', title: 'Success!', text: message, timer: 2000, showConfirmButton: false });
+            Swal.fire({
+                icon: 'success', title: 'Success!', text: message,
+                timer: 2000, showConfirmButton: false
+            });
         }
 
         loadDataAndInitTable();
