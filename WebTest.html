@@ -23,6 +23,7 @@
             --text-color: #333333;
             --success-color: #198754; /* Dark Green */
             --warning-color: #fd7e14; /* Orange */
+            --danger-color: #dc3545; /* Red */
         }
 
         body {
@@ -88,14 +89,9 @@
         .sale-price-value { color: var(--success-color); }
         .cost-price-value { color: var(--warning-color); }
 
-        /* --- NEW: Style for multiline content --- */
-        .multiline-content { white-space: pre-line; }
-
-        .unlock-cost-btn {
-            cursor: pointer; color: var(--accent-color); font-size: 0.85em;
-            margin-left: 8px; transition: color 0.2s;
-        }
+        .unlock-cost-btn { cursor: pointer; color: var(--accent-color); font-size: 0.85em; margin-left: 8px; transition: color 0.2s; }
         .unlock-cost-btn:hover { color: #ffae00; }
+        .inline-error-msg { color: var(--danger-color); font-size: 0.8rem; margin-top: 4px; }
 
         .image-section h5, #usage-section h5 {
             font-weight: bold; color: var(--secondary-color); margin-bottom: 1rem;
@@ -168,7 +164,6 @@
             return number.toLocaleString('en-US', { minimumFractionDigits: minDecimals, maximumFractionDigits: maxDecimals });
         }
         
-        // --- MODIFIED: Added 'modal-only' class to columns that should not appear in any table view ---
         const columnConfig = [
              { title: 'Details', data: null, defaultContent: '<button class="btn btn-sm btn-primary view-details-btn"><i class="fas fa-eye"></i></button>', orderable: false, className: 'text-center all-column', width: "50px" },
              { title: 'Material No.', data: 0, className: 'default-column material-column purchasing-column rate-column' },
@@ -221,10 +216,10 @@
                     const { title, value, valueClass, itemClass, isProtected, realValue } = { valueClass: '', itemClass: '', isProtected: false, realValue: '', ...options };
                     if (!value || value.trim() === '-' || value.trim() === '') return '';
                     let titleHtml = `<strong>${title}</strong>`;
-                    let valueHtml = `<div class="${valueClass}">${value}</div>`;
+                    let valueHtml = `<div class="value-container ${valueClass}" data-real-value="${realValue}">${value}</div>`;
                     if (isProtected && !passwordVerified) {
                         titleHtml = `<strong>${title} <i class="fas fa-lock unlock-cost-btn" title="ปลดล็อคเพื่อดูราคาทุน"></i></strong>`;
-                        valueHtml = `<div class="${valueClass}" data-cost="${realValue}">****</div>`;
+                        valueHtml = `<div class="value-container ${valueClass}" data-real-value="${realValue}">****</div>`;
                     }
                     return `<div class="detail-item ${itemClass}">${titleHtml}${valueHtml}</div>`;
                 }
@@ -279,10 +274,14 @@
                 });
                 if (row4Html) detailsHtml += `<div class="detail-row">${row4Html}</div>`;
                 
-                // --- MODIFIED: Added multiline-content class ---
                 let row5Html = ''; // New Cards
-                row5Html += createDetailCard({ title: 'เงื่อนไขบัญชียาหลัก', value: rowData[colMap['เงื่อนไขบัญชียาหลัก']], valueClass: 'multiline-content' });
-                row5Html += createDetailCard({ title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', value: rowData[colMap['ข้อบ่งชี้ที่ได้ขึ้นทะเบียน']], valueClass: 'multiline-content' });
+                let conditions = rowData[colMap['เงื่อนไขบัญชียาหลัก']];
+                if (conditions) conditions = conditions.replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
+                row5Html += createDetailCard({ title: 'เงื่อนไขบัญชียาหลัก', value: conditions });
+
+                let indications = rowData[colMap['ข้อบ่งชี้ที่ได้ขึ้นทะเบียน']];
+                if (indications) indications = indications.replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
+                row5Html += createDetailCard({ title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', value: indications });
                 if (row5Html) detailsHtml += `<div class="detail-row">${row5Html}</div>`;
 
                 let imageHtml = '';
@@ -319,20 +318,50 @@
                 $('#drugDetailModal').modal('show');
             });
 
+            // --- NEW: Inline password unlock flow ---
             $('#drugDetailModal').on('click', '.unlock-cost-btn', function(e) {
                 e.stopPropagation();
                 const unlockButton = $(this);
-                const valueDiv = unlockButton.closest('.detail-item').find('[data-cost]');
-                promptPassword(() => {
-                    const realCost = valueDiv.data('cost');
-                    valueDiv.text(realCost);
-                    unlockButton.fadeOut('fast', function() { $(this).remove(); });
-                }, true);
+                const valueContainer = unlockButton.closest('.detail-item').find('.value-container');
+                unlockButton.hide();
+                const formHtml = `
+                    <div class="input-group input-group-sm">
+                        <input type="password" class="form-control inline-password-input" placeholder="Password...">
+                        <button class="btn btn-primary inline-submit-btn" type="button">OK</button>
+                    </div>
+                    <div class="inline-error-msg" style="display:none;">Incorrect Password</div>`;
+                valueContainer.html(formHtml);
+                valueContainer.find('.inline-password-input').focus();
             });
+
+            $('#drugDetailModal').on('click', '.inline-submit-btn', function(e) {
+                e.stopPropagation();
+                const submitButton = $(this);
+                const inputField = submitButton.siblings('.inline-password-input');
+                const valueContainer = submitButton.closest('.value-container');
+                const errorMsg = valueContainer.find('.inline-error-msg');
+                const password = inputField.val();
+
+                if (password === 'rxccc') {
+                    passwordVerified = true;
+                    const realCost = valueContainer.data('real-value');
+                    valueContainer.html(realCost);
+                } else {
+                    errorMsg.show().delay(2000).fadeOut();
+                    inputField.val('').focus();
+                }
+            });
+
+            $('#drugDetailModal').on('keypress', '.inline-password-input', function(e) {
+                if (e.which === 13) { // Enter key
+                    e.preventDefault();
+                    $(this).siblings('.inline-submit-btn').click();
+                }
+            });
+
         }
         
-        // --- MODIFIED: setView for 'all' now respects 'modal-only' class ---
-        function setView(viewType) {
+        function setView(viewType) { /* ... (no changes from previous version) ... */
             if (!table) return;
             $('.view-toggle').removeClass('active');
             $(`#${viewType}View`).addClass('active');
@@ -369,14 +398,9 @@
             });
         });
 
-        // --- MODIFIED: promptPassword now handles focus issue ---
+        // SweetAlert prompt for main buttons (not inline)
         function promptPassword(callback, forceReauth = false) {
             if (passwordVerified && !forceReauth) { callback(); return; }
-            
-            const modalElement = document.getElementById('drugDetailModal');
-            const isModalOpen = modalElement.classList.contains('show');
-            if (isModalOpen) { $(modalElement).removeAttr('tabindex'); }
-
             Swal.fire({
                 title: 'Authentication Required', input: 'password', inputPlaceholder: 'Enter your password',
                 inputAttributes: { autocapitalize: 'off', autocorrect: 'off' },
@@ -387,7 +411,6 @@
                 },
                 allowOutsideClick: () => !Swal.isLoading()
             }).then((result) => {
-                if (isModalOpen) { $(modalElement).attr('tabindex', '-1'); }
                 if (result.isConfirmed) { passwordVerified = true; callback(); }
             });
         }
