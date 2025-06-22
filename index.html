@@ -193,19 +193,21 @@
             return number.toLocaleString('en-US', { minimumFractionDigits: minDecimals, maximumFractionDigits: maxDecimals });
         }
         
-        // --- MODIFIED: Column configuration completely restructured ---
+        // --- MODIFIED: Column configuration completely restructured for new ordering and combined columns ---
         const columnConfig = [
              { title: 'Detail View', data: null, defaultContent: '<button class="btn btn-sm btn-primary view-details-btn"><i class="fas fa-eye"></i></button>', orderable: false, className: 'text-center all-column', width: "50px" },
              { title: 'Material No.', data: 0, className: 'default-column material-column purchasing-column rate-column' },
              { title: 'SAP Name', data: 1, width: "25%", className: 'default-column sapname-column purchasing-column rate-column', render: (d, t) => t === 'display' && d ? `<span style="color: var(--primary-color)" class="fw-bold">${d}</span>` : d },
              { title: 'Generic Name', data: 2, width: "25%", className: 'default-column' },
              { title: 'TPU', data: 3, className: 'default-column purchasing-column' },
+             { title: 'Status', data: 12, className: 'default-column status-column purchasing-column rate-column', render: (d,t) => renderBadge(d, t, {'ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}) },
              { title: 'GPU', data: 4, className: 'default-column' },
              { title: 'เงื่อนไขการเบิกจ่าย', data: 5, className: 'default-column', render: (d,t) => renderBadge(d, t, {'สำรองจ่าย': 'bg-primary', 'ocpa': 'bg-success', 'เบิกได้': 'bg-success', 'ขรก เบิกไม่ได้': 'bg-danger', 'เบิกนอก': 'bg-info text-dark', 'วัคซีน': 'bg-warning text-dark'}, true) },
-             // NEW: Combined Cost Price / Unit column for Purchasing View
+             { title: 'บัญชียา', data: 6, className: 'default-column', render: (d,t) => renderBadge(d, t, {'ned': 'bg-danger', 'ed': 'bg-success', 'ในบัญชี(วถ)': 'bg-info text-dark', 'ค่าสารทึบ': 'bg-primary', 'promotion': 'bg-warning text-dark'}) },
              { 
                 title: 'ราคาทุน / หน่วย', 
-                data: 10, // Base on cost price index for sorting if needed
+                data: 10,
+                width: '130px',
                 className: 'purchasing-column',
                 render: function(data, type, row) {
                     const costPrice = formatNumber(row[10], 2, 2);
@@ -213,10 +215,10 @@
                     return `${costPrice} / ${baseUnit}`;
                 }
              },
-             // NEW: Combined Sale Price / Unit column
              { 
                 title: 'ราคาขาย / หน่วย', 
-                data: 8, // Base on sale price index for sorting if needed
+                data: 8,
+                width: '130px',
                 className: 'default-column purchasing-column rate-column',
                 render: function(data, type, row) {
                     const salePrice = formatNumber(row[8], 2, 2);
@@ -224,18 +226,17 @@
                     return `${salePrice} / ${saleUnit}`;
                 }
              },
-             { title: 'บัญชียา', data: 6, className: 'default-column', render: (d,t) => renderBadge(d, t, {'ned': 'bg-danger', 'ed': 'bg-success', 'ในบัญชี(วถ)': 'bg-info text-dark', 'ค่าสารทึบ': 'bg-primary', 'promotion': 'bg-warning text-dark'}) },
-             { title: 'Status', data: 12, className: 'default-column status-column purchasing-column rate-column', render: (d,t) => renderBadge(d, t, {'ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}) },
-             { title: 'Purchasing Unit', data: 7, className: 'purchasing-column' },
-             // Original price/unit columns are now "invisible" by not being in the config, but data is still accessible via row array
+             { title: 'ราคากลาง', data: 26, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
+             { title: 'Fee Schedule', data: 27, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
+             { title: 'Purchasing Unit', data: 7, className: 'purchasing-column default-column' },
+             { title: 'รหัสยาทดแทน', data: 28, className: 'purchasing-column' },
+             { title: 'การรับเข้าบัญชี', data: 29, className: 'purchasing-column' },
+             { title: 'Distributor', data: 30, className: 'purchasing-column' },
+             { title: 'Drug Group', data: 25, className: '' }, // Shows in 'All' view only
              { title: '06/67', data: 13, className: 'rate-column' }, { title: '07/67', data: 14, className: 'rate-column' },
              { title: '08/67', data: 15, className: 'rate-column' }, { title: '09/67', data: 16, className: 'rate-column' }, { title: '10/67', data: 17, className: 'rate-column' }, { title: '11/67', data: 18, className: 'rate-column' },
              { title: '12/67', data: 19, className: 'rate-column' }, { title: '01/68', data: 20, className: 'rate-column' }, { title: '02/68', data: 21, className: 'rate-column' }, { title: '03/68', data: 22, className: 'rate-column' },
-             { title: '04/68', data: 23, className: 'rate-column' }, { title: '05/68', data: 24, className: 'rate-column' }, 
-             { title: 'Drug Group', data: 25, className: '' },
-             { title: 'ราคากลาง', data: 26, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) }, { title: 'Fee Schedule', data: 27, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
-             { title: 'รหัสยาทดแทน', data: 28, className: 'purchasing-column' }, { title: 'การรับเข้าบัญชี', data: 29, className: 'purchasing-column' },
-             { title: 'Distributor', data: 30, className: 'purchasing-column' },
+             { title: '04/68', data: 23, className: 'rate-column' }, { title: '05/68', data: 24, className: 'rate-column' },
              { title: 'Image 1', data: 31, visible: false, className: 'modal-only' }, { title: 'Image 2', data: 32, visible: false, className: 'modal-only' },
              { title: 'เงื่อนไขบัญชียาหลัก', data: 33, visible: false, className: 'modal-only' }, { title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', data: 34, visible: false, className: 'modal-only' },
              { title: 'PAP', data: 35, visible: false, className: 'modal-only' }
@@ -307,9 +308,6 @@
                     return `<div class="detail-item ${itemClass}">${titleHtml}${valueHtml}</div>`;
                 }
                 
-                // This map needs to be manually updated because columnConfig order changed.
-                // We will access data by index directly in modal creation instead.
-                
                 let detailsHtml = '';
                 
                 let row1Html = '';
@@ -327,16 +325,12 @@
                 if (row2Html) detailsHtml += `<div class="detail-row">${row2Html}</div>`;
                 
                 let row3Html = '';
-                const salePrice = formatNumber(rowData[8], 2, 2);
-                const saleUnit = rowData[9];
-                row3Html += createDetailCard({ title: 'ราคาขาย', value: `${salePrice} / ${saleUnit || 'หน่วย'}`, valueClass: 'sale-price-value', itemClass: 'highlight-card' });
-                const costPrice = formatNumber(rowData[10], 2, 2);
-                const baseUnit = rowData[11];
-                const realCostValue = `${costPrice} / ${baseUnit || 'หน่วย'}`;
+                row3Html += createDetailCard({ title: 'ราคาขาย', value: `${formatNumber(rowData[8], 2, 2)} / ${rowData[9] || 'หน่วย'}`, valueClass: 'sale-price-value', itemClass: 'highlight-card' });
+                const realCostValue = `${formatNumber(rowData[10], 2, 2)} / ${rowData[11] || 'หน่วย'}`;
                 row3Html += createDetailCard({ title: 'ราคาทุน', value: realCostValue, valueClass: 'cost-price-value', itemClass: 'highlight-card', isProtected: true, realValue: realCostValue });
                 if (row3Html) detailsHtml += `<div class="detail-row">${row3Html}</div>`;
 
-                let row4Html = ''; // The Rest - manual check
+                let row4Html = ''; // The Rest
                 row4Html += createDetailCard({ title: 'Purchasing Unit', value: rowData[7] });
                 row4Html += createDetailCard({ title: 'Drug Group', value: rowData[25] });
                 row4Html += createDetailCard({ title: 'ราคากลาง', value: formatNumber(rowData[26], 2, 2) });
@@ -350,7 +344,6 @@
                 let conditions = rowData[33];
                 if (conditions) conditions = conditions.replace(/\n/g, '<br>');
                 row5Html += createDetailCard({ title: 'เงื่อนไขบัญชียาหลัก', value: conditions });
-
                 let indications = rowData[34];
                 if (indications) indications = indications.replace(/\n/g, '<br>');
                 row5Html += createDetailCard({ title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', value: indications });
@@ -377,7 +370,6 @@
                     }
                 });
                 const allRatesAreZero = rateData.every(rate => rate === 0);
-
                 if (rateLabels.length > 0) {
                     if (allRatesAreZero) {
                         usageTablesHtml = '<h5>อัตราการใช้ยา</h5><p class="text-center text-muted mt-3">ไม่มีอัตราการใช้ย้อนหลัง 1 ปี</p>';
