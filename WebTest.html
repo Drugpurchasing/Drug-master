@@ -119,7 +119,7 @@
 
         /* Responsive Font Sizes */
         #drugTable, .btn, .form-control, .input-group-text, .dataTables_info, .dataTables_paginate .page-link {
-            font-size: 1rem; /* Base size */
+            font-size: 1rem;
         }
         @media (max-width: 992px) {
             #drugTable, .btn, .form-control, .input-group-text, .dataTables_info, .dataTables_paginate .page-link { font-size: 0.9rem; }
@@ -143,52 +143,54 @@
         /* --- NEW/MODIFIED STYLES for Modal Body --- */
         #drugDetailModalBody .modal-main-layout {
             display: flex;
-            flex-wrap: wrap; /* Allows image section to wrap below on smaller screens */
-            gap: 15px;
+            flex-wrap: wrap; 
+            gap: 20px;
         }
         #drugDetailModalBody .details-section {
             flex: 2;
-            min-width: 320px;
+            min-width: 400px;
         }
         #drugDetailModalBody .image-section {
             flex: 1;
             min-width: 280px;
         }
-        .details-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+
+        .detail-row {
+            display: flex;
+            flex-wrap: wrap;
             gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .detail-row:last-child {
+            margin-bottom: 0;
         }
         .detail-item {
+            flex: 1;
+            min-width: 150px;
             background-color: #fdfdfd;
             border: 1px solid #e9ecef;
-            border-left: 5px solid; /* Color will be set by nth-of-type rules */
+            border-left: 5px solid var(--primary-color);
             border-radius: 5px;
-            padding: 12px 15px;
+            padding: 10px 15px;
             word-wrap: break-word;
             box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .detail-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.06);
         }
         .detail-item strong { 
             display: block; 
             color: var(--secondary-color); 
-            margin-bottom: 6px; 
+            margin-bottom: 4px; 
             font-weight: 700;
-            font-size: 1.1rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
         }
-        .detail-item div { padding-left: 5px; }
-
-        /* Color variations for detail items */
-        .detail-item:nth-of-type(6n+1) { border-left-color: #007bff; }
-        .detail-item:nth-of-type(6n+2) { border-left-color: #28a745; }
-        .detail-item:nth-of-type(6n+3) { border-left-color: #dc3545; }
-        .detail-item:nth-of-type(6n+4) { border-left-color: #ffc107; }
-        .detail-item:nth-of-type(6n+5) { border-left-color: #17a2b8; }
-        .detail-item:nth-of-type(6n+6) { border-left-color: #6c757d; }
+        .detail-item div {
+            font-size: 1.05rem;
+            font-weight: 500;
+        }
+        .detail-item .badge {
+            font-size: 0.95rem;
+            padding: .4em .6em;
+        }
 
         .image-section h5 {
             font-weight: bold;
@@ -203,11 +205,6 @@
             margin-bottom: 1rem;
             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         }
-        #usageAnalysisSection { margin-top: 20px; width: 100%; }
-        #usageAnalysisSection h5 { font-weight: bold; color: var(--secondary-color); font-size: 1.4rem; }
-        #usageAnalysisSection .table { font-size: 1rem; }
-        #usageAnalysisSection img { border: 1px solid #ddd; border-radius: 5px; padding: 5px; }
-
 
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -322,7 +319,6 @@
              { title: 'รหัสยาทดแทน', data: 28, className: 'purchasing-column' },
              { title: 'การรับเข้าบัญชี', data: 29, className: 'purchasing-column' }, 
              { title: 'Distributor', data: 30, className: 'purchasing-column' },
-             // *** NEW: Added columns for images (not visible in table) ***
              { title: 'Image 1', data: 31, visible: false },
              { title: 'Image 2', data: 32, visible: false }
         ];
@@ -376,94 +372,98 @@
             $('#globalSearch').on('keyup', function () { table.search(this.value).draw(); });
             setView('default');
 
-            // --- MODIFIED: Modal Detail Viewer ---
+            // --- REVISED: Modal Detail Viewer ---
             $('#drugTable tbody').on('click', 'button.view-details-btn', function () {
                 const row = table.row($(this).closest('tr'));
                 if (!row.any()) return;
                 const rowData = row.data();
                 
                 $('#drugDetailModalLabel').html(`<strong>${rowData[1] || ''}</strong> <small class="text-white-50 fw-normal">(${rowData[2] || 'N/A'})</small>`);
-                
-                // --- Part 1: Generate Details HTML ---
-                let detailsHtml = '';
-                const imageColIndices = [31, 32]; // Data indices for image columns
 
-                columnConfig.forEach((col) => {
-                    // Skip columns that shouldn't be in the details list
-                    if (col.data === null || imageColIndices.includes(col.data) || (col.className && col.className.includes('rate-column') && /^\d{2}\/\d{2}$/.test(col.title))) {
-                        return;
-                    }
-                    
-                    const header = col.title;  
-                    const cellData = rowData[col.data];  
-                    let displayValue;
-
-                    if (['Sale Price', 'Cost Price', 'ราคากลาง', 'Fee Schedule'].includes(header)) {
-                        displayValue = formatNumber(cellData, 2, 2);
-                    } else if (col.render && !col.render.toString().includes('formatNumber')) {  
-                        const rendered = col.render(cellData, 'display', rowData);
-                        displayValue = (typeof rendered === 'string' && rendered.startsWith('<span')) ? rendered : (cellData || '-');
-                    } else {
-                        displayValue = cellData || '-';
-                    }
-
-                    detailsHtml += `<div class="detail-item"><strong>${header}:</strong><div>${displayValue}</div></div>`;
-                });
-
-                // --- Part 2: Generate Image Section HTML ---
-                let imageHtml = '';
-                const imageUrl1 = rowData[31]; // From 'image 1' column
-                const imageUrl2 = rowData[32]; // From 'image 2' column
-
-                if (imageUrl1) imageHtml += `<img src="${imageUrl1}" class="drug-image" alt="Drug Image 1" onerror="this.style.display='none'">`;
-                if (imageUrl2) imageHtml += `<img src="${imageUrl2}" class="drug-image" alt="Drug Image 2" onerror="this.style.display='none'">`;
-
-                // --- Part 3: Generate Usage/Trend Section HTML (Existing Logic) ---
-                const rateLabels = [], rateData = [], caseData = [];
-                columnConfig.forEach(col => {
-                    if (col.className && col.className.includes('rate-column') && /^\d{2}\/\d{2}$/.test(col.title)) {
-                        const rawValue = rowData[col.data] || '';
-                        const rateMatch = rawValue.match(/^[0-9.]+/);
-                        rateData.push(rateMatch ? parseFloat(rateMatch[0]) : 0);
-                        const caseMatch = rawValue.match(/\((\d+)\)/);
-                        caseData.push(caseMatch ? parseInt(caseMatch[1], 10) : 0);
-                        rateLabels.push(col.title);
-                    }
-                });
-
-                let usageSection = '';
-                if (rateData.some(d => d > 0) || caseData.some(c => c > 0)) {
-                    const chartConfig = { type: 'line', data: { labels: rateLabels, datasets: [{ label: 'Usage Rate', data: rateData, fill: false, borderColor: 'var(--primary-color)', backgroundColor: 'var(--secondary-color)', tension: 0.1, yAxisID: 'y-axis-rate' }, { label: 'Case Count', data: caseData, fill: false, borderColor: 'var(--accent-color)', backgroundColor: '#c58a2a', tension: 0.1, yAxisID: 'y-axis-case' }] }, options: { responsive: true, title: { display: true, text: 'Monthly Usage Trend' }, legend: { display: true, position: 'top' }, scales: { 'y-axis-rate': { type: 'linear', display: true, position: 'left', title: {display: true, text: 'Usage Rate'} }, 'y-axis-case': { type: 'linear', display: true, position: 'right', title: {display: true, text: 'Case Count'}, grid: { drawOnChartArea: false } } } } };
-                    const chartUrl = 'https://quickchart.io/chart?w=600&h=300&c=' + encodeURIComponent(JSON.stringify(chartConfig));
-                    
-                    let usageTableHtml = '<h5>อัตราการใช้ยา (Usage Rate)</h5><div class="table-responsive"><table class="table table-sm table-bordered mt-3"><thead><tr>';
-                    rateLabels.forEach(label => usageTableHtml += `<th>${label}</th>`);
-                    usageTableHtml += '</tr></thead><tbody><tr>';
-                    rateData.forEach(data => usageTableHtml += `<td>${formatNumber(data, 0, 0)}</td>`);
-                    usageTableHtml += '</tr></tbody></table></div>';
-                    
-                    let caseTableHtml = '<h5 class="mt-4">จำนวนเคส (Case Count)</h5><div class="table-responsive"><table class="table table-sm table-bordered mt-3"><thead><tr>';
-                    rateLabels.forEach(label => caseTableHtml += `<th>${label}</th>`);
-                    caseTableHtml += '</tr></thead><tbody><tr>';
-                    caseData.forEach(data => caseTableHtml += `<td>${formatNumber(data, 0, 0)}</td>`);
-                    caseTableHtml += '</tr></tbody></table></div>';
-                    
-                    let graphHtml = `<div class="text-center mt-4"><img src="${chartUrl}" alt="Usage Trend Graph" class="img-fluid my-3"></div>`;
-
-                    usageSection = `<div id="usageAnalysisSection"><hr>${graphHtml}${usageTableHtml}${caseTableHtml}</div>`;
-                } else {
-                    usageSection = `<div id="usageAnalysisSection"><hr><h5 class="mt-3">Usage Trend Analysis</h5><p class="text-center text-muted mt-3">ไม่มีข้อมูลการใช้งาน</p></div>`;
+                // Helper function to create a detail card HTML
+                function createDetailCard(title, value) {
+                    const cleanValue = value || '-';
+                    // Don't create a card for empty data, unless it's a badge which is pre-formatted
+                    if (cleanValue === '-' && !title.includes('เบิกจ่าย') && !title.includes('บัญชี') && !title.includes('Status')) return ''; 
+                    return `<div class="detail-item"><strong>${title}:</strong><div>${cleanValue}</div></div>`;
                 }
-                
-                // --- Part 4: Assemble the final modal body HTML ---
+
+                const colMap = {};
+                columnConfig.forEach(c => { if (c.title && c.data !== null) colMap[c.title] = c.data; });
+
+                let detailsHtml = '';
+                const usedIndices = new Set();
+
+                // --- Row 1 ---
+                let row1Html = '';
+                ['Material No.', 'SAP Name', 'Generic Name'].forEach(title => {
+                    const dataIndex = colMap[title];
+                    row1Html += createDetailCard(title, rowData[dataIndex]);
+                    usedIndices.add(dataIndex);
+                });
+                if (row1Html) detailsHtml += `<div class="detail-row">${row1Html}</div>`;
+
+                // --- Row 2 ---
+                let row2Html = '';
+                ['TPU', 'GPU', 'เงื่อนไขการเบิกจ่าย', 'บัญชียา', 'Status'].forEach(title => {
+                    const dataIndex = colMap[title];
+                    const colCfg = columnConfig.find(c => c.data === dataIndex);
+                    let displayValue = rowData[dataIndex];
+                    if (colCfg && colCfg.render) {
+                        const rendered = colCfg.render(displayValue, 'display', rowData);
+                        displayValue = (typeof rendered === 'string' && rendered.startsWith('<span')) ? rendered : displayValue;
+                    }
+                    row2Html += createDetailCard(title, displayValue);
+                    usedIndices.add(dataIndex);
+                });
+                if (row2Html) detailsHtml += `<div class="detail-row">${row2Html}</div>`;
+
+                // --- Row 3 (Combined) ---
+                let row3Html = '';
+                const salePrice = formatNumber(rowData[colMap['Sale Price']], 2, 2);
+                const saleUnit = rowData[colMap['Sale Unit']];
+                if (salePrice !== '-' || (saleUnit && saleUnit.trim() !== '')) {
+                    row3Html += createDetailCard('Sale Price / Unit', `${salePrice} / ${saleUnit || 'หน่วย'}`);
+                }
+                usedIndices.add(colMap['Sale Price']).add(colMap['Sale Unit']);
+
+                const costPrice = formatNumber(rowData[colMap['Cost Price']], 2, 2);
+                const baseUnit = rowData[colMap['Base Unit']];
+                if (costPrice !== '-' || (baseUnit && baseUnit.trim() !== '')) {
+                    row3Html += createDetailCard('Cost Price / Unit', `${costPrice} / ${baseUnit || 'หน่วย'}`);
+                }
+                usedIndices.add(colMap['Cost Price']).add(colMap['Base Unit']);
+                if (row3Html) detailsHtml += `<div class="detail-row">${row3Html}</div>`;
+
+                // --- Row 4 (The Rest) ---
+                let row4Html = '';
+                const specialIndices = new Set([null, 31, 32]); // Details btn, images
+                columnConfig.forEach(col => {
+                    if (col.data !== null && !usedIndices.has(col.data) && !specialIndices.has(col.data) && !col.className?.includes('rate-column')) {
+                        let displayValue = rowData[col.data];
+                        if (['ราคากลาง', 'Fee Schedule'].includes(col.title)) {
+                            displayValue = formatNumber(displayValue, 2, 2);
+                        }
+                        const card = createDetailCard(col.title, displayValue);
+                        if (card) row4Html += card; // Only add if a card was created
+                        usedIndices.add(col.data);
+                    }
+                });
+                if (row4Html) detailsHtml += `<div class="detail-row">${row4Html}</div>`;
+
+                // --- Image Section (with fix) ---
+                let imageHtml = '';
+                const imageUrl1 = rowData[31];
+                const imageUrl2 = rowData[32];
+                if (imageUrl1) imageHtml += `<img src="${imageUrl1}" class="drug-image img-fluid" alt="Drug Image 1" onerror="this.onerror=null;this.src='https://via.placeholder.com/400x300.png?text=Image+Not+Found';">`;
+                if (imageUrl2) imageHtml += `<img src="${imageUrl2}" class="drug-image img-fluid" alt="Drug Image 2" onerror="this.onerror=null;this.src='https://via.placeholder.com/400x300.png?text=Image+Not+Found';">`;
+
+                // --- Assemble Final Modal HTML ---
                 const finalModalHtml = `
                     <div class="modal-main-layout">
-                        <div class="details-section">
-                            <div class="details-grid">${detailsHtml}</div>
-                        </div>
+                        <div class="details-section">${detailsHtml}</div>
                         ${imageHtml ? `<div class="image-section"><h5>รูปภาพประกอบ</h5>${imageHtml}</div>` : ''}
                     </div>
-                    ${usageSection}
                 `;
 
                 $('#drugDetailModalBody').html(finalModalHtml);
@@ -475,53 +475,39 @@
             if (!table) return;
             $('.view-toggle').removeClass('active');
             $(`#${viewType}View`).addClass('active');
-
             table.columns().visible(false);
             table.columns('.all-column').visible(true);
-
-            if (viewType === 'default') {
-                table.columns('.default-column').visible(true);
-            } else if (viewType === 'purchasing') {
-                table.columns('.purchasing-column').visible(true);
-            } else if (viewType === 'rate') {
-                table.columns('.rate-column').visible(true);
-            } else if (viewType === 'all') {
-                table.columns().visible(true);
-            }
+            if (viewType === 'default') table.columns('.default-column').visible(true);
+            else if (viewType === 'purchasing') table.columns('.purchasing-column').visible(true);
+            else if (viewType === 'rate') table.columns('.rate-column').visible(true);
+            else if (viewType === 'all') table.columns().visible(true);
         }
         
-        $('#defaultView').on('click', function() { setView('default'); });
-        $('#rateView').on('click', function() { setView('rate'); });
-        $('#purchasingView').on('click', function() { promptPassword(() => setView('purchasing')); });
-        $('#allView').on('click', function() { promptPassword(() => setView('all')); });
+        $('#defaultView').on('click', () => setView('default'));
+        $('#rateView').on('click', () => setView('rate'));
+        $('#purchasingView').on('click', () => promptPassword(() => setView('purchasing')));
+        $('#allView').on('click', () => promptPassword(() => setView('all')));
 
-        $('#exportButton').on('click', function () {
-            promptPassword(function () {
-                var visibleColumns = table.columns().visible();
-                var headers = table.columns().header().toArray().map(h => $(h).text());
-                var data = [];
-
-                var visibleHeaders = headers.filter((_, index) => visibleColumns[index]);
-                data.push(visibleHeaders);
-
+        $('#exportButton').on('click', () => {
+            promptPassword(() => {
+                const visibleColumns = table.columns().visible();
+                const headers = table.columns().header().toArray().map(h => $(h).text());
+                const data = [headers.filter((_, index) => visibleColumns[index])];
                 table.rows({ search: 'applied' }).every(function () {
-                    var rowData = this.data();
-                    var visibleRowData = rowData.filter((_, index) => visibleColumns[index]);
-                    data.push(visibleRowData);
+                    data.push(this.data().filter((_, index) => visibleColumns[index]));
                 });
-
-                var wb = XLSX.utils.book_new();
-                var ws = XLSX.utils.aoa_to_sheet(data);
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.aoa_to_sheet(data);
                 XLSX.utils.book_append_sheet(wb, ws, "Drug Master Data");
                 XLSX.writeFile(wb, 'drug_master_data.xlsx');
                 showSwalSuccess('Excel exported successfully!');
             });
         });
 
-        $('#exportJPEGButton').on('click', function () {
+        $('#exportJPEGButton').on('click', () => {
             html2canvas(document.querySelector("#drugTable_wrapper"), { scale: 2, useCORS: true })
-            .then(function (canvas) {
-                var link = document.createElement('a');
+            .then(canvas => {
+                const link = document.createElement('a');
                 link.download = 'drug_master_data.jpg';
                 link.href = canvas.toDataURL('image/jpeg', 0.9);
                 link.click();
@@ -530,10 +516,7 @@
         });
 
         function promptPassword(callback) {
-            if (passwordVerified) {
-                callback();
-                return;
-            }
+            if (passwordVerified) { callback(); return; }
             Swal.fire({
                 title: 'Authentication Required',
                 input: 'password',
@@ -550,9 +533,7 @@
                 },
                 allowOutsideClick: () => !Swal.isLoading()
             }).then((result) => {
-                if (result.isConfirmed && passwordVerified) {
-                    callback();
-                }
+                if (result.isConfirmed && passwordVerified) callback();
             });
         }
 
