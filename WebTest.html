@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="th">
 
 <head>
     <meta charset="utf-8">
-    <title>Drug master CRA V3.05</title>
+    <title>Drug master CRA V3.06</title>
     <base target="_top">
     <link rel="icon" type="image/png" href="favicon-32x32.png">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -129,7 +128,10 @@
             #drugTable, .btn, .form-control, .input-group-text, .dataTables_info, .dataTables_paginate .page-link { font-size: 0.8rem; }
         }
 
-        /* Modal Styles */
+        /* --- Modal Styles UPGRADE --- */
+        .modal-xl {
+             max-width: 95%; /* Make modal wider */
+        }
         .modal-header {
             background-color: var(--secondary-color);
             color: white;
@@ -137,11 +139,21 @@
         .modal-header .btn-close {
             filter: invert(1) grayscale(100%) brightness(200%);
         }
-        #drugDetailModalBody { font-size: 1rem; }
+        #drugDetailModalBody { 
+            font-size: 1.1rem; /* Increase base font size in modal */
+        }
         .detail-item { margin-bottom: 1rem; word-wrap: break-word; }
-        .detail-item strong { display: block; color: var(--primary-color); margin-bottom: 4px; font-weight: 600; }
+        .detail-item strong { 
+            display: block; 
+            color: var(--primary-color); 
+            margin-bottom: 4px; 
+            font-weight: 700; /* Bolder */
+            font-size: 1.2rem; /* Larger labels */
+        }
         .detail-item div { padding-left: 5px; }
-        #usageAnalysisSection h5 { font-weight: bold; color: var(--secondary-color); }
+        #usageAnalysisSection h5 { font-weight: bold; color: var(--secondary-color); font-size: 1.4rem; }
+        #usageAnalysisSection .table { font-size: 1rem; }
+
 
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -157,7 +169,7 @@
             <img src="CRAlogo.png" alt="Logo" class="img-fluid">
             <div>
                 <h1 class="app-title">Drug master CRA</h1>
-                <p class="version-info mb-0 fw-bold">Latest update 22/06/2025 | Version 3.05</p>
+                <p class="version-info mb-0 fw-bold">Latest update 22/06/2025 | Version 3.06</p>
             </div>
         </div>
 
@@ -215,7 +227,7 @@
     <script>
     $(document).ready(function () {
         const dataUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQJpIKf_q4h4h1VEIM0tT1MlMvoEw1PXLYMxMv_c3abXFvAIBS0tWHxLL0sDjuuBrPjbrTP7lJH-NQw/pub?gid=0&single=true&output=csv';
-        var table; // make table variable accessible
+        var table; 
         var passwordVerified = false;
 
         const columnConfig = [
@@ -286,18 +298,11 @@
                 language: {
                     info: "Showing _START_ to _END_ of _TOTAL_ entries",
                     lengthMenu: "Show _MENU_ entries",
-                    paginate: {
-                        first: "First",
-                        last: "Last",
-                        next: "Next",
-                        previous: "Previous"
-                    }
+                    paginate: { first: "First", last: "Last", next: "Next", previous: "Previous" }
                 }
             });
             
             $('#globalSearch').on('keyup', function () { table.search(this.value).draw(); });
-
-            // Initialize default view
             setView('default');
 
             // --- Modal Detail Viewer ---
@@ -308,38 +313,70 @@
                 
                 $('#drugDetailModalLabel').html(`${rowData[2] || ''} <small class="text-muted">(${rowData[1] || ''})</small>`);
                 
-                const rateData = []; const rateLabels = [];
+                // --- Part 1: General Details (TOP) ---
+                let detailsContent = '<div class="row">';
+                columnConfig.forEach((col) => {
+                    if (col.data === null || (col.className && col.className.includes('rate-column'))) return;
+                    const header = col.title; 
+                    const cellData = rowData[col.data]; 
+                    let displayValue = cellData || '-'; // Use '-' for empty data
+                    if (col.render) { 
+                        const rendered = col.render(cellData, 'display', rowData); 
+                        if (typeof rendered === 'string' && rendered.startsWith('<span')) { 
+                            displayValue = rendered; 
+                        }
+                    }
+                    detailsContent += `<div class="col-md-6 col-lg-4 detail-item"><strong>${header}:</strong><div>${displayValue}</div></div>`;
+                });
+                detailsContent += '</div>';
+
+                // --- Part 2: Usage Analysis (BOTTOM) ---
+                const rateLabels = [];
+                const rateData = [];
+                const caseData = [];
+
                 columnConfig.forEach(col => {
                     if (col.className && col.className.includes('rate-column')) {
-                        const value = parseFloat(rowData[col.data]);
-                        if (!isNaN(value) && value > 0) {
-                            rateLabels.push(col.title); rateData.push(value);
-                        }
+                        const rawValue = rowData[col.data] || '';
+                        
+                        // Extract usage rate (number outside parentheses)
+                        const rateMatch = rawValue.match(/^[0-9.]+/);
+                        rateData.push(rateMatch ? parseFloat(rateMatch[0]) : 0);
+
+                        // Extract case count (number inside parentheses)
+                        const caseMatch = rawValue.match(/\((\d+)\)/);
+                        caseData.push(caseMatch ? parseInt(caseMatch[1], 10) : 0);
+                        
+                        rateLabels.push(col.title);
                     }
                 });
 
                 let usageSection = '';
-                if (rateData.length > 0) {
-                    const chartConfig = { type: 'line', data: { labels: rateLabels, datasets: [{ label: 'Usage', data: rateData, fill: false, borderColor: '#005ba1', backgroundColor: '#003366', tension: 0.1 }] }, options: { responsive: true, title: { display: true, text: 'Monthly Usage Trend' }, legend: { display: false } } };
+                if (rateData.some(d => d > 0)) { // Check if there is any data to show
+                    const chartConfig = { type: 'line', data: { labels: rateLabels, datasets: [{ label: 'Usage Rate', data: rateData, fill: false, borderColor: '#005ba1', backgroundColor: '#003366', tension: 0.1 }] }, options: { responsive: true, title: { display: true, text: 'Monthly Usage Trend' }, legend: { display: false } } };
                     const chartUrl = 'https://quickchart.io/chart?w=600&h=300&c=' + encodeURIComponent(JSON.stringify(chartConfig));
-                    let tableHtml = '<div class="table-responsive"><table class="table table-sm table-bordered mt-3"><thead><tr>';
-                    rateLabels.forEach(label => tableHtml += `<th>${label}</th>`);
-                    tableHtml += '</tr></thead><tbody><tr>';
-                    rateData.forEach(data => tableHtml += `<td>${data}</td>`);
-                    tableHtml += '</tr></tbody></table></div>';
-                    usageSection = `<div id="usageAnalysisSection"><hr><h5>Usage Trend Analysis</h5><div class="text-center"><img src="${chartUrl}" alt="Usage Trend Graph" class="img-fluid my-3"></div>${tableHtml}<hr></div>`;
-                }
+                    
+                    // Usage Rate Table
+                    let usageTableHtml = '<div class="table-responsive"><table class="table table-sm table-bordered mt-3"><thead><tr>';
+                    rateLabels.forEach(label => usageTableHtml += `<th>${label}</th>`);
+                    usageTableHtml += '</tr></thead><tbody><tr>';
+                    rateData.forEach(data => usageTableHtml += `<td>${data}</td>`);
+                    usageTableHtml += '</tr></tbody></table></div>';
+                    
+                    // Case Count Table
+                    let caseTableHtml = '<h5 class="mt-4">จำนวนเคส (Case Count)</h5><div class="table-responsive"><table class="table table-sm table-bordered mt-3"><thead><tr>';
+                    rateLabels.forEach(label => caseTableHtml += `<th>${label}</th>`);
+                    caseTableHtml += '</tr></thead><tbody><tr>';
+                    caseData.forEach(data => caseTableHtml += `<td>${data}</td>`);
+                    caseTableHtml += '</tr></tbody></table></div>';
 
-                let detailsContent = '<div class="row">';
-                columnConfig.forEach((col) => {
-                    if (col.data === null || (col.className && col.className.includes('rate-column'))) return;
-                    const header = col.title; const cellData = rowData[col.data]; let displayValue = cellData || 'N/A';
-                    if (col.render) { const rendered = col.render(cellData, 'display', rowData); if (typeof rendered === 'string' && rendered.startsWith('<span')) { displayValue = rendered; } }
-                    detailsContent += `<div class="col-md-6 col-lg-4 detail-item"><strong>${header}:</strong><div>${displayValue}</div></div>`;
-                });
-                detailsContent += '</div>';
+                    usageSection = `<div id="usageAnalysisSection"><hr><h5>Usage Trend Analysis</h5><div class="text-center"><img src="${chartUrl}" alt="Usage Trend Graph" class="img-fluid my-3"></div>${usageTableHtml}${caseTableHtml}<hr></div>`;
+                } else {
+                    usageSection = `<div id="usageAnalysisSection"><hr><h5>Usage Trend Analysis</h5><p class="text-center text-muted mt-3">ไม่มีข้อมูลการใช้งาน</p></div>`;
+                }
                 
-                $('#drugDetailModalBody').html(usageSection + detailsContent);
+                // Combine and render in the correct order
+                $('#drugDetailModalBody').html(detailsContent + usageSection);
                 $('#drugDetailModal').modal('show');
             });
         }
@@ -351,7 +388,7 @@
             $(`#${viewType}View`).addClass('active');
 
             table.columns().visible(false);
-            table.columns('.all-column').visible(true); // 'Details' button is always visible
+            table.columns('.all-column').visible(true);
 
             if (viewType === 'default') {
                 table.columns('.default-column').visible(true);
@@ -443,6 +480,8 @@
     });
     </script>
 </body>
+
+</html>
 
 </html>
 ```
