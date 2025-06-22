@@ -77,18 +77,19 @@
         }
         .detail-item div { font-size: 1.05rem; font-weight: 500; }
         
-        /* Specific Card Styles */
         .material-no-card { flex: 0 1 140px; }
         .compact-card { flex: 0 1 120px !important; }
         .status-card strong { font-size: 1rem !important; }
         .status-card .badge { font-size: 1rem !important; padding: .5em .7em !important; }
         .highlight-card strong { font-size: 1.05rem !important; }
         
-        /* Specific Value Styles */
         .main-title-value { font-size: 1.25rem !important; font-weight: bold !important; }
         .sale-price-value, .cost-price-value { font-size: 1.35rem !important; font-weight: bold !important; }
         .sale-price-value { color: var(--success-color); }
         .cost-price-value { color: var(--warning-color); }
+
+        /* --- NEW: Style for multiline content --- */
+        .multiline-content { white-space: pre-line; }
 
         .unlock-cost-btn {
             cursor: pointer; color: var(--accent-color); font-size: 0.85em;
@@ -167,6 +168,7 @@
             return number.toLocaleString('en-US', { minimumFractionDigits: minDecimals, maximumFractionDigits: maxDecimals });
         }
         
+        // --- MODIFIED: Added 'modal-only' class to columns that should not appear in any table view ---
         const columnConfig = [
              { title: 'Details', data: null, defaultContent: '<button class="btn btn-sm btn-primary view-details-btn"><i class="fas fa-eye"></i></button>', orderable: false, className: 'text-center all-column', width: "50px" },
              { title: 'Material No.', data: 0, className: 'default-column material-column purchasing-column rate-column' },
@@ -183,9 +185,9 @@
              { title: '04/68', data: 23, className: 'rate-column' }, { title: '05/68', data: 24, className: 'rate-column' }, { title: 'Drug Group', data: 25, className: 'all-column' },
              { title: 'ราคากลาง', data: 26, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) }, { title: 'Fee Schedule', data: 27, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
              { title: 'รหัสยาทดแทน', data: 28, className: 'purchasing-column' }, { title: 'การรับเข้าบัญชี', data: 29, className: 'purchasing-column' },
-             { title: 'Distributor', data: 30, className: 'purchasing-column' }, { title: 'Image 1', data: 31, visible: false }, { title: 'Image 2', data: 32, visible: false },
-             // --- NEW: Added columns for new cards ---
-             { title: 'เงื่อนไขบัญชียาหลัก', data: 33, visible: false }, { title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', data: 34, visible: false }
+             { title: 'Distributor', data: 30, className: 'purchasing-column' },
+             { title: 'Image 1', data: 31, visible: false, className: 'modal-only' }, { title: 'Image 2', data: 32, visible: false, className: 'modal-only' },
+             { title: 'เงื่อนไขบัญชียาหลัก', data: 33, visible: false, className: 'modal-only' }, { title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', data: 34, visible: false, className: 'modal-only' }
         ];
 
         function renderBadge(data, type, map, textWrap = false) { /* ... (no changes) ... */
@@ -217,7 +219,7 @@
 
                 function createDetailCard(options) {
                     const { title, value, valueClass, itemClass, isProtected, realValue } = { valueClass: '', itemClass: '', isProtected: false, realValue: '', ...options };
-                    if (!value || value === '-') return '';
+                    if (!value || value.trim() === '-' || value.trim() === '') return '';
                     let titleHtml = `<strong>${title}</strong>`;
                     let valueHtml = `<div class="${valueClass}">${value}</div>`;
                     if (isProtected && !passwordVerified) {
@@ -267,7 +269,7 @@
 
                 let row4Html = ''; // The Rest
                 columnConfig.forEach(col => {
-                    if (col.data !== null && !usedIndices.has(col.data) && ![0, 31, 32, 33, 34].includes(col.data) && !/\d{2}\/\d{2}/.test(col.title)) {
+                    if (col.data !== null && !usedIndices.has(col.data) && !col.className?.includes('modal-only') && !/\d{2}\/\d{2}/.test(col.title)) {
                         let displayValue = rowData[col.data];
                         if (['ราคากลาง', 'Fee Schedule'].includes(col.title)) displayValue = formatNumber(displayValue, 2, 2);
                         const card = createDetailCard({ title: col.title, value: displayValue });
@@ -276,16 +278,16 @@
                     }
                 });
                 if (row4Html) detailsHtml += `<div class="detail-row">${row4Html}</div>`;
-
+                
+                // --- MODIFIED: Added multiline-content class ---
                 let row5Html = ''; // New Cards
-                row5Html += createDetailCard({ title: 'เงื่อนไขบัญชียาหลัก', value: rowData[colMap['เงื่อนไขบัญชียาหลัก']] });
-                row5Html += createDetailCard({ title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', value: rowData[colMap['ข้อบ่งชี้ที่ได้ขึ้นทะเบียน']] });
+                row5Html += createDetailCard({ title: 'เงื่อนไขบัญชียาหลัก', value: rowData[colMap['เงื่อนไขบัญชียาหลัก']], valueClass: 'multiline-content' });
+                row5Html += createDetailCard({ title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', value: rowData[colMap['ข้อบ่งชี้ที่ได้ขึ้นทะเบียน']], valueClass: 'multiline-content' });
                 if (row5Html) detailsHtml += `<div class="detail-row">${row5Html}</div>`;
 
                 let imageHtml = '';
                 if (rowData[31]) imageHtml += `<img src="${rowData[31]}" class="drug-image img-fluid" alt="Drug Image 1" onerror="this.style.display='none'">`;
                 if (rowData[32]) imageHtml += `<img src="${rowData[32]}" class="drug-image img-fluid" alt="Drug Image 2" onerror="this.style.display='none'">`;
-
                 let usageTablesHtml = '';
                 const rateLabels = [], rateData = [], caseData = [];
                 columnConfig.forEach(col => {
@@ -296,7 +298,6 @@
                         rateLabels.push(col.title);
                     }
                 });
-
                 if (rateData.some(d => d > 0) || caseData.some(c => c > 0)) {
                     let rateTable = '<h5>อัตราการใช้ยา (Usage Rate)</h5><div class="table-responsive"><table class="table table-sm table-bordered mt-3"><thead><tr>';
                     rateLabels.forEach(label => rateTable += `<th>${label}</th>`);
@@ -306,7 +307,6 @@
                     caseTable += `</tr></thead><tbody><tr>${caseData.map(d => `<td>${formatNumber(d, 0, 0)}</td>`).join('')}</tr></tbody></table></div>`;
                     usageTablesHtml = rateTable + caseTable;
                 }
-
                 const finalModalHtml = `
                     <div class="modal-main-layout">
                         <div class="details-section">
@@ -331,16 +331,34 @@
             });
         }
         
-        function setView(viewType) { /* ... (no changes) ... */
-            if (!table) return; $('.view-toggle').removeClass('active'); $(`#${viewType}View`).addClass('active'); table.columns().visible(false); table.columns('.all-column').visible(true);
-            if (viewType === 'default') table.columns('.default-column').visible(true); else if (viewType === 'purchasing') table.columns('.purchasing-column').visible(true);
-            else if (viewType === 'rate') table.columns('.rate-column').visible(true); else if (viewType === 'all') table.columns().visible(true);
+        // --- MODIFIED: setView for 'all' now respects 'modal-only' class ---
+        function setView(viewType) {
+            if (!table) return;
+            $('.view-toggle').removeClass('active');
+            $(`#${viewType}View`).addClass('active');
+
+            if (viewType === 'all') {
+                table.columns(':not(.modal-only)').visible(true);
+                table.columns('.modal-only').visible(false);
+            } else {
+                table.columns().visible(false);
+                table.columns('.all-column').visible(true);
+                if (viewType === 'default') table.columns('.default-column').visible(true);
+                else if (viewType === 'purchasing') table.columns('.purchasing-column').visible(true);
+                else if (viewType === 'rate') table.columns('.rate-column').visible(true);
+            }
         }
         $('#defaultView').on('click', () => setView('default')); $('#rateView').on('click', () => setView('rate'));
         $('#purchasingView').on('click', () => promptPassword(() => setView('purchasing'))); $('#allView').on('click', () => promptPassword(() => setView('all')));
         $('#exportButton').on('click', () => promptPassword(() => { /* ... (no changes) ... */
-            const visibleColumns = table.columns().visible(); const headers = table.columns().header().toArray().map(h => $(h).text()); const data = [headers.filter((_, index) => visibleColumns[index])];
-            table.rows({ search: 'applied' }).every(function () { data.push(this.data().filter((_, index) => visibleColumns[index])); });
+            const visibleColumns = table.columns(':visible').toArray()[0];
+            const headers = table.columns(visibleColumns).header().toArray().map(h => $(h).text());
+            const data = [headers];
+            table.rows({ search: 'applied' }).every(function () {
+                const rowData = this.data();
+                const visibleData = visibleColumns.map(index => rowData[index]);
+                data.push(visibleData);
+            });
             const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet(data); XLSX.utils.book_append_sheet(wb, ws, "Drug Master Data"); XLSX.writeFile(wb, 'drug_master_data.xlsx');
             showSwalSuccess('Excel exported successfully!');
         }));
@@ -351,10 +369,10 @@
             });
         });
 
+        // --- MODIFIED: promptPassword now handles focus issue ---
         function promptPassword(callback, forceReauth = false) {
             if (passwordVerified && !forceReauth) { callback(); return; }
             
-            // --- FIX for SweetAlert in Bootstrap Modal ---
             const modalElement = document.getElementById('drugDetailModal');
             const isModalOpen = modalElement.classList.contains('show');
             if (isModalOpen) { $(modalElement).removeAttr('tabindex'); }
@@ -369,7 +387,7 @@
                 },
                 allowOutsideClick: () => !Swal.isLoading()
             }).then((result) => {
-                if (isModalOpen) { $(modalElement).attr('tabindex', '-1'); } // Restore tabindex
+                if (isModalOpen) { $(modalElement).attr('tabindex', '-1'); }
                 if (result.isConfirmed) { passwordVerified = true; callback(); }
             });
         }
