@@ -193,16 +193,15 @@
             return number.toLocaleString('en-US', { minimumFractionDigits: minDecimals, maximumFractionDigits: maxDecimals });
         }
         
-        // --- MODIFIED: Column configuration completely restructured for new ordering and combined columns ---
+        // --- MODIFIED: Column configuration re-ordered for new view layouts ---
         const columnConfig = [
              { title: 'Detail View', data: null, defaultContent: '<button class="btn btn-sm btn-primary view-details-btn"><i class="fas fa-eye"></i></button>', orderable: false, className: 'text-center all-column', width: "50px" },
-             { title: 'Material No.', data: 0, className: 'default-column material-column purchasing-column rate-column' },
-             { title: 'SAP Name', data: 1, width: "25%", className: 'default-column sapname-column purchasing-column rate-column', render: (d, t) => t === 'display' && d ? `<span style="color: var(--primary-color)" class="fw-bold">${d}</span>` : d },
+             { title: 'Material No.', data: 0, className: 'default-column purchasing-column rate-column' },
+             { title: 'SAP Name', data: 1, width: "25%", className: 'default-column purchasing-column rate-column', render: (d, t) => t === 'display' && d ? `<span style="color: var(--primary-color)" class="fw-bold">${d}</span>` : d },
              { title: 'Generic Name', data: 2, width: "25%", className: 'default-column' },
              { title: 'TPU', data: 3, className: 'default-column purchasing-column' },
-             { title: 'Status', data: 12, className: 'default-column status-column purchasing-column rate-column', render: (d,t) => renderBadge(d, t, {'ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}) },
              { title: 'GPU', data: 4, className: 'default-column' },
-             { title: 'เงื่อนไขการเบิกจ่าย', data: 5, className: 'default-column', render: (d,t) => renderBadge(d, t, {'สำรองจ่าย': 'bg-primary', 'ocpa': 'bg-success', 'เบิกได้': 'bg-success', 'ขรก เบิกไม่ได้': 'bg-danger', 'เบิกนอก': 'bg-info text-dark', 'วัคซีน': 'bg-warning text-dark'}, true) },
+             { title: 'เงื่อนไขการเบิกจ่าย', data: 5, className: 'default-column', width: '180px', render: (d,t) => renderBadge(d, t, {'สำรองจ่าย': 'bg-primary', 'ocpa': 'bg-success', 'เบิกได้': 'bg-success', 'ขรก เบิกไม่ได้': 'bg-danger', 'เบิกนอก': 'bg-info text-dark', 'วัคซีน': 'bg-warning text-dark'}, true) },
              { title: 'บัญชียา', data: 6, className: 'default-column', render: (d,t) => renderBadge(d, t, {'ned': 'bg-danger', 'ed': 'bg-success', 'ในบัญชี(วถ)': 'bg-info text-dark', 'ค่าสารทึบ': 'bg-primary', 'promotion': 'bg-warning text-dark'}) },
              { 
                 title: 'ราคาทุน / หน่วย', 
@@ -210,9 +209,7 @@
                 width: '130px',
                 className: 'purchasing-column',
                 render: function(data, type, row) {
-                    const costPrice = formatNumber(row[10], 2, 2);
-                    const baseUnit = row[11] || 'หน่วย';
-                    return `${costPrice} / ${baseUnit}`;
+                    return `${formatNumber(row[10], 2, 2)} / ${row[11] || 'หน่วย'}`;
                 }
              },
              { 
@@ -221,62 +218,38 @@
                 width: '130px',
                 className: 'default-column purchasing-column rate-column',
                 render: function(data, type, row) {
-                    const salePrice = formatNumber(row[8], 2, 2);
-                    const saleUnit = row[9] || 'หน่วย';
-                    return `${salePrice} / ${saleUnit}`;
+                    return `${formatNumber(row[8], 2, 2)} / ${row[9] || 'หน่วย'}`;
                 }
              },
+             { title: 'Purchasing Unit', data: 7, className: 'purchasing-column default-column' },
+             { title: 'Status', data: 12, className: 'default-column purchasing-column rate-column', render: (d,t) => renderBadge(d, t, {'ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}) },
              { title: 'ราคากลาง', data: 26, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
              { title: 'Fee Schedule', data: 27, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
-             { title: 'Purchasing Unit', data: 7, className: 'purchasing-column default-column' },
              { title: 'รหัสยาทดแทน', data: 28, className: 'purchasing-column' },
              { title: 'การรับเข้าบัญชี', data: 29, className: 'purchasing-column' },
              { title: 'Distributor', data: 30, className: 'purchasing-column' },
-             { title: 'Drug Group', data: 25, className: '' }, // Shows in 'All' view only
-             { title: '06/67', data: 13, className: 'rate-column' }, { title: '07/67', data: 14, className: 'rate-column' },
-             { title: '08/67', data: 15, className: 'rate-column' }, { title: '09/67', data: 16, className: 'rate-column' }, { title: '10/67', data: 17, className: 'rate-column' }, { title: '11/67', data: 18, className: 'rate-column' },
-             { title: '12/67', data: 19, className: 'rate-column' }, { title: '01/68', data: 20, className: 'rate-column' }, { title: '02/68', data: 21, className: 'rate-column' }, { title: '03/68', data: 22, className: 'rate-column' },
-             { title: '04/68', data: 23, className: 'rate-column' }, { title: '05/68', data: 24, className: 'rate-column' },
+             { title: 'Drug Group', data: 25, className: '' },
+             { title: '06/67', data: 13, className: 'rate-column' }, { title: '07/67', data: 14, className: 'rate-column' }, { title: '08/67', data: 15, className: 'rate-column' },
+             { title: '09/67', data: 16, className: 'rate-column' }, { title: '10/67', data: 17, className: 'rate-column' }, { title: '11/67', data: 18, className: 'rate-column' },
+             { title: '12/67', data: 19, className: 'rate-column' }, { title: '01/68', data: 20, className: 'rate-column' }, { title: '02/68', data: 21, className: 'rate-column' },
+             { title: '03/68', data: 22, className: 'rate-column' }, { title: '04/68', data: 23, className: 'rate-column' }, { title: '05/68', data: 24, className: 'rate-column' },
              { title: 'Image 1', data: 31, visible: false, className: 'modal-only' }, { title: 'Image 2', data: 32, visible: false, className: 'modal-only' },
              { title: 'เงื่อนไขบัญชียาหลัก', data: 33, visible: false, className: 'modal-only' }, { title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', data: 34, visible: false, className: 'modal-only' },
              { title: 'PAP', data: 35, visible: false, className: 'modal-only' }
         ];
 
-        function renderBadge(data, type, map, textWrap = false) {
+        function renderBadge(data, type, map, textWrap = false) { /* ... (no changes) ... */
             if (type === 'display' && data) { const status = data.toLowerCase().trim(); const cls = Object.entries(map).find(([key]) => status.includes(key))?.[1] || 'bg-secondary'; return `<span class="badge ${cls} ${textWrap ? 'text-wrap' : ''}">${data}</span>`; } return data;
         }
 
-        function robustCsvParser(csvText) {
+        function robustCsvParser(csvText) { /* ... (no changes) ... */
             const rows = []; let currentRow = []; let currentField = ''; let inQuotes = false; const text = csvText.trim().replace(/\r\n/g, '\n');
-            for (let i = 0; i < text.length; i++) {
-                const char = text[i];
-                if (inQuotes) {
-                    if (char === '"') { if (i + 1 < text.length && text[i + 1] === '"') { currentField += '"'; i++; } else { inQuotes = false; } } else { currentField += char; }
-                } else {
-                    switch (char) {
-                        case '"': inQuotes = true; break;
-                        case ',': currentRow.push(currentField); currentField = ''; break;
-                        case '\n': currentRow.push(currentField); rows.push(currentRow); currentRow = []; currentField = ''; break;
-                        default: currentField += char;
-                    }
-                }
-            }
-            if (currentField || currentRow.length > 0) { currentRow.push(currentField); rows.push(currentRow); }
-            return rows;
+            for (let i = 0; i < text.length; i++) { const char = text[i]; if (inQuotes) { if (char === '"') { if (i + 1 < text.length && text[i + 1] === '"') { currentField += '"'; i++; } else { inQuotes = false; } } else { currentField += char; } } else { switch (char) { case '"': inQuotes = true; break; case ',': currentRow.push(currentField); currentField = ''; break; case '\n': currentRow.push(currentField); rows.push(currentRow); currentRow = []; currentField = ''; break; default: currentField += char; } } }
+            if (currentField || currentRow.length > 0) { currentRow.push(currentField); rows.push(currentRow); } return rows;
         }
 
-        async function loadDataAndInitTable() {
-            try {
-                const response = await fetch(dataUrl);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                const csvData = await response.text();
-                const parsedDataWithHeader = robustCsvParser(csvData);
-                const parsedData = parsedDataWithHeader.slice(1);
-                initializeDataTable(parsedData);
-            } catch (error) {
-                console.error("Data Load/Parse Error:", error);
-                Swal.fire({ icon: 'error', title: 'Data Load Error', text: 'Failed to load or parse data. See browser console for details.' });
-            }
+        async function loadDataAndInitTable() { /* ... (no changes) ... */
+            try { const response = await fetch(dataUrl); if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`); const csvData = await response.text(); const parsedDataWithHeader = robustCsvParser(csvData); const parsedData = parsedDataWithHeader.slice(1); initializeDataTable(parsedData); } catch (error) { console.error("Data Load/Parse Error:", error); Swal.fire({ icon: 'error', title: 'Data Load Error', text: 'Failed to load or parse data. See browser console for details.' }); }
         }
 
         function initializeDataTable(data) {
@@ -321,7 +294,7 @@
                 row2Html += createDetailCard({ title: 'GPU', value: rowData[4], itemClass: 'compact-card' });
                 row2Html += createDetailCard({ title: 'เงื่อนไขการเบิกจ่าย', value: renderBadge(rowData[5], 'display', {'สำรองจ่าย': 'bg-primary', 'ocpa': 'bg-success', 'เบิกได้': 'bg-success', 'ขรก เบิกไม่ได้': 'bg-danger', 'เบิกนอก': 'bg-info text-dark', 'วัคซีน': 'bg-warning text-dark'}, true), itemClass: 'status-card' });
                 row2Html += createDetailCard({ title: 'บัญชียา', value: renderBadge(rowData[6], 'display', {'ned': 'bg-danger', 'ed': 'bg-success', 'ในบัญชี(วถ)': 'bg-info text-dark', 'ค่าสารทึบ': 'bg-primary', 'promotion': 'bg-warning text-dark'}), itemClass: 'status-card' });
-                row2Html += createDetailCard({ title: 'Status', value: renderBadge(rowData[12], 'display', {'ในบัญชี(NS)':'bg-primary','ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}), itemClass: 'status-card' });
+                row2Html += createDetailCard({ title: 'Status', value: renderBadge(rowData[12], 'display', {'ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}), itemClass: 'status-card' });
                 if (row2Html) detailsHtml += `<div class="detail-row">${row2Html}</div>`;
                 
                 let row3Html = '';
@@ -341,17 +314,14 @@
                 if (row4Html) detailsHtml += `<div class="detail-row">${row4Html}</div>`;
                 
                 let row5Html = '';
-                let conditions = rowData[33];
-                if (conditions) conditions = conditions.replace(/\n/g, '<br>');
+                let conditions = rowData[33]; if (conditions) conditions = conditions.replace(/\n/g, '<br>');
                 row5Html += createDetailCard({ title: 'เงื่อนไขบัญชียาหลัก', value: conditions });
-                let indications = rowData[34];
-                if (indications) indications = indications.replace(/\n/g, '<br>');
+                let indications = rowData[34]; if (indications) indications = indications.replace(/\n/g, '<br>');
                 row5Html += createDetailCard({ title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', value: indications });
                 if (row5Html) detailsHtml += `<div class="detail-row">${row5Html}</div>`;
 
                 let row6Html = '';
-                let papValue = rowData[35];
-                if (papValue) papValue = papValue.replace(/\n/g, '<br>');
+                let papValue = rowData[35]; if (papValue) papValue = papValue.replace(/\n/g, '<br>');
                 row6Html += createDetailCard({ title: 'PAP', value: papValue });
                 if (row6Html) detailsHtml += `<div class="detail-row">${row6Html}</div>`;
 
