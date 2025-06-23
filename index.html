@@ -65,7 +65,8 @@
         .drug-image { width: 100%; border-radius: 5px; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
         #charts-section { margin-top: 1.5rem; width:100%; border-top: 1px solid #dee2e6; padding-top: 1.5rem;}
         .charts-container { display: flex; flex-wrap: wrap; gap: 20px; align-items: stretch; }
-        .chart-wrapper { flex: 1; min-width: 300px; }
+        /* MODIFIED: Added CSS for chart height */
+        .chart-wrapper { flex: 1; min-width: 300px; position: relative; height: 300px; }
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 4px; }
@@ -77,7 +78,7 @@
 
 <body>
     <div class="container-fluid">
-        <div class="logo-container">
+         <div class="logo-container">
             <img src="CRAlogo.png" alt="Logo" class="img-fluid">
             <div>
                 <h1 class="app-title">Drug master CRA</h1>
@@ -119,13 +120,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
     <script>
     $(document).ready(function () {
         const dataUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQJpIKf_q4h4h1VEIM0tT1MlMvoEw1PXLYMxMv_c3abXFvAIBS0tWHxLL0sDjuuBrPjbrTP7lJH-NQw/pub?gid=0&single=true&output=csv';
         var table;
         var passwordVerified = false;
-        var lineChartInstance; // To hold the chart object
-        var pieChartInstance; // To hold the chart object
+        var lineChartInstance; 
+        var pieChartInstance;
+
+        // MODIFIED: Register the datalabels plugin globally
+        Chart.register(ChartDataLabels);
 
         function formatNumber(data, minDecimals = 0, maxDecimals = 0) {
             const number = parseFloat(data);
@@ -133,8 +138,6 @@
             return number.toLocaleString('en-US', { minimumFractionDigits: minDecimals, maximumFractionDigits: maxDecimals });
         }
 
-        // --- MODIFIED: Added new columns for Pie Chart ---
-        // Assumption: New columns are added at the end of the Google Sheet (columns 36, 37, 38, 39)
         const columnConfig = [
             { title: 'Detail View', data: null, defaultContent: '<button class="btn btn-sm btn-primary view-details-btn"><i class="fas fa-eye"></i></button>', orderable: false, className: 'text-center all-column', width: "50px" },
             { title: 'Material No.', data: 0, className: 'default-column purchasing-column rate-column' },
@@ -161,14 +164,13 @@
             { title: 'Image 1', data: 31, visible: false, className: 'modal-only' }, { title: 'Image 2', data: 32, visible: false, className: 'modal-only' },
             { title: 'เงื่อนไขบัญชียาหลัก', data: 33, visible: false, className: 'modal-only' }, { title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', data: 34, visible: false, className: 'modal-only' },
             { title: 'PAP', data: 35, visible: false, className: 'modal-only' },
-            // START: Added new columns for Pie Chart data
             { title: 'ข้าราชการ', data: 36, visible: false, className: 'modal-only' },
             { title: 'จ่ายเอง', data: 37, visible: false, className: 'modal-only' },
             { title: 'สปสช + ปกส', data: 38, visible: false, className: 'modal-only' },
             { title: 'สวัสดิการเจ้าหน้าที่', data: 39, visible: false, className: 'modal-only' }
-            // END: Added new columns
         ];
-
+        
+        // --- Functions robustCsvParser, loadDataAndInitTable remain unchanged ---
         function renderBadge(data, type, map, textWrap = false) { if (type === 'display' && data) { const status = data.toLowerCase().trim(); const cls = Object.entries(map).find(([key]) => status.includes(key))?.[1] || 'bg-secondary'; return `<span class="badge ${cls} ${textWrap ? 'text-wrap' : ''}">${data}</span>`; } return data; }
         function robustCsvParser(csvText) { const rows = []; let currentRow = []; let currentField = ''; let inQuotes = false; const text = csvText.trim().replace(/\r\n/g, '\n'); for (let i = 0; i < text.length; i++) { const char = text[i]; if (inQuotes) { if (char === '"') { if (i + 1 < text.length && text[i + 1] === '"') { currentField += '"'; i++; } else { inQuotes = false; } } else { currentField += char; } } else { switch (char) { case '"': inQuotes = true; break; case ',': currentRow.push(currentField); currentField = ''; break; case '\n': currentRow.push(currentField); rows.push(currentRow); currentRow = []; currentField = ''; break; default: currentField += char; } } } if (currentField || currentRow.length > 0) { currentRow.push(currentField); rows.push(currentRow); } return rows; }
         async function loadDataAndInitTable() { try { const response = await fetch(dataUrl); if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`); const csvData = await response.text(); const parsedDataWithHeader = robustCsvParser(csvData); const parsedData = parsedDataWithHeader.slice(1); initializeDataTable(parsedData); } catch (error) { console.error("Data Load/Parse Error:", error); Swal.fire({ icon: 'error', title: 'Data Load Error', text: 'Failed to load or parse data. See browser console for details.' }); } }
@@ -211,26 +213,26 @@
                 row1Html += createDetailCard({ title: 'Generic Name', value: rowData[2], valueClass: 'main-title-value' });
                 if (row1Html) detailsHtml += `<div class="detail-row">${row1Html}</div>`;
 
-                // --- MODIFIED: ROW 2 now includes more data ---
+                // --- ROW 2: General Details ---
                 let row2Html = '';
                 row2Html += createDetailCard({ title: 'TPU', value: rowData[3], itemClass: 'compact-card' });
                 row2Html += createDetailCard({ title: 'GPU', value: rowData[4], itemClass: 'compact-card' });
                 row2Html += createDetailCard({ title: 'เงื่อนไขการเบิกจ่าย', value: renderBadge(rowData[5], 'display', {'สำรองจ่าย': 'bg-primary', 'ocpa': 'bg-success', 'เบิกได้': 'bg-success', 'ขรก เบิกไม่ได้': 'bg-danger', 'เบิกนอก': 'bg-info text-dark', 'วัคซีน': 'bg-warning text-dark'}, true), itemClass: 'status-card' });
                 row2Html += createDetailCard({ title: 'บัญชียา', value: renderBadge(rowData[6], 'display', {'ned': 'bg-danger', 'ed': 'bg-success', 'ในบัญชี(วถ)': 'bg-info text-dark', 'ค่าสารทึบ': 'bg-primary', 'promotion': 'bg-warning text-dark'}), itemClass: 'status-card' });
                 row2Html += createDetailCard({ title: 'Status', value: renderBadge(rowData[12], 'display', {'ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}), itemClass: 'status-card' });
-                // MOVED from old row 4
                 row2Html += createDetailCard({ title: 'Purchasing Unit', value: rowData[7] });
                 row2Html += createDetailCard({ title: 'Drug Group', value: rowData[25] });
-                row2Html += createDetailCard({ title: 'ราคากลาง', value: formatNumber(rowData[26], 2, 2) });
-                row2Html += createDetailCard({ title: 'Fee Schedule', value: formatNumber(rowData[27], 2, 2) });
                 row2Html += createDetailCard({ title: 'Distributor', value: rowData[30] });
                 if (row2Html) detailsHtml += `<div class="detail-row">${row2Html}</div>`;
                 
-                // --- ROW 3: Pricing ---
+                // --- MODIFIED: ROW 3 now includes Pricing, Median Price, Fee Schedule ---
                 let row3Html = '';
                 row3Html += createDetailCard({ title: 'ราคาขาย', value: `${formatNumber(rowData[8], 2, 2)} / ${rowData[9] || 'หน่วย'}`, valueClass: 'sale-price-value', itemClass: 'highlight-card' });
                 const realCostValue = `${formatNumber(rowData[10], 2, 2)} / ${rowData[11] || 'หน่วย'}`;
                 row3Html += createDetailCard({ title: 'ราคาทุน', value: realCostValue, valueClass: 'cost-price-value', itemClass: 'highlight-card', isProtected: true, realValue: realCostValue });
+                // MOVED from Row 2
+                row3Html += createDetailCard({ title: 'ราคากลาง', value: formatNumber(rowData[26], 2, 2) });
+                row3Html += createDetailCard({ title: 'Fee Schedule', value: formatNumber(rowData[27], 2, 2) });
                 if (row3Html) detailsHtml += `<div class="detail-row">${row3Html}</div>`;
 
                 // --- ROW 4: Misc Details ---
@@ -249,7 +251,6 @@
                 if (rowData[31]) imageHtml += `<img src="${rowData[31]}" class="drug-image img-fluid" alt="Drug Image 1" onerror="this.style.display='none'">`;
                 if (rowData[32]) imageHtml += `<img src="${rowData[32]}" class="drug-image img-fluid" alt="Drug Image 2" onerror="this.style.display='none'">`;
                 
-                // --- START: Chart Data Preparation ---
                 const rateLabels = [], usageData = [];
                 columnConfig.forEach(col => {
                     if (/\d{2}\/\d{2}/.test(col.title)) {
@@ -258,13 +259,8 @@
                         rateLabels.push(col.title);
                     }
                 });
-
-                const payerData = [
-                    parseFloat(rowData[36] || 0), parseFloat(rowData[37] || 0),
-                    parseFloat(rowData[38] || 0), parseFloat(rowData[39] || 0)
-                ];
+                const payerData = [ parseFloat(rowData[36] || 0), parseFloat(rowData[37] || 0), parseFloat(rowData[38] || 0), parseFloat(rowData[39] || 0) ];
                 const payerLabels = ['ข้าราชการ', 'จ่ายเอง', 'สปสช + ปกส', 'สวัสดิการเจ้าหน้าที่'];
-
                 const showLineChart = usageData.some(d => d > 0);
                 const showPieChart = payerData.some(d => d > 0);
                 
@@ -273,35 +269,21 @@
                     chartsHtml = `
                         <div id="charts-section">
                             <div class="charts-container">
-                                ${showLineChart ? `
-                                <div class="chart-wrapper">
-                                    <h5>อัตราการใช้ยา (Usage Rate)</h5>
-                                    <canvas id="usageLineChart"></canvas>
-                                </div>` : ''}
-                                ${showPieChart ? `
-                                <div class="chart-wrapper">
-                                    <h5>สัดส่วนการใช้ตามสิทธิ์</h5>
-                                    <canvas id="payerPieChart"></canvas>
-                                </div>` : ''}
+                                ${showLineChart ? `<div class="chart-wrapper"><h5>อัตราการใช้ยา (Usage Rate)</h5><canvas id="usageLineChart"></canvas></div>` : ''}
+                                ${showPieChart ? `<div class="chart-wrapper"><h5>สัดส่วนการใช้ตามสิทธิ์</h5><canvas id="payerPieChart"></canvas></div>` : ''}
                             </div>
                         </div>`;
                 } else {
                     chartsHtml = '<div id="charts-section"><h5>ข้อมูลกราฟ</h5><p class="text-center text-muted mt-3">ไม่มีข้อมูลย้อนหลัง 1 ปี</p></div>';
                 }
-                // --- END: Chart Data Preparation ---
 
                 const finalModalHtml = `
                     <div class="modal-main-layout">
-                        <div class="details-section">
-                            ${detailsHtml}
-                            ${chartsHtml}
-                        </div>
+                        <div class="details-section">${detailsHtml}${chartsHtml}</div>
                         ${imageHtml ? `<div class="image-section"><h5>รูปภาพประกอบ</h5>${imageHtml}</div>` : ''}
                     </div>`;
                 $('#drugDetailModalBody').html(finalModalHtml);
 
-                // --- START: Chart Rendering ---
-                // Destroy previous charts if they exist to prevent conflicts
                 if (lineChartInstance) lineChartInstance.destroy();
                 if (pieChartInstance) pieChartInstance.destroy();
 
@@ -310,7 +292,19 @@
                     lineChartInstance = new Chart(lineCtx, {
                         type: 'line',
                         data: { labels: rateLabels, datasets: [{ label: 'Usage Rate', data: usageData, borderColor: 'var(--primary-color)', backgroundColor: 'rgba(0, 91, 161, 0.2)', fill: true, tension: 0.1 }] },
-                        options: { responsive: true, maintainAspectRatio: false }
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false, // MODIFIED
+                            plugins: {
+                                datalabels: { // MODIFIED: Datalabels config
+                                    align: 'end',
+                                    anchor: 'end',
+                                    color: '#555',
+                                    font: { weight: 'bold' },
+                                    formatter: (value) => value > 0 ? Math.round(value) : '',
+                                }
+                            }
+                        }
                     });
                 }
                 if (showPieChart) {
@@ -319,73 +313,45 @@
                         type: 'pie',
                         data: {
                             labels: payerLabels,
-                            datasets: [{
-                                label: 'สัดส่วน',
-                                data: payerData,
-                                backgroundColor: ['#005ba1', '#dc3545', '#198754', '#ffc107'],
-                                hoverOffset: 4
-                            }]
+                            datasets: [{ label: 'สัดส่วน', data: payerData, backgroundColor: ['#005ba1', '#dc3545', '#198754', '#ffc107'], hoverOffset: 4 }]
                         },
-                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false, // MODIFIED
+                            plugins: {
+                                legend: { position: 'bottom' },
+                                datalabels: { // MODIFIED: Datalabels config
+                                    color: '#fff',
+                                    textStrokeColor: '#000',
+                                    textStrokeWidth: 2,
+                                    font: { weight: 'bold' },
+                                    formatter: (value, ctx) => {
+                                        if (value === 0) return '';
+                                        const total = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                        const percentage = (value / total * 100).toFixed(1) + '%';
+                                        return percentage;
+                                    }
+                                }
+                            }
+                        }
                     });
                 }
-                // --- END: Chart Rendering ---
 
                 $('#drugDetailModal').modal('show');
             });
-
-            // ... (no changes to password prompts or export functions) ...
-             $('#drugDetailModal').on('click', '.unlock-cost-btn', function(e) { /* ... (no changes) ... */
-                e.stopPropagation(); const unlockButton = $(this); const valueContainer = unlockButton.closest('.detail-item').find('.value-container'); unlockButton.hide();
-                const formHtml = `<div class="input-group input-group-sm"><input type="password" class="form-control inline-password-input" placeholder="Password..."><button class="btn btn-primary inline-submit-btn" type="button">OK</button></div><div class="inline-error-msg" style="display:none;">Incorrect Password</div>`;
-                valueContainer.html(formHtml); valueContainer.find('.inline-password-input').focus();
-            });
-            $('#drugDetailModal').on('click', '.inline-submit-btn', function(e) { /* ... (no changes) ... */
-                e.stopPropagation(); const submitButton = $(this); const inputField = submitButton.siblings('.inline-password-input'); const valueContainer = submitButton.closest('.value-container'); const errorMsg = valueContainer.find('.inline-error-msg'); const password = inputField.val();
-                if (password === 'rxccc') { passwordVerified = true; const realCost = valueContainer.data('real-value'); valueContainer.html(realCost); } else { errorMsg.show().delay(2000).fadeOut(); inputField.val('').focus(); }
-            });
-            $('#drugDetailModal').on('keypress', '.inline-password-input', function(e) { /* ... (no changes) ... */
-                if (e.which === 13) { e.preventDefault(); $(this).siblings('.inline-submit-btn').click(); }
-            });
+            
+            // --- All remaining functions (password prompts, view toggles, exports) remain unchanged ---
+             $('#drugDetailModal').on('click', '.unlock-cost-btn', function(e) { /* ... (no changes) ... */ e.stopPropagation(); const unlockButton = $(this); const valueContainer = unlockButton.closest('.detail-item').find('.value-container'); unlockButton.hide(); const formHtml = `<div class="input-group input-group-sm"><input type="password" class="form-control inline-password-input" placeholder="Password..."><button class="btn btn-primary inline-submit-btn" type="button">OK</button></div><div class="inline-error-msg" style="display:none;">Incorrect Password</div>`; valueContainer.html(formHtml); valueContainer.find('.inline-password-input').focus(); });
+             $('#drugDetailModal').on('click', '.inline-submit-btn', function(e) { /* ... (no changes) ... */ e.stopPropagation(); const submitButton = $(this); const inputField = submitButton.siblings('.inline-password-input'); const valueContainer = submitButton.closest('.value-container'); const errorMsg = valueContainer.find('.inline-error-msg'); const password = inputField.val(); if (password === 'rxccc') { passwordVerified = true; const realCost = valueContainer.data('real-value'); valueContainer.html(realCost); } else { errorMsg.show().delay(2000).fadeOut(); inputField.val('').focus(); } });
+             $('#drugDetailModal').on('keypress', '.inline-password-input', function(e) { /* ... (no changes) ... */ if (e.which === 13) { e.preventDefault(); $(this).siblings('.inline-submit-btn').click(); } });
         }
         
-        function setView(viewType) { /* ... (no changes) ... */
-            if (!table) return; $('.view-toggle').removeClass('active'); $(`#${viewType}View`).addClass('active');
-            if (viewType === 'all') { table.columns(':not(.modal-only)').visible(true); table.columns('.modal-only').visible(false); } else {
-                table.columns().visible(false); table.columns('.all-column').visible(true);
-                if (viewType === 'default') table.columns('.default-column').visible(true); else if (viewType === 'purchasing') table.columns('.purchasing-column').visible(true); else if (viewType === 'rate') table.columns('.rate-column').visible(true);
-            }
-        }
+        function setView(viewType) { if (!table) return; $('.view-toggle').removeClass('active'); $(`#${viewType}View`).addClass('active'); if (viewType === 'all') { table.columns(':not(.modal-only)').visible(true); table.columns('.modal-only').visible(false); } else { table.columns().visible(false); table.columns('.all-column').visible(true); if (viewType === 'default') table.columns('.default-column').visible(true); else if (viewType === 'purchasing') table.columns('.purchasing-column').visible(true); else if (viewType === 'rate') table.columns('.rate-column').visible(true); } }
         $('#defaultView').on('click', () => setView('default')); $('#rateView').on('click', () => setView('rate'));
         $('#purchasingView').on('click', () => promptPassword(() => setView('purchasing'))); $('#allView').on('click', () => promptPassword(() => setView('all')));
-        $('#exportButton').on('click', () => promptPassword(() => { /* ... (no changes) ... */
-            const visibleColumns = table.columns(':visible').toArray()[0]; const headers = table.columns(visibleColumns).header().toArray().map(h => $(h).text()); const data = [headers];
-            table.rows({ search: 'applied' }).every(function () { const rowData = this.data(); const visibleData = visibleColumns.map(index => rowData[index]); data.push(visibleData); });
-            const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet(data); XLSX.utils.book_append_sheet(wb, ws, "Drug Master Data"); XLSX.writeFile(wb, 'drug_master_data.xlsx');
-            showSwalSuccess('Excel exported successfully!');
-        }));
-        $('#exportJPEGButton').on('click', () => { /* ... (no changes) ... */
-            html2canvas(document.querySelector("#drugTable_wrapper"), { scale: 2, useCORS: true }).then(canvas => {
-                const link = document.createElement('a'); link.download = 'drug_master_data.jpg'; link.href = canvas.toDataURL('image/jpeg', 0.9); link.click();
-                showSwalSuccess('Screenshot saved successfully!');
-            });
-        });
-
-        function promptPassword(callback, forceReauth = false) { /* ... (no changes) ... */
-            if (passwordVerified && !forceReauth) { callback(); return; }
-            Swal.fire({
-                title: 'Authentication Required', input: 'password', inputPlaceholder: 'Enter your password',
-                inputAttributes: { autocapitalize: 'off', autocorrect: 'off' },
-                showCancelButton: true, confirmButtonText: 'Submit', showLoaderOnConfirm: true,
-                preConfirm: (password) => {
-                    if (password === 'rxccc') { return true; } 
-                    else { Swal.showValidationMessage('Incorrect password'); return false; }
-                },
-                allowOutsideClick: () => !Swal.isLoading()
-            }).then((result) => {
-                if (result.isConfirmed) { passwordVerified = true; callback(); }
-            });
-        }
+        $('#exportButton').on('click', () => promptPassword(() => { const visibleColumns = table.columns(':visible').toArray()[0]; const headers = table.columns(visibleColumns).header().toArray().map(h => $(h).text()); const data = [headers]; table.rows({ search: 'applied' }).every(function () { const rowData = this.data(); const visibleData = visibleColumns.map(index => rowData[index]); data.push(visibleData); }); const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet(data); XLSX.utils.book_append_sheet(wb, ws, "Drug Master Data"); XLSX.writeFile(wb, 'drug_master_data.xlsx'); showSwalSuccess('Excel exported successfully!'); }));
+        $('#exportJPEGButton').on('click', () => { html2canvas(document.querySelector("#drugTable_wrapper"), { scale: 2, useCORS: true }).then(canvas => { const link = document.createElement('a'); link.download = 'drug_master_data.jpg'; link.href = canvas.toDataURL('image/jpeg', 0.9); link.click(); showSwalSuccess('Screenshot saved successfully!'); }); });
+        function promptPassword(callback, forceReauth = false) { if (passwordVerified && !forceReauth) { callback(); return; } Swal.fire({ title: 'Authentication Required', input: 'password', inputPlaceholder: 'Enter your password', inputAttributes: { autocapitalize: 'off', autocorrect: 'off' }, showCancelButton: true, confirmButtonText: 'Submit', showLoaderOnConfirm: true, preConfirm: (password) => { if (password === 'rxccc') { return true; } else { Swal.showValidationMessage('Incorrect password'); return false; } }, allowOutsideClick: () => !Swal.isLoading() }).then((result) => { if (result.isConfirmed) { passwordVerified = true; callback(); } }); }
         function showSwalSuccess(message) { Swal.fire({ icon: 'success', title: 'Success!', text: message, timer: 2000, showConfirmButton: false }); }
         loadDataAndInitTable();
     });
