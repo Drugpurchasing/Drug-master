@@ -126,6 +126,12 @@
                         </div>
                     </div>
                 </div>
+                
+                <div id="loadingIndicator" class="progress mb-3" style="height: 20px; display: none;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                        <strong class="text-white">Loading Data... Please Wait</strong>
+                    </div>
+                </div>
                 <div class="table-responsive"><table id="drugTable" class="table table-hover table-striped w-100"></table></div>
             </div>
         </div>
@@ -198,9 +204,29 @@
         
         function renderBadge(data, type, map, textWrap = false) { if (type === 'display' && data) { const status = data.toLowerCase().trim(); const cls = Object.entries(map).find(([key]) => status.includes(key))?.[1] || 'bg-secondary'; return `<span class="badge ${cls} ${textWrap ? 'text-wrap' : ''}">${data}</span>`; } return data; }
         function robustCsvParser(csvText) { const rows = []; let currentRow = []; let currentField = ''; let inQuotes = false; const text = csvText.trim().replace(/\r\n/g, '\n'); for (let i = 0; i < text.length; i++) { const char = text[i]; if (inQuotes) { if (char === '"') { if (i + 1 < text.length && text[i + 1] === '"') { currentField += '"'; i++; } else { inQuotes = false; } } else { currentField += char; } } else { switch (char) { case '"': inQuotes = true; break; case ',': currentRow.push(currentField); currentField = ''; break; case '\n': currentRow.push(currentField); rows.push(currentRow); currentRow = []; currentField = ''; break; default: currentField += char; } } } if (currentField || currentRow.length > 0) { currentRow.push(currentField); rows.push(currentRow); } return rows; }
-        async function loadDataAndInitTable() { try { const response = await fetch(dataUrl); if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`); const csvData = await response.text(); const parsedDataWithHeader = robustCsvParser(csvData); const parsedData = parsedDataWithHeader.slice(1); initializeDataTable(parsedData); } catch (error) { console.error("Data Load/Parse Error:", error); Swal.fire({ icon: 'error', title: 'Data Load Error', text: 'Failed to load or parse data. See browser console for details.' }); } }
+        
+        async function loadDataAndInitTable() {
+            // MODIFIED: Show the loading bar before starting the fetch operation
+            $('#loadingIndicator').show();
+            try {
+                const response = await fetch(dataUrl);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const csvData = await response.text();
+                const parsedDataWithHeader = robustCsvParser(csvData);
+                const parsedData = parsedDataWithHeader.slice(1);
+                initializeDataTable(parsedData);
+            } catch (error) {
+                // MODIFIED: Hide the loading bar on error
+                $('#loadingIndicator').hide();
+                console.error("Data Load/Parse Error:", error);
+                Swal.fire({ icon: 'error', title: 'Data Load Error', text: 'Failed to load or parse data. See browser console for details.' });
+            }
+        }
 
         function initializeDataTable(data) {
+            // MODIFIED: Hide the loading bar right before initializing the table
+            $('#loadingIndicator').hide();
+            
             table = $('#drugTable').DataTable({
                 data: data, columns: columnConfig, dom: 'rt<"bottom d-flex justify-content-between align-items-center mt-3"lip>',
                 pageLength: 10, lengthMenu: [10, 25, 50, 100], scrollX: true, responsive: false,
@@ -283,9 +309,9 @@
                 if (showUsageStats) {
                     // MODIFIED: Increased bottom margin of charts container to mb-5 to prevent overlap.
                     let chartsHtml = `<div class="charts-container mb-5">
-                                        <div class="chart-wrapper"><h5 class="mb-3">อัตราการใช้ยาย้อนหลัง 12 เดือน</h5><canvas id="usageLineChart"></canvas></div>
-                                        ${showPieChart ? `<div class="chart-wrapper"><h5 class="mb-3">สัดส่วนการใช้ตามสิทธิ์</h5><canvas id="payerPieChart"></canvas></div>` : ''}
-                                      </div>`;
+                                            <div class="chart-wrapper"><h5 class="mb-3">อัตราการใช้ยาย้อนหลัง 12 เดือน</h5><canvas id="usageLineChart"></canvas></div>
+                                            ${showPieChart ? `<div class="chart-wrapper"><h5 class="mb-3">สัดส่วนการใช้ตามสิทธิ์</h5><canvas id="payerPieChart"></canvas></div>` : ''}
+                                        </div>`;
                     
                     let tablesHtml = '';
                     let caseTable = `<h5 class="mt-0">จำนวนเคส (Case Count)</h5><div class="table-responsive"><table class="table table-sm table-bordered"><thead><tr>`;
