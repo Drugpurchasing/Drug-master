@@ -36,6 +36,19 @@
         .btn-primary { background-color: var(--primary-color); border-color: var(--primary-color); }
         .btn-primary:hover { background-color: var(--secondary-color); border-color: var(--secondary-color); }
         .view-toggle.active { background-color: var(--primary-color); color: white; }
+        
+        /* MODIFIED: Added custom style for the new purple button */
+        .btn-purple {
+            color: #fff;
+            background-color: #6f42c1;
+            border-color: #6f42c1;
+        }
+        .btn-purple:hover {
+            color: #fff;
+            background-color: #5a34a0;
+            border-color: #533092;
+        }
+
         table.dataTable thead th { border-bottom: 2px solid var(--primary-color); font-weight: 600; background-color: #f1f1f1; vertical-align: middle; }
         #drugTable td { vertical-align: middle; }
         .modal-xl { max-width: 95%; }
@@ -65,15 +78,11 @@
         .drug-image { width: 100%; border-radius: 5px; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
         #stats-section { margin-top: 1.5rem; width:100%; border-top: 1px solid #dee2e6; padding-top: 1.5rem;}
         .charts-container { display: flex; flex-wrap: wrap; gap: 20px; align-items: stretch; }
-        
-        /* MODIFIED: Increased min-width and height for larger charts */
         .chart-wrapper { flex: 1; min-width: 350px; position: relative; height: 350px; }
-        
         #stats-section .tables-container {
             margin-top: 2rem;
             clear: both;
         }
-
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 4px; }
@@ -104,6 +113,9 @@
                         </div>
                         <div class="col-lg-8 col-md-12">
                             <div class="d-flex flex-wrap gap-2 justify-content-md-end justify-content-center">
+                                <a href="https://drugpurchasing.github.io/Drug-master/Markup.html" target="_blank" class="btn btn-warning text-dark fw-bold"><i class="fas fa-calculator me-1"></i>Markup</a>
+                                <a href="https://drugpurchasing.github.io/Drug-master/NewList.html" target="_blank" class="btn btn-purple"><i class="fas fa-file-medical me-1"></i>สรุปยาเข้าใหม่</a>
+                                
                                 <button id="exportButton" class="btn btn-success"><i class="fas fa-file-excel me-1"></i>Excel</button>
                                 <button id="exportJPEGButton" class="btn btn-danger"><i class="fas fa-camera me-1"></i>Screenshot</button>
                                 <button id="defaultView" class="btn btn-outline-primary view-toggle"><i class="fas fa-eye me-1"></i>Essential</button>
@@ -268,9 +280,9 @@
                 const showPieChart = payerData.some(d => d > 0);
                 
                 let statsHtml = '';
-                // MODIFIED: The Pie chart (`payerPieChart`) is now also conditional on `showUsageStats`.
                 if (showUsageStats) {
-                    let chartsHtml = `<div class="charts-container mb-3">
+                    // MODIFIED: Increased bottom margin of charts container to mb-5 to prevent overlap.
+                    let chartsHtml = `<div class="charts-container mb-5">
                                         <div class="chart-wrapper"><h5 class="mb-3">อัตราการใช้ยาย้อนหลัง 12 เดือน</h5><canvas id="usageLineChart"></canvas></div>
                                         ${showPieChart ? `<div class="chart-wrapper"><h5 class="mb-3">สัดส่วนการใช้ตามสิทธิ์</h5><canvas id="payerPieChart"></canvas></div>` : ''}
                                       </div>`;
@@ -293,7 +305,6 @@
                 if (pieChartInstance) pieChartInstance.destroy();
 
                 if (showUsageStats) {
-                    // MODIFIED: Calculate max value and add 15% for the Y-axis range.
                     const dataMax = Math.max(...usageData);
                     const suggestedMax = dataMax > 0 ? dataMax * 1.15 : 1;
 
@@ -305,7 +316,6 @@
                             responsive: true, maintainAspectRatio: false,
                             scales: { 
                                 x: { ticks: { color: '#000000', font: { weight: 'bold' } } }, 
-                                // MODIFIED: Set min to 0 and suggestedMax for the Y-axis.
                                 y: { 
                                     ticks: { color: '#000000', font: { weight: 'bold' } },
                                     min: 0,
@@ -319,7 +329,6 @@
                         }
                     });
                 }
-                // MODIFIED: Pie chart creation is now conditional on usage stats as well.
                 if (showUsageStats && showPieChart) {
                     const pieCtx = document.getElementById('payerPieChart').getContext('2d');
                     pieChartInstance = new Chart(pieCtx, {
