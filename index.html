@@ -252,14 +252,7 @@
                 if (rowData[32]) imageHtml += `<img src="${rowData[32]}" class="drug-image img-fluid" alt="Drug Image 2" onerror="this.style.display='none'">`;
                 
                 const rateLabels = [], usageData = [], caseData = [];
-                columnConfig.forEach(col => {
-                    if (/\d{2}\/\d{2}/.test(col.title)) {
-                        const rawValue = rowData[col.data] || '';
-                        usageData.push(parseFloat(rawValue.match(/^[0-9.]+/)?.[0] || 0));
-                        caseData.push(parseInt(rawValue.match(/\((\d+)\)/)?.[1] || 0, 10));
-                        rateLabels.push(col.title);
-                    }
-                });
+                columnConfig.forEach(col => { if (/\d{2}\/\d{2}/.test(col.title)) { const rawValue = rowData[col.data] || ''; usageData.push(parseFloat(rawValue.match(/^[0-9.]+/)?.[0] || 0)); caseData.push(parseInt(rawValue.match(/\((\d+)\)/)?.[1] || 0, 10)); rateLabels.push(col.title); } });
 
                 const payerData = [ parseFloat(rowData[36] || 0), parseFloat(rowData[37] || 0), parseFloat(rowData[38] || 0), parseFloat(rowData[39] || 0) ];
                 const payerLabels = ['ข้าราชการ', 'จ่ายเอง', 'สปสช + ปกส', 'สวัสดิการเจ้าหน้าที่'];
@@ -268,22 +261,19 @@
                 
                 let statsHtml = '';
                 if (showUsageStats || showPieChart) {
-                    // MODIFIED: Changed H5 title for line chart
-                    let chartsHtml = `<div class="charts-container">
-                                        ${showUsageStats ? `<div class="chart-wrapper"><h5>อัตราการใช้ยาย้อนหลัง 12 เดือน</h5><canvas id="usageLineChart"></canvas></div>` : ''}
-                                        ${showPieChart ? `<div class="chart-wrapper"><h5>สัดส่วนการใช้ตามสิทธิ์</h5><canvas id="payerPieChart"></canvas></div>` : ''}
+                    // MODIFIED: Added margins (mb-3) to chart container and titles for spacing.
+                    let chartsHtml = `<div class="charts-container mb-3">
+                                        ${showUsageStats ? `<div class="chart-wrapper"><h5 class="mb-3">อัตราการใช้ยาย้อนหลัง 12 เดือน</h5><canvas id="usageLineChart"></canvas></div>` : ''}
+                                        ${showPieChart ? `<div class="chart-wrapper"><h5 class="mb-3">สัดส่วนการใช้ตามสิทธิ์</h5><canvas id="payerPieChart"></canvas></div>` : ''}
                                      </div>`;
                     
                     let tablesHtml = '';
                     if(showUsageStats){
-                        // REMOVED: The usage rate table is no longer created here.
-                        
-                        // RETAINED: The case count table remains.
-                        let caseTable = '<h5 class="mt-4">จำนวนเคส (Case Count)</h5><div class="table-responsive"><table class="table table-sm table-bordered"><thead><tr>';
+                        let caseTable = `<h5 class="mt-0">จำนวนเคส (Case Count)</h5><div class="table-responsive"><table class="table table-sm table-bordered"><thead><tr>`;
                         rateLabels.forEach(label => caseTable += `<th>${label}</th>`);
                         caseTable += `</tr></thead><tbody><tr>${caseData.map(d => `<td>${formatNumber(d, 0, 0)}</td>`).join('')}</tr></tbody></table></div>`;
                         
-                        tablesHtml = caseTable;
+                        tablesHtml = `<div class="tables-container mt-4">${caseTable}</div>`;
                     }
                     statsHtml = `<div id="stats-section">${chartsHtml}${tablesHtml}</div>`;
                 } else {
@@ -303,12 +293,9 @@
                         data: { labels: rateLabels, datasets: [{ label: 'Usage Rate', data: usageData, borderColor: 'var(--primary-color)', backgroundColor: 'rgba(0, 91, 161, 0.2)', fill: true, tension: 0.1 }] },
                         options: {
                             responsive: true, maintainAspectRatio: false,
-                            scales: { // MODIFIED: Added styles for XY axes
-                                x: { ticks: { color: '#000000', font: { weight: 'bold' } } },
-                                y: { ticks: { color: '#000000', font: { weight: 'bold' } } }
-                            },
+                            scales: { x: { ticks: { color: '#000000', font: { weight: 'bold' } } }, y: { ticks: { color: '#000000', font: { weight: 'bold' } } } },
                             plugins: { 
-                                legend: { display: false }, // MODIFIED: Hide legend for line chart
+                                legend: { display: false },
                                 datalabels: { align: 'end', anchor: 'end', color: '#555', font: { weight: 'bold', size: 14 }, formatter: (value) => value > 0 ? Math.round(value) : '' } 
                             }
                         }
@@ -324,10 +311,7 @@
                             plugins: {
                                 legend: { 
                                     position: 'bottom',
-                                    labels: { // MODIFIED: Added styles for legend labels
-                                        color: '#000000',
-                                        font: { weight: 'bold' }
-                                    }
+                                    labels: { color: '#000000', font: { weight: 'bold' } }
                                 },
                                 datalabels: { color: '#fff', textStrokeColor: '#000', textStrokeWidth: 2, font: { weight: 'bold', size: 14 }, formatter: (value, ctx) => { if (value === 0) return ''; const total = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); const percentage = (value / total * 100).toFixed(1) + '%'; return percentage; } }
                             }
