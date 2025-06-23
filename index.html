@@ -65,7 +65,15 @@
         .drug-image { width: 100%; border-radius: 5px; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
         #stats-section { margin-top: 1.5rem; width:100%; border-top: 1px solid #dee2e6; padding-top: 1.5rem;}
         .charts-container { display: flex; flex-wrap: wrap; gap: 20px; align-items: stretch; }
-        .chart-wrapper { flex: 1; min-width: 300px; position: relative; height: 300px; }
+        
+        /* MODIFIED: Increased min-width and height for larger charts */
+        .chart-wrapper { flex: 1; min-width: 350px; position: relative; height: 350px; }
+        
+        #stats-section .tables-container {
+            margin-top: 2rem;
+            clear: both;
+        }
+
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 4px; }
@@ -260,21 +268,19 @@
                 const showPieChart = payerData.some(d => d > 0);
                 
                 let statsHtml = '';
-                if (showUsageStats || showPieChart) {
-                    // MODIFIED: Added margins (mb-3) to chart container and titles for spacing.
+                // MODIFIED: The Pie chart (`payerPieChart`) is now also conditional on `showUsageStats`.
+                if (showUsageStats) {
                     let chartsHtml = `<div class="charts-container mb-3">
-                                        ${showUsageStats ? `<div class="chart-wrapper"><h5 class="mb-3">อัตราการใช้ยาย้อนหลัง 12 เดือน</h5><canvas id="usageLineChart"></canvas></div>` : ''}
+                                        <div class="chart-wrapper"><h5 class="mb-3">อัตราการใช้ยาย้อนหลัง 12 เดือน</h5><canvas id="usageLineChart"></canvas></div>
                                         ${showPieChart ? `<div class="chart-wrapper"><h5 class="mb-3">สัดส่วนการใช้ตามสิทธิ์</h5><canvas id="payerPieChart"></canvas></div>` : ''}
-                                     </div>`;
+                                      </div>`;
                     
                     let tablesHtml = '';
-                    if(showUsageStats){
-                        let caseTable = `<h5 class="mt-0">จำนวนเคส (Case Count)</h5><div class="table-responsive"><table class="table table-sm table-bordered"><thead><tr>`;
-                        rateLabels.forEach(label => caseTable += `<th>${label}</th>`);
-                        caseTable += `</tr></thead><tbody><tr>${caseData.map(d => `<td>${formatNumber(d, 0, 0)}</td>`).join('')}</tr></tbody></table></div>`;
-                        
-                        tablesHtml = `<div class="tables-container mt-4">${caseTable}</div>`;
-                    }
+                    let caseTable = `<h5 class="mt-0">จำนวนเคส (Case Count)</h5><div class="table-responsive"><table class="table table-sm table-bordered"><thead><tr>`;
+                    rateLabels.forEach(label => caseTable += `<th>${label}</th>`);
+                    caseTable += `</tr></thead><tbody><tr>${caseData.map(d => `<td>${formatNumber(d, 0, 0)}</td>`).join('')}</tr></tbody></table></div>`;
+                    
+                    tablesHtml = `<div class="tables-container">${caseTable}</div>`;
                     statsHtml = `<div id="stats-section">${chartsHtml}${tablesHtml}</div>`;
                 } else {
                     statsHtml = '<div id="stats-section"><h5>ข้อมูลสถิติ</h5><p class="text-center text-muted mt-3">ไม่มีข้อมูลย้อนหลัง 1 ปี</p></div>';
@@ -287,13 +293,25 @@
                 if (pieChartInstance) pieChartInstance.destroy();
 
                 if (showUsageStats) {
+                    // MODIFIED: Calculate max value and add 15% for the Y-axis range.
+                    const dataMax = Math.max(...usageData);
+                    const suggestedMax = dataMax > 0 ? dataMax * 1.15 : 1;
+
                     const lineCtx = document.getElementById('usageLineChart').getContext('2d');
                     lineChartInstance = new Chart(lineCtx, {
                         type: 'line',
                         data: { labels: rateLabels, datasets: [{ label: 'Usage Rate', data: usageData, borderColor: 'var(--primary-color)', backgroundColor: 'rgba(0, 91, 161, 0.2)', fill: true, tension: 0.1 }] },
                         options: {
                             responsive: true, maintainAspectRatio: false,
-                            scales: { x: { ticks: { color: '#000000', font: { weight: 'bold' } } }, y: { ticks: { color: '#000000', font: { weight: 'bold' } } } },
+                            scales: { 
+                                x: { ticks: { color: '#000000', font: { weight: 'bold' } } }, 
+                                // MODIFIED: Set min to 0 and suggestedMax for the Y-axis.
+                                y: { 
+                                    ticks: { color: '#000000', font: { weight: 'bold' } },
+                                    min: 0,
+                                    suggestedMax: suggestedMax
+                                } 
+                            },
                             plugins: { 
                                 legend: { display: false },
                                 datalabels: { align: 'end', anchor: 'end', color: '#555', font: { weight: 'bold', size: 14 }, formatter: (value) => value > 0 ? Math.round(value) : '' } 
@@ -301,7 +319,8 @@
                         }
                     });
                 }
-                if (showPieChart) {
+                // MODIFIED: Pie chart creation is now conditional on usage stats as well.
+                if (showUsageStats && showPieChart) {
                     const pieCtx = document.getElementById('payerPieChart').getContext('2d');
                     pieChartInstance = new Chart(pieCtx, {
                         type: 'pie',
