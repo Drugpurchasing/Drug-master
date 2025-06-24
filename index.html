@@ -170,6 +170,7 @@
             return number.toLocaleString('en-US', { minimumFractionDigits: minDecimals, maximumFractionDigits: maxDecimals });
         }
 
+        // --- MODIFIED: Re-ordered and updated columnConfig with new data indices ---
         const columnConfig = [
             { title: 'Detail View', data: null, defaultContent: '<button class="btn btn-sm btn-primary view-details-btn"><i class="fas fa-eye"></i></button>', orderable: false, className: 'text-center all-column', width: "50px" },
             { title: 'Material No.', data: 0, className: 'default-column purchasing-column rate-column' },
@@ -179,34 +180,38 @@
             { title: 'GPU', data: 4, className: 'default-column' },
             { title: 'เงื่อนไขการเบิกจ่าย', data: 5, className: 'default-column', width: '180px', render: (d,t) => renderBadge(d, t, {'สำรองจ่าย': 'bg-primary', 'ocpa': 'bg-success', 'เบิกได้': 'bg-success', 'ขรก เบิกไม่ได้': 'bg-danger', 'เบิกนอก': 'bg-info text-dark', 'วัคซีน': 'bg-warning text-dark'}, true) },
             { title: 'บัญชียา', data: 6, className: 'default-column', render: (d,t) => renderBadge(d, t, {'ned': 'bg-danger', 'ed': 'bg-success', 'ในบัญชี(วถ)': 'bg-info text-dark', 'ค่าสารทึบ': 'bg-primary', 'promotion': 'bg-warning text-dark'}) },
-            { title: 'ราคาทุน / หน่วย', data: 10, width: '130px', className: 'purchasing-column', render: (d, t, row) => `${formatNumber(row[10], 2, 2)} / ${row[11] || 'หน่วย'}` },
-            { title: 'ราคาขาย / หน่วย', data: 8, width: '130px', className: 'default-column purchasing-column rate-column', render: (d, t, row) => `${formatNumber(row[8], 2, 2)} / ${row[9] || 'หน่วย'}` },
             { title: 'Purchasing Unit', data: 7, className: 'purchasing-column default-column' },
+            { title: 'ราคาขาย / หน่วย', data: 8, width: '130px', className: 'default-column purchasing-column rate-column', render: (d, t, row) => `${formatNumber(row[8], 2, 2)} / ${row[9] || 'หน่วย'}` },
+            { title: 'ราคาทุน / หน่วย', data: 10, width: '130px', className: 'purchasing-column', render: (d, t, row) => `${formatNumber(row[10], 2, 2)} / ${row[11] || 'หน่วย'}` },
             { title: 'Status', data: 12, className: 'default-column purchasing-column rate-column', render: (d,t) => renderBadge(d, t, {'ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}) },
-            { title: 'ราคากลาง', data: 26, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
-            { title: 'Fee Schedule', data: 27, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
-            { title: 'รหัสยาทดแทน', data: 28, className: 'purchasing-column' },
-            { title: 'การรับเข้าบัญชี', data: 29, className: 'purchasing-column' },
-            { title: 'Distributor', data: 30, className: 'purchasing-column' },
-            { title: 'Drug Group', data: 25, className: '' },
             { title: '06/67', data: 13, className: 'rate-column' }, { title: '07/67', data: 14, className: 'rate-column' }, { title: '08/67', data: 15, className: 'rate-column' },
             { title: '09/67', data: 16, className: 'rate-column' }, { title: '10/67', data: 17, className: 'rate-column' }, { title: '11/67', data: 18, className: 'rate-column' },
             { title: '12/67', data: 19, className: 'rate-column' }, { title: '01/68', data: 20, className: 'rate-column' }, { title: '02/68', data: 21, className: 'rate-column' },
             { title: '03/68', data: 22, className: 'rate-column' }, { title: '04/68', data: 23, className: 'rate-column' }, { title: '05/68', data: 24, className: 'rate-column' },
-            { title: 'Image 1', data: 31, visible: false, className: 'modal-only' }, { title: 'Image 2', data: 32, visible: false, className: 'modal-only' },
-            { title: 'เงื่อนไขบัญชียาหลัก', data: 33, visible: false, className: 'modal-only' }, { title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', data: 34, visible: false, className: 'modal-only' },
-            { title: 'PAP', data: 35, visible: false, className: 'modal-only' },
-            { title: 'ข้าราชการ', data: 36, visible: false, className: 'modal-only' },
-            { title: 'จ่ายเอง', data: 37, visible: false, className: 'modal-only' },
-            { title: 'สปสช + ปกส', data: 38, visible: false, className: 'modal-only' },
-            { title: 'สวัสดิการเจ้าหน้าที่', data: 39, visible: false, className: 'modal-only' }
+            { title: 'Drug Group', data: 25, className: '' },
+            { title: 'ราคากลาง', data: 26, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
+            { title: 'Fee Schedule', data: 27, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
+            { title: 'Storage', data: 28, className: 'purchasing-column' },
+            { title: 'รหัสยาทดแทน', data: 29, className: 'purchasing-column' },
+            { title: 'การรับเข้าบัญชี', data: 30, className: 'purchasing-column' },
+            { title: 'Distributor', data: 31, className: 'purchasing-column' },
+            { title: 'ข้าราชการ', data: 32, visible: false, className: 'modal-only' },
+            { title: 'จ่ายเอง', data: 33, visible: false, className: 'modal-only' },
+            { title: 'ปกส', data: 34, visible: false, className: 'modal-only' },
+            { title: 'รัฐวิสาหกิจ', data: 35, visible: false, className: 'modal-only' },
+            { title: 'สปสช', data: 36, visible: false, className: 'modal-only' },
+            { title: 'สวัสดิการเจ้าหน้าที่', data: 37, visible: false, className: 'modal-only' },
+            { title: 'เงื่อนไขบัญชียาหลัก', data: 38, visible: false, className: 'modal-only' },
+            { title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', data: 39, visible: false, className: 'modal-only' },
+            { title: 'PAP', data: 40, visible: false, className: 'modal-only' },
+            { title: 'Image 1', data: 41, visible: false, className: 'modal-only' },
+            { title: 'Image 2', data: 42, visible: false, className: 'modal-only' }
         ];
         
         function renderBadge(data, type, map, textWrap = false) { if (type === 'display' && data) { const status = data.toLowerCase().trim(); const cls = Object.entries(map).find(([key]) => status.includes(key))?.[1] || 'bg-secondary'; return `<span class="badge ${cls} ${textWrap ? 'text-wrap' : ''}">${data}</span>`; } return data; }
         function robustCsvParser(csvText) { const rows = []; let currentRow = []; let currentField = ''; let inQuotes = false; const text = csvText.trim().replace(/\r\n/g, '\n'); for (let i = 0; i < text.length; i++) { const char = text[i]; if (inQuotes) { if (char === '"') { if (i + 1 < text.length && text[i + 1] === '"') { currentField += '"'; i++; } else { inQuotes = false; } } else { currentField += char; } } else { switch (char) { case '"': inQuotes = true; break; case ',': currentRow.push(currentField); currentField = ''; break; case '\n': currentRow.push(currentField); rows.push(currentRow); currentRow = []; currentField = ''; break; default: currentField += char; } } } if (currentField || currentRow.length > 0) { currentRow.push(currentField); rows.push(currentRow); } return rows; }
         
         async function loadDataAndInitTable() {
-            // MODIFIED: Show the loading bar before starting the fetch operation
             $('#loadingIndicator').show();
             try {
                 const response = await fetch(dataUrl);
@@ -216,7 +221,6 @@
                 const parsedData = parsedDataWithHeader.slice(1);
                 initializeDataTable(parsedData);
             } catch (error) {
-                // MODIFIED: Hide the loading bar on error
                 $('#loadingIndicator').hide();
                 console.error("Data Load/Parse Error:", error);
                 Swal.fire({ icon: 'error', title: 'Data Load Error', text: 'Failed to load or parse data. See browser console for details.' });
@@ -224,7 +228,6 @@
         }
 
         function initializeDataTable(data) {
-            // MODIFIED: Hide the loading bar right before initializing the table
             $('#loadingIndicator').hide();
             
             table = $('#drugTable').DataTable({
@@ -257,6 +260,7 @@
 
                 let detailsHtml = '';
                 
+                // --- MODIFIED: Updated rowData indices for modal details ---
                 let row1Html = '';
                 row1Html += createDetailCard({ title: 'Material No.', value: rowData[0], valueClass: 'main-title-value', itemClass: 'material-no-card' });
                 row1Html += createDetailCard({ title: 'SAP Name', value: rowData[1], valueClass: 'main-title-value' });
@@ -271,7 +275,8 @@
                 row2Html += createDetailCard({ title: 'Status', value: renderBadge(rowData[12], 'display', {'ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}), itemClass: 'status-card' });
                 row2Html += createDetailCard({ title: 'Purchasing Unit', value: rowData[7] });
                 row2Html += createDetailCard({ title: 'Drug Group', value: rowData[25] });
-                row2Html += createDetailCard({ title: 'Distributor', value: rowData[30] });
+                row2Html += createDetailCard({ title: 'Distributor', value: rowData[31] });
+                row2Html += createDetailCard({ title: 'Storage', value: rowData[28] }); // Added Storage
                 if (row2Html) detailsHtml += `<div class="detail-row">${row2Html}</div>`;
                 
                 let row3Html = '';
@@ -283,35 +288,42 @@
                 if (row3Html) detailsHtml += `<div class="detail-row">${row3Html}</div>`;
 
                 let row4Html = '';
-                row4Html += createDetailCard({ title: 'รหัสยาทดแทน', value: rowData[28] });
-                row4Html += createDetailCard({ title: 'การรับเข้าบัญชี', value: rowData[29] });
-                let conditions = rowData[33]; if (conditions) conditions = conditions.replace(/\n/g, '<br>');
+                row4Html += createDetailCard({ title: 'รหัสยาทดแทน', value: rowData[29] });
+                row4Html += createDetailCard({ title: 'การรับเข้าบัญชี', value: rowData[30] });
+                let conditions = rowData[38]; if (conditions) conditions = conditions.replace(/\n/g, '<br>');
                 row4Html += createDetailCard({ title: 'เงื่อนไขบัญชียาหลัก', value: conditions });
-                let indications = rowData[34]; if (indications) indications = indications.replace(/\n/g, '<br>');
+                let indications = rowData[39]; if (indications) indications = indications.replace(/\n/g, '<br>');
                 row4Html += createDetailCard({ title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', value: indications });
-                let papValue = rowData[35]; if (papValue) papValue = papValue.replace(/\n/g, '<br>');
+                let papValue = rowData[40]; if (papValue) papValue = papValue.replace(/\n/g, '<br>');
                 row4Html += createDetailCard({ title: 'PAP', value: papValue });
                 if (row4Html) detailsHtml += `<div class="detail-row">${row4Html}</div>`;
 
                 let imageHtml = '';
-                if (rowData[31]) imageHtml += `<img src="${rowData[31]}" class="drug-image img-fluid" alt="Drug Image 1" onerror="this.style.display='none'">`;
-                if (rowData[32]) imageHtml += `<img src="${rowData[32]}" class="drug-image img-fluid" alt="Drug Image 2" onerror="this.style.display='none'">`;
+                if (rowData[41]) imageHtml += `<img src="${rowData[41]}" class="drug-image img-fluid" alt="Drug Image 1" onerror="this.style.display='none'">`;
+                if (rowData[42]) imageHtml += `<img src="${rowData[42]}" class="drug-image img-fluid" alt="Drug Image 2" onerror="this.style.display='none'">`;
                 
                 const rateLabels = [], usageData = [], caseData = [];
                 columnConfig.forEach(col => { if (/\d{2}\/\d{2}/.test(col.title)) { const rawValue = rowData[col.data] || ''; usageData.push(parseFloat(rawValue.match(/^[0-9.]+/)?.[0] || 0)); caseData.push(parseInt(rawValue.match(/\((\d+)\)/)?.[1] || 0, 10)); rateLabels.push(col.title); } });
 
-                const payerData = [ parseFloat(rowData[36] || 0), parseFloat(rowData[37] || 0), parseFloat(rowData[38] || 0), parseFloat(rowData[39] || 0) ];
-                const payerLabels = ['ข้าราชการ', 'จ่ายเอง', 'สปสช + ปกส', 'สวัสดิการเจ้าหน้าที่'];
+                // --- MODIFIED: Updated payer data and labels for Pie Chart ---
+                const pks_spsch_sum = (parseFloat(rowData[34] || 0) + parseFloat(rowData[36] || 0));
+                const payerData = [
+                    parseFloat(rowData[32] || 0), // ข้าราชการ
+                    parseFloat(rowData[33] || 0), // จ่ายเอง
+                    pks_spsch_sum,                 // ปกส + สปสช
+                    parseFloat(rowData[35] || 0), // รัฐวิสาหกิจ
+                    parseFloat(rowData[37] || 0)  // สวัสดิการเจ้าหน้าที่
+                ];
+                const payerLabels = ['ข้าราชการ', 'จ่ายเอง', 'สปสช + ปกส', 'รัฐวิสาหกิจ', 'สวัสดิการเจ้าหน้าที่'];
                 const showUsageStats = usageData.some(d => d > 0);
                 const showPieChart = payerData.some(d => d > 0);
                 
                 let statsHtml = '';
                 if (showUsageStats) {
-                    // MODIFIED: Increased bottom margin of charts container to mb-5 to prevent overlap.
                     let chartsHtml = `<div class="charts-container mb-5">
-                                            <div class="chart-wrapper"><h5 class="mb-3">อัตราการใช้ยาย้อนหลัง 12 เดือน</h5><canvas id="usageLineChart"></canvas></div>
-                                            ${showPieChart ? `<div class="chart-wrapper"><h5 class="mb-3">สัดส่วนการใช้ตามสิทธิ์</h5><canvas id="payerPieChart"></canvas></div>` : ''}
-                                        </div>`;
+                                        <div class="chart-wrapper"><h5 class="mb-3">อัตราการใช้ยาย้อนหลัง 12 เดือน</h5><canvas id="usageLineChart"></canvas></div>
+                                        ${showPieChart ? `<div class="chart-wrapper"><h5 class="mb-3">สัดส่วนการใช้ตามสิทธิ์</h5><canvas id="payerPieChart"></canvas></div>` : ''}
+                                    </div>`;
                     
                     let tablesHtml = '';
                     let caseTable = `<h5 class="mt-0">จำนวนเคส (Case Count)</h5><div class="table-responsive"><table class="table table-sm table-bordered"><thead><tr>`;
@@ -359,7 +371,16 @@
                     const pieCtx = document.getElementById('payerPieChart').getContext('2d');
                     pieChartInstance = new Chart(pieCtx, {
                         type: 'pie',
-                        data: { labels: payerLabels, datasets: [{ label: 'สัดส่วน', data: payerData, backgroundColor: ['#005ba1', '#dc3545', '#198754', '#ffc107'], hoverOffset: 4 }] },
+                        // --- MODIFIED: Updated data and colors for Pie Chart ---
+                        data: { 
+                            labels: payerLabels, 
+                            datasets: [{ 
+                                label: 'สัดส่วน', 
+                                data: payerData, 
+                                backgroundColor: ['#005ba1', '#dc3545', '#198754', '#6f42c1', '#ffc107'], // Added purple for new category
+                                hoverOffset: 4 
+                            }] 
+                        },
                         options: {
                             responsive: true, maintainAspectRatio: false,
                             plugins: {
@@ -376,9 +397,9 @@
                 $('#drugDetailModal').modal('show');
             });
             
-             $('#drugDetailModal').on('click', '.unlock-cost-btn', function(e) { e.stopPropagation(); const unlockButton = $(this); const valueContainer = unlockButton.closest('.detail-item').find('.value-container'); unlockButton.hide(); const formHtml = `<div class="input-group input-group-sm"><input type="password" class="form-control inline-password-input" placeholder="Password..."><button class="btn btn-primary inline-submit-btn" type="button">OK</button></div><div class="inline-error-msg" style="display:none;">Incorrect Password</div>`; valueContainer.html(formHtml); valueContainer.find('.inline-password-input').focus(); });
-             $('#drugDetailModal').on('click', '.inline-submit-btn', function(e) { e.stopPropagation(); const submitButton = $(this); const inputField = submitButton.siblings('.inline-password-input'); const valueContainer = submitButton.closest('.value-container'); const errorMsg = valueContainer.find('.inline-error-msg'); const password = inputField.val(); if (password === 'rxccc') { passwordVerified = true; const realCost = valueContainer.data('real-value'); valueContainer.html(realCost); } else { errorMsg.show().delay(2000).fadeOut(); inputField.val('').focus(); } });
-             $('#drugDetailModal').on('keypress', '.inline-password-input', function(e) { if (e.which === 13) { e.preventDefault(); $(this).siblings('.inline-submit-btn').click(); } });
+            $('#drugDetailModal').on('click', '.unlock-cost-btn', function(e) { e.stopPropagation(); const unlockButton = $(this); const valueContainer = unlockButton.closest('.detail-item').find('.value-container'); unlockButton.hide(); const formHtml = `<div class="input-group input-group-sm"><input type="password" class="form-control inline-password-input" placeholder="Password..."><button class="btn btn-primary inline-submit-btn" type="button">OK</button></div><div class="inline-error-msg" style="display:none;">Incorrect Password</div>`; valueContainer.html(formHtml); valueContainer.find('.inline-password-input').focus(); });
+            $('#drugDetailModal').on('click', '.inline-submit-btn', function(e) { e.stopPropagation(); const submitButton = $(this); const inputField = submitButton.siblings('.inline-password-input'); const valueContainer = submitButton.closest('.value-container'); const errorMsg = valueContainer.find('.inline-error-msg'); const password = inputField.val(); if (password === 'rxccc') { passwordVerified = true; const realCost = valueContainer.data('real-value'); valueContainer.html(realCost); } else { errorMsg.show().delay(2000).fadeOut(); inputField.val('').focus(); } });
+            $('#drugDetailModal').on('keypress', '.inline-password-input', function(e) { if (e.which === 13) { e.preventDefault(); $(this).siblings('.inline-submit-btn').click(); } });
         }
         
         function setView(viewType) { if (!table) return; $('.view-toggle').removeClass('active'); $(`#${viewType}View`).addClass('active'); if (viewType === 'all') { table.columns(':not(.modal-only)').visible(true); table.columns('.modal-only').visible(false); } else { table.columns().visible(false); table.columns('.all-column').visible(true); if (viewType === 'default') table.columns('.default-column').visible(true); else if (viewType === 'purchasing') table.columns('.purchasing-column').visible(true); else if (viewType === 'rate') table.columns('.rate-column').visible(true); } }
