@@ -31,6 +31,8 @@
         .bg-purple { background-color: var(--bs-purple) !important; }
         .bg-pink { background-color: var(--bs-pink) !important; }
         .bg-teal { background-color: var(--bs-teal) !important; }
+        /* MODIFIED: Added bg-orange for the new storage map */
+        .bg-orange { background-color: var(--warning-color) !important; }
 
         body { font-family: 'Sarabun', sans-serif; background-color: var(--light-bg); color: var(--text-color); line-height: 1.6; }
         .container-fluid { padding: 20px; }
@@ -163,7 +165,6 @@
             return number.toLocaleString('en-US', { minimumFractionDigits: minDecimals, maximumFractionDigits: maxDecimals });
         }
 
-        // --- NEW: Color Maps for Badges ---
         const drugGroupColorMap = {
             'gastro-intestinal system': 'bg-success', 'cardiovascular system': 'bg-danger', 'respiratory system': 'bg-info text-dark',
             'central nervous system': 'bg-purple', 'infections': 'bg-warning text-dark', 'endocrine system': 'bg-orange', 'obstetrics': 'bg-pink',
@@ -171,6 +172,8 @@
             'ear, nose, and oropharynx': 'bg-light text-dark', 'skin': 'bg-warning text-dark', 'immunological': 'bg-info text-dark',
             'anesthesia': 'bg-purple', 'antidotes': 'bg-danger', 'contrast media': 'bg-primary', 'other': 'bg-secondary'
         };
+        
+        // --- MODIFIED: Updated storageColorMap as requested ---
         const storageColorMap = { 'below 30°C': 'bg-success', '2°C - 8°C': 'bg-primary', 'below 25°C': 'bg-orange', 'below -20°C': 'bg-info', '-15°C ถึง -25°C': 'bg-info text-dark' };
 
         const columnConfig = [
@@ -205,7 +208,7 @@
             { title: 'Image 2', data: 42, visible: false, className: 'modal-only' }
         ];
         
-        function renderBadge(data, type, map, textWrap = false) { if (type === 'display' && data) { const status = data.toLowerCase().trim(); const key = Object.keys(map).find(k => status.includes(k)); const cls = key ? map[key] : 'bg-secondary'; return `<span class="badge ${cls} ${textWrap ? 'text-wrap' : ''}">${data}</span>`; } return data; }
+        function renderBadge(data, type, map, textWrap = false) { if (type === 'display' && data) { const status = data.toLowerCase().trim(); const key = Object.keys(map).find(k => status.includes(k.toLowerCase())); const cls = key ? map[key] : 'bg-secondary'; return `<span class="badge ${cls} ${textWrap ? 'text-wrap' : ''}">${data}</span>`; } return data; }
         function robustCsvParser(csvText) { const rows = []; let currentRow = []; let currentField = ''; let inQuotes = false; const text = csvText.trim().replace(/\r\n/g, '\n'); for (let i = 0; i < text.length; i++) { const char = text[i]; if (inQuotes) { if (char === '"') { if (i + 1 < text.length && text[i + 1] === '"') { currentField += '"'; i++; } else { inQuotes = false; } } else { currentField += char; } } else { switch (char) { case '"': inQuotes = true; break; case ',': currentRow.push(currentField); currentField = ''; break; case '\n': currentRow.push(currentField); rows.push(currentRow); currentRow = []; currentField = ''; break; default: currentField += char; } } } if (currentField || currentRow.length > 0) { currentRow.push(currentField); rows.push(currentRow); } return rows; }
         
         async function loadDataAndInitTable() { $('#loadingIndicator').show(); try { const response = await fetch(dataUrl); if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`); const csvData = await response.text(); const parsedDataWithHeader = robustCsvParser(csvData); const parsedData = parsedDataWithHeader.slice(1); initializeDataTable(parsedData); } catch (error) { $('#loadingIndicator').hide(); console.error("Data Load/Parse Error:", error); Swal.fire({ icon: 'error', title: 'Data Load Error', text: 'Failed to load or parse data. See browser console for details.' }); } }
@@ -253,7 +256,7 @@
                     let chartsHtml = `<div class="charts-container"> <div class="chart-wrapper"><h5 class="mb-3">อัตราการใช้ยาย้อนหลัง 12 เดือน</h5><canvas id="usageLineChart"></canvas></div> ${showPieChart ? `<div class="chart-wrapper"><h5 class="mb-3">สัดส่วนการใช้ตามสิทธิ์</h5><canvas id="payerPieChart"></canvas></div>` : ''} </div>`;
                     const stats = calculateStatistics(usageData); const statsTable = createStatsTable(stats);
                     let caseTable = `<h5 class="mt-4">จำนวนเคส (Case Count)</h5><div class="table-responsive"><table class="table table-sm table-bordered"><thead><tr>`; rateLabels.forEach(label => caseTable += `<th>${label}</th>`); caseTable += `</tr></thead><tbody><tr>${caseData.map(d => `<td>${formatNumber(d, 0, 0)}</td>`).join('')}</tr></tbody></table></div>`;
-                    let tablesHtml = `<div class="tables-container mt-5">${statsTable}${caseTable}</div>`; // --- MODIFIED: Added mt-5 ---
+                    let tablesHtml = `<div class="tables-container mt-5">${statsTable}${caseTable}</div>`;
                     statsHtml = `<div id="stats-section">${chartsHtml}${tablesHtml}</div>`;
                 } else { statsHtml = '<div id="stats-section"><h5>ข้อมูลสถิติ</h5><p class="text-center text-muted mt-3">ไม่มีข้อมูลย้อนหลัง 1 ปี</p></div>'; }
                 
