@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Drug master CRA V4.03</title>
+    <title>Drug master CRA V4.04</title>
     <base target="_top">
     <link rel="icon" type="image/png" href="favicon-32x32.png">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -29,8 +29,7 @@
             --bs-teal: #20c997;
         }
         .bg-purple { background-color: var(--bs-purple) !important; }
-        .bg-pink { background-color: var(--bs-pink) !import
-ant; }
+        .bg-pink { background-color: var(--bs-pink) !important; }
         .bg-teal { background-color: var(--bs-teal) !important; }
         .bg-orange { background-color: var(--warning-color) !important; }
 
@@ -95,7 +94,7 @@ ant; }
             <img src="CRAlogo.png" alt="Logo" class="img-fluid">
             <div>
                 <h1 class="app-title">Drug master CRA</h1>
-                <p class="version-info mb-0 fw-bold">Latest update 25/06/2025 | Version 4.03</p>
+                <p class="version-info mb-0 fw-bold">Latest update 26/06/2025 | Version 4.04</p>
             </div>
         </div>
         <div class="card">
@@ -110,14 +109,14 @@ ant; }
                         </div>
                         <div class="col-lg-8 col-md-12">
                             <div class="d-flex flex-wrap gap-2 justify-content-md-end justify-content-center">
-                                <a href="https://drugpurchasing.github.io/Drug-master/Markup.html" target="_blank" class="btn btn-warning text-dark fw-bold"><i class="fas fa-calculator me-1"></i>Markup</a>
-                                <a href="https://drugpurchasing.github.io/Drug-master/NewList.html" target="_blank" class="btn btn-purple"><i class="fas fa-file-medical me-1"></i>สรุปยาเข้าใหม่</a>
-                                <button id="exportButton" class="btn btn-success"><i class="fas fa-file-excel me-1"></i>Excel</button>
-                                <button id="exportJPEGButton" class="btn btn-danger"><i class="fas fa-camera me-1"></i>Screenshot</button>
-                                <button id="defaultView" class="btn btn-outline-primary view-toggle"><i class="fas fa-eye me-1"></i>Essential</button>
-                                <button id="purchasingView" class="btn btn-outline-primary view-toggle"><i class="fas fa-shopping-cart me-1"></i>Purchasing</button>
-                                <button id="rateView" class="btn btn-outline-primary view-toggle"><i class="fas fa-chart-line me-1"></i>Rates</button>
-                                <button id="allView" class="btn btn-outline-primary view-toggle"><i class="fas fa-th-list me-1"></i>View All</button>
+                                <a href="https://drugpurchasing.github.io/Drug-master/Markup.html" target="_blank" class="btn btn-warning text-dark fw-bold" data-bs-toggle="tooltip" data-bs-placement="top" title="คำนวณราคาขายจากราคาทุน"><i class="fas fa-calculator me-1"></i>Markup</a>
+                                <a href="https://drugpurchasing.github.io/Drug-master/NewList.html" target="_blank" class="btn btn-purple" data-bs-toggle="tooltip" data-bs-placement="top" title="เปิดหน้ารายการยาเข้าใหม่"><i class="fas fa-file-medical me-1"></i>สรุปยาเข้าใหม่</a>
+                                <button id="exportButton" class="btn btn-success" data-bs-toggle="tooltip" data-bs-placement="top" title="ส่งออกข้อมูลตารางที่แสดงอยู่เป็นไฟล์ Excel"><i class="fas fa-file-excel me-1"></i>Excel</button>
+                                <button id="exportJPEGButton" class="btn btn-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="ถ่ายภาพหน้าจอของตารางที่แสดงอยู่"><i class="fas fa-camera me-1"></i>Screenshot</button>
+                                <button id="defaultView" class="btn btn-outline-primary view-toggle" data-bs-toggle="tooltip" data-bs-placement="top" title="แสดงข้อมูลที่จำเป็นพื้นฐาน"><i class="fas fa-eye me-1"></i>Essential</button>
+                                <button id="purchasingView" class="btn btn-outline-primary view-toggle" data-bs-toggle="tooltip" data-bs-placement="top" title="แสดงข้อมูลสำหรับฝ่ายจัดซื้อ"><i class="fas fa-shopping-cart me-1"></i>Purchasing</button>
+                                <button id="rateView" class="btn btn-outline-primary view-toggle" data-bs-toggle="tooltip" data-bs-placement="top" title="แสดงข้อมูลอัตราการใช้ยาย้อนหลัง"><i class="fas fa-chart-line me-1"></i>Rates</button>
+                                <button id="allView" class="btn btn-outline-primary view-toggle" data-bs-toggle="tooltip" data-bs-placement="top" title="แสดงข้อมูลทั้งหมดทุกคอลัมน์"><i class="fas fa-th-list me-1"></i>View All</button>
                             </div>
                         </div>
                     </div>
@@ -151,7 +150,6 @@ ant; }
 
     <script>
     $(document).ready(function () {
-        // --- MODIFIED: URLs are now hardcoded with the links you provided ---
         const mainDataUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQJpIKf_q4h4h1VEIM0tT1MlMvoEw1PXLYMxMv_c3abXFvAIBS0tWHxLL0sDjuuBrPjbrTP7lJH-NQw/pub?gid=0&single=true&output=csv';
         const tooltipDataUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQJpIKf_q4h4h1VEIM0tT1MlMvoEw1PXLYMxMv_c3abXFvAIBS0tWHxLL0sDjuuBrPjbrTP7lJH-NQw/pub?gid=1603098884&single=true&output=csv';
         
@@ -159,10 +157,11 @@ ant; }
         var passwordVerified = false;
         var lineChartInstance; 
         var pieChartInstance;
-        var tooltipMap = {}; // Will be populated from the Google Sheet
+        var tooltipMap = {};
 
         Chart.register(ChartDataLabels);
         
+        // This single line initializes all tooltips on the page, including static and dynamic ones.
         $('body').tooltip({
             selector: '[data-bs-toggle="tooltip"]'
         });
@@ -182,7 +181,6 @@ ant; }
                 const csvData = await response.text();
                 const parsedData = robustCsvParser(csvData);
                 const map = {};
-                // Start from 1 to skip header row
                 for (let i = 1; i < parsedData.length; i++) {
                     const row = parsedData[i];
                     if (row && row[0]) {
@@ -243,8 +241,9 @@ ant; }
         
         const storageColorMap = { 'below 30°C': 'bg-success', '2°C - 8°C': 'bg-primary', 'below 25°C': 'bg-orange', 'below -20°C': 'bg-info', '-15°C ถึง -25°C': 'bg-info text-dark' };
 
+        // MODIFIED: Added tooltip attributes to the Detail View button
         const columnConfig = [
-            { title: 'Detail View', data: null, defaultContent: '<button class="btn btn-sm btn-primary view-details-btn"><i class="fas fa-eye"></i></button>', orderable: false, className: 'text-center all-column', width: "50px" },
+            { title: 'Detail View', data: null, defaultContent: '<button class="btn btn-sm btn-primary view-details-btn" data-bs-toggle="tooltip" data-bs-placement="top" title="คลิกเพื่อดูข้อมูลของยาโดยละเอียด"><i class="fas fa-eye"></i></button>', orderable: false, className: 'text-center all-column', width: "50px" },
             { title: 'Material No.', data: 0, className: 'default-column purchasing-column rate-column' },
             { title: 'SAP Name', data: 1, width: "25%", className: 'default-column purchasing-column rate-column', render: (d, t) => t === 'display' && d ? `<span style="color: var(--primary-color)" class="fw-bold">${d}</span>` : d },
             { title: 'Generic Name', data: 2, width: "25%", className: 'default-column' },
