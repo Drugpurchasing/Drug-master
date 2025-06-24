@@ -226,6 +226,73 @@
             }
         }
 
+        // --- NEW: Statistics and Trendline Calculation Functions ---
+        function calculateTrendline(data) {
+            if (!data || data.length < 2) return [];
+            const n = data.length;
+            let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
+            for (let i = 0; i < n; i++) {
+                sumX += i;
+                sumY += data[i];
+                sumXY += i * data[i];
+                sumXX += i * i;
+            }
+            const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+            const intercept = (sumY - slope * sumX) / n;
+            return data.map((_, i) => slope * i + intercept);
+        }
+
+        function calculateStatistics(data) {
+            const filteredData = data.filter(d => typeof d === 'number' && d > 0);
+            if (filteredData.length === 0) return { mean: 0, avgLast3: 0, median: 0, min: 0, max: 0, stdDev: 0, total: 0 };
+            
+            const total = data.reduce((sum, val) => sum + (val || 0), 0);
+            const mean = filteredData.reduce((a, b) => a + b, 0) / filteredData.length;
+            
+            const last3 = data.slice(-3);
+            const avgLast3 = last3.reduce((sum, val) => sum + (val || 0), 0) / last3.length;
+            
+            const sorted = [...filteredData].sort((a, b) => a - b);
+            const mid = Math.floor(sorted.length / 2);
+            const median = sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+            
+            const min = Math.min(...filteredData);
+            const max = Math.max(...filteredData);
+            
+            const stdDev = Math.sqrt(filteredData.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b, 0) / filteredData.length);
+
+            return { mean, avgLast3, median, min, max, stdDev, total };
+        }
+        
+        function createStatsTable(stats) {
+            return `
+                <h5 class="mt-4">Usage Statistics</h5>
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Average</th>
+                                <th>3-Month Avg</th>
+                                <th>Median</th>
+                                <th>Min / Max</th>
+                                <th>Std. Dev</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>${formatNumber(stats.mean, 2, 2)}</td>
+                                <td>${formatNumber(stats.avgLast3, 2, 2)}</td>
+                                <td>${formatNumber(stats.median, 2, 2)}</td>
+                                <td>${formatNumber(stats.min, 0, 0)} / ${formatNumber(stats.max, 0, 0)}</td>
+                                <td>${formatNumber(stats.stdDev, 2, 2)}</td>
+                                <td>${formatNumber(stats.total, 0, 0)}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>`;
+        }
+
         function initializeDataTable(data) {
             $('#loadingIndicator').hide();
             
@@ -247,7 +314,7 @@
 
                 function createDetailCard(options) {
                     const { title, value, valueClass, itemClass, isProtected, realValue } = { valueClass: '', itemClass: '', isProtected: false, realValue: '', ...options };
-                    if (!value || value.trim() === '-' || value.trim() === '') return '';
+                    if (!value || value.toString().trim() === '-' || value.toString().trim() === '') return '';
                     let titleHtml = `<strong>${title}</strong>`;
                     let valueHtml = `<div class="value-container ${valueClass}" data-real-value="${realValue}">${value}</div>`;
                     if (isProtected && !passwordVerified) {
@@ -302,16 +369,11 @@
                 
                 const rateLabels = [], usageData = [], caseData = [];
                 columnConfig.forEach(col => { if (/\d{2}\/\d{2}/.test(col.title)) { const rawValue = rowData[col.data] || ''; usageData.push(parseFloat(rawValue.match(/^[0-9.]+/)?.[0] || 0)); caseData.push(parseInt(rawValue.match(/\((\d+)\)/)?.[1] || 0, 10)); rateLabels.push(col.title); } });
-
-                // --- REVISED: Separated payer data for individual slices ---
+                
                 const payerLabels = ['ข้าราชการ', 'จ่ายเอง', 'ปกส', 'รัฐวิสาหกิจ', 'สปสช', 'สวัสดิการเจ้าหน้าที่'];
                 const payerData = [
-                    parseFloat(rowData[32] || 0), // ข้าราชการ
-                    parseFloat(rowData[33] || 0), // จ่ายเอง
-                    parseFloat(rowData[34] || 0), // ปกส
-                    parseFloat(rowData[35] || 0), // รัฐวิสาหกิจ
-                    parseFloat(rowData[36] || 0), // สปสช
-                    parseFloat(rowData[37] || 0)  // สวัสดิการเจ้าหน้าที่
+                    parseFloat(rowData[32] || 0), parseFloat(rowData[33] || 0), parseFloat(rowData[34] || 0),
+                    parseFloat(rowData[35] || 0), parseFloat(rowData[36] || 0), parseFloat(rowData[37] || 0)
                 ];
                 const showUsageStats = usageData.some(d => d > 0);
                 const showPieChart = payerData.some(d => d > 0);
@@ -323,12 +385,16 @@
                                         ${showPieChart ? `<div class="chart-wrapper"><h5 class="mb-3">สัดส่วนการใช้ตามสิทธิ์</h5><canvas id="payerPieChart"></canvas></div>` : ''}
                                     </div>`;
                     
+                    // --- MODIFIED: Generate stats and case tables ---
                     let tablesHtml = '';
-                    let caseTable = `<h5 class="mt-0">จำนวนเคส (Case Count)</h5><div class="table-responsive"><table class="table table-sm table-bordered"><thead><tr>`;
+                    const stats = calculateStatistics(usageData); // Calculate stats
+                    const statsTable = createStatsTable(stats); // Create stats table HTML
+                    
+                    let caseTable = `<h5 class="mt-4">จำนวนเคส (Case Count)</h5><div class="table-responsive"><table class="table table-sm table-bordered"><thead><tr>`;
                     rateLabels.forEach(label => caseTable += `<th>${label}</th>`);
                     caseTable += `</tr></thead><tbody><tr>${caseData.map(d => `<td>${formatNumber(d, 0, 0)}</td>`).join('')}</tr></tbody></table></div>`;
                     
-                    tablesHtml = `<div class="tables-container">${caseTable}</div>`;
+                    tablesHtml = `<div class="tables-container">${statsTable}${caseTable}</div>`; // Combine tables
                     statsHtml = `<div id="stats-section">${chartsHtml}${tablesHtml}</div>`;
                 } else {
                     statsHtml = '<div id="stats-section"><h5>ข้อมูลสถิติ</h5><p class="text-center text-muted mt-3">ไม่มีข้อมูลย้อนหลัง 1 ปี</p></div>';
@@ -343,11 +409,37 @@
                 if (showUsageStats) {
                     const dataMax = Math.max(...usageData);
                     const suggestedMax = dataMax > 0 ? dataMax * 1.15 : 1;
+                    
+                    // --- MODIFIED: Added trendline dataset ---
+                    const trendlineData = calculateTrendline(usageData);
 
                     const lineCtx = document.getElementById('usageLineChart').getContext('2d');
                     lineChartInstance = new Chart(lineCtx, {
                         type: 'line',
-                        data: { labels: rateLabels, datasets: [{ label: 'Usage Rate', data: usageData, borderColor: 'var(--primary-color)', backgroundColor: 'rgba(0, 91, 161, 0.2)', fill: true, tension: 0.1 }] },
+                        data: { 
+                            labels: rateLabels, 
+                            datasets: [
+                                { 
+                                    label: 'Usage Rate', 
+                                    data: usageData, 
+                                    borderColor: 'var(--primary-color)', 
+                                    backgroundColor: 'rgba(0, 91, 161, 0.2)', 
+                                    fill: true, 
+                                    tension: 0.1 
+                                },
+                                {
+                                    label: 'Trendline',
+                                    data: trendlineData,
+                                    type: 'line',
+                                    fill: false,
+                                    borderColor: 'rgba(220, 53, 69, 0.7)',
+                                    borderWidth: 2,
+                                    borderDash: [5, 5], // Dashed line
+                                    pointRadius: 0, // No points on trendline
+                                    datalabels: { display: false } // Hide labels for trendline
+                                }
+                            ] 
+                        },
                         options: {
                             responsive: true, maintainAspectRatio: false,
                             scales: { 
@@ -359,7 +451,7 @@
                                 } 
                             },
                             plugins: { 
-                                legend: { display: false },
+                                legend: { display: true, position: 'top', labels: { usePointStyle: true } },
                                 datalabels: { align: 'end', anchor: 'end', color: '#555', font: { weight: 'bold', size: 14 }, formatter: (value) => value > 0 ? Math.round(value) : '' } 
                             }
                         }
@@ -374,7 +466,7 @@
                             datasets: [{ 
                                 label: 'สัดส่วน', 
                                 data: payerData, 
-                                backgroundColor: ['#005ba1', '#dc3545', '#198754', '#6f42c1', '#fd7e14', '#ffc107'], // Added orange for the new slice
+                                backgroundColor: ['#005ba1', '#dc3545', '#198754', '#6f42c1', '#fd7e14', '#ffc107'],
                                 hoverOffset: 4 
                             }] 
                         },
