@@ -11,8 +11,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
-        body { 
-            font-family: 'Sarabun', sans-serif; 
+        body {
+            font-family: 'Sarabun', sans-serif;
             background-color: #F7FAFC;
         }
 
@@ -29,15 +29,16 @@
         .tag-filter-3 { background-color: #FDBA74; color: #9A3412; }
         .tag-filter-4 { background-color: #93C5FD; color: #1E3A8A; }
         .tag-filter-misc { background-color: #D1D5DB; color: #1F2937; }
+        .tag-filter-group { background-color: #A5F3FC; color: #0E7490; }
 
         /* --- ED/NED/NON-STOCK TAG COLORS --- */
         .tag-ed { background-color: #D1FAE5; color: #047857; }
         .tag-ned { background-color: #DC2626; color: white; }
-        .tag-nonstock { background-color: #DBEAFE; color: #1E40AF; } 
+        .tag-nonstock { background-color: #DBEAFE; color: #1E40AF; }
         .tag-default { background-color: #E5E7EB; color: #374151; }
 
         .category-tag { padding: 0.25rem 0.75rem; border-radius: 9999px; font-weight: 600; font-size: 0.75rem; }
-        
+
         #loader { border: 8px solid #f3f3f3; border-top: 8px solid #3498db; border-radius: 50%; width: 60px; height: 60px; animation: spin 2s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
@@ -61,21 +62,28 @@
         <h1 class="text-4xl md:text-5xl font-bold text-gray-800">สรุปข้อมูลยาเข้าใหม่</h1>
     </header>
 
-    <div id="controls" class="py-4 mb-8">
-        <div class="relative mb-4 max-w-2xl mx-auto">
+    <div id="controls" class="py-4 mb-8 space-y-6">
+        <div class="relative max-w-2xl mx-auto">
             <input type="text" id="searchInput" class="w-full p-2 pl-10 text-base border-2 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition" placeholder="ค้นหาชื่อยา, ชื่อสามัญ, รหัสยา...">
             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
             </div>
         </div>
-        <div id="filter-container" class="flex flex-wrap gap-3 justify-center"></div>
+        <div>
+            <p class="text-center font-semibold text-gray-600 mb-2">Filter by Category:</p>
+            <div id="category-filter-container" class="flex flex-wrap gap-3 justify-center"></div>
+        </div>
+        <div>
+            <p class="text-center font-semibold text-gray-600 mb-2">Filter by Group:</p>
+            <div id="group-filter-container" class="flex flex-wrap gap-3 justify-center"></div>
+        </div>
     </div>
 
     <div id="loading-container" class="flex flex-col items-center justify-center p-10">
         <div id="loader"></div>
         <p class="text-gray-600 mt-4">กำลังโหลดข้อมูล กรุณารอสักครู่</p>
     </div>
-    
+
     <div id="drug-list" class="space-y-8"></div>
 </div>
 
@@ -85,7 +93,8 @@ const googleSheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTv6yIfV
 const drugListContainer = document.getElementById('drug-list');
 const loadingContainer = document.getElementById('loading-container');
 const searchInput = document.getElementById('searchInput');
-const filterContainer = document.getElementById('filter-container');
+const categoryFilterContainer = document.getElementById('category-filter-container');
+const groupFilterContainer = document.getElementById('group-filter-container');
 
 let allDrugData = [];
 
@@ -139,7 +148,8 @@ async function loadDrugData() {
                     drugListContainer.innerHTML = '<p class="text-center text-red-500 font-semibold">ไม่มีข้อมูลที่จะแสดง</p>';
                     return;
                 }
-                setupFilters();
+                setupCategoryFilters();
+                setupGroupFilters();
                 renderGroupedCards(allDrugData);
                 setupEventListeners();
             },
@@ -153,26 +163,45 @@ async function loadDrugData() {
 function renderGroupedCards(drugData) {
     drugListContainer.innerHTML = '';
     const fragment = document.createDocumentFragment();
-    const drugGroups = drugData.reduce((acc, drug) => {
+
+    const activeGroupFilter = groupFilterContainer.querySelector('.active')?.dataset.filter || 'all';
+
+    const groupsToRender = drugData.reduce((acc, drug) => {
         const groupName = (drug.group || 'ไม่มีกลุ่ม').trim();
-        if (!acc[groupName]) acc[groupName] = [];
-        acc[groupName].push(drug);
+        if (!acc[groupName]) {
+            acc[groupName] = { drugs: [], groupOrder: drug.groupOrder };
+        }
+        acc[groupName].drugs.push(drug);
         return acc;
     }, {});
-    const sortedGroupNames = Object.keys(drugGroups).sort((a, b) => getOrder(drugGroups[a][0]?.groupOrder) - getOrder(drugGroups[b][0]?.groupOrder));
+
+    const sortedGroupNames = Object.keys(groupsToRender).sort((a, b) => {
+         // If a group filter is active, it should always be at the top.
+        if (activeGroupFilter !== 'all') {
+            if (a === activeGroupFilter && b !== activeGroupFilter) return -1;
+            if (b === activeGroupFilter && a !== activeGroupFilter) return 1;
+        }
+        return getOrder(groupsToRender[a].groupOrder) - getOrder(groupsToRender[b].groupOrder);
+    });
+
     if (drugData.length === 0) {
         drugListContainer.innerHTML = '<p class="text-center text-gray-500 font-semibold mt-8">ไม่พบข้อมูลที่ตรงกับเงื่อนไข</p>';
         return;
     }
+
     sortedGroupNames.forEach(groupName => {
-        const drugsInGroup = drugGroups[groupName].filter(d => drugData.includes(d)).sort((a, b) => getOrder(a.itemOrder) - getOrder(b.itemOrder));
+        const groupInfo = groupsToRender[groupName];
+        const drugsInGroup = groupInfo.drugs.sort((a, b) => getOrder(a.itemOrder) - getOrder(b.itemOrder));
+
         if (drugsInGroup.length > 0) {
             fragment.appendChild(document.createRange().createContextualFragment(createGroupHeaderHTML(groupName)));
             drugsInGroup.forEach(drug => fragment.appendChild(document.createRange().createContextualFragment(createDrugCardHTML(drug))));
         }
     });
+
     drugListContainer.appendChild(fragment);
 }
+
 
 function createGroupHeaderHTML(groupName) {
     return `<div class="mt-10 mb-4"><h2 class="text-3xl font-bold text-gray-900 border-b-2 border-gray-800 pb-2">${sanitizeHTML(groupName)}</h2></div>`;
@@ -190,7 +219,6 @@ function createDrugCardHTML(drug) {
     const food = formatContent(drug.food);
     const sanitizedName = sanitizeHTML(drug.name || '');
 
-    // --- REVISED LOGIC for Type Tag: Prioritize NED check ---
     let drugTypeTagClass = 'tag-default';
     const drugTypeOriginal = drug.type || '';
     const drugTypeUpper = drugTypeOriginal.toUpperCase();
@@ -209,6 +237,9 @@ function createDrugCardHTML(drug) {
     const placeholderNotFound = 'https://placehold.co/600x400/E2E8F0/4A5568?text=No+Image';
 
     let imageHTML = '';
+    // ** IMAGE SIZING UPDATE **
+    // The parent div now has a fixed height (e.g., md:h-64) and flex properties.
+    // The `<img>` tags use `object-contain` to fit within their container (either full or half height) while maintaining aspect ratio.
     if (imageUrl1 && imageUrl2) {
         imageHTML = `<div class="h-full w-full flex flex-col"><img class="h-1/2 w-full object-contain p-2" src="${imageUrl1}" alt="รูปยา ${sanitizedName} 1" onerror="${placeholderError}"><img class="h-1/2 w-full object-contain p-2" src="${imageUrl2}" alt="รูปยา ${sanitizedName} 2" onerror="${placeholderError}"></div>`;
     } else if (imageUrl1) {
@@ -219,7 +250,7 @@ function createDrugCardHTML(drug) {
 
     return `
     <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col md:flex-row border-l-[6px] card-druggroup-${druggroup}">
-        <div class="md:w-1/3 flex-shrink-0 bg-gray-50 flex items-center justify-center min-h-[200px] md:min-h-full">
+        <div class="md:w-1/3 flex-shrink-0 bg-gray-50 flex items-center justify-center min-h-[200px] md:h-64">
             ${imageHTML}
         </div>
         <div class="flex-grow flex flex-col">
@@ -272,17 +303,21 @@ function createDrugCardHTML(drug) {
 
 function setupEventListeners() {
     searchInput.addEventListener('input', filterAndRender);
-    filterContainer.addEventListener('click', (e) => {
+
+    const handleFilterClick = (container) => (e) => {
         if (e.target.tagName === 'BUTTON') {
-            const currentActive = filterContainer.querySelector('.active');
+            const currentActive = container.querySelector('.active');
             if (currentActive) currentActive.classList.remove('active');
             e.target.classList.add('active');
             filterAndRender();
         }
-    });
+    };
+
+    categoryFilterContainer.addEventListener('click', handleFilterClick(categoryFilterContainer));
+    groupFilterContainer.addEventListener('click', handleFilterClick(groupFilterContainer));
 }
 
-function setupFilters() {
+function setupCategoryFilters() {
     const categories = allDrugData.reduce((acc, drug) => {
         const druggroup = getDrugGroupCode(drug.code);
         const name = drug.druggroupName || `ยา กลุ่ม ${druggroup}`;
@@ -295,18 +330,34 @@ function setupFilters() {
     Object.values(categories).sort((a,b) => a.code.localeCompare(b.code)).forEach(cat => {
         filterHtml += `<button class="filter-btn tag-filter-${cat.code}" data-filter="${cat.code}">${sanitizeHTML(cat.name)}</button>`;
     });
-    filterContainer.innerHTML = filterHtml;
+    categoryFilterContainer.innerHTML = filterHtml;
+}
+
+function setupGroupFilters() {
+    const groups = [...new Set(allDrugData.map(drug => (drug.group || '').trim()).filter(Boolean))];
+    let filterHtml = '<button class="filter-btn active" data-filter="all">ทั้งหมด</button>';
+    groups.sort().forEach(group => {
+        // Using a generic group filter color for now
+        filterHtml += `<button class="filter-btn tag-filter-group" data-filter="${group}">${sanitizeHTML(group)}</button>`;
+    });
+    groupFilterContainer.innerHTML = filterHtml;
 }
 
 function filterAndRender() {
     const searchTerm = searchInput.value.toLowerCase().trim();
-    const activeFilter = filterContainer.querySelector('.active').dataset.filter;
+    const activeCategoryFilter = categoryFilterContainer.querySelector('.active').dataset.filter;
+    const activeGroupFilter = groupFilterContainer.querySelector('.active').dataset.filter;
+
     const filteredData = allDrugData.filter(drug => {
         const searchableContent = (drug.name + ' ' + drug.generic + ' ' + drug.sapCode).toLowerCase();
         const matchesSearch = searchTerm === '' || searchableContent.includes(searchTerm);
-        const matchesFilter = activeFilter === 'all' || getDrugGroupCode(drug.code) === activeFilter;
-        return matchesSearch && matchesFilter;
+
+        const matchesCategory = activeCategoryFilter === 'all' || getDrugGroupCode(drug.code) === activeCategoryFilter;
+        const matchesGroup = activeGroupFilter === 'all' || (drug.group || '').trim() === activeGroupFilter;
+
+        return matchesSearch && matchesCategory && matchesGroup;
     });
+
     renderGroupedCards(filteredData);
 }
 
