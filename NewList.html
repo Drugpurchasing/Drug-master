@@ -233,24 +233,36 @@ function createDrugCardHTML(drug) {
     const isNonStock = (drug.name || '').toLowerCase().includes('non-stock');
     const nonStockTag = isNonStock ? `<span class="category-tag tag-nonstock">Non-stock</span>` : '';
 
+    // --- START: MODIFIED IMAGE HANDLING LOGIC ---
     const imageUrl1 = drug.image && drug.image.trim() !== '' ? drug.image.trim() : '';
     const imageUrl2 = drug.image2 && drug.image2.trim() !== '' ? drug.image2.trim() : '';
     const placeholderError = `this.onerror=null;this.src='https://placehold.co/600x400/E2E8F0/4A5568?text=Image+Error';`;
-    const placeholderNotFound = 'https://placehold.co/600x400/E2E8F0/4A5568?text=No+Image';
+    
+    let imageContainerContent = '';
 
-    let imageHTML = '';
-    if (imageUrl1 && imageUrl2) {
-        imageHTML = `<div class="h-full w-full flex flex-col"><img class="h-1/2 w-full object-contain p-2" src="${imageUrl1}" alt="รูปยา ${sanitizedName} 1" onerror="${placeholderError}"><img class="h-1/2 w-full object-contain p-2" src="${imageUrl2}" alt="รูปยา ${sanitizedName} 2" onerror="${placeholderError}"></div>`;
-    } else if (imageUrl1) {
-        imageHTML = `<img class="h-full w-full object-contain p-2" src="${imageUrl1}" alt="รูปยา ${sanitizedName}" onerror="${placeholderError}">`;
-    } else {
-        imageHTML = `<img class="h-full w-full object-contain" src="${placeholderNotFound}" alt="ไม่มีรูปยา">`;
+    if (imageUrl1) {
+        imageContainerContent += `<img class="w-full object-contain p-2 flex-1 min-h-0" src="${imageUrl1}" alt="รูปยา ${sanitizedName} 1" onerror="${placeholderError}">`;
     }
+    if (imageUrl2) {
+        // If imageUrl1 exists, imageUrl2 can disappear on error.
+        // If imageUrl1 does NOT exist, imageUrl2 is the primary image and should show an error placeholder.
+        const onerrorAction = imageUrl1 ? `this.style.display='none'` : placeholderError;
+        imageContainerContent += `<img class="w-full object-contain p-2 flex-1 min-h-0" src="${imageUrl2}" alt="รูปยา ${sanitizedName} 2" onerror="${onerrorAction}">`;
+    }
+    
+    let imageHTML = '';
+    if (imageContainerContent === '') {
+        imageHTML = `<img class="h-full w-full object-contain" src="https://placehold.co/600x400/E2E8F0/4A5568?text=No+Image" alt="ไม่มีรูปยา">`;
+    } else {
+        imageHTML = `<div class="h-full w-full flex flex-col">${imageContainerContent}</div>`;
+    }
+    // --- END: MODIFIED IMAGE HANDLING LOGIC ---
 
-    // **MODIFICATION: Increased image container size**
+    // **MODIFICATION 1: Removed md:h-[750px] for auto-height fit.
+    // **MODIFICATION 2: Implemented new image logic via imageHTML variable.
     return `
     <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col md:flex-row border-l-[6px] card-druggroup-${druggroup}">
-        <div class="md:w-2/5 flex-shrink-0 bg-gray-50 flex items-center justify-center min-h-[400px] md:h-[500px]">
+        <div class="md:w-2/5 flex-shrink-0 bg-gray-50 flex items-center justify-center min-h-[400px]">
             ${imageHTML}
         </div>
         <div class="flex-grow flex flex-col">
