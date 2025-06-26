@@ -233,7 +233,6 @@ function createDrugCardHTML(drug) {
     const isNonStock = (drug.name || '').toLowerCase().includes('non-stock');
     const nonStockTag = isNonStock ? `<span class="category-tag tag-nonstock">Non-stock</span>` : '';
 
-    // --- START: MODIFIED IMAGE HANDLING LOGIC ---
     const imageUrl1 = drug.image && drug.image.trim() !== '' ? drug.image.trim() : '';
     const imageUrl2 = drug.image2 && drug.image2.trim() !== '' ? drug.image2.trim() : '';
     const placeholderError = `this.onerror=null;this.src='https://placehold.co/600x400/E2E8F0/4A5568?text=Image+Error';`;
@@ -241,11 +240,10 @@ function createDrugCardHTML(drug) {
     let imageContainerContent = '';
 
     if (imageUrl1) {
+        // Use flex-1 to allow images to share space in a flex container
         imageContainerContent += `<img class="w-full object-contain p-2 flex-1 min-h-0" src="${imageUrl1}" alt="รูปยา ${sanitizedName} 1" onerror="${placeholderError}">`;
     }
     if (imageUrl2) {
-        // If imageUrl1 exists, imageUrl2 can disappear on error.
-        // If imageUrl1 does NOT exist, imageUrl2 is the primary image and should show an error placeholder.
         const onerrorAction = imageUrl1 ? `this.style.display='none'` : placeholderError;
         imageContainerContent += `<img class="w-full object-contain p-2 flex-1 min-h-0" src="${imageUrl2}" alt="รูปยา ${sanitizedName} 2" onerror="${onerrorAction}">`;
     }
@@ -254,15 +252,14 @@ function createDrugCardHTML(drug) {
     if (imageContainerContent === '') {
         imageHTML = `<img class="h-full w-full object-contain" src="https://placehold.co/600x400/E2E8F0/4A5568?text=No+Image" alt="ไม่มีรูปยา">`;
     } else {
+        // The outer div ensures vertical stacking if multiple images exist
         imageHTML = `<div class="h-full w-full flex flex-col">${imageContainerContent}</div>`;
     }
-    // --- END: MODIFIED IMAGE HANDLING LOGIC ---
 
-    // **MODIFICATION 1: Removed md:h-[750px] for auto-height fit.
-    // **MODIFICATION 2: Implemented new image logic via imageHTML variable.
+    // **MODIFICATION**: Added padding (p-4 md:p-8) to the image container to reduce image size.
     return `
     <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col md:flex-row border-l-[6px] card-druggroup-${druggroup}">
-        <div class="md:w-2/5 flex-shrink-0 bg-gray-50 flex items-center justify-center min-h-[400px]">
+        <div class="md:w-2/5 flex-shrink-0 bg-gray-50 flex items-center justify-center min-h-[400px] p-4 md:p-8">
             ${imageHTML}
         </div>
         <div class="flex-grow flex flex-col">
@@ -349,7 +346,6 @@ function setupGroupFilters() {
     const groups = [...new Set(allDrugData.map(drug => (drug.group || '').trim()).filter(Boolean))];
     let filterHtml = '<button class="filter-btn active" data-filter="all">ทั้งหมด</button>';
     groups.sort().forEach(group => {
-        // **MODIFICATION: Shorten button text by removing content in parentheses**
         const buttonText = group.replace(/\s*\(.*\)/, '');
         filterHtml += `<button class="filter-btn tag-filter-group" data-filter="${group}">${sanitizeHTML(buttonText)}</button>`;
     });
