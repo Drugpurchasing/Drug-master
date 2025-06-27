@@ -55,12 +55,12 @@
         .label-food       { color: #D97706; }
         .label-comparable { color: #F59E0B; } /* New Color */
 
-        /* --- CSS for vertical images with auto height --- */
+        /* --- CSS for vertical images with fixed height --- */
         .image-container {
             display: flex;
             flex-direction: column;
             width: 100%;
-            height: 100%;
+            justify-content: center; /* จัดกลางเพื่อให้สวยงามเมื่อมีรูปเดียว */
             gap: 4px;
         }
         .image-container:empty {
@@ -68,13 +68,11 @@
         }
         .drug-image {
             width: 100%;
-            flex-grow: 1;
-            min-height: 0;
-            object-fit: contain;
-            background-color: #f9fafb;
+            height: 350px; /* <<-- ปรับความสูงของรูปภาพทั้งหมดได้ที่นี่ --<< */
+            object-fit: contain; /* ย่อรูปให้พอดีกรอบโดยไม่เสียสัดส่วน */
+            background-color: #f9fafb; /* พื้นหลังสีเทาอ่อนสำหรับส่วนที่ว่าง */
             border-radius: 8px; /* ทำให้รูปมีขอบมน */
         }
-        /* -- Removed image divider -- */
 
     </style>
 </head>
@@ -265,7 +263,6 @@ function createDrugCardHTML(drug) {
         imagesContent += `<img src="${imageUrl2}" alt="รูปยา ${sanitizedName} 2" class="drug-image" onerror="${onErrorScript}">`;
     }
     
-    // --- START: HTML Structure Change for Info Section ---
     const indicationHTML = `
         <div class="flex items-start text-lg leading-relaxed mt-4">
             <span class="label-indication"><svg class="h-6 w-6 mr-3 flex-shrink-0 mt-1" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M18.889 3.323c-1.23-1.063-2.862-1.548-4.5-1.48-2.07.085-3.94.94-5.312 2.313-1.373 1.373-2.228 3.243-2.313 5.313-.068 1.638.417 3.27 1.48 4.5l8.322 8.323a.75.75 0 001.06 0l8.323-8.323c1.063-1.23 1.548-2.862 1.48-4.5-.085-2.07-.94-3.94-2.313-5.313-1.344-1.344-3.19-2.204-5.227-2.312z"/></svg></span>
@@ -280,11 +277,10 @@ function createDrugCardHTML(drug) {
             <div><strong class="font-semibold label-comparable">ยาในบัญชีฯที่ใกล้เคียงกัน:</strong><div class="mt-1 text-black">${comparableDrug}</div></div>
         </div>`;
     }
-    // --- END: HTML Structure Change for Info Section ---
 
     return `
     <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col md:flex-row border-l-[6px] card-druggroup-${druggroup}">
-        <div class="md:w-2/5 flex-shrink-0 bg-gray-50 flex items-stretch justify-center p-4">
+        <div class="md:w-2/5 flex-shrink-0 bg-gray-50 flex items-center justify-center p-4">
             <div class="image-container">
                 ${imagesContent}
             </div>
