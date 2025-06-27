@@ -54,39 +54,27 @@
         .label-storage    { color: #0891B2; }
         .label-food       { color: #D97706; }
 
-        /* --- CSS for fixed-size images --- */
-        .image-fixed-height-container {
+        /* --- CSS for vertical images with conditional visibility --- */
+        .image-container {
             display: flex;
-            flex-direction: row;
-            gap: 8px;
-            justify-content: center;
-            align-items: center;
+            flex-direction: column; /* จัดเรียงแนวตั้ง */
             width: 100%;
-            height: 350px; /* <<-- ปรับความสูงของรูปภาพทั้งหมดได้ที่นี่ --<< */
-            padding: 8px;
-            box-sizing: border-box;
+            border: 1px solid #E5E7EB; /* ใส่กรอบ */
+            border-radius: 8px;
+            overflow: hidden; /* ซ่อนส่วนที่ล้นกรอบ */
         }
-
+        /* ถ้า container ไม่มี element ลูก (img) อยู่ข้างใน ให้ซ่อน container ไปเลย */
+        .image-container:empty {
+            display: none;
+        }
         .drug-image {
             width: 100%;
-            height: 100%;
+            height: auto; /* ความสูงปรับตามสัดส่วนรูป */
             object-fit: contain;
-            flex-shrink: 1;
-            min-width: 0;
         }
-
-        .drug-placeholder {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #E5E7EB;
-            color: #4B5563;
-            font-weight: 600;
-            text-align: center;
-            padding: 1rem;
-            border-radius: 8px;
+        /* ใส่เส้นคั่นระหว่างรูปบนกับรูปล่าง */
+        .drug-image + .drug-image {
+            border-top: 1px solid #E5E7EB;
         }
 
     </style>
@@ -269,35 +257,26 @@ function createDrugCardHTML(drug) {
     const isNonStock = (drug.name || '').toLowerCase().includes('non-stock');
     const nonStockTag = isNonStock ? `<span class="category-tag tag-nonstock">Non-stock</span>` : '';
 
-    // --- START: New image logic for equal sizing ---
+    // --- START: Image logic (vertical, conditional, no placeholder) ---
     const imageUrl1 = drug.image && drug.image.trim() !== '' ? drug.image.trim() : '';
     const imageUrl2 = drug.image2 && drug.image2.trim() !== '' ? drug.image2.trim() : '';
     let imagesContent = '';
 
-    const createPlaceholder = (text) => `<div class="drug-placeholder">${text}</div>`;
-    
-    const createImageTag = (url, alt) => {
-        const onErrorScript = `
-            const p = document.createElement('div');
-            p.className = 'drug-placeholder';
-            p.textContent = 'Image Error';
-            this.parentNode.replaceChild(p, this);
-        `.replace(/\s+/g, ' ').trim();
-        return `<img src="${url}" alt="${alt}" class="drug-image" onerror="${onErrorScript}">`;
-    };
+    // onerror script will remove the <img> tag from the DOM if it fails to load
+    const onErrorScript = `this.remove()`;
 
-    if (imageUrl1) imagesContent += createImageTag(imageUrl1, `รูปยา ${sanitizedName} 1`);
-    if (imageUrl2) imagesContent += createImageTag(imageUrl2, `รูปยา ${sanitizedName} 2`);
-
-    if (!imagesContent) {
-        imagesContent = createPlaceholder('No Image');
+    if (imageUrl1) {
+        imagesContent += `<img src="${imageUrl1}" alt="รูปยา ${sanitizedName} 1" class="drug-image" onerror="${onErrorScript}">`;
     }
-    // --- END: New image logic ---
+    if (imageUrl2) {
+        imagesContent += `<img src="${imageUrl2}" alt="รูปยา ${sanitizedName} 2" class="drug-image" onerror="${onErrorScript}">`;
+    }
+    // --- END: Image logic ---
     
     return `
     <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col md:flex-row border-l-[6px] card-druggroup-${druggroup}">
-        <div class="md:w-2/5 flex-shrink-0 bg-gray-50 flex items-center justify-center">
-             <div class="image-fixed-height-container">
+        <div class="md:w-2/5 flex-shrink-0 bg-gray-50 flex items-center justify-center p-4">
+            <div class="image-container">
                 ${imagesContent}
             </div>
         </div>
