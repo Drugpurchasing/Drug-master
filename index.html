@@ -75,17 +75,15 @@
         .inline-error-msg { color: var(--danger-color); font-size: 0.8rem; margin-top: 4px; }
         .image-section h5, #stats-section h5 { font-weight: bold; color: var(--secondary-color); margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--primary-color); }
         
-        /* === MODIFIED SECTION START === */
         .drug-image {
             width: 100%;
-            height: 360px; /* <<-- ปรับความสูงของรูปภาพทั้งหมดได้ที่นี่ --<< */
-            object-fit: contain; /* ย่อรูปให้พอดีกรอบโดยไม่เสียสัดส่วน */
-            background-color: #f9fafb; /* พื้นหลังสีเทาอ่อนสำหรับส่วนที่ว่าง */
-            border-radius: 8px; /* ทำให้รูปมีขอบมน */
+            height: 360px;
+            object-fit: contain;
+            background-color: #f9fafb;
+            border-radius: 8px;
             margin-bottom: 1rem;
             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         }
-        /* === MODIFIED SECTION END === */
 
         #stats-section { margin-top: 1.5rem; width:100%; border-top: 1px solid #dee2e6; padding-top: 1.5rem;}
         .charts-container { display: flex; flex-wrap: wrap; gap: 20px; align-items: stretch; }
@@ -95,8 +93,8 @@
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--secondary-color); }
-        @media (max-width: 992px) { /* ... (no changes to responsive styles) ... */ }
-        @media (max-width: 768px) { /* ... (no changes to responsive styles) ... */ }
+        @media (max-width: 992px) { }
+        @media (max-width: 768px) { }
     </style>
 </head>
 
@@ -123,6 +121,7 @@
                             <div class="d-flex flex-wrap gap-2 justify-content-md-end justify-content-center">
                                 <a href="https://drugpurchasing.github.io/Drug-master/Markup.html" target="_blank" class="btn btn-warning text-dark fw-bold" data-bs-toggle="tooltip" data-bs-placement="top" title="คำนวณราคาขายจากราคาทุน"><i class="fas fa-calculator me-1"></i>Markup</a>
                                 <a href="https://drugpurchasing.github.io/Drug-master/NewList.html" target="_blank" class="btn btn-purple" data-bs-toggle="tooltip" data-bs-placement="top" title="เปิดหน้ารายการยาเข้าใหม่"><i class="fas fa-file-medical me-1"></i>สรุปยาเข้าใหม่</a>
+                                <button id="contactButton" class="btn btn-info" data-bs-toggle="tooltip" data-bs-placement="top" title="ติดต่อผู้ดูแล, แจ้งปัญหา, หรือส่งข้อเสนอแนะ"><i class="fas fa-comments me-1"></i>ติดต่อ</button>
                                 <button id="exportButton" class="btn btn-success" data-bs-toggle="tooltip" data-bs-placement="top" title="ส่งออกข้อมูลตารางที่แสดงอยู่เป็นไฟล์ Excel"><i class="fas fa-file-excel me-1"></i>Excel</button>
                                 <button id="exportJPEGButton" class="btn btn-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="ถ่ายภาพหน้าจอของตารางที่แสดงอยู่"><i class="fas fa-camera me-1"></i>Screenshot</button>
                                 <button id="defaultView" class="btn btn-outline-primary view-toggle" data-bs-toggle="tooltip" data-bs-placement="top" title="แสดงข้อมูลที่จำเป็นพื้นฐาน"><i class="fas fa-eye me-1"></i>Essential</button>
@@ -142,6 +141,7 @@
             </div>
         </div>
     </div>
+    
     <div class="modal fade" id="drugDetailModal" tabindex="-1" aria-labelledby="drugDetailModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered"><div class="modal-content">
             <div class="modal-header"><h5 class="modal-title" id="drugDetailModalLabel">Drug Details</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
@@ -149,6 +149,56 @@
             <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
         </div></div>
     </div>
+
+    <div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="contactModalLabel"><i class="fas fa-comments me-2"></i>ติดต่อผู้ดูแลระบบ</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p class="text-secondary mb-4">เลือกหัวข้อและกรอกรายละเอียดที่ต้องการแจ้ง</p>
+            <form id="contactForm">
+              <div class="mb-3">
+                  <label class="form-label fw-bold">หัวข้อการติดต่อ:</label>
+                  <div class="row">
+                      <div class="col-md-6">
+                          <div class="form-check mb-2">
+                              <input class="form-check-input" type="radio" name="topic" id="topic1" value="ขอแก้ไขข้อมูลยา" checked>
+                              <label class="form-check-label" for="topic1">ขอแก้ไขข้อมูลยา</label>
+                          </div>
+                          <div class="form-check mb-2">
+                              <input class="form-check-input" type="radio" name="topic" id="topic2" value="พบปัญหาการใช้งาน">
+                              <label class="form-check-label" for="topic2">พบปัญหาการใช้งาน</label>
+                          </div>
+                      </div>
+                      <div class="col-md-6">
+                           <div class="form-check mb-2">
+                              <input class="form-check-input" type="radio" name="topic" id="topic3" value="คำถาม">
+                              <label class="form-check-label" for="topic3">คำถาม</label>
+                          </div>
+                          <div class="form-check mb-2">
+                              <input class="form-check-input" type="radio" name="topic" id="topic4" value="ข้อเสนอแนะ">
+                              <label class="form-check-label" for="topic4">ข้อเสนอแนะ</label>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="mb-3">
+                <label for="message" class="form-label fw-bold">รายละเอียด:</label>
+                <textarea class="form-control" id="message" name="message" rows="5" placeholder="กรุณาระบุรายละเอียด เช่น ชื่อยาที่ต้องการแก้ไข หรือปัญหาที่พบ..." required></textarea>
+              </div>
+              <div class="modal-footer pb-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane me-2"></i>ส่งเรื่อง</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -173,7 +223,6 @@
 
         Chart.register(ChartDataLabels);
         
-        // This single line initializes all tooltips on the page, including static and dynamic ones.
         $('body').tooltip({
             selector: '[data-bs-toggle="tooltip"]'
         });
@@ -253,7 +302,6 @@
         
         const storageColorMap = { 'below 30°C': 'bg-success', '2°C - 8°C': 'bg-primary', 'below 25°C': 'bg-orange', 'below -20°C': 'bg-info', '-15°C ถึง -25°C': 'bg-info text-dark' };
 
-        // MODIFIED: Added tooltip attributes to the Detail View button
         const columnConfig = [
             { title: 'Detail View', data: null, defaultContent: '<button class="btn btn-sm btn-primary view-details-btn" data-bs-toggle="tooltip" data-bs-placement="top" title="คลิกเพื่อดูข้อมูลของยาโดยละเอียด"><i class="fas fa-eye"></i></button>', orderable: false, className: 'text-center all-column', width: "50px" },
             { title: 'Material No.', data: 0, className: 'default-column purchasing-column rate-column' },
@@ -373,10 +421,84 @@
         function promptPassword(callback, forceReauth = false) { if (passwordVerified && !forceReauth) { callback(); return; } Swal.fire({ title: 'Authentication Required', input: 'password', inputPlaceholder: 'Enter your password', inputAttributes: { autocapitalize: 'off', autocorrect: 'off' }, showCancelButton: true, confirmButtonText: 'Submit', showLoaderOnConfirm: true, preConfirm: (password) => { if (password === 'rxccc') { return true; } else { Swal.showValidationMessage('Incorrect password'); return false; } }, allowOutsideClick: () => !Swal.isLoading() }).then((result) => { if (result.isConfirmed) { passwordVerified = true; callback(); } }); }
         function showSwalSuccess(message) { Swal.fire({ icon: 'success', title: 'Success!', text: message, timer: 2000, showConfirmButton: false }); }
         
+
+        // --- NEW: CONTACT FORM SCRIPT START ---
+
+        // 1. Initialize Bootstrap Modal
+        const contactModal = new bootstrap.Modal(document.getElementById('contactModal'));
+        
+        // 2. Add event listener to open the modal
+        $('#contactButton').on('click', function() {
+            contactModal.show();
+        });
+
+        // 3. Add event listener for form submission
+        $('#contactForm').on('submit', function(event) {
+            event.preventDefault();
+            
+            // --- IMPORTANT ---
+            // PASTE THE WEB APP URL YOU GOT FROM GOOGLE APPS SCRIPT DEPLOYMENT HERE
+            const webAppUrl = 'https://script.google.com/macros/s/AKfycbyH_ULtPI5Wat_VmNY7smo7Ytq2jfk0DcKgFmjFQU5FXTyG2ICT9-5ro4Bj70TQ0tjS/exec'; 
+            // --- IMPORTANT ---
+
+            const form = this;
+            const submitButton = $(form).find('button[type="submit"]');
+            const originalButtonText = submitButton.html();
+
+            if (webAppUrl === 'YOUR_WEB_APP_URL_HERE') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'ตั้งค่าไม่สมบูรณ์',
+                    text: 'กรุณาตั้งค่า Web App URL ในไฟล์ HTML ก่อน (แจ้ง Developer)'
+                });
+                return;
+            }
+
+            // Disable button and show loading state
+            submitButton.prop('disabled', true);
+            submitButton.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> กำลังส่ง...');
+
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            fetch(webAppUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                cache: 'no-cache',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+                redirect: 'follow'
+            })
+            .then(response => {
+                contactModal.hide();
+                form.reset();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'ส่งข้อมูลสำเร็จ',
+                    text: 'ขอบคุณสำหรับข้อมูลครับ',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'เกิดข้อผิดพลาด',
+                    text: 'ไม่สามารถส่งข้อมูลได้: ' + error.message,
+                });
+            })
+            .finally(() => {
+                // Re-enable button and restore original text
+                submitButton.prop('disabled', false);
+                submitButton.html(originalButtonText);
+            });
+        });
+        // --- NEW: CONTACT FORM SCRIPT END ---
+
+
         loadAllDataAndInitTable();
     });
     </script>
 </body>
-
-    
 </html>
