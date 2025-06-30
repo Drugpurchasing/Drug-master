@@ -127,7 +127,7 @@
                             <div class="d-flex flex-wrap gap-2 justify-content-md-end justify-content-center">
                                 <a href="https://drugpurchasing.github.io/Drug-master/Markup.html" target="_blank" class="btn btn-warning text-dark fw-bold" data-bs-toggle="tooltip" data-bs-placement="top" title="คำนวณราคาขายจากราคาทุน"><i class="fas fa-calculator me-1"></i>Markup</a>
                                 <a href="https://drugpurchasing.github.io/Drug-master/NewList.html" target="_blank" class="btn btn-purple" data-bs-toggle="tooltip" data-bs-placement="top" title="เปิดหน้ารายการยาเข้าใหม่"><i class="fas fa-file-medical me-1"></i>สรุปยาเข้าใหม่</a>
-                                <button id="contactButton" class="btn btn-info" data-bs-toggle="tooltip" data-bs-placement="top" title="ติดต่อผู้ดูแล, แจ้งปัญหา, หรือส่งข้อเสนอแนะ"><i class="fas fa-comments me-1"></i>ติดต่อ</button>
+                                <button id="contactButton" class="btn btn-info contact-trigger" data-bs-toggle="tooltip" data-bs-placement="top" title="ติดต่อผู้ดูแล, แจ้งปัญหา, หรือส่งข้อเสนอแนะ"><i class="fas fa-comments me-1"></i>ติดต่อ</button>
                                 <button id="exportButton" class="btn btn-success" data-bs-toggle="tooltip" data-bs-placement="top" title="ส่งออกข้อมูลตารางที่แสดงอยู่เป็นไฟล์ Excel"><i class="fas fa-file-excel me-1"></i>Excel</button>
                                 <button id="exportJPEGButton" class="btn btn-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="ถ่ายภาพหน้าจอของตารางที่แสดงอยู่"><i class="fas fa-camera me-1"></i>Screenshot</button>
                                 <button id="defaultView" class="btn btn-outline-primary view-toggle" data-bs-toggle="tooltip" data-bs-placement="top" title="แสดงข้อมูลที่จำเป็นพื้นฐาน"><i class="fas fa-eye me-1"></i>Essential</button>
@@ -149,17 +149,20 @@
     </div>
 
     <div id="floating-toolbar" class="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-3">
-    <button id="contactButton"  title="ขอแก้ไขข้อมูล, แจ้งปัญหา, สอบถาม, หรือส่งข้อเสนอแนะ" class="bg-green-600 hover:bg-green-700 text-white font-semibold rounded-full shadow-lg transition-all duration-300 flex items-center gap-2 px-4 py-3">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
-        <span>ติดต่อ/แจ้งปัญหา</span>
-    </button>
+        <button id="floatingContactButton" title="ขอแก้ไขข้อมูล, แจ้งปัญหา, สอบถาม, หรือส่งข้อเสนอแนะ" class="contact-trigger bg-green-600 hover:bg-green-700 text-white font-semibold rounded-full shadow-lg transition-all duration-300 flex items-center gap-2 px-4 py-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+            <span>ติดต่อ/แจ้งปัญหา</span>
+        </button>
     </div>
     
     <div class="modal fade" id="drugDetailModal" tabindex="-1" aria-labelledby="drugDetailModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered"><div class="modal-content">
             <div class="modal-header"><h5 class="modal-title" id="drugDetailModalLabel">Drug Details</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
             <div class="modal-body" id="drugDetailModalBody"></div>
-            <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info me-auto contact-trigger"><i class="fas fa-comments me-1"></i>แจ้งปัญหาเกี่ยวกับยานี้</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
         </div></div>
     </div>
 
@@ -233,6 +236,7 @@
         var lineChartInstance; 
         var pieChartInstance;
         var tooltipMap = {};
+        const contactModal = new bootstrap.Modal(document.getElementById('contactModal'));
 
         Chart.register(ChartDataLabels);
         
@@ -377,8 +381,15 @@
                 
                 function createDetailCard(options) { const { title, value, valueClass, itemClass, isProtected, realValue } = { valueClass: '', itemClass: '', isProtected: false, realValue: '', ...options }; if (!value || value.toString().trim() === '-' || value.toString().trim() === '') return ''; let titleHtml = `<strong>${title}</strong>`; let valueHtml = `<div class="value-container ${valueClass}" data-real-value="${realValue}">${value}</div>`; if (isProtected && !passwordVerified) { titleHtml = `<strong>${title} <i class="fas fa-lock unlock-cost-btn" title="ปลดล็อคเพื่อดูราคาทุน"></i></strong>`; valueHtml = `<div class="value-container ${valueClass}" data-real-value="${realValue}">****</div>`; } return `<div class="detail-item ${itemClass}">${titleHtml}${valueHtml}</div>`; }
                 let detailsHtml = '';
-                let row1Html = ''; row1Html += createDetailCard({ title: 'Material No.', value: rowData[0], valueClass: 'main-title-value', itemClass: 'material-no-card' }); row1Html += createDetailCard({ title: 'SAP Name', value: rowData[1], valueClass: 'main-title-value' }); row1Html += createDetailCard({ title: 'Generic Name', value: rowData[2], valueClass: 'main-title-value' }); if (row1Html) detailsHtml += `<div class="detail-row">${row1Html}</div>`;
+
+                // Row 1
+                let row1Html = ''; 
+                row1Html += createDetailCard({ title: 'Material No.', value: rowData[0], valueClass: 'main-title-value', itemClass: 'material-no-card' }); 
+                row1Html += createDetailCard({ title: 'SAP Name', value: rowData[1], valueClass: 'main-title-value' }); 
+                row1Html += createDetailCard({ title: 'Generic Name', value: rowData[2], valueClass: 'main-title-value' }); 
+                if (row1Html) detailsHtml += `<div class="detail-row">${row1Html}</div>`;
                 
+                // Row 2
                 let row2Html = '';
                 row2Html += createDetailCard({ title: 'TPU', value: rowData[3], itemClass: 'compact-card' });
                 row2Html += createDetailCard({ title: 'GPU', value: rowData[4], itemClass: 'compact-card' });
@@ -388,27 +399,33 @@
                 row2Html += createDetailCard({ title: 'Drug Group', value: renderBadge(rowData[25], 'display', drugGroupColorMap, true) });
                 if (row2Html) detailsHtml += `<div class="detail-row">${row2Html}</div>`;
                 
+                // Row 3
                 let row3Html = ''; 
                 row3Html += createDetailCard({ title: 'ราคาขาย', value: `${formatNumber(rowData[8], 2, 2)} / ${rowData[9] || 'หน่วย'}`, valueClass: 'sale-price-value', itemClass: 'highlight-card' }); 
                 const realCostValue = `${formatNumber(rowData[10], 2, 2)} / ${rowData[11] || 'หน่วย'}`; 
                 row3Html += createDetailCard({ title: 'ราคาทุน', value: realCostValue, valueClass: 'cost-price-value', itemClass: 'highlight-card', isProtected: true, realValue: realCostValue }); 
                 row3Html += createDetailCard({ title: 'ราคากลาง', value: formatNumber(rowData[26], 2, 2) }); 
                 row3Html += createDetailCard({ title: 'Fee Schedule', value: formatNumber(rowData[27], 2, 2) }); 
-                row3Html += createDetailCard({ title: 'Purchasing Unit', value: rowData[7] });
-                row3Html += createDetailCard({ title: 'Distributor', value: rowData[31] });
-                row3Html += createDetailCard({ title: 'Storage', value: renderBadge(rowData[28], 'display', storageColorMap, true) });
                 if (row3Html) detailsHtml += `<div class="detail-row">${row3Html}</div>`;
 
-                let row4Html = ''; 
-                row4Html += createDetailCard({ title: 'รหัสยาทดแทน', value: rowData[29] }); 
-                row4Html += createDetailCard({ title: 'การรับเข้าบัญชี', value: rowData[30] }); 
-                let conditions = rowData[38]; if (conditions) conditions = conditions.replace(/\n/g, '<br>'); 
-                row4Html += createDetailCard({ title: 'เงื่อนไขบัญชียาหลัก', value: conditions, itemClass: 'orange-border-card' }); 
-                let indications = rowData[39]; if (indications) indications = indications.replace(/\n/g, '<br>'); 
-                row4Html += createDetailCard({ title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', value: indications }); 
-                let papValue = rowData[40]; if (papValue) papValue = papValue.replace(/\n/g, '<br>'); 
-                row4Html += createDetailCard({ title: 'PAP', value: papValue, itemClass: 'orange-border-card' }); 
+                // Row 4
+                let row4Html = '';
+                row4Html += createDetailCard({ title: 'Purchasing Unit', value: rowData[7] });
+                row4Html += createDetailCard({ title: 'Distributor', value: rowData[31] });
+                row4Html += createDetailCard({ title: 'Storage', value: renderBadge(rowData[28], 'display', storageColorMap, true) });
                 if (row4Html) detailsHtml += `<div class="detail-row">${row4Html}</div>`;
+
+                // Row 5
+                let row5Html = ''; 
+                row5Html += createDetailCard({ title: 'รหัสยาทดแทน', value: rowData[29] }); 
+                row5Html += createDetailCard({ title: 'การรับเข้าบัญชี', value: rowData[30] }); 
+                let conditions = rowData[38]; if (conditions) conditions = conditions.replace(/\n/g, '<br>'); 
+                row5Html += createDetailCard({ title: 'เงื่อนไขบัญชียาหลัก', value: conditions, itemClass: 'orange-border-card' }); 
+                let indications = rowData[39]; if (indications) indications = indications.replace(/\n/g, '<br>'); 
+                row5Html += createDetailCard({ title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', value: indications }); 
+                let papValue = rowData[40]; if (papValue) papValue = papValue.replace(/\n/g, '<br>'); 
+                row5Html += createDetailCard({ title: 'PAP', value: papValue, itemClass: 'orange-border-card' }); 
+                if (row5Html) detailsHtml += `<div class="detail-row">${row5Html}</div>`;
                 
                 let imageHtml = ''; if (rowData[41]) imageHtml += `<img src="${rowData[41]}" class="drug-image img-fluid" alt="Drug Image 1" onerror="this.style.display='none'">`; if (rowData[42]) imageHtml += `<img src="${rowData[42]}" class="drug-image img-fluid" alt="Drug Image 2" onerror="this.style.display='none'">`;
                 const rateLabels = [], usageData = [], caseData = []; columnConfig.forEach(col => { if (/\d{2}\/\d{2}/.test(col.title)) { const rawValue = rowData[col.data] || ''; usageData.push(parseFloat(rawValue.match(/^[0-9.]+/)?.[0] || 0)); caseData.push(parseInt(rawValue.match(/\((\d+)\)/)?.[1] || 0, 10)); rateLabels.push(col.title); } });
@@ -426,6 +443,10 @@
                 
                 const finalModalHtml = `<div class="modal-main-layout"><div class="details-section">${detailsHtml}${statsHtml}</div>${imageHtml ? `<div class="image-section"><h5>รูปภาพประกอบ</h5>${imageHtml}</div>` : ''}</div>`;
                 $('#drugDetailModalBody').html(finalModalHtml);
+
+                // Store drug name for contact form
+                $('#drugDetailModal').data('drug-name', `${rowData[1]} (Mat No: ${rowData[0]})`);
+
                 if (lineChartInstance) lineChartInstance.destroy(); if (pieChartInstance) pieChartInstance.destroy();
                 if (showUsageStats) { const dataMax = Math.max(...usageData); const suggestedMax = dataMax > 0 ? dataMax * 1.15 : 1; const trendlineData = calculateTrendline(usageData); const lineCtx = document.getElementById('usageLineChart').getContext('2d'); lineChartInstance = new Chart(lineCtx, { type: 'line', data: { labels: rateLabels, datasets: [ { label: 'Usage Rate', data: usageData, borderColor: 'var(--primary-color)', backgroundColor: 'rgba(0, 91, 161, 0.2)', fill: true, tension: 0.1 }, { label: 'Trendline', data: trendlineData, type: 'line', fill: false, borderColor: 'rgba(220, 53, 69, 0.7)', borderWidth: 2, borderDash: [5, 5], pointRadius: 0, datalabels: { display: false } } ] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { ticks: { color: '#000000', font: { weight: 'bold' } } }, y: { ticks: { color: '#000000', font: { weight: 'bold' } }, min: 0, suggestedMax: suggestedMax } }, plugins: { legend: { display: true, position: 'top', labels: { usePointStyle: true } }, datalabels: { align: 'end', anchor: 'end', color: '#555', font: { weight: 'bold', size: 14 }, formatter: (value) => value > 0 ? Math.round(value) : '' } } } }); }
                 if (showUsageStats && showPieChart) { const pieCtx = document.getElementById('payerPieChart').getContext('2d'); pieChartInstance = new Chart(pieCtx, { type: 'pie', data: { labels: payerLabels, datasets: [{ label: 'สัดส่วน', data: payerData, backgroundColor: ['#005ba1', '#dc3545', '#198754', '#6f42c1', '#fd7e14', '#ffc107'], hoverOffset: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#000000', font: { weight: 'bold' } } }, datalabels: { color: '#fff', textStrokeColor: '#000', textStrokeWidth: 2, font: { weight: 'bold', size: 14 }, formatter: (value, ctx) => { if (value === 0) return ''; const total = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); const percentage = (value / total * 100).toFixed(1) + '%'; return percentage; } } } } }); }
@@ -440,6 +461,13 @@
             $('#drugDetailModal').on('click', '.unlock-cost-btn', function(e) { e.stopPropagation(); const unlockButton = $(this); const valueContainer = unlockButton.closest('.detail-item').find('.value-container'); unlockButton.hide(); const formHtml = `<div class="input-group input-group-sm"><input type="password" class="form-control inline-password-input" placeholder="Password..."><button class="btn btn-primary inline-submit-btn" type="button">OK</button></div><div class="inline-error-msg" style="display:none;">Incorrect Password</div>`; valueContainer.html(formHtml); valueContainer.find('.inline-password-input').focus(); });
             $('#drugDetailModal').on('click', '.inline-submit-btn', function(e) { e.stopPropagation(); const submitButton = $(this); const inputField = submitButton.siblings('.inline-password-input'); const valueContainer = submitButton.closest('.value-container'); const errorMsg = valueContainer.find('.inline-error-msg'); const password = inputField.val(); if (password === 'rxccc') { passwordVerified = true; const realCost = valueContainer.data('real-value'); valueContainer.html(realCost); } else { errorMsg.show().delay(2000).fadeOut(); inputField.val('').focus(); } });
             $('#drugDetailModal').on('keypress', '.inline-password-input', function(e) { if (e.which === 13) { e.preventDefault(); $(this).siblings('.inline-submit-btn').click(); } });
+        
+            $('#drugDetailModal').on('hidden.bs.modal', function () {
+                $(this).find('[data-bs-toggle="tooltip"]').tooltip('dispose');
+                 if (lineChartInstance) lineChartInstance.destroy();
+                if (pieChartInstance) pieChartInstance.destroy();
+                $(this).data('drug-name', ''); // Clear stored drug name
+            });
         }
         
         function setView(viewType) { if (!table) return; $('.view-toggle').removeClass('active'); $(`#${viewType}View`).addClass('active'); if (viewType === 'all') { table.columns(':not(.modal-only)').visible(true); table.columns('.modal-only').visible(false); } else { table.columns().visible(false); table.columns('.all-column').visible(true); if (viewType === 'default') table.columns('.default-column').visible(true); else if (viewType === 'purchasing') table.columns('.purchasing-column').visible(true); else if (viewType === 'rate') table.columns('.rate-column').visible(true); } table.columns.adjust().draw(false); }
@@ -451,24 +479,24 @@
         function showSwalSuccess(message) { Swal.fire({ icon: 'success', title: 'Success!', text: message, timer: 2000, showConfirmButton: false }); }
         
 
-        // --- NEW: CONTACT FORM SCRIPT START ---
+        // --- CONTACT FORM SCRIPT ---
+        $('.contact-trigger').on('click', function() {
+            const drugName = $('#drugDetailModal').data('drug-name');
+            const contactForm = $('#contactForm');
+            contactForm.trigger('reset'); // Reset form on open
 
-        // 1. Initialize Bootstrap Modal
-        const contactModal = new bootstrap.Modal(document.getElementById('contactModal'));
-        
-        // 2. Add event listener to open the modal
-        $('#contactButton').on('click', function() {
+            if (drugName) {
+                // Pre-fill if coming from a detail modal
+                contactForm.find('input[name="topic"][value="ขอแก้ไขข้อมูลยา"]').prop('checked', true);
+                contactForm.find('#message').val(`[Drug: ${drugName}]\n\n`);
+            }
             contactModal.show();
         });
 
-        // 3. Add event listener for form submission
         $('#contactForm').on('submit', function(event) {
             event.preventDefault();
             
-            // --- IMPORTANT ---
-            // PASTE THE WEB APP URL YOU GOT FROM GOOGLE APPS SCRIPT DEPLOYMENT HERE
             const webAppUrl = 'https://script.google.com/macros/s/AKfycbyH_ULtPI5Wat_VmNY7smo7Ytq2jfk0DcKgFmjFQU5FXTyG2ICT9-5ro4Bj70TQ0tjS/exec'; 
-            // --- IMPORTANT ---
 
             const form = this;
             const submitButton = $(form).find('button[type="submit"]');
@@ -483,7 +511,6 @@
                 return;
             }
 
-            // Disable button and show loading state
             submitButton.prop('disabled', true);
             submitButton.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> กำลังส่ง...');
 
@@ -520,13 +547,10 @@
                 });
             })
             .finally(() => {
-                // Re-enable button and restore original text
                 submitButton.prop('disabled', false);
                 submitButton.html(originalButtonText);
             });
         });
-        // --- NEW: CONTACT FORM SCRIPT END ---
-
 
         loadAllDataAndInitTable();
     });
