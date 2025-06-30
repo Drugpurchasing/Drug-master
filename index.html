@@ -98,25 +98,27 @@
 
         /* Floating Action Button Style */
         /* Floating Action Button Style */
+        /* Floating Action Button Style (Smaller) */
         .floating-action-button {
             position: fixed;
             bottom: 1.5rem;
             right: 1.5rem;
-            width: auto; /* Changed */
-            height: auto; /* Changed */
+            width: auto;
+            height: auto;
             background-color: var(--success-color);
             color: white;
-            border-radius: 9999px; /* Changed to pill shape */
+            border-radius: 9999px;
             border: none;
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem; /* Added space between icon and text */
-            padding: 0.75rem 1.25rem; /* Added padding */
+            gap: 0.4rem; /* Reduced space */
+            padding: 0.5rem 1rem; /* Reduced padding */
             z-index: 1050;
             cursor: pointer;
-            font-weight: 600; /* Added for bold text */
+            font-size: 0.875rem; /* Reduced font size */
+            font-weight: 600;
             transition: background-color 0.3s, transform 0.2s;
         }
         .floating-action-button:hover {
@@ -124,8 +126,8 @@
             transform: scale(1.05);
         }
         .floating-action-button svg {
-            width: 24px; /* Adjusted icon size */
-            height: 24px;
+            width: 20px; /* Reduced icon size */
+            height: 20px; /* Reduced icon size */
         }
 
 
