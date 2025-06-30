@@ -434,8 +434,10 @@
                 const realCostValue = `${formatNumber(rowData[10], 2, 2)} / ${rowData[11] || 'หน่วย'}`; 
                 row3Html += createDetailCard({ title: 'ราคาทุน', value: realCostValue, valueClass: 'cost-price-value', itemClass: 'highlight-card', isProtected: true, realValue: realCostValue }); 
                 row3Html += createDetailCard({ title: 'ราคากลาง', value: formatNumber(rowData[26], 2, 2) }); 
-                row3Html += createDetailCard({ title: 'Fee Schedule', value: formatNumber(rowData[27], 2, 2) }); 
+                row3Html += createDetailCard({ title: 'Fee Schedule', value: formatNumber(rowData[27], 2, 2) });
+                row3Html += createDetailCard({ title: 'การรับเข้าบัญชี', value: rowData[30] }); // <-- ย้ายมาไว้ที่นี่
                 if (row3Html) detailsHtml += `<div class="detail-row">${row3Html}</div>`;
+
 
                 // Row 4
                 let row4Html = '';
@@ -447,7 +449,6 @@
                 // Row 5
                 let row5Html = ''; 
                 row5Html += createDetailCard({ title: 'รหัสยาทดแทน', value: rowData[29] }); 
-                row5Html += createDetailCard({ title: 'การรับเข้าบัญชี', value: rowData[30] }); 
                 let conditions = rowData[38]; if (conditions) conditions = conditions.replace(/\n/g, '<br>'); 
                 row5Html += createDetailCard({ title: 'เงื่อนไขบัญชียาหลัก', value: conditions, itemClass: 'orange-border-card' }); 
                 let indications = rowData[39]; if (indications) indications = indications.replace(/\n/g, '<br>'); 
