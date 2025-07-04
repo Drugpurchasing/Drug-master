@@ -474,8 +474,6 @@
                     if (rowData/42]) imageHtml += <img src="${rowData/42]}" class="drug-image img-fluid" alt="Drug Image 1" onerror="this.style.display='none'">;
                     if (rowData/43]) imageHtml += <img src="${rowData/43]}" class="drug-image img-fluid" alt="Drug Image 2" onerror="this.style.display='none'">;
                     if (rowData/44]) imageHtml += <img src="${rowData/44]}" class="drug-image img-fluid" alt="Drug Image 3" onerror="this.style.display='none'">;
-                    const finalModalHtml = <div class="modal-main-layout"><div class="details-section">${detailsHtml}${statsHtml}</div>${imageHtml ? <div class="image-section"><h5>รูปภาพประกอบ</h5>${imageHtml}</div> : ''}</div>;
-                    $('#drugDetailModalBody').html(finalModalHtml);
                 const rateLabels = [], usageData = [], caseData = []; columnConfig.forEach(col => { if (/\d{2}\/\d{2}/.test(col.title)) { const rawValue = rowData[col.data] || ''; usageData.push(parseFloat(rawValue.match(/^[0-9.]+/)?.[0] || 0)); caseData.push(parseInt(rawValue.match(/\((\d+)\)/)?.[1] || 0, 10)); rateLabels.push(col.title); } });
                 const payerLabels = ['ข้าราชการ', 'จ่ายเอง', 'ปกส', 'รัฐวิสาหกิจ', 'สปสช', 'สวัสดิการเจ้าหน้าที่']; const payerData = [ parseFloat(rowData[32] || 0), parseFloat(rowData[33] || 0), parseFloat(rowData[34] || 0), parseFloat(rowData[35] || 0), parseFloat(rowData[36] || 0), parseFloat(rowData[37] || 0) ];
                 const showUsageStats = usageData.some(d => d > 0); const showPieChart = payerData.some(d => d > 0);
