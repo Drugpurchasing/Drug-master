@@ -104,7 +104,6 @@
         </div>
     </div>
 </div>
-
 <script>
 // --- CONSTANTS AND GLOBAL VARIABLES ---
 const googleSheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTv6yIfVLrXZ76oqef80u3iZbheswq3h-igusVAjNryZYucvVhnXc35I2HDNvEZr-4FYf4rwIu9EHn-/pub?gid=0&single=true&output=csv';
@@ -243,7 +242,7 @@ reportModal.addEventListener('click', function(event) { if (event.target === rep
 
 reportForm.addEventListener('submit', function(event) {
     event.preventDefault();
-    const webAppUrl = 'https://script.google.com/macros/s/AKfycbyH_ULtPI5Wat_VmNY7smo7Ytq2jfk0DcKgFmjFQU5FXTyG2ICT9-5ro4Bj70TQ0tjS/exec'; // <--- วาง URL ของ Web App ที่ได้จาก Google Apps Script ตรงนี้
+    const webAppUrl = 'https://script.google.com/macros/s/AKfycbyH_ULtPI5Wat_VmNY7smo7Ytq2jfk0DcKgFmjFQU5FXTyG2ICT9-5ro4Bj70TQ0tjS/exec';
     const formData = new FormData(reportForm);
     const data = Object.fromEntries(formData.entries());
     const submitButton = reportForm.querySelector('button[type="submit"]');
