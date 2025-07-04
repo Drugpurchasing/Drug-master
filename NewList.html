@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
     <title>สรุปข้อมูลยาเข้าใหม่</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -13,7 +12,7 @@
     <style>
         body {
             font-family: 'Sarabun', sans-serif;
-            background-color: #003366; /* <<< สีที่เปลี่ยนแปลง */
+            background-color: #003366;
             min-height: 100vh;
         }
 
@@ -26,6 +25,16 @@
             min-height: calc(100vh - 40px);
         }
 
+        .header-gradient {
+            background-color: #003366;
+            border-radius: 20px 20px 0 0;
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
         .header-gradient::before {
             content: '';
             position: absolute;
@@ -36,15 +45,6 @@
             background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
         }
 
-        .header-gradient {
-            background-color: #003366; /* <<< สีที่เปลี่ยนแปลง */
-            border-radius: 20px 20px 0 0;
-            color: white;
-            padding: 2rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
         .card-druggroup-1 { border-left-color: #EF4444; background: linear-gradient(135deg, #FEF2F2 0%, #FFFFFF 100%); }
         .card-druggroup-2 { border-left-color: #8B5CF6; background: linear-gradient(135deg, #FAF5FF 0%, #FFFFFF 100%); }
         .card-druggroup-3 { border-left-color: #F59E0B; background: linear-gradient(135deg, #FFFBEB 0%, #FFFFFF 100%); }
@@ -161,7 +161,7 @@
         }
 
         .group-header {
-            background-color: #003366; /* <<< สีที่เปลี่ยนแปลง */
+            background-color: #003366;
             color: white;
             padding: 20px;
             border-radius: 16px;
@@ -193,7 +193,7 @@
         }
 
         .floating-btn {
-            background-color: #003366; /* <<< สีที่เปลี่ยนแปลง */
+            background-color: #003366;
             color: white;
             border-radius: 50px;
             padding: 16px 24px;
@@ -224,7 +224,7 @@
         }
 
         .modal-header {
-            background-color: #003366; /* <<< สีที่เปลี่ยนแปลง */
+            background-color: #003366;
             color: white;
             padding: 24px;
             text-align: center;
@@ -232,7 +232,7 @@
 
         .loader {
             border: 6px solid #f3f3f3;
-            border-top: 6px solid #003366; /* <<< สีที่เปลี่ยนแปลง */
+            border-top: 6px solid #003366;
             border-radius: 50%;
             width: 60px;
             height: 60px;
@@ -285,6 +285,8 @@
             <div class="flex items-center justify-center gap-4 mb-4">
                 <img src="CRAlogo.png" alt="Logo" class="h-16 w-auto">
                 <h1 class="text-3xl md:text-4xl font-bold">สรุปข้อมูลยาเข้าใหม่</h1>
+            </div>
+        </div>
     </header>
 
     <div class="p-6 md:p-8">
@@ -455,7 +457,7 @@ async function loadDrugData() {
                     setupGroupFilters();
                     renderGroupedCards(allDrugData);
                     setupEventListeners();
-                }, 500); // Delay for animation
+                }, 500);
             },
             error: (err) => {
                 loadingContainer.innerHTML = `<div class="text-center py-20"><p class="text-xl text-red-600 font-bold">CSV Error: ${err.message}</p></div>`;
@@ -501,10 +503,16 @@ function renderGroupedCards(drugData) {
                 const cardWrapper = document.createElement('div');
                 cardWrapper.innerHTML = createDrugCardHTML(drug);
                 const cardElement = cardWrapper.firstChild;
-                cardElement.classList.add('fade-in');
-                cardElement.style.animationDelay = `${animationDelay}ms`;
-                fragment.appendChild(cardElement);
-                animationDelay += 50; // Stagger animation
+                
+                // <<< FIX: เพิ่มการตรวจสอบนี้เพื่อป้องกัน Error >>>
+                if (cardElement) {
+                    cardElement.classList.add('fade-in');
+                    cardElement.style.animationDelay = `${animationDelay}ms`;
+                    fragment.appendChild(cardElement);
+                    animationDelay += 50;
+                } else {
+                    console.error("ไม่สามารถสร้างการ์ดได้, กรุณาตรวจสอบข้อมูลของยา:", drug);
+                }
             });
         }
     });
@@ -519,8 +527,6 @@ function createDrugCardHTML(drug) {
     const formatContent = (text) => (sanitizeHTML(text) || '-').replace(/\\n|\n/g, '<br>');
     const druggroup = getDrugGroupCode(drug.code);
     const notesInfo = formatNotesAdvanced(drug.notes);
-
-    // Sanitize all drug data points
     const genericName = formatContent(drug.generic);
     const tradeName = formatContent(drug.name);
     const sapCode = formatContent(drug.sapCode);
@@ -532,8 +538,6 @@ function createDrugCardHTML(drug) {
     const storage = formatContent(drug.storage);
     const food = formatContent(drug.food);
     const drugTypeOriginal = drug.type || '';
-
-    // Determine drug type tag style
     let drugTypeTagClass = 'tag-default';
     const drugTypeUpper = drugTypeOriginal.toUpperCase();
     if (drugTypeUpper.includes('NED') || drugTypeOriginal.includes('เบิกไม่ได้')) {
@@ -542,11 +546,8 @@ function createDrugCardHTML(drug) {
         drugTypeTagClass = 'tag-ed';
     }
     const drugType = formatContent(drugTypeOriginal);
-
     const isNonStock = (drug.name || '').toLowerCase().includes('non-stock');
     const nonStockTag = isNonStock ? `<span class="category-tag tag-nonstock">Non-stock</span>` : '';
-
-    // Image handling
     const imageUrl1 = drug.image && drug.image.trim() !== '' ? drug.image.trim() : '';
     const imageUrl2 = drug.image2 && drug.image2.trim() !== '' ? drug.image2.trim() : '';
     let imagesContent = '';
@@ -575,7 +576,6 @@ function createDrugCardHTML(drug) {
                     ${nonStockTag}
                 </div>
             </div>
-
             <div class="info-section space-y-5">
                 <div class="flex items-start">
                     <svg class="info-icon label-indication" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path></svg>
@@ -594,7 +594,6 @@ function createDrugCardHTML(drug) {
                     ${food && food !== '-' ? `<div class="flex items-start col-span-1 lg:col-span-2"><svg class="info-icon label-food" fill="currentColor" viewBox="0 0 20 20"><path d="M18.293 11.293A1 1 0 0018 11H2a1 1 0 00-.707 1.707l7 7a1 1 0 001.414 0l7-7a1 1 0 00.293-1.414zM10 16.586L4.414 11H15.586L10 16.586zM2 9a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1z"/></svg><div><strong class="font-semibold label-food">Food Interaction:</strong><div class="mt-1 text-gray-800">${food}</div></div></div>` : ''}
                 </div>
             </div>
-
             <div class="bg-gray-50 px-6 py-4 mt-6 border-t border-gray-200 rounded-b-lg">
                 <strong class="font-semibold text-gray-800">หมายเหตุ:</strong>
                 <div class="mt-2 text-gray-700 leading-relaxed">${notesInfo}</div>
@@ -602,7 +601,6 @@ function createDrugCardHTML(drug) {
         </div>
     </div>`;
 }
-
 
 function setupEventListeners() {
     searchInput.addEventListener('input', filterAndRender);
