@@ -104,6 +104,7 @@
         </div>
     </div>
 </div>
+
 <script>
 // --- CONSTANTS AND GLOBAL VARIABLES ---
 const googleSheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTv6yIfVLrXZ76oqef80u3iZbheswq3h-igusVAjNryZYucvVhnXc35I2HDNvEZr-4FYf4rwIu9EHn-/pub?gid=0&single=true&output=csv';
@@ -120,6 +121,7 @@ function getDrugGroupCode(code) { return ['1', '2', '3', '4', '5'].includes(Stri
 function getOrder(value, fallback = 999) { const num = parseInt(value, 10); return isNaN(num) ? fallback : num; }
 function formatNotesAdvanced(text) { if (!text || text.trim() === '') return '-'; let sanitizedText = sanitizeHTML(text); const lines = sanitizedText.split(/\\n|\n/g); let finalHtml = lines.map(line => { let processedLine = line.trim(); processedLine = processedLine.replace(/กำหนดการสั่งเฉพาะ/g, '<strong class="text-red-600 underline">$&</strong>'); if (/^(\d+\.\d+|\d+\)|\-|\•)\s/.test(processedLine)) { return `<div class="pl-4">${processedLine}</div>`; } return processedLine; }).join('<br />'); finalHtml = finalHtml.replace(/เบิกไม่ได้/g, '<strong class="text-red-600 px-2 py-1 bg-red-100 rounded">$&</strong>'); finalHtml = finalHtml.replace(/Non-stock/g, '<strong class="text-blue-600 px-2 py-1 bg-blue-100 rounded">$&</strong>'); finalHtml = finalHtml.replace(/สำรองจ่าย/g, '<strong class="text-blue-600 px-2 py-1 bg-blue-100 rounded">$&</strong>'); finalHtml = finalHtml.replace(/เข้าทดแทน/g, '<strong class="text-purple-600 px-2 py-1 bg-purple-100 rounded">$&</strong>'); return finalHtml; }
 
+// --- FIXED DATA LOADING FUNCTION ---
 async function loadDrugData() {
     try {
         const response = await fetch(googleSheetUrl);
@@ -168,6 +170,7 @@ async function loadDrugData() {
     }
 }
 
+// --- FIXED CARD RENDERING FUNCTION ---
 function renderGroupedCards(drugData) {
     drugListContainer.innerHTML = '';
     const fragment = document.createDocumentFragment();
@@ -281,7 +284,5 @@ reportForm.addEventListener('submit', function(event) {
 // --- INITIAL LOAD ---
 loadDrugData();
 </script>
-</body>
-</html>
 </body>
 </html>
