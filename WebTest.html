@@ -253,18 +253,6 @@
             50% { opacity: 0.7; }
         }
 
-        /* --- CSS Fade In (ถูกลบออกแล้ว) --- */
-        /*
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        */
-
         .label-indication { color: #2563EB; }
         .label-dose { color: #16A34A; }
         .label-unit { color: #9333EA; }
@@ -450,10 +438,12 @@ async function loadDrugData() {
             complete: (results) => {
                 setTimeout(() => {
                     loadingContainer.style.display = 'none';
-                    if (results.errors.length) console.error("CSV Parsing Errors:", results.errors);
+                    if (results.errors.length) {
+                        console.error("CSV Parsing Errors:", results.errors);
+                    }
                     allDrugData = results.data.filter(row => row.sapCode && row.sapCode.trim() !== '');
                     if (allDrugData.length === 0) {
-                        drugListContainer.innerHTML = '<div class="text-center py-20"><p class="text-xl text-red-500 font-semibold">ไม่มีข้อมูลที่จะแสดง</p></div>';
+                        drugListContainer.innerHTML = '<div class="text-center py-20"><p class="text-xl text-red-500 font-semibold">ไม่พบข้อมูลที่จะแสดง (กรุณาตรวจสอบการตั้งค่า "เผยแพร่" และ "ชื่อคอลัมน์" ใน Google Sheet)</p></div>';
                         return;
                     }
                     setupCategoryFilters();
@@ -490,8 +480,9 @@ function renderGroupedCards(drugData) {
         }
         return getOrder(groupsToRender[a].groupOrder) - getOrder(groupsToRender[b].groupOrder);
     });
-    if (drugData.length === 0) {
-        drugListContainer.innerHTML = '<div class="text-center py-20"><p class="text-xl text-gray-500 font-semibold">ไม่พบข้อมูลที่ตรงกับเงื่อนไข</p></div>';
+    
+    if (sortedGroupNames.length === 0) {
+        drugListContainer.innerHTML = '<div class="text-center py-20"><p class="text-xl text-gray-500 font-semibold">ไม่พบข้อมูลที่ตรงกับเงื่อนไขการค้นหา</p></div>';
         return;
     }
 
@@ -508,12 +499,9 @@ function renderGroupedCards(drugData) {
                 const cardElement = cardWrapper.firstChild;
                 
                 if (cardElement) {
-                    // --- JS Fade In (ถูกลบออกแล้ว) ---
-                    // cardElement.classList.add('fade-in');
-                    // cardElement.style.animationDelay = `${animationDelay}ms`;
                     fragment.appendChild(cardElement);
                 } else {
-                    console.error("ไม่สามารถสร้างการ์ดได้, กรุณาตรวจสอบข้อมูลของยา:", drug);
+                    console.error("ไม่สามารถสร้างการ์ดได้ อาจเพราะข้อมูลบางแถวใน Sheet ผิดพลาด:", drug);
                 }
             });
         }
