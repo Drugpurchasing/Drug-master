@@ -96,9 +96,6 @@
         
         .orange-border-card { border-left-color: var(--warning-color) !important; }
 
-        /* Floating Action Button Style */
-        /* Floating Action Button Style */
-        /* Floating Action Button Style (Smaller) */
         .floating-action-button {
             position: fixed;
             bottom: 1.5rem;
@@ -129,7 +126,6 @@
             width: 20px; /* Reduced icon size */
             height: 20px; /* Reduced icon size */
         }
-
 
         @media (max-width: 992px) { }
         @media (max-width: 768px) { }
@@ -206,29 +202,29 @@
             <p class="text-secondary mb-4">เลือกหัวข้อและกรอกรายละเอียดที่ต้องการแจ้ง</p>
             <form id="contactForm">
               <div class="mb-3">
-                  <label class="form-label fw-bold">หัวข้อการติดต่อ:</label>
-                  <div class="row">
-                      <div class="col-md-6">
-                          <div class="form-check mb-2">
-                              <input class="form-check-input" type="radio" name="topic" id="topic1" value="ขอแก้ไขข้อมูลยา" checked>
-                              <label class="form-check-label" for="topic1">ขอแก้ไขข้อมูลยา</label>
-                          </div>
-                          <div class="form-check mb-2">
-                              <input class="form-check-input" type="radio" name="topic" id="topic2" value="พบปัญหาการใช้งาน">
-                              <label class="form-check-label" for="topic2">พบปัญหาการใช้งาน</label>
-                          </div>
-                      </div>
-                      <div class="col-md-6">
-                          <div class="form-check mb-2">
-                              <input class="form-check-input" type="radio" name="topic" id="topic3" value="คำถาม">
-                              <label class="form-check-label" for="topic3">คำถาม</label>
-                          </div>
-                          <div class="form-check mb-2">
-                              <input class="form-check-input" type="radio" name="topic" id="topic4" value="ข้อเสนอแนะ">
-                              <label class="form-check-label" for="topic4">ข้อเสนอแนะ</label>
-                          </div>
-                      </div>
-                  </div>
+                <label class="form-label fw-bold">หัวข้อการติดต่อ:</label>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="topic" id="topic1" value="ขอแก้ไขข้อมูลยา" checked>
+                            <label class="form-check-label" for="topic1">ขอแก้ไขข้อมูลยา</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="topic" id="topic2" value="พบปัญหาการใช้งาน">
+                            <label class="form-check-label" for="topic2">พบปัญหาการใช้งาน</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="topic" id="topic3" value="คำถาม">
+                            <label class="form-check-label" for="topic3">คำถาม</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="topic" id="topic4" value="ข้อเสนอแนะ">
+                            <label class="form-check-label" for="topic4">ข้อเสนอแนะ</label>
+                        </div>
+                    </div>
+                </div>
               </div>
               <div class="mb-3">
                 <label for="message" class="form-label fw-bold">รายละเอียด:</label>
@@ -243,7 +239,6 @@
         </div>
       </div>
     </div>
-
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -377,11 +372,11 @@
                 { title: 'สปสช', data: 36, visible: false, className: 'modal-only' }, { title: 'สวัสดิการเจ้าหน้าที่', data: 37, visible: false, className: 'modal-only' },
                 { title: 'เงื่อนไขบัญชียาหลัก', data: 38, visible: false, className: 'modal-only' }, 
                 { title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', data: 39, visible: false, className: 'modal-only' },
-                { title: 'คำเตือน/หมายเหตุ/จำกัดแพทย์', data: 40, visible: false, className: 'modal-only' }, // <-- คอลัมน์ใหม่
-                { title: 'PAP', data: 41, visible: false, className: 'modal-only' }, // <-- ปรับ index
-                { title: 'Image 1', data: 42, visible: false, className: 'modal-only' }, // <-- ปรับ index
+                { title: 'คำเตือน/หมายเหตุ/จำกัดแพทย์', data: 40, visible: false, className: 'modal-only' },
+                { title: 'PAP', data: 41, visible: false, className: 'modal-only' },
+                { title: 'Image 1', data: 42, visible: false, className: 'modal-only' },
                 { title: 'Image 2', data: 43, visible: false, className: 'modal-only' },
-                { title: 'Image 3', data: 44, visible: false, className: 'modal-only' } // <-- ปรับ index
+                { title: 'Image 3', data: 44, visible: false, className: 'modal-only' }
             ];
         
         function renderBadge(data, type, map, textWrap = false) {
@@ -439,9 +434,8 @@
                 row3Html += createDetailCard({ title: 'ราคาทุน', value: realCostValue, valueClass: 'cost-price-value', itemClass: 'highlight-card', isProtected: true, realValue: realCostValue }); 
                 row3Html += createDetailCard({ title: 'ราคากลาง', value: formatNumber(rowData[26], 2, 2) }); 
                 row3Html += createDetailCard({ title: 'Fee Schedule', value: formatNumber(rowData[27], 2, 2) });
-                row3Html += createDetailCard({ title: 'การรับเข้าบัญชี', value: rowData[30] }); // <-- ย้ายมาไว้ที่นี่
+                row3Html += createDetailCard({ title: 'การรับเข้าบัญชี', value: rowData[30] });
                 if (row3Html) detailsHtml += `<div class="detail-row">${row3Html}</div>`;
-
 
                 // Row 4
                 let row4Html = '';
@@ -449,12 +443,11 @@
                 row4Html += createDetailCard({ title: 'Distributor', value: rowData[31] });
                 row4Html += createDetailCard({ title: 'Storage', value: renderBadge(rowData[28], 'display', storageColorMap, true) });
                 row4Html += createDetailCard({ title: 'รหัสยาทดแทน', value: rowData[29] }); 
-                let conditions = rowData[38]; if (conditions) conditions = conditions.replace(/\n/g, '<br>'); 
                 if (row4Html) detailsHtml += `<div class="detail-row">${row4Html}</div>`;
 
                 // Row 5
-                // Row 5
                 let row5Html = ''; 
+                let conditions = rowData[38]; if (conditions) conditions = conditions.replace(/\n/g, '<br>'); 
                 row5Html += createDetailCard({ title: 'เงื่อนไขบัญชียาหลัก', value: conditions, itemClass: 'orange-border-card' }); 
                 let indications = rowData[39]; if (indications) indications = indications.replace(/\n/g, '<br>'); 
                 row5Html += createDetailCard({ title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', value: indications }); 
@@ -462,30 +455,48 @@
                 row5Html += createDetailCard({ title: 'PAP', value: papValue, itemClass: 'orange-border-card' }); 
                 if (row5Html) detailsHtml += `<div class="detail-row">${row5Html}</div>`;
                 
-                // Row 6 (แถวใหม่สำหรับคำเตือน)
+                // Row 6
                 let row6Html = '';
                 let warningNote = rowData[40]; if (warningNote) warningNote = warningNote.replace(/\n/g, '<br>');
-                // เพิ่ม CSS class 'danger-border-card' สำหรับเปลี่ยนสีเส้นขอบด้านซ้ายเป็นสีแดง
-                // คุณต้องเพิ่ม style นี้ในแท็ก <style> ด้านบน: .danger-border-card { border-left-color: var(--danger-color) !important; }
                 row6Html += createDetailCard({ title: 'คำเตือน/หมายเหตุ/จำกัดแพทย์', value: warningNote, itemClass: 'danger-border-card' });
                 if (row6Html) detailsHtml += `<div class="detail-row">${row6Html}</div>`;
                 
                 let imageHtml = '';
-                    if (rowData/42]) imageHtml += <img src="${rowData/42]}" class="drug-image img-fluid" alt="Drug Image 1" onerror="this.style.display='none'">;
-                    if (rowData/43]) imageHtml += <img src="${rowData/43]}" class="drug-image img-fluid" alt="Drug Image 2" onerror="this.style.display='none'">;
-                    if (rowData/44]) imageHtml += <img src="${rowData/44]}" class="drug-image img-fluid" alt="Drug Image 3" onerror="this.style.display='none'">;
-                const rateLabels = [], usageData = [], caseData = []; columnConfig.forEach(col => { if (/\d{2}\/\d{2}/.test(col.title)) { const rawValue = rowData[col.data] || ''; usageData.push(parseFloat(rawValue.match(/^[0-9.]+/)?.[0] || 0)); caseData.push(parseInt(rawValue.match(/\((\d+)\)/)?.[1] || 0, 10)); rateLabels.push(col.title); } });
-                const payerLabels = ['ข้าราชการ', 'จ่ายเอง', 'ปกส', 'รัฐวิสาหกิจ', 'สปสช', 'สวัสดิการเจ้าหน้าที่']; const payerData = [ parseFloat(rowData[32] || 0), parseFloat(rowData[33] || 0), parseFloat(rowData[34] || 0), parseFloat(rowData[35] || 0), parseFloat(rowData[36] || 0), parseFloat(rowData[37] || 0) ];
-                const showUsageStats = usageData.some(d => d > 0); const showPieChart = payerData.some(d => d > 0);
+                if (rowData[42]) imageHtml += `<img src="${rowData[42]}" class="drug-image img-fluid" alt="Drug Image 1" onerror="this.style.display='none'">`;
+                if (rowData[43]) imageHtml += `<img src="${rowData[43]}" class="drug-image img-fluid" alt="Drug Image 2" onerror="this.style.display='none'">`;
+                if (rowData[44]) imageHtml += `<img src="${rowData[44]}" class="drug-image img-fluid" alt="Drug Image 3" onerror="this.style.display='none'">`;
+
+                const rateLabels = [], usageData = [], caseData = [];
+                columnConfig.forEach(col => {
+                    if (/\d{2}\/\d{2}/.test(col.title)) {
+                        const rawValue = rowData[col.data] || '';
+                        usageData.push(parseFloat(rawValue.match(/^[0-9.]+/)?.[0] || 0));
+                        caseData.push(parseInt(rawValue.match(/\((\d+)\)/)?.[1] || 0, 10));
+                        rateLabels.push(col.title);
+                    }
+                });
+
+                const payerLabels = ['ข้าราชการ', 'จ่ายเอง', 'ปกส', 'รัฐวิสาหกิจ', 'สปสช', 'สวัสดิการเจ้าหน้าที่'];
+                const payerData = [
+                    parseFloat(rowData[32] || 0), parseFloat(rowData[33] || 0), parseFloat(rowData[34] || 0),
+                    parseFloat(rowData[35] || 0), parseFloat(rowData[36] || 0), parseFloat(rowData[37] || 0)
+                ];
+                const showUsageStats = usageData.some(d => d > 0);
+                const showPieChart = payerData.some(d => d > 0);
                 
                 let statsHtml = '';
                 if (showUsageStats) {
                     let chartsHtml = `<div class="charts-container"> <div class="chart-wrapper"><h5 class="mb-3">อัตราการใช้ยาย้อนหลัง 12 เดือน</h5><canvas id="usageLineChart"></canvas></div> ${showPieChart ? `<div class="chart-wrapper"><h5 class="mb-3">สัดส่วนการใช้ตามสิทธิ์</h5><canvas id="payerPieChart"></canvas></div>` : ''} </div>`;
-                    const stats = calculateStatistics(usageData); const statsTable = createStatsTable(stats);
-                    let caseTable = `<h5 class="mt-4">จำนวนเคส (Case Count)</h5><div class="table-responsive"><table class="table table-sm table-bordered text-center"><thead><tr>`; rateLabels.forEach(label => caseTable += `<th>${label}</th>`); caseTable += `</tr></thead><tbody><tr>${caseData.map(d => `<td>${formatNumber(d, 0, 0)}</td>`).join('')}</tr></tbody></table></div>`;
+                    const stats = calculateStatistics(usageData);
+                    const statsTable = createStatsTable(stats);
+                    let caseTable = `<h5 class="mt-4">จำนวนเคส (Case Count)</h5><div class="table-responsive"><table class="table table-sm table-bordered text-center"><thead><tr>`;
+                    rateLabels.forEach(label => caseTable += `<th>${label}</th>`);
+                    caseTable += `</tr></thead><tbody><tr>${caseData.map(d => `<td>${formatNumber(d, 0, 0)}</td>`).join('')}</tr></tbody></table></div>`;
                     let tablesHtml = `<div class="tables-container mt-5">${statsTable}${caseTable}</div>`;
                     statsHtml = `<div id="stats-section">${chartsHtml}${tablesHtml}</div>`;
-                } else { statsHtml = '<div id="stats-section"><h5>ข้อมูลสถิติ</h5><p class="text-center text-muted mt-3">ไม่มีข้อมูลย้อนหลัง 1 ปี</p></div>'; }
+                } else {
+                    statsHtml = '<div id="stats-section"><h5>ข้อมูลสถิติ</h5><p class="text-center text-muted mt-3">ไม่มีข้อมูลย้อนหลัง 1 ปี</p></div>';
+                }
                 
                 const finalModalHtml = `<div class="modal-main-layout"><div class="details-section">${detailsHtml}${statsHtml}</div>${imageHtml ? `<div class="image-section"><h5>รูปภาพประกอบ</h5>${imageHtml}</div>` : ''}</div>`;
                 $('#drugDetailModalBody').html(finalModalHtml);
