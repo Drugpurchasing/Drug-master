@@ -1,482 +1,728 @@
 <!DOCTYPE html>
 <html lang="th">
-
 <head>
-    <meta charset="utf-8">
-    <title>Drug master CRA V3.08</title>
-    <base target="_top">
-    <link rel="icon" type="image/png" href="favicon-32x32.png">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <title>สรุปข้อมูลยาเข้าใหม่</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
-        :root {
-            --primary-color: #005ba1;
-            --secondary-color: #003366;
-            --accent-color: #e5a12a;
-            --light-bg: #f8f9fa;
-            --card-bg: #ffffff;
-            --text-color: #333333;
-            --success-color: #198754; /* Dark Green */
-            --warning-color: #fd7e14; /* Orange */
-            --danger-color: #dc3545; /* Red */
-        }
-
         body {
             font-family: 'Sarabun', sans-serif;
-            background-color: var(--light-bg);
-            color: var(--text-color);
-            line-height: 1.6;
+            background-color: #003366;
+            min-height: 100vh;
         }
 
-        .container-fluid { padding: 20px; }
-        .card { border: none; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); margin-bottom: 20px; background-color: var(--card-bg); }
-
-        .logo-container {
-            display: flex; align-items: center; justify-content: center; margin-bottom: 20px;
-            gap: 15px; flex-wrap: wrap; background-color: var(--secondary-color);
-            padding: 15px; border-radius: 5px; color: white;
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+            min-height: calc(100vh - 40px);
         }
-        .logo-container img { height: 70px; }
-        .app-title { font-size: 24px; font-weight: 700; color: white; margin: 0; }
-        .version-info { font-size: 14px; color: #e5a12a; text-align: right; }
 
-        .filter-section { background-color: var(--card-bg); padding: 15px; border-radius: 5px; margin-bottom: 15px; border: 1px solid #dee2e6; }
-        .btn-primary { background-color: var(--primary-color); border-color: var(--primary-color); }
-        .btn-primary:hover { background-color: var(--secondary-color); border-color: var(--secondary-color); }
-        .view-toggle.active { background-color: var(--primary-color); color: white; }
+        .header-gradient {
+            background-color: #003366;
+            border-radius: 20px 20px 0 0;
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
         
-        table.dataTable thead th { border-bottom: 2px solid var(--primary-color); font-weight: 600; background-color: #f1f1f1; vertical-align: middle; }
-        #drugTable td { vertical-align: middle; }
-
-        /* Modal Styles */
-        .modal-xl { max-width: 95%; }
-        .modal-header { background-color: var(--secondary-color); color: white; }
-        .modal-header .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
-
-        /* --- STYLES for Modal Body --- */
-        #drugDetailModalBody .modal-main-layout { display: flex; flex-wrap: wrap; gap: 20px; }
-        #drugDetailModalBody .details-section { flex: 2; min-width: 400px; }
-        #drugDetailModalBody .image-section { flex: 1; min-width: 280px; }
-
-        .detail-row { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem; }
-        .detail-row:last-child { margin-bottom: 0; }
-
-        .detail-item {
-            flex: 1; min-width: 150px; background-color: #fdfdfd;
-            border: 1px solid #e9ecef; border-left: 5px solid var(--primary-color);
-            border-radius: 5px; padding: 10px 15px; word-wrap: break-word;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        .header-gradient::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
         }
-        .detail-item strong { 
-            display: block; color: var(--secondary-color); margin-bottom: 4px; 
-            font-weight: 700; font-size: 0.9rem; text-transform: uppercase;
+
+        .card-druggroup-1 { border-left-color: #EF4444; background: linear-gradient(135deg, #FEF2F2 0%, #FFFFFF 100%); }
+        .card-druggroup-2 { border-left-color: #8B5CF6; background: linear-gradient(135deg, #FAF5FF 0%, #FFFFFF 100%); }
+        .card-druggroup-3 { border-left-color: #F59E0B; background: linear-gradient(135deg, #FFFBEB 0%, #FFFFFF 100%); }
+        .card-druggroup-4 { border-left-color: #3B82F6; background: linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%); }
+        .card-druggroup-5 { border-left-color: #10B981; background: linear-gradient(135deg, #ECFDF5 0%, #FFFFFF 100%); }
+        .card-druggroup-misc { border-left-color: #6B7280; background: linear-gradient(135deg, #F9FAFB 0%, #FFFFFF 100%); }
+
+        .drug-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-left-width: 6px;
         }
-        .detail-item div { font-size: 1.05rem; font-weight: 500; }
-        
-        .material-no-card { flex: 0 1 140px; }
-        .compact-card { flex: 0 1 120px !important; }
-        .status-card strong { font-size: 1rem !important; }
-        .status-card .badge { font-size: 1rem !important; padding: .5em .7em !important; }
-        .highlight-card strong { font-size: 1.05rem !important; }
-        
-        .main-title-value { font-size: 1.25rem !important; font-weight: bold !important; }
-        .sale-price-value, .cost-price-value { font-size: 1.35rem !important; font-weight: bold !important; }
-        .sale-price-value { color: var(--success-color); }
-        .cost-price-value { color: var(--warning-color); }
 
-        .unlock-cost-btn { cursor: pointer; color: var(--accent-color); font-size: 0.85em; margin-left: 8px; transition: color 0.2s; }
-        .unlock-cost-btn:hover { color: #ffae00; }
-        .inline-error-msg { color: var(--danger-color); font-size: 0.8rem; margin-top: 4px; }
-
-        .image-section h5, #usage-section h5 {
-            font-weight: bold; color: var(--secondary-color); margin-bottom: 1rem;
-            padding-bottom: 0.5rem; border-bottom: 2px solid var(--primary-color);
+        .drug-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         }
-        .drug-image { width: 100%; border-radius: 5px; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
-        #usage-section { margin-top: 1.5rem; width:100%; border-top: 1px solid #dee2e6; padding-top: 1.5rem;}
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--secondary-color); }
+        .search-container {
+            background: white;
+            border-radius: 50px;
+            padding: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .search-container:focus-within {
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .search-input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 16px;
+            padding: 12px 20px;
+            width: 100%;
+            border-radius: 50px;
+        }
+
+        .filter-section {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .filter-btn {
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .filter-btn:not(.active) {
+            background: white;
+            color: #4A5568;
+            border-color: #E2E8F0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .filter-btn:hover:not(.active) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-btn.active {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .tag-filter-1 { background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%); color: #991B1B; }
+        .tag-filter-2 { background: linear-gradient(135deg, #EDE9FE 0%, #D8B4FE 100%); color: #581C87; }
+        .tag-filter-3 { background: linear-gradient(135deg, #FED7AA 0%, #FDBA74 100%); color: #9A3412; }
+        .tag-filter-4 { background: linear-gradient(135deg, #DBEAFE 0%, #93C5FD 100%); color: #1E3A8A; }
+        .tag-filter-5 { background: linear-gradient(135deg, #D1FAE5 0%, #BBF7D0 100%); color: #15803D; }
+        .tag-filter-misc { background: linear-gradient(135deg, #F3F4F6 0%, #D1D5DB 100%); color: #1F2937; }
+        .tag-filter-group { background: linear-gradient(135deg, #CFFAFE 0%, #A5F3FC 100%); color: #0E7490; }
+
+        .category-tag {
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .tag-ed { background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%); color: #047857; }
+        .tag-ned { background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%); color: #B91C1C; }
+        .tag-nonstock { background: linear-gradient(135deg, #DBEAFE 0%, #93C5FD 100%); color: #1E40AF; }
+        .tag-default { background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%); color: #374151; }
+
+        .info-section {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 16px 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .info-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+            flex-shrink: 0;
+            margin-top: 4px;
+        }
+
+        .group-header {
+            background-color: #003366;
+            color: white;
+            padding: 20px;
+            border-radius: 16px;
+            margin: 40px 0 24px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .image-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            justify-content: center;
+            gap: 8px;
+            height: 360px;
+            background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%);
+            border-radius: 16px;
+            padding: 16px;
+        }
+
+        .image-container:empty { display: none; }
+
+        .drug-image {
+            width: 100%;
+            flex-shrink: 1;
+            min-height: 0;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .floating-btn {
+            background-color: #003366;
+            color: white;
+            border-radius: 50px;
+            padding: 16px 24px;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            cursor: pointer;
+        }
+
+        .floating-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            margin: auto;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background-color: #003366;
+            color: white;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .loader {
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #003366;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* --- CSS Fade In (ถูกลบออกแล้ว) --- */
+        /*
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        */
+
+        .label-indication { color: #2563EB; }
+        .label-dose { color: #16A34A; }
+        .label-unit { color: #9333EA; }
+        .label-proposer { color: #64748B; }
+        .label-storage { color: #0891B2; }
+        .label-food { color: #D97706; }
+        .label-comparable { color: #F59E0B; }
+
+        @media (max-width: 768px) {
+            .main-container { margin: 10px; }
+            .header-gradient { padding: 1.5rem; }
+            .drug-card { flex-direction: column; }
+        }
     </style>
 </head>
+<body class="text-gray-800">
 
-<body>
-    <div class="container-fluid">
-        <div class="logo-container">
-            <img src="CRAlogo.png" alt="Logo" class="img-fluid">
-            <div>
-                <h1 class="app-title">Drug master CRA</h1>
-                <p class="version-info mb-0 fw-bold">Latest update 22/06/2025 | Version 3.08</p>
+<div class="main-container">
+    <header class="header-gradient">
+        <div class="relative z-10">
+            <div class="flex items-center justify-center gap-4 mb-4">
+                <img src="CRAlogo.png" alt="Logo" class="h-16 w-auto">
+                <h1 class="text-3xl md:text-4xl font-bold">สรุปข้อมูลยาเข้าใหม่</h1>
             </div>
         </div>
-        <div class="card">
-            <div class="card-body">
-                <div class="filter-section p-3 mb-3 border rounded">
-                    <div class="row g-2 align-items-center">
-                        <div class="col-lg-4 col-md-12"><div class="input-group"><span class="input-group-text"><i class="fas fa-search"></i></span><input type="text" id="globalSearch" class="form-control" placeholder="Search all..."></div></div>
-                        <div class="col-lg-8 col-md-12 text-lg-end">
-                            <button id="exportButton" class="btn btn-success me-1"><i class="fas fa-file-excel me-1"></i>Excel</button>
-                            <button id="exportJPEGButton" class="btn btn-danger me-1"><i class="fas fa-camera me-1"></i>Screenshot</button>
-                            <button id="defaultView" class="btn btn-outline-primary view-toggle"><i class="fas fa-eye me-1"></i>Essential</button>
-                            <button id="purchasingView" class="btn btn-outline-primary view-toggle"><i class="fas fa-shopping-cart me-1"></i>Purchasing</button>
-                            <button id="rateView" class="btn btn-outline-primary view-toggle"><i class="fas fa-chart-line me-1"></i>Rates</button>
-                            <button id="allView" class="btn btn-outline-primary view-toggle"><i class="fas fa-th-list me-1"></i>View All</button>
-                        </div>
+    </header>
+
+    <div class="p-6 md:p-8">
+        <div id="controls" class="py-6 mb-8 space-y-8">
+            <div class="max-w-2xl mx-auto">
+                <div class="search-container">
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400 ml-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <input type="text" id="searchInput" class="search-input" placeholder="ค้นหาชื่อยา, ชื่อสามัญ, รหัสยา...">
                     </div>
                 </div>
-                <div class="table-responsive"><table id="drugTable" class="table table-hover table-striped w-100"></table></div>
+            </div>
+
+            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-center gap-8">
+                <div class="filter-section flex-1">
+                    <h3 class="text-xl font-bold text-gray-700 mb-4 text-center">กลุ่มยา</h3>
+                    <div id="category-filter-container" class="flex flex-wrap gap-3 justify-center"></div>
+                </div>
+
+                <div class="filter-section flex-1">
+                    <h3 class="text-xl font-bold text-gray-700 mb-4 text-center">รอบที่เสนอเข้า</h3>
+                    <div id="group-filter-container" class="flex flex-wrap gap-3 justify-center"></div>
+                </div>
             </div>
         </div>
+
+        <div id="loading-container" class="flex flex-col items-center justify-center p-20">
+            <div class="loader"></div>
+            <p class="text-gray-600 mt-6 text-lg pulse-animation">กำลังโหลดข้อมูล กรุณารอสักครู่...</p>
+        </div>
+
+        <div id="drug-list" class="space-y-10"></div>
     </div>
-    <div class="modal fade" id="drugDetailModal" tabindex="-1" aria-labelledby="drugDetailModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered"><div class="modal-content">
-                <div class="modal-header"><h5 class="modal-title" id="drugDetailModalLabel">Drug Details</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
-                <div class="modal-body" id="drugDetailModalBody"></div>
-                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
-        </div></div>
-    </div>
+</div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<div id="floating-toolbar" class="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-4">
+    <button id="scrollToTopBtn" class="floating-btn hidden items-center gap-2" title="กลับขึ้นบนสุด">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+        </svg>
+        <span>กลับขึ้นบนสุด</span>
+    </button>
 
-    <script>
-    $(document).ready(function () {
-        const dataUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQJpIKf_q4h4h1VEIM0tT1MlMvoEw1PXLYMxMv_c3abXFvAIBS0tWHxLL0sDjuuBrPjbrTP7lJH-NQw/pub?gid=0&single=true&output=csv';
-        var table; 
-        var passwordVerified = false;
+    <button id="openReportModalBtn" class="floating-btn flex items-center gap-2" title="ติดต่อ/แจ้งปัญหา">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
+        <span>ติดต่อ/แจ้งปัญหา</span>
+    </button>
+</div>
 
-        function formatNumber(data, minDecimals = 0, maxDecimals = 0) {
-            const number = parseFloat(data);
-            if (isNaN(number)) return data === null || data === '' ? '-' : data;
-            return number.toLocaleString('en-US', { minimumFractionDigits: minDecimals, maximumFractionDigits: maxDecimals });
-        }
-        
-        const columnConfig = [
-             { title: 'Details', data: null, defaultContent: '<button class="btn btn-sm btn-primary view-details-btn"><i class="fas fa-eye"></i></button>', orderable: false, className: 'text-center all-column', width: "50px" },
-             { title: 'Material No.', data: 0, className: 'default-column material-column purchasing-column rate-column' },
-             { title: 'SAP Name', data: 1, width: "25%", className: 'default-column sapname-column purchasing-column rate-column', render: (d, t) => t === 'display' && d ? `<span style="color: var(--primary-color)" class="fw-bold">${d}</span>` : d },
-             { title: 'Generic Name', data: 2, width: "25%", className: 'default-column' }, { title: 'TPU', data: 3, className: 'default-column purchasing-column' },
-             { title: 'GPU', data: 4, className: 'default-column' }, { title: 'เงื่อนไขการเบิกจ่าย', data: 5, className: 'default-column', render: (d,t) => renderBadge(d, t, {'สำรองจ่าย': 'bg-primary', 'ocpa': 'bg-success', 'เบิกได้': 'bg-success', 'ขรก เบิกไม่ได้': 'bg-danger', 'เบิกนอก': 'bg-info text-dark', 'วัคซีน': 'bg-warning text-dark'}, true) },
-             { title: 'บัญชียา', data: 6, className: 'default-column', render: (d,t) => renderBadge(d, t, {'ned': 'bg-danger', 'ed': 'bg-success', 'ในบัญชี(วถ)': 'bg-info text-dark', 'ค่าสารทึบ': 'bg-primary', 'promotion': 'bg-warning text-dark'}) },
-             { title: 'Status', data: 12, className: 'default-column status-column purchasing-column rate-column', render: (d,t) => renderBadge(d, t, {'ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}) },
-             { title: 'Purchasing Unit', data: 7, className: 'purchasing-column' }, { title: 'Sale Price', data: 8, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
-             { title: 'Sale Unit', data: 9, className: 'purchasing-column rate-column' }, { title: 'Cost Price', data: 10, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
-             { title: 'Base Unit', data: 11, className: 'purchasing-column' }, { title: '06/67', data: 13, className: 'rate-column' }, { title: '07/67', data: 14, className: 'rate-column' },
-             { title: '08/67', data: 15, className: 'rate-column' }, { title: '09/67', data: 16, className: 'rate-column' }, { title: '10/67', data: 17, className: 'rate-column' }, { title: '11/67', data: 18, className: 'rate-column' },
-             { title: '12/67', data: 19, className: 'rate-column' }, { title: '01/68', data: 20, className: 'rate-column' }, { title: '02/68', data: 21, className: 'rate-column' }, { title: '03/68', data: 22, className: 'rate-column' },
-             { title: '04/68', data: 23, className: 'rate-column' }, { title: '05/68', data: 24, className: 'rate-column' }, { title: 'Drug Group', data: 25, className: 'all-column' },
-             { title: 'ราคากลาง', data: 26, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) }, { title: 'Fee Schedule', data: 27, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
-             { title: 'รหัสยาทดแทน', data: 28, className: 'purchasing-column' }, { title: 'การรับเข้าบัญชี', data: 29, className: 'purchasing-column' },
-             { title: 'Distributor', data: 30, className: 'purchasing-column' },
-             { title: 'Image 1', data: 31, visible: false, className: 'modal-only' }, { title: 'Image 2', data: 32, visible: false, className: 'modal-only' },
-             { title: 'เงื่อนไขบัญชียาหลัก', data: 33, visible: false, className: 'modal-only' }, { title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', data: 34, visible: false, className: 'modal-only' }
-        ];
+<div id="reportModal" class="hidden fixed inset-0 modal-overlay overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
+    <div class="modal-content w-full">
+        <div class="modal-header">
+            <h3 class="text-2xl font-bold">ติดต่อผู้ดูแลระบบ</h3>
+            <p class="text-sm opacity-90 mt-2">เลือกหัวข้อและกรอกรายละเอียดที่ต้องการแจ้ง</p>
+        </div>
 
-        function renderBadge(data, type, map, textWrap = false) {
-            if (type === 'display' && data) { const status = data.toLowerCase().trim(); const cls = Object.entries(map).find(([key]) => status.includes(key))?.[1] || 'bg-secondary'; return `<span class="badge ${cls} ${textWrap ? 'text-wrap' : ''}">${data}</span>`; } return data;
-        }
-
-        // --- NEW: Robust CSV Parser to handle newlines within fields ---
-        function robustCsvParser(csvText) {
-            const rows = [];
-            let currentRow = [];
-            let currentField = '';
-            let inQuotes = false;
-            const text = csvText.trim().replace(/\r\n/g, '\n');
-
-            for (let i = 0; i < text.length; i++) {
-                const char = text[i];
-                if (inQuotes) {
-                    if (char === '"') {
-                        if (i + 1 < text.length && text[i + 1] === '"') {
-                            currentField += '"';
-                            i++;
-                        } else {
-                            inQuotes = false;
-                        }
-                    } else {
-                        currentField += char;
-                    }
-                } else {
-                    switch (char) {
-                        case '"':
-                            inQuotes = true;
-                            break;
-                        case ',':
-                            currentRow.push(currentField);
-                            currentField = '';
-                            break;
-                        case '\n':
-                            currentRow.push(currentField);
-                            rows.push(currentRow);
-                            currentRow = [];
-                            currentField = '';
-                            break;
-                        default:
-                            currentField += char;
-                    }
-                }
-            }
-            if (currentField || currentRow.length > 0) {
-                currentRow.push(currentField);
-                rows.push(currentRow);
-            }
-            return rows;
-        }
-
-        async function loadDataAndInitTable() {
-            try {
-                const response = await fetch(dataUrl);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                const csvData = await response.text();
-                
-                // --- Use the new robust parser ---
-                const parsedDataWithHeader = robustCsvParser(csvData);
-                const parsedData = parsedDataWithHeader.slice(1);
-
-                initializeDataTable(parsedData);
-            } catch (error) {
-                console.error("Data Load/Parse Error:", error);
-                Swal.fire({ icon: 'error', title: 'Data Load Error', text: 'Failed to load or parse data. See browser console for details.' });
-            }
-        }
-
-        function initializeDataTable(data) {
-            table = $('#drugTable').DataTable({
-                data: data, columns: columnConfig, dom: 'rt<"bottom d-flex justify-content-between align-items-center mt-3"lip>',
-                pageLength: 10, lengthMenu: [10, 25, 50, 100], scrollX: true, responsive: false,
-                language: { info: "Showing _START_ to _END_ of _TOTAL_ entries", lengthMenu: "Show _MENU_ entries", paginate: { first: "First", last: "Last", next: "Next", previous: "Previous" } }
-            });
-            
-            $('#globalSearch').on('keyup', function () { table.search(this.value).draw(); });
-            setView('default');
-
-            $('#drugTable tbody').on('click', 'button.view-details-btn', function () {
-                const row = table.row($(this).closest('tr'));
-                if (!row.any()) return;
-                const rowData = row.data();
-                
-                $('#drugDetailModalLabel').html(`<strong>${rowData[1] || ''}</strong> <small class="text-white-50 fw-normal">(${rowData[2] || 'N/A'})</small>`);
-
-                function createDetailCard(options) {
-                    const { title, value, valueClass, itemClass, isProtected, realValue } = { valueClass: '', itemClass: '', isProtected: false, realValue: '', ...options };
-                    if (!value || value.trim() === '-' || value.trim() === '') return '';
-                    let titleHtml = `<strong>${title}</strong>`;
-                    let valueHtml = `<div class="value-container ${valueClass}" data-real-value="${realValue}">${value}</div>`;
-                    if (isProtected && !passwordVerified) {
-                        titleHtml = `<strong>${title} <i class="fas fa-lock unlock-cost-btn" title="ปลดล็อคเพื่อดูราคาทุน"></i></strong>`;
-                        valueHtml = `<div class="value-container ${valueClass}" data-real-value="${realValue}">****</div>`;
-                    }
-                    return `<div class="detail-item ${itemClass}">${titleHtml}${valueHtml}</div>`;
-                }
-
-                const colMap = {};
-                columnConfig.forEach(c => { if (c.title) colMap[c.title] = c.data; });
-                let detailsHtml = '';
-                const usedIndices = new Set();
-                
-                let row1Html = '';
-                row1Html += createDetailCard({ title: 'Material No.', value: rowData[colMap['Material No.']], valueClass: 'main-title-value', itemClass: 'material-no-card' });
-                row1Html += createDetailCard({ title: 'SAP Name', value: rowData[colMap['SAP Name']], valueClass: 'main-title-value' });
-                row1Html += createDetailCard({ title: 'Generic Name', value: rowData[colMap['Generic Name']], valueClass: 'main-title-value' });
-                usedIndices.add(colMap['Material No.']).add(colMap['SAP Name']).add(colMap['Generic Name']);
-                if (row1Html) detailsHtml += `<div class="detail-row">${row1Html}</div>`;
-
-                let row2Html = '';
-                row2Html += createDetailCard({ title: 'TPU', value: rowData[colMap['TPU']], itemClass: 'compact-card' });
-                row2Html += createDetailCard({ title: 'GPU', value: rowData[colMap['GPU']], itemClass: 'compact-card' });
-                ['เงื่อนไขการเบิกจ่าย', 'บัญชียา', 'Status'].forEach(title => {
-                    const dataIndex = colMap[title];
-                    const colCfg = columnConfig.find(c => c.data === dataIndex);
-                    let displayValue = rowData[dataIndex];
-                    if (colCfg && colCfg.render) displayValue = colCfg.render(displayValue, 'display', rowData) || '-';
-                    row2Html += createDetailCard({ title: title, value: displayValue, itemClass: 'status-card' });
-                    usedIndices.add(dataIndex);
-                });
-                usedIndices.add(colMap['TPU']).add(colMap['GPU']);
-                if (row2Html) detailsHtml += `<div class="detail-row">${row2Html}</div>`;
-                
-                let row3Html = '';
-                const salePrice = formatNumber(rowData[colMap['Sale Price']], 2, 2);
-                const saleUnit = rowData[colMap['Sale Unit']];
-                row3Html += createDetailCard({ title: 'ราคาขาย', value: `${salePrice} / ${saleUnit || 'หน่วย'}`, valueClass: 'sale-price-value', itemClass: 'highlight-card' });
-                usedIndices.add(colMap['Sale Price']).add(colMap['Sale Unit']);
-                const costPrice = formatNumber(rowData[colMap['Cost Price']], 2, 2);
-                const baseUnit = rowData[colMap['Base Unit']];
-                const realCostValue = `${costPrice} / ${baseUnit || 'หน่วย'}`;
-                row3Html += createDetailCard({ title: 'ราคาทุน', value: realCostValue, valueClass: 'cost-price-value', itemClass: 'highlight-card', isProtected: true, realValue: realCostValue });
-                usedIndices.add(colMap['Cost Price']).add(colMap['Base Unit']);
-                if (row3Html) detailsHtml += `<div class="detail-row">${row3Html}</div>`;
-
-                let row4Html = ''; // The Rest
-                columnConfig.forEach(col => {
-                    if (col.data !== null && !usedIndices.has(col.data) && !col.className?.includes('modal-only') && !/\d{2}\/\d{2}/.test(col.title)) {
-                        let displayValue = rowData[col.data];
-                        if (['ราคากลาง', 'Fee Schedule'].includes(col.title)) displayValue = formatNumber(displayValue, 2, 2);
-                        const card = createDetailCard({ title: col.title, value: displayValue });
-                        if (card) row4Html += card;
-                        usedIndices.add(col.data);
-                    }
-                });
-                if (row4Html) detailsHtml += `<div class="detail-row">${row4Html}</div>`;
-                
-                let row5Html = ''; // New Cards
-                // --- FIX: Replace newline characters with <br> tags for HTML rendering ---
-                let conditions = rowData[colMap['เงื่อนไขบัญชียาหลัก']];
-                if (conditions) conditions = conditions.replace(/\n/g, '<br>');
-                row5Html += createDetailCard({ title: 'เงื่อนไขบัญชียาหลัก', value: conditions });
-
-                let indications = rowData[colMap['ข้อบ่งชี้ที่ได้ขึ้นทะเบียน']];
-                if (indications) indications = indications.replace(/\n/g, '<br>');
-                row5Html += createDetailCard({ title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', value: indications });
-                if (row5Html) detailsHtml += `<div class="detail-row">${row5Html}</div>`;
-
-                let imageHtml = '';
-                if (rowData[31]) imageHtml += `<img src="${rowData[31]}" class="drug-image img-fluid" alt="Drug Image 1" onerror="this.style.display='none'">`;
-                if (rowData[32]) imageHtml += `<img src="${rowData[32]}" class="drug-image img-fluid" alt="Drug Image 2" onerror="this.style.display='none'">`;
-                let usageTablesHtml = '';
-                const rateLabels = [], rateData = [], caseData = [];
-                columnConfig.forEach(col => {
-                    if (/\d{2}\/\d{2}/.test(col.title)) {
-                        const rawValue = rowData[col.data] || '';
-                        rateData.push(parseFloat(rawValue.match(/^[0-9.]+/)?.[0] || 0));
-                        caseData.push(parseInt(rawValue.match(/\((\d+)\)/)?.[1] || 0, 10));
-                        rateLabels.push(col.title);
-                    }
-                });
-                if (rateData.some(d => d > 0) || caseData.some(c => c > 0)) {
-                    let rateTable = '<h5>อัตราการใช้ยา (Usage Rate)</h5><div class="table-responsive"><table class="table table-sm table-bordered mt-3"><thead><tr>';
-                    rateLabels.forEach(label => rateTable += `<th>${label}</th>`);
-                    rateTable += `</tr></thead><tbody><tr>${rateData.map(d => `<td>${formatNumber(d, 0, 0)}</td>`).join('')}</tr></tbody></table></div>`;
-                    let caseTable = '<h5 class="mt-4">จำนวนเคส (Case Count)</h5><div class="table-responsive"><table class="table table-sm table-bordered mt-3"><thead><tr>';
-                    rateLabels.forEach(label => caseTable += `<th>${label}</th>`);
-                    caseTable += `</tr></thead><tbody><tr>${caseData.map(d => `<td>${formatNumber(d, 0, 0)}</td>`).join('')}</tr></tbody></table></div>`;
-                    usageTablesHtml = rateTable + caseTable;
-                }
-                const finalModalHtml = `
-                    <div class="modal-main-layout">
-                        <div class="details-section">
-                            ${detailsHtml}
-                            ${usageTablesHtml ? `<div id="usage-section" class="w-100">${usageTablesHtml}</div>` : ''}
-                        </div>
-                        ${imageHtml ? `<div class="image-section"><h5>รูปภาพประกอบ</h5>${imageHtml}</div>` : ''}
-                    </div>`;
-                $('#drugDetailModalBody').html(finalModalHtml);
-                $('#drugDetailModal').modal('show');
-            });
-
-            $('#drugDetailModal').on('click', '.unlock-cost-btn', function(e) {
-                e.stopPropagation();
-                const unlockButton = $(this);
-                const valueContainer = unlockButton.closest('.detail-item').find('.value-container');
-                unlockButton.hide();
-                const formHtml = `
-                    <div class="input-group input-group-sm">
-                        <input type="password" class="form-control inline-password-input" placeholder="Password...">
-                        <button class="btn btn-primary inline-submit-btn" type="button">OK</button>
+        <div class="p-6">
+            <form id="reportForm" class="space-y-6">
+                <div>
+                    <label class="block text-lg font-semibold text-gray-700 mb-4">หัวข้อการติดต่อ:</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <label class="flex items-center p-4 border-2 rounded-xl hover:bg-gray-50 cursor-pointer transition-all">
+                            <input type="radio" name="topic" value="ขอแก้ไขข้อมูลยา" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" checked>
+                            <span class="ml-3 text-gray-800 font-medium">ขอแก้ไขข้อมูลยา</span>
+                        </label>
+                        <label class="flex items-center p-4 border-2 rounded-xl hover:bg-gray-50 cursor-pointer transition-all">
+                            <input type="radio" name="topic" value="พบปัญหาการใช้งาน" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                            <span class="ml-3 text-gray-800 font-medium">พบปัญหา</span>
+                        </label>
+                        <label class="flex items-center p-4 border-2 rounded-xl hover:bg-gray-50 cursor-pointer transition-all">
+                            <input type="radio" name="topic" value="คำถาม" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                            <span class="ml-3 text-gray-800 font-medium">คำถาม</span>
+                        </label>
+                        <label class="flex items-center p-4 border-2 rounded-xl hover:bg-gray-50 cursor-pointer transition-all">
+                            <input type="radio" name="topic" value="ข้อเสนอแนะ" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                            <span class="ml-3 text-gray-800 font-medium">ข้อเสนอแนะ</span>
+                        </label>
                     </div>
-                    <div class="inline-error-msg" style="display:none;">Incorrect Password</div>`;
-                valueContainer.html(formHtml);
-                valueContainer.find('.inline-password-input').focus();
-            });
+                </div>
 
-            $('#drugDetailModal').on('click', '.inline-submit-btn', function(e) {
-                e.stopPropagation();
-                const submitButton = $(this);
-                const inputField = submitButton.siblings('.inline-password-input');
-                const valueContainer = submitButton.closest('.value-container');
-                const errorMsg = submitButton.closest('.value-container').find('.inline-error-msg');
-                const password = inputField.val();
+                <div>
+                    <label for="message" class="block text-lg font-semibold text-gray-700 mb-2">รายละเอียด:</label>
+                    <textarea id="message" name="message" rows="5" class="w-full p-4 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all" placeholder="กรุณาระบุรายละเอียด เช่น ชื่อยาที่ต้องการแก้ไข หรือปัญหาที่พบ..." required></textarea>
+                </div>
 
-                if (password === 'rxccc') {
-                    passwordVerified = true;
-                    const realCost = valueContainer.data('real-value');
-                    valueContainer.html(realCost);
-                } else {
-                    errorMsg.show().delay(2000).fadeOut();
-                    inputField.val('').focus();
-                }
-            });
+                <div class="flex gap-4 pt-4">
+                    <button id="closeReportModalBtn" type="button" class="flex-1 px-6 py-3 bg-gray-200 text-gray-800 rounded-xl hover:bg-gray-300 font-semibold transition-all">
+                        ยกเลิก
+                    </button>
+                    <button type="submit" class="flex-1 px-6 py-3 bg-[#003366] text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:bg-[#004488] transition-all">
+                        ส่งเรื่อง
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
-            $('#drugDetailModal').on('keypress', '.inline-password-input', function(e) {
-                if (e.which === 13) {
-                    e.preventDefault();
-                    $(this).siblings('.inline-submit-btn').click();
-                }
-            });
+<script>
+// --- CONSTANTS AND GLOBAL VARIABLES ---
+const googleSheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTv6yIfVLrXZ76oqef80u3iZbheswq3h-igusVAjNryZYucvVhnXc35I2HDNvEZr-4FYf4rwIu9EHn-/pub?gid=0&single=true&output=csv';
+const drugListContainer = document.getElementById('drug-list');
+const loadingContainer = document.getElementById('loading-container');
+const searchInput = document.getElementById('searchInput');
+const categoryFilterContainer = document.getElementById('category-filter-container');
+const groupFilterContainer = document.getElementById('group-filter-container');
+let allDrugData = [];
 
+// --- CORE DATA HANDLING AND RENDERING FUNCTIONS ---
+function sanitizeHTML(text) {
+    if (!text) return '';
+    const temp = document.createElement('div');
+    temp.textContent = text;
+    return temp.innerHTML;
+}
+
+function getDrugGroupCode(code) {
+    return ['1', '2', '3', '4', '5'].includes(String(code)) ? String(code) : 'misc';
+}
+
+function getOrder(value, fallback = 999) {
+    const num = parseInt(value, 10);
+    return isNaN(num) ? fallback : num;
+}
+
+function formatNotesAdvanced(text) {
+    if (!text || text.trim() === '') return '-';
+    let sanitizedText = sanitizeHTML(text);
+    const lines = sanitizedText.split(/\\n|\n/g);
+    let finalHtml = lines.map(line => {
+        let processedLine = line.trim();
+        processedLine = processedLine.replace(/กำหนดการสั่งเฉพาะ/g, '<strong class="text-red-600 underline">$&</strong>');
+        if (/^(\d+\.\d+|\d+\)|\-|\•)\s/.test(processedLine)) {
+            return `<div class="pl-4">${processedLine}</div>`;
         }
-        
-        function setView(viewType) {
-            if (!table) return;
-            $('.view-toggle').removeClass('active');
-            $(`#${viewType}View`).addClass('active');
+        return processedLine;
+    }).join('<br />');
+    finalHtml = finalHtml.replace(/เบิกไม่ได้/g, '<strong class="text-red-600 px-2 py-1 bg-red-100 rounded">$&</strong>');
+    finalHtml = finalHtml.replace(/Non-stock/g, '<strong class="text-blue-600 px-2 py-1 bg-blue-100 rounded">$&</strong>');
+    finalHtml = finalHtml.replace(/สำรองจ่าย/g, '<strong class="text-blue-600 px-2 py-1 bg-blue-100 rounded">$&</strong>');
+    finalHtml = finalHtml.replace(/เข้าทดแทน/g, '<strong class="text-purple-600 px-2 py-1 bg-purple-100 rounded">$&</strong>');
+    return finalHtml;
+}
 
-            if (viewType === 'all') {
-                table.columns(':not(.modal-only)').visible(true);
-                table.columns('.modal-only').visible(false);
-            } else {
-                table.columns().visible(false);
-                table.columns('.all-column').visible(true);
-                if (viewType === 'default') table.columns('.default-column').visible(true);
-                else if (viewType === 'purchasing') table.columns('.purchasing-column').visible(true);
-                else if (viewType === 'rate') table.columns('.rate-column').visible(true);
+async function loadDrugData() {
+    try {
+        const response = await fetch(googleSheetUrl);
+        if (!response.ok) throw new Error(`Network response error: ${response.statusText}`);
+        const csvText = await response.text();
+        Papa.parse(csvText, {
+            header: true,
+            skipEmptyLines: true,
+            trimHeaders: true,
+            complete: (results) => {
+                setTimeout(() => {
+                    loadingContainer.style.display = 'none';
+                    if (results.errors.length) console.error("CSV Parsing Errors:", results.errors);
+                    allDrugData = results.data.filter(row => row.sapCode && row.sapCode.trim() !== '');
+                    if (allDrugData.length === 0) {
+                        drugListContainer.innerHTML = '<div class="text-center py-20"><p class="text-xl text-red-500 font-semibold">ไม่มีข้อมูลที่จะแสดง</p></div>';
+                        return;
+                    }
+                    setupCategoryFilters();
+                    setupGroupFilters();
+                    renderGroupedCards(allDrugData);
+                    setupEventListeners();
+                }, 500);
+            },
+            error: (err) => {
+                loadingContainer.innerHTML = `<div class="text-center py-20"><p class="text-xl text-red-600 font-bold">CSV Error: ${err.message}</p></div>`;
             }
-        }
-        $('#defaultView').on('click', () => setView('default')); $('#rateView').on('click', () => setView('rate'));
-        $('#purchasingView').on('click', () => promptPassword(() => setView('purchasing'))); $('#allView').on('click', () => promptPassword(() => setView('all')));
-        $('#exportButton').on('click', () => promptPassword(() => {
-            const visibleColumns = table.columns(':visible').toArray()[0];
-            const headers = table.columns(visibleColumns).header().toArray().map(h => $(h).text());
-            const data = [headers];
-            table.rows({ search: 'applied' }).every(function () {
-                const rowData = this.data();
-                const visibleData = visibleColumns.map(index => rowData[index]);
-                data.push(visibleData);
-            });
-            const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet(data); XLSX.utils.book_append_sheet(wb, ws, "Drug Master Data"); XLSX.writeFile(wb, 'drug_master_data.xlsx');
-            showSwalSuccess('Excel exported successfully!');
-        }));
-        $('#exportJPEGButton').on('click', () => {
-            html2canvas(document.querySelector("#drugTable_wrapper"), { scale: 2, useCORS: true }).then(canvas => {
-                const link = document.createElement('a'); link.download = 'drug_master_data.jpg'; link.href = canvas.toDataURL('image/jpeg', 0.9); link.click();
-                showSwalSuccess('Screenshot saved successfully!');
-            });
         });
+    } catch (error) {
+        loadingContainer.innerHTML = `<div class="text-center py-20"><p class="text-xl text-red-600 font-bold">Load Error: ${error.message}</p></div>`;
+    }
+}
 
-        // SweetAlert prompt for main buttons (not inline)
-        function promptPassword(callback, forceReauth = false) {
-            if (passwordVerified && !forceReauth) { callback(); return; }
-            Swal.fire({
-                title: 'Authentication Required', input: 'password', inputPlaceholder: 'Enter your password',
-                inputAttributes: { autocapitalize: 'off', autocorrect: 'off' },
-                showCancelButton: true, confirmButtonText: 'Submit', showLoaderOnConfirm: true,
-                preConfirm: (password) => {
-                    if (password === 'rxccc') { return true; } 
-                    else { Swal.showValidationMessage('Incorrect password'); return false; }
-                },
-                allowOutsideClick: () => !Swal.isLoading()
-            }).then((result) => {
-                if (result.isConfirmed) { passwordVerified = true; callback(); }
+function renderGroupedCards(drugData) {
+    drugListContainer.innerHTML = '';
+    const fragment = document.createDocumentFragment();
+    const activeGroupFilter = groupFilterContainer.querySelector('.active')?.dataset.filter || 'all';
+    const groupsToRender = drugData.reduce((acc, drug) => {
+        const groupName = (drug.group || 'ไม่มีกลุ่ม').trim();
+        if (!acc[groupName]) {
+            acc[groupName] = { drugs: [], groupOrder: drug.groupOrder };
+        }
+        acc[groupName].drugs.push(drug);
+        return acc;
+    }, {});
+    const sortedGroupNames = Object.keys(groupsToRender).sort((a, b) => {
+        if (activeGroupFilter !== 'all') {
+            if (a === activeGroupFilter && b !== activeGroupFilter) return -1;
+            if (b === activeGroupFilter && a !== activeGroupFilter) return 1;
+        }
+        return getOrder(groupsToRender[a].groupOrder) - getOrder(groupsToRender[b].groupOrder);
+    });
+    if (drugData.length === 0) {
+        drugListContainer.innerHTML = '<div class="text-center py-20"><p class="text-xl text-gray-500 font-semibold">ไม่พบข้อมูลที่ตรงกับเงื่อนไข</p></div>';
+        return;
+    }
+
+    sortedGroupNames.forEach(groupName => {
+        const groupInfo = groupsToRender[groupName];
+        const drugsInGroup = groupInfo.drugs.sort((a, b) => getOrder(a.itemOrder) - getOrder(b.itemOrder));
+        if (drugsInGroup.length > 0) {
+            const groupHeader = document.createRange().createContextualFragment(createGroupHeaderHTML(groupName));
+            fragment.appendChild(groupHeader.firstChild);
+
+            drugsInGroup.forEach(drug => {
+                const cardWrapper = document.createElement('div');
+                cardWrapper.innerHTML = createDrugCardHTML(drug);
+                const cardElement = cardWrapper.firstChild;
+                
+                if (cardElement) {
+                    // --- JS Fade In (ถูกลบออกแล้ว) ---
+                    // cardElement.classList.add('fade-in');
+                    // cardElement.style.animationDelay = `${animationDelay}ms`;
+                    fragment.appendChild(cardElement);
+                } else {
+                    console.error("ไม่สามารถสร้างการ์ดได้, กรุณาตรวจสอบข้อมูลของยา:", drug);
+                }
             });
         }
-        function showSwalSuccess(message) { Swal.fire({ icon: 'success', title: 'Success!', text: message, timer: 2000, showConfirmButton: false }); }
-        loadDataAndInitTable();
     });
-    </script>
-</body>
+    drugListContainer.appendChild(fragment);
+}
 
+function createGroupHeaderHTML(groupName) {
+    return `<h2 class="text-3xl font-bold group-header">${sanitizeHTML(groupName)}</h2>`;
+}
+
+function createDrugCardHTML(drug) {
+    const formatContent = (text) => (sanitizeHTML(text) || '-').replace(/\\n|\n/g, '<br>');
+    const druggroup = getDrugGroupCode(drug.code);
+    const notesInfo = formatNotesAdvanced(drug.notes);
+    const genericName = formatContent(drug.generic);
+    const tradeName = formatContent(drug.name);
+    const sapCode = formatContent(drug.sapCode);
+    const indication = formatContent(drug.indication);
+    const comparableDrug = formatContent(drug['Comparable drug']);
+    const dose = formatContent(drug.dose);
+    const unitInfo = formatContent(drug.unit);
+    const proposerInfo = formatContent(drug.proposer);
+    const storage = formatContent(drug.storage);
+    const food = formatContent(drug.food);
+    const drugTypeOriginal = drug.type || '';
+    let drugTypeTagClass = 'tag-default';
+    const drugTypeUpper = drugTypeOriginal.toUpperCase();
+    if (drugTypeUpper.includes('NED') || drugTypeOriginal.includes('เบิกไม่ได้')) {
+        drugTypeTagClass = 'tag-ned';
+    } else if (drugTypeUpper.includes('ED') || drugTypeOriginal.includes('สมุนไพรในบัญชี')) {
+        drugTypeTagClass = 'tag-ed';
+    }
+    const drugType = formatContent(drugTypeOriginal);
+    const isNonStock = (drug.name || '').toLowerCase().includes('non-stock');
+    const nonStockTag = isNonStock ? `<span class="category-tag tag-nonstock">Non-stock</span>` : '';
+    const imageUrl1 = drug.image && drug.image.trim() !== '' ? drug.image.trim() : '';
+    const imageUrl2 = drug.image2 && drug.image2.trim() !== '' ? drug.image2.trim() : '';
+    let imagesContent = '';
+    const onErrorScript = `this.style.display='none';`;
+    if (imageUrl1) {
+        imagesContent += `<img src="${imageUrl1}" alt="รูปยา ${tradeName} 1" class="drug-image" onerror="${onErrorScript}">`;
+    }
+    if (imageUrl2) {
+        imagesContent += `<img src="${imageUrl2}" alt="รูปยา ${tradeName} 2" class="drug-image" onerror="${onErrorScript}">`;
+    }
+
+    return `
+    <div class="drug-card flex flex-col md:flex-row card-druggroup-${druggroup}">
+        <div class="md:w-2/5 flex-shrink-0 p-6 flex items-center justify-center">
+            <div class="image-container">${imagesContent}</div>
+        </div>
+        <div class="flex-grow p-6">
+            <div class="flex justify-between items-start gap-4">
+                <div class="flex-grow">
+                    <p class="text-lg font-semibold text-gray-500">${genericName}</p>
+                    <h3 class="text-3xl font-bold text-gray-900 mt-1">${tradeName}</h3>
+                    <p class="text-md text-gray-500 font-mono mt-2">SAP Code: ${sapCode}</p>
+                </div>
+                <div class="flex flex-col items-end gap-y-2 flex-shrink-0">
+                    <span class="category-tag ${drugTypeTagClass}">${drugType}</span>
+                    ${nonStockTag}
+                </div>
+            </div>
+            <div class="info-section space-y-5">
+                <div class="flex items-start">
+                    <svg class="info-icon label-indication" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path></svg>
+                    <div><strong class="font-semibold label-indication">ข้อบ่งชี้:</strong><div class="mt-1 text-gray-800">${indication}</div></div>
+                </div>
+                ${comparableDrug && comparableDrug !== '-' ? `
+                <div class="flex items-start">
+                    <svg class="info-icon label-comparable" fill="currentColor" viewBox="0 0 20 20"><path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2-2H4a2 2 0 01-2-2v-4z"></path></svg>
+                    <div><strong class="font-semibold label-comparable">ยาในบัญชีฯ ที่ใกล้เคียง:</strong><div class="mt-1 text-gray-800">${comparableDrug}</div></div>
+                </div>` : ''}
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-5">
+                    <div class="flex items-start"><svg class="info-icon label-dose" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7 2a1 1 0 00-1 1v1H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 00-1-1H7zm2 10a1 1 0 100 2h2a1 1 0 100-2H9z" clip-rule="evenodd"></path></svg><div><strong class="font-semibold label-dose">ขนาดใช้ยา:</strong><div class="mt-1 text-gray-800">${dose}</div></div></div>
+                    <div class="flex items-start"><svg class="info-icon label-unit" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.5 4.5A2.5 2.5 0 015 2h10a2.5 2.5 0 012.5 2.5v1A2.5 2.5 0 0115 8H5a2.5 2.5 0 01-2.5-2.5v-1zM5 4.5a.5.5 0 00-.5.5v1a.5.5 0 00.5.5h10a.5.5 0 00.5-.5v-1a.5.5 0 00-.5-.5H5zM2.5 10A2.5 2.5 0 015 7.5h10a2.5 2.5 0 012.5 2.5v4A2.5 2.5 0 0115 19H5a2.5 2.5 0 01-2.5-2.5v-4z" clip-rule="evenodd"></path></svg><div><strong class="font-semibold label-unit">หน่วยซื้อ:</strong><div class="mt-1 text-gray-800">${unitInfo}</div></div></div>
+                    <div class="flex items-start"><svg class="info-icon label-proposer" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg><div><strong class="font-semibold label-proposer">แพทย์ผู้เสนอ:</strong><div class="mt-1 text-gray-800">${proposerInfo}</div></div></div>
+                    <div class="flex items-start"><svg class="info-icon label-storage" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 00-1 1v1a1 1 0 002 0V3a1 1 0 00-1-1zM4 6a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 9a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1zm1 3a1 1 0 100 2h12a1 1 0 100-2H3z"></path></svg><div><strong class="font-semibold label-storage">การจัดเก็บ:</strong><div class="mt-1 text-gray-800">${storage}</div></div></div>
+                    ${food && food !== '-' ? `<div class="flex items-start col-span-1 lg:col-span-2"><svg class="info-icon label-food" fill="currentColor" viewBox="0 0 20 20"><path d="M18.293 11.293A1 1 0 0018 11H2a1 1 0 00-.707 1.707l7 7a1 1 0 001.414 0l7-7a1 1 0 00.293-1.414zM10 16.586L4.414 11H15.586L10 16.586zM2 9a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1z"/></svg><div><strong class="font-semibold label-food">Food Interaction:</strong><div class="mt-1 text-gray-800">${food}</div></div></div>` : ''}
+                </div>
+            </div>
+            <div class="bg-gray-50 px-6 py-4 mt-6 border-t border-gray-200 rounded-b-lg">
+                <strong class="font-semibold text-gray-800">หมายเหตุ:</strong>
+                <div class="mt-2 text-gray-700 leading-relaxed">${notesInfo}</div>
+            </div>
+        </div>
+    </div>`;
+}
+
+function setupEventListeners() {
+    searchInput.addEventListener('input', filterAndRender);
+    const handleFilterClick = (container) => (e) => {
+        if (e.target.tagName === 'BUTTON') {
+            const currentActive = container.querySelector('.active');
+            if (currentActive) currentActive.classList.remove('active');
+            e.target.classList.add('active');
+            filterAndRender();
+        }
+    };
+    categoryFilterContainer.addEventListener('click', handleFilterClick(categoryFilterContainer));
+    groupFilterContainer.addEventListener('click', handleFilterClick(groupFilterContainer));
+}
+
+function setupCategoryFilters() {
+    const categories = allDrugData.reduce((acc, drug) => {
+        const druggroup = getDrugGroupCode(drug.code);
+        const name = drug.druggroupName || `ยา กลุ่ม ${druggroup}`;
+        if (!acc[druggroup]) {
+            acc[druggroup] = { name: name.trim(), code: druggroup };
+        }
+        return acc;
+    }, {});
+    let filterHtml = '<button class="filter-btn active" data-filter="all">ทั้งหมด</button>';
+    Object.values(categories).sort((a,b) => a.code.localeCompare(b.code)).forEach(cat => {
+        filterHtml += `<button class="filter-btn tag-filter-${cat.code}" data-filter="${cat.code}">${sanitizeHTML(cat.name)}</button>`;
+    });
+    categoryFilterContainer.innerHTML = filterHtml;
+}
+
+function setupGroupFilters() {
+    const groups = [...new Set(allDrugData.map(drug => (drug.group || '').trim()).filter(Boolean))];
+    let filterHtml = '<button class="filter-btn active" data-filter="all">ทั้งหมด</button>';
+    groups.sort().forEach(group => {
+        const buttonText = group.replace(/\s*\(.*\)/, '');
+        filterHtml += `<button class="filter-btn tag-filter-group" data-filter="${group}">${sanitizeHTML(buttonText)}</button>`;
+    });
+    groupFilterContainer.innerHTML = filterHtml;
+}
+
+function filterAndRender() {
+    const searchTerm = searchInput.value.toLowerCase().trim();
+    const activeCategoryFilter = categoryFilterContainer.querySelector('.active').dataset.filter;
+    const activeGroupFilter = groupFilterContainer.querySelector('.active').dataset.filter;
+    const filteredData = allDrugData.filter(drug => {
+        const searchableContent = (drug.name + ' ' + drug.generic + ' ' + drug.sapCode).toLowerCase();
+        const matchesSearch = searchTerm === '' || searchableContent.includes(searchTerm);
+        const matchesCategory = activeCategoryFilter === 'all' || getDrugGroupCode(drug.code) === activeCategoryFilter;
+        const matchesGroup = activeGroupFilter === 'all' || (drug.group || '').trim() === activeGroupFilter;
+        return matchesSearch && matchesCategory && matchesGroup;
+    });
+    renderGroupedCards(filteredData);
+}
+
+// ===== FLOATING TOOLBAR & MODAL SCRIPT START =====
+const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+const openReportModalBtn = document.getElementById('openReportModalBtn');
+const reportModal = document.getElementById('reportModal');
+const closeReportModalBtn = document.getElementById('closeReportModalBtn');
+const reportForm = document.getElementById('reportForm');
+
+window.onscroll = function() {
+    if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+        scrollToTopBtn.style.display = "flex";
+    } else {
+        scrollToTopBtn.style.display = "none";
+    }
+};
+scrollToTopBtn.addEventListener('click', function() {
+    window.scrollTo({top: 0, behavior: 'smooth'});
+});
+
+function openModal() { reportModal.classList.remove('hidden'); }
+function closeModal() { reportModal.classList.add('hidden'); }
+
+openReportModalBtn.addEventListener('click', openModal);
+closeReportModalBtn.addEventListener('click', closeModal);
+reportModal.addEventListener('click', function(event) {
+    if (event.target === reportModal) {
+        closeModal();
+    }
+});
+
+reportForm.addEventListener('submit', function(event) {
+    event.preventDefault();
+    const webAppUrl = 'https://script.google.com/macros/s/AKfycbyH_ULtPI5Wat_VmNY7smo7Ytq2jfk0DcKgFmjFQU5FXTyG2ICT9-5ro4Bj70TQ0tjS/exec';
+    const formData = new FormData(reportForm);
+    const data = Object.fromEntries(formData.entries());
+    const submitButton = reportForm.querySelector('button[type="submit"]');
+
+    submitButton.disabled = true;
+    submitButton.innerHTML = 'กำลังส่ง...';
+
+    fetch(webAppUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        cache: 'no-cache',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+        redirect: 'follow'
+    })
+    .then(response => {
+        alert('ส่งข้อมูลเรียบร้อยแล้ว ขอบคุณครับ');
+        closeModal();
+        reportForm.reset();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('เกิดข้อผิดพลาดในการส่งข้อมูล: ' + error.message);
+    })
+    .finally(() => {
+        submitButton.disabled = false;
+        submitButton.innerHTML = 'ส่งเรื่อง';
+    });
+});
+// ===== FLOATING TOOLBAR & MODAL SCRIPT END =====
+
+// --- INITIAL LOAD ---
+loadDrugData();
+</script>
+</body>
 </html>
