@@ -22,17 +22,7 @@
         
         /* --- CSS for vertical images with fixed height (FIX APPLIED HERE) --- */
 /* --- CSS for vertical images with fixed height (FIX APPLIED HERE) --- */
-        .image-container {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            justify-content: center;
-            gap: 4px;
-            height: 360px; /* MODIFIED: เปลี่ยนเป็น height เพื่อกำหนดความสูงคงที่ */
-        }
-        .image-container:empty { 
-            display: none; 
-        }
+        /* --- โค้ดเดิม --- */
         .drug-image {
             width: 100%;
             /* MODIFIED: ลบ height: 360px ออก */
@@ -41,6 +31,17 @@
             object-fit: contain;
             background-color: #f9fafb;
             border-radius: 8px;
+        }
+        
+        /* --- โค้ดที่แก้ไขแล้ว --- */
+        .drug-image {
+            width: 100%;
+            flex-shrink: 1;
+            min-height: 0;
+            object-fit: contain;
+            background-color: #f9fafb;
+            border-radius: 8px;
+            flex-grow: 1; /* <-- ADDED: เพิ่มบรรทัดนี้เข้าไป */
         }
     </style>
 </head>
