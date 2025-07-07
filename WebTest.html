@@ -41,7 +41,6 @@
         .tag-ned { background-color: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; }
         .tag-nonstock { background-color: #DBEAFE; color: #1E40AF; }
         .tag-default { background-color: #E5E7EB; color: #374151; }
-        /* MODIFICATION: Increased tag size */
         .category-tag {
             padding: 0.5rem 1rem;
             border-radius: 9999px;
@@ -104,7 +103,6 @@
         /* --- Drug Image Styling --- */
         .drug-image-container {
             display: flex;
-            /* MODIFICATION: Changed to column for vertical stacking */
             flex-direction: column;
             gap: 0.75rem; /* Space between images */
             align-items: center;
@@ -230,27 +228,50 @@ function getOrder(value, fallback = 999) { const num = parseInt(value, 10); retu
 
 function formatNotesAdvanced(text) {
     if (!text || text.trim() === '') return '-';
-    let sanitizedText = sanitizeHTML(text);
+    let processedText = sanitizeHTML(text);
 
-    // MODIFICATION: Added all requested keywords to this regex for highlighting
-    const keywordsToHighlight = /ห้าม|ควรระวัง|กำหนด|ไม่ควร|ไม่ |หลีกเลี่ยง|กรณี|เปรียบเทียบ|ปริมาณน้อย|ไม่สามารถ|กำหนดเงื่อนไขการสั่งเฉพาะ|ใช้แทน|กำหนดข้อบ่งใช้|จำกัดผู้สั่ง|จำกัด|สำหรับ/g;
-    sanitizedText = sanitizedText.replace(keywordsToHighlight, '<strong class="text-red-600 underline decoration-2 decoration-wavy">$&</strong>');
+    // Define keywords and their corresponding styles
+    const styles = {
+        red: 'font-bold text-red-800 px-2.5 py-1 bg-red-100 rounded-lg ring-1 ring-red-200',
+        amber: 'font-bold text-amber-800 px-2.5 py-1 bg-amber-100 rounded-lg ring-1 ring-amber-200',
+        green: 'font-bold text-green-800 px-2.5 py-1 bg-green-100 rounded-lg ring-1 ring-green-200',
+        slate: 'font-bold text-slate-800 px-2.5 py-1 bg-slate-100 rounded-lg ring-1 ring-slate-200',
+        purple: 'font-bold text-purple-700 px-2.5 py-1 bg-purple-100 rounded-md ring-1 ring-purple-200',
+        cyan: 'font-bold text-cyan-700 px-2.5 py-1 bg-cyan-100 rounded-md ring-1 ring-cyan-200'
+    };
 
-    const lines = sanitizedText.split(/\\n|\n/g);
+    // MODIFICATION: Adjusted keyword groups and colors based on new request
+    const keywordMap = [
+        // Red (Strict Rules / Prohibitions) - Longest matches first
+        { words: ['กำหนดเงื่อนไขการสั่งเฉพาะ', 'กำหนดข้อบ่งใช้', 'จำกัดผู้สั่ง', 'เบิกไม่ได้', 'ไม่สามารถ', 'กำหนด', 'จำกัด', 'ห้าม', 'ไม่ ', 'ขอ '], style: styles.red },
+        // Amber (Warnings / Cautions)
+        { words: ['ไม่ควร', 'ควรระวัง', 'หลีกเลี่ยง'], style: styles.amber },
+        // Green (Substitution / Action)
+        { words: ['ใช้แทน', 'เข้าทดแทน'], style: styles.green },
+        // Slate (Informational)
+        { words: ['กรณี', 'เปรียบเทียบ', 'ปริมาณน้อย', 'สำหรับ'], style: styles.slate },
+        // Other specific keywords that might remain
+        { words: ['สำรองจ่าย'], style: styles.cyan },
+        { words: ['Non-stock'], style: styles.purple }
+    ];
+
+    // Apply styles by replacing keywords
+    keywordMap.forEach(group => {
+        // Create a regex that avoids matching parts of already styled tags
+        const regex = new RegExp(`(?<![=">-])\\b(${group.words.join('|')})\\b(?![<])`, 'g');
+        processedText = processedText.replace(regex, (match) => `<span class="${group.style}">${match}</span>`);
+    });
+
+    // Handle list formatting
+    const lines = processedText.split(/\\n|\n/g);
     let finalHtml = lines.map(line => {
-        let processedLine = line.trim();
+        let trimmedLine = line.trim();
         // Indent list items
-        if (/^(\d+\.\d+|\d+\)|\-|\•)\s/.test(processedLine)) {
-            return `<div class="pl-5">${processedLine}</div>`;
+        if (/^(\d+\.\d+|\d+\)|\-|\•)\s/.test(trimmedLine)) {
+            return `<div class="pl-5">${trimmedLine}</div>`;
         }
-        return processedLine;
+        return trimmedLine;
     }).join('<br />');
-
-    // Wrap other keywords in styled tags
-    finalHtml = finalHtml.replace(/เบิกไม่ได้/g, '<span class="font-bold text-red-700 px-2.5 py-1 bg-red-100 rounded-md ring-1 ring-red-200">$&</span>');
-    finalHtml = finalHtml.replace(/Non-stock/g, '<span class="font-bold text-blue-700 px-2.5 py-1 bg-blue-100 rounded-md ring-1 ring-blue-200">$&</span>');
-    finalHtml = finalHtml.replace(/สำรองจ่าย/g, '<span class="font-bold text-cyan-700 px-2.5 py-1 bg-cyan-100 rounded-md ring-1 ring-cyan-200">$&</span>');
-    finalHtml = finalHtml.replace(/เข้าทดแทน/g, '<span class="font-bold text-purple-700 px-2.5 py-1 bg-purple-100 rounded-md ring-1 ring-purple-200">$&</span>');
 
     return finalHtml;
 }
