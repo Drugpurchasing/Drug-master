@@ -28,12 +28,6 @@
         .card-druggroup-misc { border-left-color: #9CA3AF; } /* Gray */
 
         /* --- Filter Tag Colors --- */
-        .tag-filter-1 { background-color: #FECACA; color: #991B1B; }
-        .tag-filter-2 { background-color: #D8B4FE; color: #581C87; }
-        .tag-filter-3 { background-color: #FDE68A; color: #9A3412; }
-        .tag-filter-4 { background-color: #BFDBFE; color: #1E3A8A; }
-        .tag-filter-5 { background-color: #BBF7D0; color: #15803D; }
-        .tag-filter-misc { background-color: #D1D5DB; color: #1F2937; }
         .tag-filter-group { background-color: #A5F3FC; color: #0E7490; }
 
         /* --- Status Tags --- */
@@ -82,12 +76,6 @@
             border-color: transparent !important;
         }
         .filter-btn.active[data-filter="all"] { background-color: #4B5563; } /* Gray-600 */
-        .filter-btn.active.tag-filter-1 { background-color: #EF4444; } /* Red-500 */
-        .filter-btn.active.tag-filter-2 { background-color: #8B5CF6; } /* Violet-500 */
-        .filter-btn.active.tag-filter-3 { background-color: #F59E0B; } /* Amber-500 */
-        .filter-btn.active.tag-filter-4 { background-color: #3B82F6; } /* Blue-500 */
-        .filter-btn.active.tag-filter-5 { background-color: #22C55E; } /* Green-500 */
-        .filter-btn.active.tag-filter-misc { background-color: #6B7280; } /* Gray-500 */
         .filter-btn.active.tag-filter-group { background-color: #0891B2; } /* Cyan-600 */
 
         /* --- Label Colors --- */
@@ -104,16 +92,16 @@
         .drug-image-container {
             display: flex;
             flex-direction: column;
-            gap: 0.75rem; /* Space between images */
+            gap: 0.75rem;
             align-items: center;
             justify-content: center;
             width: 100%;
-            min-height: 200px; /* Minimum height for consistency */
+            min-height: 200px;
         }
         .drug-image {
             width: 100%;
             height: auto;
-            max-height: 360px; /* Limit max height */
+            max-height: 360px;
             flex-shrink: 1;
             object-fit: contain;
             background-color: #ffffff;
@@ -124,13 +112,13 @@
 </head>
 <body class="text-gray-800">
 
-<div class="container mx-auto p-4 md:p-8 max-w-7xl">
-    <header class="text-center mb-12 flex flex-col items-center justify-center gap-4">
-        <img src="CRAlogo.png" alt="Logo" class="h-16 w-auto">
-        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">สรุปข้อมูลยาเข้าใหม่</h1>
-    </header>
+<header class="text-center py-8 flex flex-col items-center justify-center gap-4 bg-white shadow-sm">
+    <img src="CRAlogo.png" alt="Logo" class="h-16 w-auto">
+    <h1 class="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">สรุปข้อมูลยาเข้าใหม่</h1>
+</header>
 
-    <div id="controls" class="py-6 mb-10 space-y-6 bg-white shadow-sm rounded-xl p-6 border border-gray-200/80">
+<div id="controls" class="py-6 mb-10 bg-white shadow-sm border-t border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 md:px-8 space-y-6">
         <div class="relative max-w-3xl mx-auto">
             <input type="text" id="searchInput" class="w-full p-3 pl-12 text-lg border-2 border-gray-300 rounded-full focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition-all duration-300" placeholder="ค้นหาชื่อยา, ชื่อสามัญ, รหัสยา...">
             <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
@@ -139,23 +127,20 @@
         </div>
         <div class="flex flex-col md:flex-row md:items-start md:justify-center gap-x-10 gap-y-6 pt-4">
             <div class="text-center">
-                <p class="font-semibold text-gray-600 mb-3 text-lg">Filter by กลุ่มยา:</p>
-                <div id="category-filter-container" class="flex flex-wrap gap-3 justify-center"></div>
-            </div>
-            <div class="text-center">
                 <p class="font-semibold text-gray-600 mb-3 text-lg">Filter by รอบที่เสนอเข้า:</p>
                 <div id="group-filter-container" class="flex flex-wrap gap-3 justify-center"></div>
             </div>
-        </div>
+            </div>
     </div>
+</div>
 
+<main class="container mx-auto p-4 md:p-8 max-w-7xl">
     <div id="loading-container" class="flex flex-col items-center justify-center p-10">
         <div id="loader"></div>
         <p class="text-gray-600 mt-6 text-lg">กำลังโหลดข้อมูล กรุณารอสักครู่...</p>
     </div>
-    
     <div id="drug-list" class="space-y-8"></div>
-</div>
+</main>
 
 <div id="floating-toolbar" class="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-3">
     <button id="scrollToTopBtn" title="กลับขึ้นบนสุด" class="hidden bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full shadow-lg transition-all duration-300 flex items-center gap-2 px-4 py-3">
@@ -217,7 +202,7 @@ const googleSheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTv6yIfV
 const drugListContainer = document.getElementById('drug-list');
 const loadingContainer = document.getElementById('loading-container');
 const searchInput = document.getElementById('searchInput');
-const categoryFilterContainer = document.getElementById('category-filter-container');
+// MODIFICATION: categoryFilterContainer is removed
 const groupFilterContainer = document.getElementById('group-filter-container');
 let allDrugData = [];
 
@@ -226,11 +211,11 @@ function sanitizeHTML(text) { if (!text) return ''; const temp = document.create
 function getDrugGroupCode(code) { return ['1', '2', '3', '4', '5'].includes(String(code)) ? String(code) : 'misc'; }
 function getOrder(value, fallback = 999) { const num = parseInt(value, 10); return isNaN(num) ? fallback : num; }
 
+// MODIFICATION: This function is now fixed to correctly highlight keywords.
 function formatNotesAdvanced(text) {
     if (!text || text.trim() === '') return '-';
     let processedText = sanitizeHTML(text);
 
-    // Define keywords and their corresponding styles
     const styles = {
         red: 'font-bold text-red-800 px-2.5 py-1 bg-red-100 rounded-lg ring-1 ring-red-200',
         amber: 'font-bold text-amber-800 px-2.5 py-1 bg-amber-100 rounded-lg ring-1 ring-amber-200',
@@ -240,33 +225,29 @@ function formatNotesAdvanced(text) {
         cyan: 'font-bold text-cyan-700 px-2.5 py-1 bg-cyan-100 rounded-md ring-1 ring-cyan-200'
     };
 
-    // MODIFICATION: Adjusted keyword groups and colors based on new request
     const keywordMap = [
-        // Red (Strict Rules / Prohibitions) - Longest matches first
-        { words: ['กำหนดเงื่อนไขการสั่งเฉพาะ', 'กำหนดข้อบ่งใช้', 'จำกัดผู้สั่ง', 'เบิกไม่ได้', 'ไม่สามารถ', 'กำหนด', 'จำกัด', 'ห้าม', 'ไม่ ', 'ขอ '], style: styles.red },
+        // Red (Strict Rules / Prohibitions) - Longest phrases first to avoid partial matches
+        { words: ['กำหนดเงื่อนไขการสั่งเฉพาะ', 'ไม่สามารถ', 'เบิกไม่ได้', 'กำหนด', 'จำกัด', 'ห้าม', 'ไม่ ', 'ขอ '], style: styles.red },
         // Amber (Warnings / Cautions)
         { words: ['ไม่ควร', 'ควรระวัง', 'หลีกเลี่ยง'], style: styles.amber },
         // Green (Substitution / Action)
         { words: ['ใช้แทน', 'เข้าทดแทน'], style: styles.green },
         // Slate (Informational)
         { words: ['กรณี', 'เปรียบเทียบ', 'ปริมาณน้อย', 'สำหรับ'], style: styles.slate },
-        // Other specific keywords that might remain
+        // Other specific keywords
         { words: ['สำรองจ่าย'], style: styles.cyan },
         { words: ['Non-stock'], style: styles.purple }
     ];
 
-    // Apply styles by replacing keywords
     keywordMap.forEach(group => {
-        // Create a regex that avoids matching parts of already styled tags
-        const regex = new RegExp(`(?<![=">-])\\b(${group.words.join('|')})\\b(?![<])`, 'g');
-        processedText = processedText.replace(regex, (match) => `<span class="${group.style}">${match}</span>`);
+        // A simpler, more reliable regex. We ensure longest words are first in the array.
+        const regex = new RegExp(`(${group.words.join('|')})`, 'g');
+        processedText = processedText.replace(regex, `<span class="${group.style}">$1</span>`);
     });
-
-    // Handle list formatting
+    
     const lines = processedText.split(/\\n|\n/g);
     let finalHtml = lines.map(line => {
         let trimmedLine = line.trim();
-        // Indent list items
         if (/^(\d+\.\d+|\d+\)|\-|\•)\s/.test(trimmedLine)) {
             return `<div class="pl-5">${trimmedLine}</div>`;
         }
@@ -294,7 +275,7 @@ async function loadDrugData() {
                     drugListContainer.innerHTML = '<p class="text-center text-red-500 font-semibold text-xl">ไม่มีข้อมูลที่จะแสดง</p>';
                     return;
                 }
-                setupCategoryFilters();
+                // MODIFICATION: setupCategoryFilters() call removed
                 setupGroupFilters();
                 renderGroupedCards(allDrugData);
                 setupEventListeners();
@@ -437,7 +418,7 @@ function createDrugCardHTML(drug) {
     </div>`;
 }
 
-// --- SETUP AND EVENT LISTENERS (No functional changes, only minor adjustments for new modal) ---
+// --- SETUP AND EVENT LISTENERS ---
 function setupEventListeners() {
     searchInput.addEventListener('input', filterAndRender);
     const handleFilterClick = (container) => (e) => {
@@ -448,31 +429,18 @@ function setupEventListeners() {
             filterAndRender();
         }
     };
-    categoryFilterContainer.addEventListener('click', handleFilterClick(categoryFilterContainer));
+    // MODIFICATION: categoryFilterContainer listener removed
     groupFilterContainer.addEventListener('click', handleFilterClick(groupFilterContainer));
 }
 
-function setupCategoryFilters() {
-    const categories = allDrugData.reduce((acc, drug) => {
-        const druggroup = getDrugGroupCode(drug.code);
-        const name = drug.druggroupName || `ยา กลุ่ม ${druggroup}`;
-        if (!acc[druggroup]) {
-            acc[druggroup] = { name: name.trim(), code: druggroup };
-        }
-        return acc;
-    }, {});
-    let filterHtml = '<button class="filter-btn active" data-filter="all">ทั้งหมด</button>';
-    Object.values(categories).sort((a,b) => a.code.localeCompare(b.code)).forEach(cat => {
-        filterHtml += `<button class="filter-btn tag-filter-${cat.code}" data-filter="${cat.code}">${sanitizeHTML(cat.name)}</button>`;
-    });
-    categoryFilterContainer.innerHTML = filterHtml;
-}
+// MODIFICATION: This function is now removed as it's no longer needed.
+// function setupCategoryFilters() { ... }
 
 function setupGroupFilters() {
     const groups = [...new Set(allDrugData.map(drug => (drug.group || '').trim()).filter(Boolean))];
     let filterHtml = '<button class="filter-btn active" data-filter="all">ทั้งหมด</button>';
     groups.sort().forEach(group => {
-        const buttonText = group.replace(/\s*\(.*\)/, ''); // Keep this logic
+        const buttonText = group.replace(/\s*\(.*\)/, '');
         filterHtml += `<button class="filter-btn tag-filter-group" data-filter="${group}">${sanitizeHTML(buttonText)}</button>`;
     });
     groupFilterContainer.innerHTML = filterHtml;
@@ -480,14 +448,15 @@ function setupGroupFilters() {
 
 function filterAndRender() {
     const searchTerm = searchInput.value.toLowerCase().trim();
-    const activeCategoryFilter = categoryFilterContainer.querySelector('.active').dataset.filter;
+    // MODIFICATION: activeCategoryFilter logic removed
     const activeGroupFilter = groupFilterContainer.querySelector('.active').dataset.filter;
+    
     const filteredData = allDrugData.filter(drug => {
         const searchableContent = (drug.name + ' ' + drug.generic + ' ' + drug.sapCode).toLowerCase();
         const matchesSearch = searchTerm === '' || searchableContent.includes(searchTerm);
-        const matchesCategory = activeCategoryFilter === 'all' || getDrugGroupCode(drug.code) === activeCategoryFilter;
+        // MODIFICATION: matchesCategory logic removed
         const matchesGroup = activeGroupFilter === 'all' || (drug.group || '').trim() === activeGroupFilter;
-        return matchesSearch && matchesCategory && matchesGroup;
+        return matchesSearch && matchesGroup; // MODIFICATION: Simplified return
     });
     renderGroupedCards(filteredData);
 }
@@ -497,7 +466,7 @@ const scrollToTopBtn = document.getElementById('scrollToTopBtn');
 const openReportModalBtn = document.getElementById('openReportModalBtn');
 const reportModal = document.getElementById('reportModal');
 const closeReportModalBtn = document.getElementById('closeReportModalBtn');
-const formCancelBtn = document.querySelector('.form-cancel-btn'); // New cancel button in form
+const formCancelBtn = document.querySelector('.form-cancel-btn');
 const reportForm = document.getElementById('reportForm');
 
 window.onscroll = function() {
@@ -516,7 +485,7 @@ function closeModal() { reportModal.classList.add('hidden'); }
 
 openReportModalBtn.addEventListener('click', openModal);
 closeReportModalBtn.addEventListener('click', closeModal);
-formCancelBtn.addEventListener('click', closeModal); // Make form cancel button work
+formCancelBtn.addEventListener('click', closeModal);
 reportModal.addEventListener('click', function(event) {
     if (event.target === reportModal) {
         closeModal();
