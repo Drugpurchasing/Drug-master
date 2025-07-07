@@ -112,9 +112,11 @@
 </head>
 <body class="text-gray-800">
 
-<header class="text-center py-8 flex flex-col items-center justify-center gap-4 bg-white shadow-sm">
-    <img src="CRAlogo.png" alt="Logo" class="h-16 w-auto">
-    <h1 class="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">สรุปข้อมูลยาเข้าใหม่</h1>
+<header class="py-6 bg-white shadow-sm">
+    <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+        <img src="CRAlogo.png" alt="Logo" class="h-14 w-auto">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight text-center flex-grow">สรุปข้อมูลยาเข้าใหม่</h1>
+        <div class="h-14 w-14"></div> </div>
 </header>
 
 <div id="controls" class="py-6 mb-10 bg-white shadow-sm border-t border-b border-gray-200">
@@ -130,11 +132,11 @@
                 <p class="font-semibold text-gray-600 mb-3 text-lg">Filter by รอบที่เสนอเข้า:</p>
                 <div id="group-filter-container" class="flex flex-wrap gap-3 justify-center"></div>
             </div>
-            </div>
+        </div>
     </div>
 </div>
 
-<main class="container mx-auto p-4 md:p-8 max-w-7xl">
+<main class="container mx-auto p-4 md:p-8 max-w-screen-2xl">
     <div id="loading-container" class="flex flex-col items-center justify-center p-10">
         <div id="loader"></div>
         <p class="text-gray-600 mt-6 text-lg">กำลังโหลดข้อมูล กรุณารอสักครู่...</p>
@@ -202,7 +204,6 @@ const googleSheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTv6yIfV
 const drugListContainer = document.getElementById('drug-list');
 const loadingContainer = document.getElementById('loading-container');
 const searchInput = document.getElementById('searchInput');
-// MODIFICATION: categoryFilterContainer is removed
 const groupFilterContainer = document.getElementById('group-filter-container');
 let allDrugData = [];
 
@@ -211,7 +212,6 @@ function sanitizeHTML(text) { if (!text) return ''; const temp = document.create
 function getDrugGroupCode(code) { return ['1', '2', '3', '4', '5'].includes(String(code)) ? String(code) : 'misc'; }
 function getOrder(value, fallback = 999) { const num = parseInt(value, 10); return isNaN(num) ? fallback : num; }
 
-// MODIFICATION: This function is now fixed to correctly highlight keywords.
 function formatNotesAdvanced(text) {
     if (!text || text.trim() === '') return '-';
     let processedText = sanitizeHTML(text);
@@ -226,21 +226,15 @@ function formatNotesAdvanced(text) {
     };
 
     const keywordMap = [
-        // Red (Strict Rules / Prohibitions) - Longest phrases first to avoid partial matches
         { words: ['กำหนดเงื่อนไขการสั่งเฉพาะ', 'ไม่สามารถ', 'เบิกไม่ได้', 'กำหนด', 'จำกัด', 'ห้าม', 'ไม่ ', 'ขอ '], style: styles.red },
-        // Amber (Warnings / Cautions)
         { words: ['ไม่ควร', 'ควรระวัง', 'หลีกเลี่ยง'], style: styles.amber },
-        // Green (Substitution / Action)
         { words: ['ใช้แทน', 'เข้าทดแทน'], style: styles.green },
-        // Slate (Informational)
         { words: ['กรณี', 'เปรียบเทียบ', 'ปริมาณน้อย', 'สำหรับ'], style: styles.slate },
-        // Other specific keywords
         { words: ['สำรองจ่าย'], style: styles.cyan },
         { words: ['Non-stock'], style: styles.purple }
     ];
 
     keywordMap.forEach(group => {
-        // A simpler, more reliable regex. We ensure longest words are first in the array.
         const regex = new RegExp(`(${group.words.join('|')})`, 'g');
         processedText = processedText.replace(regex, `<span class="${group.style}">$1</span>`);
     });
@@ -275,7 +269,6 @@ async function loadDrugData() {
                     drugListContainer.innerHTML = '<p class="text-center text-red-500 font-semibold text-xl">ไม่มีข้อมูลที่จะแสดง</p>';
                     return;
                 }
-                // MODIFICATION: setupCategoryFilters() call removed
                 setupGroupFilters();
                 renderGroupedCards(allDrugData);
                 setupEventListeners();
@@ -332,12 +325,10 @@ function createGroupHeaderHTML(groupName) {
 }
 
 function createDrugCardHTML(drug) {
-    // --- Helper Functions & Data Preparation ---
     const formatContent = (text, fallback = '-') => (sanitizeHTML(text) || fallback).replace(/\\n|\n/g, '<br>');
     const druggroup = getDrugGroupCode(drug.code);
     const sanitizedName = sanitizeHTML(drug.name || '');
     
-    // --- Drug Type & Tags ---
     let drugTypeTagClass = 'tag-default';
     const drugTypeOriginal = drug.type || '';
     const drugTypeUpper = drugTypeOriginal.toUpperCase();
@@ -349,7 +340,6 @@ function createDrugCardHTML(drug) {
     const isNonStock = (drug.name || '').toLowerCase().includes('non-stock');
     const nonStockTag = isNonStock ? `<span class="category-tag tag-nonstock">Non-stock</span>` : '';
 
-    // --- Image Handling (Supports 2 images) ---
     const imageUrl1 = drug.image && drug.image.trim() !== '' ? drug.image.trim() : '';
     const imageUrl2 = drug.image2 && drug.image2.trim() !== '' ? drug.image2.trim() : '';
     let imagesContent = '';
@@ -364,7 +354,6 @@ function createDrugCardHTML(drug) {
         imagesContent = '<div class="flex items-center justify-center bg-gray-100 w-full h-full rounded-lg text-gray-400">ไม่มีรูปภาพ</div>';
     }
 
-    // --- Content Sections ---
     const indicationHTML = `<div class="flex items-start text-lg mt-4"> <span class="label-indication mt-1"><svg class="h-6 w-6 mr-3 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.963 2.286a.75.75 0 00-1.071 1.052A11.213 11.213 0 0112 15a11.213 11.213 0 01-9.892-11.662.75.75 0 00-1.071-1.052A12.713 12.713 0 001.5 15C1.5 21.627 6.873 27 13.5 27s12-5.373 12-12c0-5.12-3.213-9.489-7.537-11.348z" clip-rule="evenodd" /></svg></span> <div><strong class="font-semibold label-indication">ข้อบ่งชี้:</strong><div class="mt-1 text-gray-700">${formatContent(drug.indication)}</div></div> </div>`;
     const comparableDrug = formatContent(drug['Comparable drug']);
     const comparableDrugHTML = comparableDrug && comparableDrug !== '-' 
@@ -375,7 +364,6 @@ function createDrugCardHTML(drug) {
         ? `<div class="flex items-start"> <span class="label-food mt-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 00-3 3v2.236l-1.063.807a1 1 0 00.414 1.832L3 13.447V17a1 1 0 001 1h12a1 1 0 001-1v-3.553l1.649-.412a1 1 0 00.553-1.832L17 10.236V6a3 3 0 00-3-3h-3.763L18 3zM16 6v4.062l-.5.125-10-2.5V6a1 1 0 011-1h8a1 1 0 011 1z" /></svg></span> <div><strong class="font-semibold label-food">Food Interaction:</strong><div class="mt-1 text-gray-700">${foodInteraction}</div></div> </div>` 
         : '';
 
-    // --- Final Card Assembly ---
     return `
     <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 flex flex-col md:flex-row border-l-8 card-druggroup-${druggroup} border-t border-gray-200/80">
         <div class="md:w-2/5 flex-shrink-0 bg-slate-50 flex items-center justify-center p-4 border-b md:border-b-0 md:border-r border-gray-200">
@@ -418,7 +406,6 @@ function createDrugCardHTML(drug) {
     </div>`;
 }
 
-// --- SETUP AND EVENT LISTENERS ---
 function setupEventListeners() {
     searchInput.addEventListener('input', filterAndRender);
     const handleFilterClick = (container) => (e) => {
@@ -429,12 +416,8 @@ function setupEventListeners() {
             filterAndRender();
         }
     };
-    // MODIFICATION: categoryFilterContainer listener removed
     groupFilterContainer.addEventListener('click', handleFilterClick(groupFilterContainer));
 }
-
-// MODIFICATION: This function is now removed as it's no longer needed.
-// function setupCategoryFilters() { ... }
 
 function setupGroupFilters() {
     const groups = [...new Set(allDrugData.map(drug => (drug.group || '').trim()).filter(Boolean))];
@@ -448,15 +431,13 @@ function setupGroupFilters() {
 
 function filterAndRender() {
     const searchTerm = searchInput.value.toLowerCase().trim();
-    // MODIFICATION: activeCategoryFilter logic removed
     const activeGroupFilter = groupFilterContainer.querySelector('.active').dataset.filter;
     
     const filteredData = allDrugData.filter(drug => {
         const searchableContent = (drug.name + ' ' + drug.generic + ' ' + drug.sapCode).toLowerCase();
         const matchesSearch = searchTerm === '' || searchableContent.includes(searchTerm);
-        // MODIFICATION: matchesCategory logic removed
         const matchesGroup = activeGroupFilter === 'all' || (drug.group || '').trim() === activeGroupFilter;
-        return matchesSearch && matchesGroup; // MODIFICATION: Simplified return
+        return matchesSearch && matchesGroup;
     });
     renderGroupedCards(filteredData);
 }
