@@ -12,8 +12,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
         /* --- Base & Custom Styles --- */
-        body { 
-            font-family: 'Sarabun', sans-serif; 
+        body {
+            font-family: 'Sarabun', sans-serif;
             background-color: #f8fafc; /* Lighter gray background */
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
@@ -41,20 +41,26 @@
         .tag-ned { background-color: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; }
         .tag-nonstock { background-color: #DBEAFE; color: #1E40AF; }
         .tag-default { background-color: #E5E7EB; color: #374151; }
-        .category-tag { padding: 0.25rem 0.75rem; border-radius: 9999px; font-weight: 600; font-size: 0.875rem; }
+        /* MODIFICATION: Increased tag size */
+        .category-tag {
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-size: 1rem;
+        }
 
         /* --- Loader Animation --- */
-        #loader { 
-            border: 8px solid #f3f3f3; 
+        #loader {
+            border: 8px solid #f3f3f3;
             border-top: 8px solid #3b82f6; /* Tailwind blue-500 */
-            border-radius: 50%; 
-            width: 60px; 
-            height: 60px; 
-            animation: spin 1.5s linear infinite; 
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1.5s linear infinite;
         }
-        @keyframes spin { 
-            0% { transform: rotate(0deg); } 
-            100% { transform: rotate(360deg); } 
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         /* --- Filter Button Styles --- */
@@ -98,7 +104,9 @@
         /* --- Drug Image Styling --- */
         .drug-image-container {
             display: flex;
-            gap: 0.5rem; /* Space between images */
+            /* MODIFICATION: Changed to column for vertical stacking */
+            flex-direction: column;
+            gap: 0.75rem; /* Space between images */
             align-items: center;
             justify-content: center;
             width: 100%;
@@ -219,27 +227,34 @@ let allDrugData = [];
 function sanitizeHTML(text) { if (!text) return ''; const temp = document.createElement('div'); temp.textContent = text; return temp.innerHTML; }
 function getDrugGroupCode(code) { return ['1', '2', '3', '4', '5'].includes(String(code)) ? String(code) : 'misc'; }
 function getOrder(value, fallback = 999) { const num = parseInt(value, 10); return isNaN(num) ? fallback : num; }
+
 function formatNotesAdvanced(text) {
     if (!text || text.trim() === '') return '-';
     let sanitizedText = sanitizeHTML(text);
+
+    // MODIFICATION: Added all requested keywords to this regex for highlighting
+    const keywordsToHighlight = /ห้าม|ควรระวัง|กำหนด|ไม่ควร|ไม่ |หลีกเลี่ยง|กรณี|เปรียบเทียบ|ปริมาณน้อย|ไม่สามารถ|กำหนดเงื่อนไขการสั่งเฉพาะ|ใช้แทน|กำหนดข้อบ่งใช้|จำกัดผู้สั่ง|จำกัด|สำหรับ/g;
+    sanitizedText = sanitizedText.replace(keywordsToHighlight, '<strong class="text-red-600 underline decoration-2 decoration-wavy">$&</strong>');
+
     const lines = sanitizedText.split(/\\n|\n/g);
     let finalHtml = lines.map(line => {
         let processedLine = line.trim();
-        // Highlight specific phrases
-        processedLine = processedLine.replace(/กำหนดการสั่งเฉพาะ/g, '<strong class="text-red-600 underline decoration-2">$&</strong>');
         // Indent list items
         if (/^(\d+\.\d+|\d+\)|\-|\•)\s/.test(processedLine)) {
             return `<div class="pl-5">${processedLine}</div>`;
         }
         return processedLine;
     }).join('<br />');
-    // Wrap keywords in styled tags
+
+    // Wrap other keywords in styled tags
     finalHtml = finalHtml.replace(/เบิกไม่ได้/g, '<span class="font-bold text-red-700 px-2.5 py-1 bg-red-100 rounded-md ring-1 ring-red-200">$&</span>');
     finalHtml = finalHtml.replace(/Non-stock/g, '<span class="font-bold text-blue-700 px-2.5 py-1 bg-blue-100 rounded-md ring-1 ring-blue-200">$&</span>');
     finalHtml = finalHtml.replace(/สำรองจ่าย/g, '<span class="font-bold text-cyan-700 px-2.5 py-1 bg-cyan-100 rounded-md ring-1 ring-cyan-200">$&</span>');
     finalHtml = finalHtml.replace(/เข้าทดแทน/g, '<span class="font-bold text-purple-700 px-2.5 py-1 bg-purple-100 rounded-md ring-1 ring-purple-200">$&</span>');
+
     return finalHtml;
 }
+
 
 async function loadDrugData() {
     try {
@@ -360,8 +375,8 @@ function createDrugCardHTML(drug) {
 
     // --- Final Card Assembly ---
     return `
-    <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 flex flex-col border-l-8 card-druggroup-${druggroup} border-t border-gray-200/80">
-        <div class="flex-shrink-0 bg-slate-50 flex items-center justify-center p-4 border-b border-gray-200">
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 flex flex-col md:flex-row border-l-8 card-druggroup-${druggroup} border-t border-gray-200/80">
+        <div class="md:w-2/5 flex-shrink-0 bg-slate-50 flex items-center justify-center p-4 border-b md:border-b-0 md:border-r border-gray-200">
             <div class="drug-image-container">${imagesContent}</div>
         </div>
         <div class="flex-grow flex flex-col">
