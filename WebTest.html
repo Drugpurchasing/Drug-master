@@ -10,100 +10,317 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
-        body { font-family: 'Sarabun', sans-serif; background-color: #F7FAFC; }
-        .card-druggroup-1 { border-left-color: #FCA5A5; } .card-druggroup-2 { border-left-color: #C4B5FD; } .card-druggroup-3 { border-left-color: #FED7AA; } .card-druggroup-4 { border-left-color: #60A5FA; } .card-druggroup-5 { border-left-color: #4ADE80; } .card-druggroup-misc { border-left-color: #A3A3A3; }
-        .tag-filter-1 { background-color: #FECACA; color: #991B1B; } .tag-filter-2 { background-color: #D8B4FE; color: #581C87; } .tag-filter-3 { background-color: #FDBA74; color: #9A3412; } .tag-filter-4 { background-color: #93C5FD; color: #1E3A8A; } .tag-filter-5 { background-color: #BBF7D0; color: #15803D; } .tag-filter-misc { background-color: #D1D5DB; color: #1F2937; } .tag-filter-group { background-color: #A5F3FC; color: #0E7490; }
-        .tag-ed { background-color: #D1FAE5; color: #047857; } .tag-ned { background-color: #DC2626; color: white; } .tag-nonstock { background-color: #DBEAFE; color: #1E40AF; } .tag-default { background-color: #E5E7EB; color: #374151; }
-        .category-tag { padding: 0.25rem 0.75rem; border-radius: 9999px; font-weight: 600; font-size: 0.75rem; }
-        #loader { border: 8px solid #f3f3f3; border-top: 8px solid #3498db; border-radius: 50%; width: 60px; height: 60px; animation: spin 2s linear infinite; } @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .filter-btn { padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; transition: all 0.2s; border: 2px solid transparent; } .filter-btn.active { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); } .filter-btn:not(.active) { background-color: #fff; color: #4A5568; border-color: #E2E8F0; }
-        .label-indication { color: #2563EB; } .label-dose { color: #16A34A; } .label-unit { color: #9333EA; } .label-proposer { color: #64748B; } .label-storage { color: #0891B2; } .label-food { color: #D97706; } .label-comparable { color: #F59E0B; }
+        body { 
+            font-family: 'Sarabun', sans-serif; 
+            background-color: #F8FAFC;
+            line-height: 1.6;
+        }
+        
+        /* Card Colors */
+        .card-druggroup-1 { border-left-color: #EF4444; } 
+        .card-druggroup-2 { border-left-color: #8B5CF6; } 
+        .card-druggroup-3 { border-left-color: #F59E0B; } 
+        .card-druggroup-4 { border-left-color: #3B82F6; } 
+        .card-druggroup-5 { border-left-color: #10B981; } 
+        .card-druggroup-misc { border-left-color: #6B7280; }
+        
+        /* Tag Colors */
+        .tag-filter-1 { background-color: #FEE2E2; color: #B91C1C; } 
+        .tag-filter-2 { background-color: #EDE9FE; color: #5B21B6; } 
+        .tag-filter-3 { background-color: #FEF3C7; color: #92400E; } 
+        .tag-filter-4 { background-color: #DBEAFE; color: #1E40AF; } 
+        .tag-filter-5 { background-color: #D1FAE5; color: #047857; } 
+        .tag-filter-misc { background-color: #E5E7EB; color: #374151; } 
+        .tag-filter-group { background-color: #ECFDF5; color: #059669; border: 1px solid #A7F3D0; }
+        
+        /* Status Tags */
+        .tag-ed { background-color: #D1FAE5; color: #047857; border: 1px solid #A7F3D0; } 
+        .tag-ned { background-color: #FEE2E2; color: #B91C1C; border: 1px solid #FECACA; } 
+        .tag-nonstock { background-color: #E0E7FF; color: #4338CA; border: 1px solid #C7D2FE; } 
+        .tag-default { background-color: #E5E7EB; color: #374151; border: 1px solid #D1D5DB; }
+        
+        .category-tag { 
+            padding: 0.25rem 0.75rem; 
+            border-radius: 9999px; 
+            font-weight: 600; 
+            font-size: 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+        
+        #loader { 
+            border: 8px solid #f3f3f3; 
+            border-top: 8px solid #3B82F6; 
+            border-radius: 50%; 
+            width: 60px; 
+            height: 60px; 
+            animation: spin 2s linear infinite; 
+        } 
+        
+        @keyframes spin { 
+            0% { transform: rotate(0deg); } 
+            100% { transform: rotate(360deg); } 
+        }
+        
+        .filter-btn { 
+            padding: 0.5rem 1rem; 
+            border-radius: 8px; 
+            font-weight: 600; 
+            transition: all 0.2s; 
+            border: 2px solid transparent;
+            font-size: 0.875rem;
+        } 
+        
+        .filter-btn.active { 
+            transform: translateY(-2px); 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+            border-color: #3B82F6;
+            background-color: #3B82F6;
+            color: white;
+        } 
+        
+        .filter-btn:not(.active) { 
+            background-color: #fff; 
+            color: #4A5568; 
+            border-color: #E2E8F0;
+        }
+        
+        .filter-btn:hover:not(.active) {
+            background-color: #F3F4F6;
+        }
+        
+        /* Label Colors */
+        .label-indication { color: #2563EB; } 
+        .label-dose { color: #16A34A; } 
+        .label-unit { color: #9333EA; } 
+        .label-proposer { color: #64748B; } 
+        .label-storage { color: #0891B2; } 
+        .label-food { color: #D97706; } 
+        .label-comparable { color: #F59E0B; }
         
         .image-container {
             display: flex;
             flex-direction: column;
             width: 100%;
             justify-content: center;
-            gap: 4px;
+            gap: 1rem;
             height: 360px;
+            background-color: #F9FAFB;
+            border-radius: 12px;
+            padding: 1rem;
         }
+        
         .image-container:empty { 
             display: none; 
         }
+        
         .drug-image {
             width: 100%;
             flex-shrink: 1;
             min-height: 0;
             object-fit: contain;
-            background-color: #f9fafb;
             border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border: 1px solid #E5E7EB;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .image-container {
+                height: 280px;
+            }
+            
+            .drug-card {
+                flex-direction: column;
+            }
+            
+            .drug-image-section {
+                width: 100%;
+            }
+            
+            .drug-info-section {
+                width: 100%;
+            }
+        }
+        
+        /* Highlight important text */
+        .highlight {
+            background-color: #FEF08A;
+            padding: 0.1rem 0.3rem;
+            border-radius: 4px;
+        }
+        
+        /* Modal styling */
+        .modal-content {
+            animation: modalFadeIn 0.3s ease-out;
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Group header */
+        .group-header {
+            position: relative;
+            padding-left: 1.5rem;
+            margin: 3rem 0 1.5rem;
+        }
+        
+        .group-header::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 6px;
+            background-color: #3B82F6;
+            border-radius: 3px;
+        }
+        
+        /* Card hover effect */
+        .drug-card {
+            transition: all 0.3s ease;
+        }
+        
+        .drug-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        /* Floating toolbar */
+        #floating-toolbar button {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        #floating-toolbar button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
         }
     </style>
 </head>
-<body class="text-gray-800">
+<body class="text-gray-800 antialiased">
 
-<div class="container mx-auto p-4 md:p-8">
-    <header class="text-center mb-12 flex items-center justify-center gap-4">
-        <img src="CRAlogo.png" alt="Logo" class="h-12 w-auto">
-        <h1 class="text-2xl md:text-3xl font-bold text-gray-800" style="font-size: 95%;">สรุปข้อมูลยาเข้าใหม่</h1>
-    </header>
-    <div id="controls" class="py-4 mb-8 space-y-6">
-        <div class="relative max-w-2xl mx-auto">
-            <input type="text" id="searchInput" class="w-full p-2 pl-10 text-base border-2 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition" placeholder="ค้นหาชื่อยา, ชื่อสามัญ, รหัสยา...">
-            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg></div>
+<div class="container mx-auto px-4 md:px-8 py-6">
+    <header class="text-center mb-10 flex flex-col items-center">
+        <div class="flex items-center justify-center gap-4 mb-4">
+            <img src="CRAlogo.png" alt="Logo" class="h-14 w-auto">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 bg-clip-text bg-gradient-to-r from-blue-600 to-blue-800">
+                สรุปข้อมูลยาเข้าใหม่
+            </h1>
         </div>
-        <div class="flex flex-col md:flex-row md:items-start md:justify-center gap-x-12 gap-y-6">
-            <div class="text-center border rounded-md p-4">
-                <p class="font-semibold text-gray-600 mb-2">Filter by กลุ่มยา:</p>
-                <div id="category-filter-container" class="flex flex-wrap gap-3 justify-center"></div>
+        <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+            ระบบสรุปข้อมูลยาที่เสนอเข้าใหม่ในโรงพยาบาล แสดงรายละเอียดยา ข้อบ่งใช้ ขนาดยา และข้อมูลสำคัญอื่นๆ
+        </p>
+    </header>
+    
+    <div id="controls" class="py-6 mb-8 space-y-8 bg-white rounded-xl shadow-sm p-6">
+        <div class="relative max-w-2xl mx-auto">
+            <input type="text" id="searchInput" 
+                   class="w-full p-3 pl-12 text-lg border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition placeholder-gray-400" 
+                   placeholder="ค้นหาชื่อยา, ชื่อสามัญ, รหัสยา...">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
             </div>
-            <div class="text-center border rounded-md p-4">
-                <p class="font-semibold text-gray-600 mb-2">Filter by รอบที่เสนอเข้า:</p>
-                <div id="group-filter-container" class="flex flex-wrap gap-3 justify-center"></div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-gray-50 rounded-xl p-5 border border-gray-100">
+                <p class="font-semibold text-gray-700 mb-3 text-lg">Filter by กลุ่มยา:</p>
+                <div id="category-filter-container" class="flex flex-wrap gap-2 justify-center"></div>
+            </div>
+            
+            <div class="bg-gray-50 rounded-xl p-5 border border-gray-100">
+                <p class="font-semibold text-gray-700 mb-3 text-lg">Filter by รอบที่เสนอเข้า:</p>
+                <div id="group-filter-container" class="flex flex-wrap gap-2 justify-center"></div>
             </div>
         </div>
     </div>
-    <div id="loading-container" class="flex flex-col items-center justify-center p-10"><div id="loader"></div><p class="text-gray-600 mt-4">กำลังโหลดข้อมูล กรุณารอสักครู่</p></div>
+    
+    <div id="loading-container" class="flex flex-col items-center justify-center p-12">
+        <div id="loader"></div>
+        <p class="text-gray-600 mt-6 text-lg">กำลังโหลดข้อมูล กรุณารอสักครู่...</p>
+    </div>
+    
     <div id="drug-list" class="space-y-8"></div>
 </div>
 
+<!-- Floating Action Buttons -->
 <div id="floating-toolbar" class="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-3">
-    <button id="scrollToTopBtn" title="กลับขึ้นบนสุด" class="hidden bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full shadow-lg transition-all duration-300 flex items-center gap-2 px-4 py-3">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 25 25" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" /></svg>
+    <button id="scrollToTopBtn" title="กลับขึ้นบนสุด" class="hidden bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full shadow-lg transition-all duration-300 flex items-center gap-2 px-5 py-3 text-lg">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 25 25" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+        </svg>
         <span>กลับขึ้นบนสุด</span>
     </button>
-    <button id="openReportModalBtn" title="ขอแก้ไขข้อมูล, แจ้งปัญหา, สอบถาม, หรือส่งข้อเสนอแนะ" class="bg-green-600 hover:bg-green-700 text-white font-semibold rounded-full shadow-lg transition-all duration-300 flex items-center gap-2 px-4 py-3">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 25 25" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+    
+    <button id="openReportModalBtn" title="ขอแก้ไขข้อมูล, แจ้งปัญหา, สอบถาม, หรือส่งข้อเสนอแนะ" class="bg-green-600 hover:bg-green-700 text-white font-semibold rounded-full shadow-lg transition-all duration-300 flex items-center gap-2 px-5 py-3 text-lg">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 25 25" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
         <span>ติดต่อ/แจ้งปัญหา</span>
     </button>
 </div>
-<div id="reportModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
-    <div class="relative mx-auto p-5 border w-full max-w-lg shadow-lg rounded-md bg-white">
-        <div class="mt-3 text-center">
-            <h3 class="text-2xl leading-6 font-bold text-gray-900">ติดต่อผู้ดูแลระบบ</h3>
-            <p class="text-sm text-gray-500 mt-2">เลือกหัวข้อและกรอกรายละเอียดที่ต้องการแจ้ง</p>
-            <form id="reportForm" class="mt-6 text-left space-y-4">
+
+<!-- Report Modal -->
+<div id="reportModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
+    <div class="relative mx-auto p-6 border w-full max-w-2xl shadow-lg rounded-xl bg-white modal-content">
+        <div class="text-center">
+            <h3 class="text-2xl md:text-3xl leading-6 font-bold text-gray-900 mb-2">ติดต่อผู้ดูแลระบบ</h3>
+            <p class="text-md text-gray-500 mb-6">เลือกหัวข้อและกรอกรายละเอียดที่ต้องการแจ้ง</p>
+            
+            <form id="reportForm" class="mt-2 text-left space-y-6">
                 <div>
-                    <label class="font-semibold text-gray-700">หัวข้อการติดต่อ:</label>
-                    <div class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"><input type="radio" name="topic" value="ขอแก้ไขข้อมูลยา" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" checked><span class="ml-3 text-gray-800">ขอแก้ไขข้อมูลยา</span></label>
-                        <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"><input type="radio" name="topic" value="พบปัญหาการใช้งาน" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"><span class="ml-3 text-gray-800">พบปัญหา</span></label>
-                        <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"><input type="radio" name="topic" value="คำถาม" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"><span class="ml-3 text-gray-800">คำถาม</span></label>
-                        <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"><input type="radio" name="topic" value="ข้อเสนอแนะ" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"><span class="ml-3 text-gray-800">ข้อเสนอแนะ</span></label>
+                    <label class="block font-semibold text-gray-700 text-lg mb-3">หัวข้อการติดต่อ:</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl hover:bg-blue-50 cursor-pointer transition has-[:checked]:bg-blue-50 has-[:checked]:border-blue-200">
+                            <input type="radio" name="topic" value="ขอแก้ไขข้อมูลยา" class="h-5 w-5 text-blue-600 border-gray-300 focus:ring-blue-500" checked>
+                            <span class="ml-3 text-gray-800 font-medium">ขอแก้ไขข้อมูลยา</span>
+                        </label>
+                        
+                        <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl hover:bg-blue-50 cursor-pointer transition has-[:checked]:bg-blue-50 has-[:checked]:border-blue-200">
+                            <input type="radio" name="topic" value="พบปัญหาการใช้งาน" class="h-5 w-5 text-blue-600 border-gray-300 focus:ring-blue-500">
+                            <span class="ml-3 text-gray-800 font-medium">พบปัญหา</span>
+                        </label>
+                        
+                        <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl hover:bg-blue-50 cursor-pointer transition has-[:checked]:bg-blue-50 has-[:checked]:border-blue-200">
+                            <input type="radio" name="topic" value="คำถาม" class="h-5 w-5 text-blue-600 border-gray-300 focus:ring-blue-500">
+                            <span class="ml-3 text-gray-800 font-medium">คำถาม</span>
+                        </label>
+                        
+                        <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl hover:bg-blue-50 cursor-pointer transition has-[:checked]:bg-blue-50 has-[:checked]:border-blue-200">
+                            <input type="radio" name="topic" value="ข้อเสนอแนะ" class="h-5 w-5 text-blue-600 border-gray-300 focus:ring-blue-500">
+                            <span class="ml-3 text-gray-800 font-medium">ข้อเสนอแนะ</span>
+                        </label>
                     </div>
                 </div>
+                
                 <div>
-                    <label for="message" class="font-semibold text-gray-700">รายละเอียด:</label>
-                    <textarea id="message" name="message" rows="5" class="mt-2 p-2 w-full border-2 border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition" placeholder="กรุณาระบุรายละเอียด เช่น ชื่อยาที่ต้องการแก้ไข หรือปัญหาที่พบ..." required></textarea>
+                    <label for="message" class="block font-semibold text-gray-700 text-lg mb-3">รายละเอียด:</label>
+                    <textarea id="message" name="message" rows="6" class="mt-1 p-3 w-full border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition placeholder-gray-400 text-lg" placeholder="กรุณาระบุรายละเอียด เช่น ชื่อยาที่ต้องการแก้ไข หรือปัญหาที่พบ..." required></textarea>
                 </div>
-                <div class="items-center gap-4 pt-4 flex">
-                    <button id="closeReportModalBtn" type="button" class="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">ยกเลิก</button>
-                    <button type="submit" class="flex-1 px-4 py-2 bg-blue-600 text-white text-base font-semibold rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">ส่งเรื่อง</button>
+                
+                <div class="flex items-center gap-4 pt-2">
+                    <button id="closeReportModalBtn" type="button" class="flex-1 px-6 py-3 bg-gray-200 text-gray-800 rounded-xl hover:bg-gray-300 font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition text-lg">
+                        ยกเลิก
+                    </button>
+                    
+                    <button type="submit" class="flex-1 px-6 py-3 bg-blue-600 text-white text-lg font-semibold rounded-xl shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                        </svg>
+                        ส่งเรื่อง
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
 <script>
 // --- CONSTANTS AND GLOBAL VARIABLES ---
 const googleSheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTv6yIfVLrXZ76oqef80u3iZbheswq3h-igusVAjNryZYucvVhnXc35I2HDNvEZr-4FYf4rwIu9EHn-/pub?gid=0&single=true&output=csv';
@@ -118,7 +335,29 @@ let allDrugData = [];
 function sanitizeHTML(text) { if (!text) return ''; const temp = document.createElement('div'); temp.textContent = text; return temp.innerHTML; }
 function getDrugGroupCode(code) { return ['1', '2', '3', '4', '5'].includes(String(code)) ? String(code) : 'misc'; }
 function getOrder(value, fallback = 999) { const num = parseInt(value, 10); return isNaN(num) ? fallback : num; }
-function formatNotesAdvanced(text) { if (!text || text.trim() === '') return '-'; let sanitizedText = sanitizeHTML(text); const lines = sanitizedText.split(/\\n|\n/g); let finalHtml = lines.map(line => { let processedLine = line.trim(); processedLine = processedLine.replace(/กำหนดการสั่งเฉพาะ/g, '<strong class="text-red-600 underline">$&</strong>'); if (/^(\d+\.\d+|\d+\)|\-|\•)\s/.test(processedLine)) { return `<div class="pl-4">${processedLine}</div>`; } return processedLine; }).join('<br />'); finalHtml = finalHtml.replace(/เบิกไม่ได้/g, '<strong class="text-red-600 px-2 py-1 bg-red-100 rounded">$&</strong>'); finalHtml = finalHtml.replace(/Non-stock/g, '<strong class="text-blue-600 px-2 py-1 bg-blue-100 rounded">$&</strong>'); finalHtml = finalHtml.replace(/สำรองจ่าย/g, '<strong class="text-blue-600 px-2 py-1 bg-blue-100 rounded">$&</strong>'); finalHtml = finalHtml.replace(/เข้าทดแทน/g, '<strong class="text-purple-600 px-2 py-1 bg-purple-100 rounded">$&</strong>'); return finalHtml; }
+
+function formatNotesAdvanced(text) { 
+    if (!text || text.trim() === '') return '-'; 
+    let sanitizedText = sanitizeHTML(text); 
+    const lines = sanitizedText.split(/\\n|\n/g); 
+    let finalHtml = lines.map(line => { 
+        let processedLine = line.trim(); 
+        processedLine = processedLine.replace(/กำหนดการสั่งเฉพาะ/g, '<strong class="text-red-600 underline">$&</strong>'); 
+        if (/^(\d+\.\d+|\d+\)|\-|\•)\s/.test(processedLine)) { 
+            return `<div class="pl-4">${processedLine}</div>`; 
+        } 
+        return processedLine; 
+    }).join('<br />'); 
+    
+    // Enhanced highlighting
+    finalHtml = finalHtml.replace(/เบิกไม่ได้/g, '<strong class="text-red-600 px-1 py-0.5 bg-red-100 rounded-md">$&</strong>'); 
+    finalHtml = finalHtml.replace(/Non-stock/g, '<strong class="text-blue-600 px-1 py-0.5 bg-blue-100 rounded-md">$&</strong>'); 
+    finalHtml = finalHtml.replace(/สำรองจ่าย/g, '<strong class="text-blue-600 px-1 py-0.5 bg-blue-100 rounded-md">$&</strong>'); 
+    finalHtml = finalHtml.replace(/เข้าทดแทน/g, '<strong class="text-purple-600 px-1 py-0.5 bg-purple-100 rounded-md">$&</strong>'); 
+    finalHtml = finalHtml.replace(/สำคัญ|พิเศษ/g, '<span class="highlight">$&</span>');
+    
+    return finalHtml; 
+}
 
 // --- FIXED DATA LOADING FUNCTION ---
 async function loadDrugData() {
@@ -129,25 +368,17 @@ async function loadDrugData() {
         }
         const csvText = await response.text();
         
-        console.log("Successfully fetched data from URL. Parsing CSV...");
-
         Papa.parse(csvText, {
             header: true,
             skipEmptyLines: true,
             trimHeaders: true,
             complete: (results) => {
-                console.log("Parsing complete. Results object:", results);
-                console.log("Headers found in your Google Sheet:", results.meta.fields);
-
                 if (results.errors.length) {
                     console.error("CSV Parsing Errors:", results.errors);
                 }
 
                 allDrugData = results.data.filter(row => row.sapCode && row.sapCode.trim() !== '');
                 
-                console.log(`Found ${results.data.length} total rows.`);
-                console.log(`Found ${allDrugData.length} rows with a valid sapCode.`);
-
                 loadingContainer.style.display = 'none';
 
                 if (allDrugData.length === 0) {
@@ -192,7 +423,7 @@ function renderGroupedCards(drugData) {
     });
 
     if (drugData.length === 0) {
-        drugListContainer.innerHTML = '<p class="text-center text-gray-500 font-semibold mt-8">ไม่พบข้อมูลที่ตรงกับเงื่อนไข</p>';
+        drugListContainer.innerHTML = '<div class="bg-white p-8 rounded-xl shadow text-center"><p class="text-gray-500 font-semibold text-xl">ไม่พบข้อมูลที่ตรงกับเงื่อนไขการค้นหา</p><p class="text-gray-400 mt-2">ลองเปลี่ยนคำค้นหาหรือตัวกรองดูนะครับ</p></div>';
         return;
     }
 
@@ -216,12 +447,247 @@ function renderGroupedCards(drugData) {
     drugListContainer.appendChild(fragment);
 }
 
-function createGroupHeaderHTML(groupName) { return `<div class="mt-10 mb-4"><h2 class="text-3xl font-bold text-gray-900 border-b-2 border-gray-800 pb-2">${sanitizeHTML(groupName)}</h2></div>`; }
-function createDrugCardHTML(drug) { const formatContent = (text) => (sanitizeHTML(text) || '-').replace(/\\n|\n/g, '<br>'); const druggroup = getDrugGroupCode(drug.code); const notesInfo = formatNotesAdvanced(drug.notes); const indication = formatContent(drug.indication); const dose = formatContent(drug.dose); const proposerInfo = formatContent(drug.proposer); const unitInfo = formatContent(drug.unit); const storage = formatContent(drug.storage); const food = formatContent(drug.food); const comparableDrug = formatContent(drug['Comparable drug']); const sanitizedName = sanitizeHTML(drug.name || ''); let drugTypeTagClass = 'tag-default'; const drugTypeOriginal = drug.type || ''; const drugTypeUpper = drugTypeOriginal.toUpperCase(); if (drugTypeUpper.includes('NED') || drugTypeOriginal.includes('เบิกไม่ได้')) { drugTypeTagClass = 'tag-ned'; } else if (drugTypeUpper.includes('ED') || drugTypeOriginal.includes('สมุนไพรในบัญชี')) { drugTypeTagClass = 'tag-ed'; } const isNonStock = (drug.name || '').toLowerCase().includes('non-stock'); const nonStockTag = isNonStock ? `<span class="category-tag tag-nonstock">Non-stock</span>` : ''; const imageUrl1 = drug.image && drug.image.trim() !== '' ? drug.image.trim() : ''; const imageUrl2 = drug.image2 && drug.image2.trim() !== '' ? drug.image2.trim() : ''; let imagesContent = ''; const onErrorScript = `this.remove()`; if (imageUrl1) { imagesContent += `<img src="${imageUrl1}" alt="รูปยา ${sanitizedName} 1" class="drug-image" onerror="${onErrorScript}">`; } if (imageUrl2) { imagesContent += `<img src="${imageUrl2}" alt="รูปยา ${sanitizedName} 2" class="drug-image" onerror="${onErrorScript}">`; } const indicationHTML = ` <div class="flex items-start text-lg leading-relaxed mt-4"> <span class="label-indication"><svg class="h-6 w-6 mr-3 flex-shrink-0 mt-1" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M18.889 3.323c-1.23-1.063-2.862-1.548-4.5-1.48-2.07.085-3.94.94-5.312 2.313-1.373 1.373-2.228 3.243-2.313 5.313-.068 1.638.417 3.27 1.48 4.5l8.322 8.323a.75.75 0 001.06 0l8.323-8.323c1.063-1.23 1.548-2.862 1.48-4.5-.085-2.07-.94-3.94-2.313-5.313-1.344-1.344-3.19-2.204-5.227-2.312z"/></svg></span> <div><strong class="font-semibold label-indication">ข้อบ่งชี้:</strong><div class="mt-1 text-black">${indication}</div></div> </div>`; let comparableDrugHTML = ''; if (comparableDrug && comparableDrug !== '-') { comparableDrugHTML = ` <div class="flex items-start text-sm leading-relaxed mt-4"> <span class="label-comparable"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 mt-1" viewBox="0 0 20 20" fill="currentColor"><path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2-2H4a2 2 0 01-2-2v-4z" /></svg></span> <div><strong class="font-semibold label-comparable">ยาในบัญชีฯที่ใกล้เคียงกัน:</strong><div class="mt-1 text-black">${comparableDrug}</div></div> </div>`; } return ` <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col md:flex-row border-l-[6px] card-druggroup-${druggroup}"> <div class="md:w-2/5 flex-shrink-0 bg-gray-50 flex items-center justify-center p-4"> <div class="image-container"> ${imagesContent} </div> </div> <div class="flex-grow flex flex-col"> <div class="p-6 flex-grow"> <div class="flex justify-between items-start"> <div class="flex-grow pr-4"> <p class="text-lg font-semibold text-gray-500">${formatContent(drug.generic)}</p> <h3 class="text-3xl font-bold text-gray-900 mt-1">${formatContent(drug.name)}</h3> <p class="text-lg text-gray-500 font-mono mt-1">SAP Code: ${formatContent(drug.sapCode)}</p> </div> <div class="flex flex-col items-end gap-y-2 flex-shrink-0"> <span class="category-tag whitespace-nowrap ${drugTypeTagClass}" style="font-size: 1.5rem;">${formatContent(drug.type)}</span> ${nonStockTag} </div> </div> <hr class="my-4"> ${indicationHTML} ${comparableDrugHTML} <div class="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-5 text-lg leading-relaxed"> <div class="flex items-start"> <span class="label-dose"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 mt-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7 2a1 1 0 00-1 1v1H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 00-1-1H7zm2 10a1 1 0 100 2h2a1 1 0 100-2H9z" clip-rule="evenodd" /></svg></span> <div><strong class="font-semibold label-dose">ขนาดใช้ยา:</strong><div class="mt-1 text-black">${dose}</div></div> </div> <div class="flex items-start"> <span class="label-unit"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 mt-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M2.5 4.5A2.5 2.5 0 015 2h10a2.5 2.5 0 012.5 2.5v1A2.5 2.5 0 0115 8H5a2.5 2.5 0 01-2.5-2.5v-1zM5 4.5a.5.5 0 00-.5.5v1a.5.5 0 00.5.5h10a.5.5 0 00.5-.5v-1a.5.5 0 00-.5-.5H5zM2.5 10A2.5 2.5 0 015 7.5h10a2.5 2.5 0 012.5 2.5v4A2.5 2.5 0 0115 19H5a2.5 2.5 0 01-2.5-2.5v-4z" clip-rule="evenodd" /></svg></span> <div><strong class="font-semibold label-unit">หน่วยซื้อ:</strong><div class="mt-1 text-black">${unitInfo}</div></div> </div> <div class="flex items-start"> <span class="label-proposer"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 mt-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg></span> <div><strong class="font-semibold label-proposer">แพทย์ผู้เสนอ:</strong><div class="mt-1 text-black">${proposerInfo}</div></div> </div> <div class="flex items-start"> <span class="label-storage"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 mt-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.05 5.05a.75.75 0 011.06 0l2.5 2.5a.75.75 0 01-1.06 1.06L10 7.06l-1.54 1.55a.75.75 0 11-1.06-1.06l2.5-2.5zM10 12a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 12z" clip-rule="evenodd" /></svg></span> <div><strong class="font-semibold label-storage">การจัดเก็บ:</strong><div class="mt-1 text-black">${storage}</div></div> </div> ${food && food !== '-' ? `<div class="flex items-start"> <span class="label-food"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 mt-1" viewBox="0 0 20 20" fill="currentColor"><path d="M18.293 11.293A1 1 0 0018 11H2a1 1 0 00-.707 1.707l7 7a1 1 0 001.414 0l7-7a1 1 0 00.293-1.414zM10 16.586L4.414 11H15.586L10 16.586zM2 9a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1z"/></svg></span> <div><strong class="font-semibold label-food">Food interaction:</strong><div class="mt-1 text-black">${food}</div></div> </div>` : ''} </div> </div> <div class="bg-gray-50 px-6 py-4 mt-auto border-t border-gray-200"> <div><strong class="font-semibold underline text-black">หมายเหตุ:</strong><div class="mt-1 text-xl text-black leading-relaxed">${notesInfo}</div></div> </div> </div> </div>`;}
-function setupEventListeners() { searchInput.addEventListener('input', filterAndRender); const handleFilterClick = (container) => (e) => { if (e.target.tagName === 'BUTTON') { const currentActive = container.querySelector('.active'); if (currentActive) currentActive.classList.remove('active'); e.target.classList.add('active'); filterAndRender(); } }; categoryFilterContainer.addEventListener('click', handleFilterClick(categoryFilterContainer)); groupFilterContainer.addEventListener('click', handleFilterClick(groupFilterContainer)); }
-function setupCategoryFilters() { const categories = allDrugData.reduce((acc, drug) => { const druggroup = getDrugGroupCode(drug.code); const name = drug.druggroupName || `ยา กลุ่ม ${druggroup}`; if (!acc[druggroup]) { acc[druggroup] = { name: name.trim(), code: druggroup }; } return acc; }, {}); let filterHtml = '<button class="filter-btn active" data-filter="all">ทั้งหมด</button>'; Object.values(categories).sort((a,b) => a.code.localeCompare(b.code)).forEach(cat => { filterHtml += `<button class="filter-btn tag-filter-${cat.code}" data-filter="${cat.code}">${sanitizeHTML(cat.name)}</button>`; }); categoryFilterContainer.innerHTML = filterHtml; }
-function setupGroupFilters() { const groups = [...new Set(allDrugData.map(drug => (drug.group || '').trim()).filter(Boolean))]; let filterHtml = '<button class="filter-btn active" data-filter="all">ทั้งหมด</button>'; groups.sort().forEach(group => { const buttonText = group.replace(/\s*\(.*\)/, ''); filterHtml += `<button class="filter-btn tag-filter-group" data-filter="${group}">${sanitizeHTML(buttonText)}</button>`; }); groupFilterContainer.innerHTML = filterHtml; }
-function filterAndRender() { const searchTerm = searchInput.value.toLowerCase().trim(); const activeCategoryFilter = categoryFilterContainer.querySelector('.active').dataset.filter; const activeGroupFilter = groupFilterContainer.querySelector('.active').dataset.filter; const filteredData = allDrugData.filter(drug => { const searchableContent = (drug.name + ' ' + drug.generic + ' ' + drug.sapCode).toLowerCase(); const matchesSearch = searchTerm === '' || searchableContent.includes(searchTerm); const matchesCategory = activeCategoryFilter === 'all' || getDrugGroupCode(drug.code) === activeCategoryFilter; const matchesGroup = activeGroupFilter === 'all' || (drug.group || '').trim() === activeGroupFilter; return matchesSearch && matchesCategory && matchesGroup; }); renderGroupedCards(filteredData); }
+function createGroupHeaderHTML(groupName) { 
+    return `
+    <div class="group-header">
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-900">
+            ${sanitizeHTML(groupName)}
+        </h2>
+        <div class="text-sm text-gray-500 mt-1">จำนวนยา: ${allDrugData.filter(d => (d.group || '').trim() === groupName).length} รายการ</div>
+    </div>
+    `; 
+}
+
+function createDrugCardHTML(drug) { 
+    const formatContent = (text) => (sanitizeHTML(text) || '-').replace(/\\n|\n/g, '<br>'); 
+    const druggroup = getDrugGroupCode(drug.code); 
+    const notesInfo = formatNotesAdvanced(drug.notes); 
+    const indication = formatContent(drug.indication); 
+    const dose = formatContent(drug.dose); 
+    const proposerInfo = formatContent(drug.proposer); 
+    const unitInfo = formatContent(drug.unit); 
+    const storage = formatContent(drug.storage); 
+    const food = formatContent(drug.food); 
+    const comparableDrug = formatContent(drug['Comparable drug']); 
+    const sanitizedName = sanitizeHTML(drug.name || ''); 
+    
+    let drugTypeTagClass = 'tag-default'; 
+    const drugTypeOriginal = drug.type || ''; 
+    const drugTypeUpper = drugTypeOriginal.toUpperCase(); 
+    if (drugTypeUpper.includes('NED') || drugTypeOriginal.includes('เบิกไม่ได้')) { 
+        drugTypeTagClass = 'tag-ned'; 
+    } else if (drugTypeUpper.includes('ED') || drugTypeOriginal.includes('สมุนไพรในบัญชี')) { 
+        drugTypeTagClass = 'tag-ed'; 
+    } 
+    
+    const isNonStock = (drug.name || '').toLowerCase().includes('non-stock'); 
+    const nonStockTag = isNonStock ? `<span class="category-tag tag-nonstock">Non-stock</span>` : ''; 
+    
+    const imageUrl1 = drug.image && drug.image.trim() !== '' ? drug.image.trim() : ''; 
+    const imageUrl2 = drug.image2 && drug.image2.trim() !== '' ? drug.image2.trim() : ''; 
+    let imagesContent = ''; 
+    const onErrorScript = `this.remove()`; 
+    
+    if (imageUrl1) { 
+        imagesContent += `<img src="${imageUrl1}" alt="รูปยา ${sanitizedName} 1" class="drug-image" onerror="${onErrorScript}">`; 
+    } 
+    if (imageUrl2) { 
+        imagesContent += `<img src="${imageUrl2}" alt="รูปยา ${sanitizedName} 2" class="drug-image" onerror="${onErrorScript}">`; 
+    } 
+    
+    const indicationHTML = ` 
+    <div class="flex items-start text-lg leading-relaxed mt-4"> 
+        <span class="label-indication">
+            <svg class="h-6 w-6 mr-3 flex-shrink-0 mt-1" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18.889 3.323c-1.23-1.063-2.862-1.548-4.5-1.48-2.07.085-3.94.94-5.312 2.313-1.373 1.373-2.228 3.243-2.313 5.313-.068 1.638.417 3.27 1.48 4.5l8.322 8.323a.75.75 0 001.06 0l8.323-8.323c1.063-1.23 1.548-2.862 1.48-4.5-.085-2.07-.94-3.94-2.313-5.313-1.344-1.344-3.19-2.204-5.227-2.312z"/>
+            </svg>
+        </span> 
+        <div>
+            <strong class="font-semibold label-indication">ข้อบ่งชี้:</strong>
+            <div class="mt-1 text-gray-800">${indication}</div>
+        </div> 
+    </div>`; 
+    
+    let comparableDrugHTML = ''; 
+    if (comparableDrug && comparableDrug !== '-') { 
+        comparableDrugHTML = ` 
+        <div class="flex items-start text-lg leading-relaxed mt-4"> 
+            <span class="label-comparable">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 mt-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2-2H4a2 2 0 01-2-2v-4z" />
+                </svg>
+            </span> 
+            <div>
+                <strong class="font-semibold label-comparable">ยาในบัญชีฯที่ใกล้เคียงกัน:</strong>
+                <div class="mt-1 text-gray-800">${comparableDrug}</div>
+            </div> 
+        </div>`; 
+    } 
+    
+    return ` 
+    <div class="bg-white rounded-xl shadow-md overflow-hidden drug-card border-l-[6px] card-druggroup-${druggroup}">
+        <div class="flex flex-col md:flex-row">
+            <div class="md:w-2/5 flex-shrink-0 p-6">
+                <div class="image-container">
+                    ${imagesContent}
+                </div>
+            </div>
+            
+            <div class="flex-grow flex flex-col p-6">
+                <div class="flex justify-between items-start">
+                    <div class="flex-grow pr-4">
+                        <p class="text-lg font-semibold text-gray-500">${formatContent(drug.generic)}</p>
+                        <h3 class="text-2xl md:text-3xl font-bold text-gray-900 mt-1">${formatContent(drug.name)}</h3>
+                        <p class="text-lg text-gray-500 font-mono mt-1">SAP Code: ${formatContent(drug.sapCode)}</p>
+                    </div>
+                    
+                    <div class="flex flex-col items-end gap-y-2 flex-shrink-0">
+                        <span class="category-tag whitespace-nowrap ${drugTypeTagClass}">
+                            ${formatContent(drug.type)}
+                        </span>
+                        ${nonStockTag}
+                    </div>
+                </div>
+                
+                <hr class="my-4 border-gray-200">
+                
+                ${indicationHTML}
+                ${comparableDrugHTML}
+                
+                <div class="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-5 text-lg leading-relaxed">
+                    <div class="flex items-start">
+                        <span class="label-dose">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 mt-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M7 2a1 1 0 00-1 1v1H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 00-1-1H7zm2 10a1 1 0 100 2h2a1 1 0 100-2H9z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                        <div>
+                            <strong class="font-semibold label-dose">ขนาดใช้ยา:</strong>
+                            <div class="mt-1 text-gray-800">${dose}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <span class="label-unit">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 mt-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M2.5 4.5A2.5 2.5 0 015 2h10a2.5 2.5 0 012.5 2.5v1A2.5 2.5 0 0115 8H5a2.5 2.5 0 01-2.5-2.5v-1zM5 4.5a.5.5 0 00-.5.5v1a.5.5 0 00.5.5h10a.5.5 0 00.5-.5v-1a.5.5 0 00-.5-.5H5zM2.5 10A2.5 2.5 0 015 7.5h10a2.5 2.5 0 012.5 2.5v4A2.5 2.5 0 0115 19H5a2.5 2.5 0 01-2.5-2.5v-4z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                        <div>
+                            <strong class="font-semibold label-unit">หน่วยซื้อ:</strong>
+                            <div class="mt-1 text-gray-800">${unitInfo}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <span class="label-proposer">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 mt-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                        <div>
+                            <strong class="font-semibold label-proposer">แพทย์ผู้เสนอ:</strong>
+                            <div class="mt-1 text-gray-800">${proposerInfo}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <span class="label-storage">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 mt-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.05 5.05a.75.75 0 011.06 0l2.5 2.5a.75.75 0 01-1.06 1.06L10 7.06l-1.54 1.55a.75.75 0 11-1.06-1.06l2.5-2.5zM10 12a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 12z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                        <div>
+                            <strong class="font-semibold label-storage">การจัดเก็บ:</strong>
+                            <div class="mt-1 text-gray-800">${storage}</div>
+                        </div>
+                    </div>
+                    
+                    ${food && food !== '-' ? `
+                    <div class="flex items-start">
+                        <span class="label-food">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 mt-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M18.293 11.293A1 1 0 0018 11H2a1 1 0 00-.707 1.707l7 7a1 1 0 001.414 0l7-7a1 1 0 00.293-1.414zM10 16.586L4.414 11H15.586L10 16.586zM2 9a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1z"/>
+                            </svg>
+                        </span>
+                        <div>
+                            <strong class="font-semibold label-food">Food interaction:</strong>
+                            <div class="mt-1 text-gray-800">${food}</div>
+                        </div>
+                    </div>` : ''}
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
+            <div>
+                <strong class="font-semibold text-gray-700">หมายเหตุ:</strong>
+                <div class="mt-2 text-gray-800 leading-relaxed">
+                    ${notesInfo}
+                </div>
+            </div>
+        </div>
+    </div>`;
+}
+
+function setupEventListeners() { 
+    searchInput.addEventListener('input', filterAndRender); 
+    
+    const handleFilterClick = (container) => (e) => { 
+        if (e.target.tagName === 'BUTTON') { 
+            const currentActive = container.querySelector('.active'); 
+            if (currentActive) currentActive.classList.remove('active'); 
+            e.target.classList.add('active'); 
+            filterAndRender(); 
+        } 
+    }; 
+    
+    categoryFilterContainer.addEventListener('click', handleFilterClick(categoryFilterContainer)); 
+    groupFilterContainer.addEventListener('click', handleFilterClick(groupFilterContainer)); 
+}
+
+function setupCategoryFilters() { 
+    const categories = allDrugData.reduce((acc, drug) => { 
+        const druggroup = getDrugGroupCode(drug.code); 
+        const name = drug.druggroupName || `ยา กลุ่ม ${druggroup}`; 
+        if (!acc[druggroup]) { 
+            acc[druggroup] = { name: name.trim(), code: druggroup }; 
+        } 
+        return acc; 
+    }, {}); 
+    
+    let filterHtml = '<button class="filter-btn active" data-filter="all">ทั้งหมด</button>'; 
+    Object.values(categories).sort((a,b) => a.code.localeCompare(b.code)).forEach(cat => { 
+        filterHtml += `<button class="filter-btn tag-filter-${cat.code}" data-filter="${cat.code}">${sanitizeHTML(cat.name)}</button>`; 
+    }); 
+    categoryFilterContainer.innerHTML = filterHtml; 
+}
+
+function setupGroupFilters() { 
+    const groups = [...new Set(allDrugData.map(drug => (drug.group || '').trim()).filter(Boolean)]; 
+    let filterHtml = '<button class="filter-btn active" data-filter="all">ทั้งหมด</button>'; 
+    groups.sort().forEach(group => { 
+        const buttonText = group.replace(/\s*\(.*\)/, ''); 
+        filterHtml += `<button class="filter-btn tag-filter-group" data-filter="${group}">${sanitizeHTML(buttonText)}</button>`; 
+    }); 
+    groupFilterContainer.innerHTML = filterHtml; 
+}
+
+function filterAndRender() { 
+    const searchTerm = searchInput.value.toLowerCase().trim(); 
+    const activeCategoryFilter = categoryFilterContainer.querySelector('.active').dataset.filter; 
+    const activeGroupFilter = groupFilterContainer.querySelector('.active').dataset.filter; 
+    
+    const filteredData = allDrugData.filter(drug => { 
+        const searchableContent = (drug.name + ' ' + drug.generic + ' ' + drug.sapCode).toLowerCase(); 
+        const matchesSearch = searchTerm === '' || searchableContent.includes(searchTerm); 
+        const matchesCategory = activeCategoryFilter === 'all' || getDrugGroupCode(drug.code) === activeCategoryFilter; 
+        const matchesGroup = activeGroupFilter === 'all' || (drug.group || '').trim() === activeGroupFilter; 
+        return matchesSearch && matchesCategory && matchesGroup; 
+    }); 
+    
+    renderGroupedCards(filteredData); 
+}
 
 // ===== FLOATING TOOLBAR & MODAL SCRIPT START =====
 const scrollToTopBtn = document.getElementById('scrollToTopBtn');
@@ -230,15 +696,35 @@ const reportModal = document.getElementById('reportModal');
 const closeReportModalBtn = document.getElementById('closeReportModalBtn');
 const reportForm = document.getElementById('reportForm');
 
-window.onscroll = function() { if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) { scrollToTopBtn.style.display = "flex"; } else { scrollToTopBtn.style.display = "none"; } };
-scrollToTopBtn.addEventListener('click', function() { window.scrollTo({top: 0, behavior: 'smooth'}); });
+window.onscroll = function() { 
+    if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) { 
+        scrollToTopBtn.style.display = "flex"; 
+    } else { 
+        scrollToTopBtn.style.display = "none"; 
+    } 
+};
 
-function openModal() { reportModal.classList.remove('hidden'); }
-function closeModal() { reportModal.classList.add('hidden'); }
+scrollToTopBtn.addEventListener('click', function() { 
+    window.scrollTo({top: 0, behavior: 'smooth'}); 
+});
+
+function openModal() { 
+    reportModal.classList.remove('hidden'); 
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal() { 
+    reportModal.classList.add('hidden'); 
+    document.body.style.overflow = 'auto';
+}
 
 openReportModalBtn.addEventListener('click', openModal);
 closeReportModalBtn.addEventListener('click', closeModal);
-reportModal.addEventListener('click', function(event) { if (event.target === reportModal) { closeModal(); } });
+reportModal.addEventListener('click', function(event) { 
+    if (event.target === reportModal) { 
+        closeModal(); 
+    } 
+});
 
 reportForm.addEventListener('submit', function(event) {
     event.preventDefault();
@@ -253,7 +739,7 @@ reportForm.addEventListener('submit', function(event) {
     }
 
     submitButton.disabled = true;
-    submitButton.textContent = 'กำลังส่ง...';
+    submitButton.innerHTML = '<span class="inline-flex items-center"><svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> กำลังส่ง...</span>';
 
     fetch(webAppUrl, {
         method: 'POST',
@@ -275,7 +761,7 @@ reportForm.addEventListener('submit', function(event) {
     })
     .finally(() => {
         submitButton.disabled = false;
-        submitButton.textContent = 'ส่งเรื่อง';
+        submitButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg> ส่งเรื่อง';
     });
 });
 // ===== FLOATING TOOLBAR & MODAL SCRIPT END =====
