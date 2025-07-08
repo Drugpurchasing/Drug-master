@@ -33,14 +33,14 @@
 
         body {
             font-family: 'Sarabun', sans-serif;
-            background-color: #f5f7fb;
+            background: linear-gradient(to bottom, #f5f7fb, #eef2f7); /* MODIFIED: Added subtle gradient */
             color: var(--text-color);
             line-height: 1.6;
             font-size: 1rem;
         }
 
         .app-container {
-            max-width: 1800px; /* MODIFIED: Increased width */
+            max-width: 1800px;
             margin: 0 auto;
             padding: 0 15px;
         }
@@ -90,10 +90,8 @@
         }
 
         .card-header {
-            background: var(--secondary-color);
-            color: white;
-            font-weight: 600;
-            padding: 15px 20px;
+            background: linear-gradient(135deg, hsl(216, 73%, 32%), hsl(215, 60%, 55%)); /* MODIFIED: Gradient background */
+            padding: 8px 20px; /* MODIFIED: Reduced padding for a thinner bar */
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
@@ -162,7 +160,7 @@
         }
 
         .modal-xl {
-            max-width: 98%; /* MODIFIED: Increased width */
+            max-width: 98%;
         }
 
         .modal-header {
@@ -235,7 +233,7 @@
         }
 
         .material-no-card {
-            flex: 0 1 180px; /* MODIFIED: Increased flex-basis */
+            flex: 0 1 180px;
         }
 
         .compact-card {
@@ -595,10 +593,7 @@
         </div>
         
         <div class="card">
-            <div class="card-header">
-                <i class="fas fa-database me-2"></i>Drug Master Database
-            </div>
-            <div class="card-body">
+            <div class="card-header"></div> <div class="card-body">
                 <div class="filter-section">
                     <div class="row g-3 justify-content-between align-items-center">
                         <div class="col-lg-5 col-md-12">
@@ -649,7 +644,7 @@
                     <table id="drugTable" class="table table-hover table-striped w-100"></table>
                 </div>
                 
-                </div>
+            </div>
         </div>
     </div>
 
@@ -866,7 +861,7 @@
         const storageColorMap = { 'below 30°c': 'bg-success', '2°c - 8°c': 'bg-primary', 'below 25°c': 'bg-orange', 'below -20°c': 'bg-info', '-15°c ถึง -25°c': 'bg-info text-dark' };
 
         const columnConfig = [
-                { title: '<i class="fas fa-eye"></i>', data: null, defaultContent: '<button class="btn btn-sm btn-primary view-details-btn" data-bs-toggle="tooltip" data-bs-placement="top" title="คลิกเพื่อดูข้อมูลของยาโดยละเอียด"><i class="fas fa-eye"></i></button>', orderable: false, className: 'text-center all-column', width: "50px" },
+                { title: 'Detail View', data: null, defaultContent: '<button class="btn btn-sm btn-primary view-details-btn" data-bs-toggle="tooltip" data-bs-placement="top" title="คลิกเพื่อดูข้อมูลของยาโดยละเอียด"><i class="fas fa-eye"></i></button>', orderable: false, className: 'text-center all-column', width: "110px" }, // MODIFIED
                 { title: 'Material No.', data: 0, className: 'default-column purchasing-column rate-column' },
                 { title: 'SAP Name', data: 1, width: "25%", className: 'default-column purchasing-column rate-column', render: (d, t) => t === 'display' && d ? `<span style="color: var(--primary-color)" class="fw-bold">${d}</span>` : d },
                 { title: 'Generic Name', data: 2, width: "25%", className: 'default-column' },
