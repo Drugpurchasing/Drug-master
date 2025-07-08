@@ -33,7 +33,7 @@
 
         body {
             font-family: 'Sarabun', sans-serif;
-            background: linear-gradient(to bottom, #f5f7fb, #eef2f7); /* MODIFIED: Added subtle gradient */
+            background: linear-gradient(to bottom, #f5f7fb, #eef2f7);
             color: var(--text-color);
             line-height: 1.6;
             font-size: 1rem;
@@ -50,7 +50,7 @@
             align-items: center;
             justify-content: space-between;
             background: var(--header-gradient);
-            padding: 15px 20px;
+            padding: 10px 20px; /* MODIFIED: Reduced padding */
             border-radius: 10px;
             color: white;
             margin-bottom: 25px;
@@ -58,7 +58,7 @@
         }
 
         .logo-container img {
-            height: 70px;
+            height: 60px; /* MODIFIED: Reduced height */
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
         }
 
@@ -90,8 +90,8 @@
         }
 
         .card-header {
-            background: linear-gradient(135deg, hsl(216, 73%, 32%), hsl(215, 60%, 55%)); /* MODIFIED: Gradient background */
-            padding: 8px 20px; /* MODIFIED: Reduced padding for a thinner bar */
+            background: linear-gradient(135deg, hsl(216, 73%, 32%), hsl(215, 60%, 55%));
+            padding: 8px 20px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
@@ -593,7 +593,8 @@
         </div>
         
         <div class="card">
-            <div class="card-header"></div> <div class="card-body">
+            <div class="card-header"></div>
+            <div class="card-body">
                 <div class="filter-section">
                     <div class="row g-3 justify-content-between align-items-center">
                         <div class="col-lg-5 col-md-12">
@@ -743,6 +744,14 @@
         var tooltipMap = {};
         const contactModal = new bootstrap.Modal(document.getElementById('contactModal'));
 
+        // MODIFIED: Added passwords for view-specific exports
+        const exportPasswords = {
+            'default': 'rxccc',
+            'purchasing': 'rxpur',
+            'rate': 'rxccc',
+            'all': 'rxpur'
+        };
+
         Chart.register(ChartDataLabels);
         
         $('body').tooltip({
@@ -861,14 +870,15 @@
         const storageColorMap = { 'below 30°c': 'bg-success', '2°c - 8°c': 'bg-primary', 'below 25°c': 'bg-orange', 'below -20°c': 'bg-info', '-15°c ถึง -25°c': 'bg-info text-dark' };
 
         const columnConfig = [
-                { title: 'Detail View', data: null, defaultContent: '<button class="btn btn-sm btn-primary view-details-btn" data-bs-toggle="tooltip" data-bs-placement="top" title="คลิกเพื่อดูข้อมูลของยาโดยละเอียด"><i class="fas fa-eye"></i></button>', orderable: false, className: 'text-center all-column', width: "110px" }, // MODIFIED
+                { title: 'Detail View', data: null, defaultContent: '<button class="btn btn-sm btn-primary view-details-btn" data-bs-toggle="tooltip" data-bs-placement="top" title="คลิกเพื่อดูข้อมูลของยาโดยละเอียด"><i class="fas fa-eye"></i></button>', orderable: false, className: 'text-center all-column', width: "95px" },
                 { title: 'Material No.', data: 0, className: 'default-column purchasing-column rate-column' },
                 { title: 'SAP Name', data: 1, width: "25%", className: 'default-column purchasing-column rate-column', render: (d, t) => t === 'display' && d ? `<span style="color: var(--primary-color)" class="fw-bold">${d}</span>` : d },
                 { title: 'Generic Name', data: 2, width: "25%", className: 'default-column' },
                 { title: 'TPU', data: 3, className: 'default-column purchasing-column' },
                 { title: 'GPU', data: 4, className: 'default-column' },
                 { title: 'เงื่อนไขการเบิกจ่าย', data: 5, className: 'default-column', width: '180px', render: (d,t) => renderBadge(d, t, {'สำรองจ่าย': 'bg-primary', 'ocpa': 'bg-success', 'เบิกได้': 'bg-success', 'ขรก เบิกไม่ได้': 'bg-danger', 'เบิกนอก': 'bg-info text-dark', 'วัคซีน': 'bg-warning text-dark'}, true) },
-                { title: 'บัญชียา', data: 6, className: 'default-column', render: (d,t) => renderBadge(d, t, {'ned': 'bg-danger', 'ed': 'bg-success' , 'ค่าสารทึบ': 'bg-orange', 'promotion': 'bg-warning text-dark'}) },
+                // MODIFIED: Added new badge color for "วิตามิน อาหารเสริม"
+                { title: 'บัญชียา', data: 6, className: 'default-column', render: (d,t) => renderBadge(d, t, {'ned': 'bg-danger', 'ed': 'bg-success' , 'ค่าสารทึบ': 'bg-orange', 'promotion': 'bg-warning text-dark', 'วิตามิน อาหารเสริม': 'bg-teal'}) },
                 { title: 'Purchasing Unit', data: 7, className: 'purchasing-column default-column' },
                 { title: 'ราคาขาย / หน่วย', data: 8, width: '130px', className: 'default-column purchasing-column rate-column', render: (d, t, row) => `${formatNumber(row[8], 2, 2)} / ${row[9] || 'หน่วย'}` },
                 { title: 'Storage', data: 28, className: 'default-column', render: (d,t) => renderBadge(d, t, storageColorMap, true) },
@@ -959,7 +969,7 @@
                 row2Html += createDetailCard({ title: 'TPU', value: rowData[3], itemClass: 'compact-card' });
                 row2Html += createDetailCard({ title: 'GPU', value: rowData[4], itemClass: 'compact-card' });
                 row2Html += createDetailCard({ title: 'เงื่อนไขการเบิกจ่าย', value: renderBadge(rowData[5], 'display', {'สำรองจ่าย': 'bg-primary', 'ocpa': 'bg-success', 'เบิกได้': 'bg-success', 'ขรก เบิกไม่ได้': 'bg-danger', 'เบิกนอก': 'bg-info text-dark', 'วัคซีน': 'bg-warning text-dark'}, true), itemClass: 'status-card' });
-                row2Html += createDetailCard({ title: 'บัญชียา', value: renderBadge(rowData[6], 'display', {'ned': 'bg-danger', 'ed': 'bg-success', 'ในบัญชี(วถ)': 'bg-info text-dark', 'ค่าสารทึบ': 'bg-primary', 'promotion': 'bg-warning text-dark'}), itemClass: 'status-card' });
+                row2Html += createDetailCard({ title: 'บัญชียา', value: renderBadge(rowData[6], 'display', {'ned': 'bg-danger', 'ed': 'bg-success', 'ในบัญชี(วถ)': 'bg-info text-dark', 'ค่าสารทึบ': 'bg-primary', 'promotion': 'bg-warning text-dark', 'วิตามิน อาหารเสริม': 'bg-teal'}), itemClass: 'status-card' });
                 row2Html += createDetailCard({ title: 'Status', value: renderBadge(rowData[12], 'display', {'ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}), itemClass: 'status-card' });
                 row2Html += createDetailCard({ title: 'Drug Group', value: renderBadge(rowData[25], 'display', drugGroupColorMap, true) });
                 if (row2Html) detailsHtml += `<div class="detail-row">${row2Html}</div>`;
@@ -1065,13 +1075,74 @@
         
         function setView(viewType) { if (!table) return; $('.view-toggle').removeClass('active'); $(`#${viewType}View`).addClass('active'); if (viewType === 'all') { table.columns(':not(.modal-only)').visible(true); table.columns('.modal-only').visible(false); } else { table.columns().visible(false); table.columns('.all-column').visible(true); if (viewType === 'default') table.columns('.default-column').visible(true); else if (viewType === 'purchasing') table.columns('.purchasing-column').visible(true); else if (viewType === 'rate') table.columns('.rate-column').visible(true); } table.columns.adjust().draw(false); }
         $('#defaultView').on('click', () => setView('default')); $('#rateView').on('click', () => setView('rate'));
-        $('#purchasingView').on('click', () => promptPassword(() => setView('purchasing'))); $('#allView').on('click', () => promptPassword(() => setView('all')));
-        $('#exportButton').on('click', () => promptPassword(() => { const visibleColumns = table.columns(':visible').toArray()[0]; const headers = table.columns(visibleColumns).header().toArray().map(h => $(h).text()); const data = [headers]; table.rows({ search: 'applied' }).every(function () { const rowData = this.data(); const visibleData = visibleColumns.map(index => rowData[index]); data.push(visibleData); }); const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet(data); XLSX.utils.book_append_sheet(wb, ws, "Drug Master Data"); XLSX.writeFile(wb, 'drug_master_data.xlsx'); showSwalSuccess('Excel exported successfully!'); }));
-        $('#exportJPEGButton').on('click', () => { html2canvas(document.querySelector("#drugTable_wrapper"), { scale: 2, useCORS: true }).then(canvas => { const link = document.createElement('a'); link.download = 'drug_master_data.jpg'; link.href = canvas.toDataURL('image/jpeg', 0.9); link.click(); showSwalSuccess('Screenshot saved successfully!'); }); });
-        function promptPassword(callback, forceReauth = false) { if (passwordVerified && !forceReauth) { callback(); return; } Swal.fire({ title: 'Authentication Required', input: 'password', inputPlaceholder: 'Enter your password', inputAttributes: { autocapitalize: 'off', autocorrect: 'off' }, showCancelButton: true, confirmButtonText: 'Submit', showLoaderOnConfirm: true, preConfirm: (password) => { if (password === 'rxccc') { return true; } else { Swal.showValidationMessage('Incorrect password'); return false; } }, allowOutsideClick: () => !Swal.isLoading() }).then((result) => { if (result.isConfirmed) { passwordVerified = true; callback(); } }); }
+        
+        $('#exportButton').on('click', () => {
+            let activeView = 'default';
+            if ($('#purchasingView').hasClass('active')) activeView = 'purchasing';
+            else if ($('#rateView').hasClass('active')) activeView = 'rate';
+            else if ($('#allView').hasClass('active')) activeView = 'all';
+
+            promptPassword(() => { 
+                const visibleColumns = table.columns(':visible').toArray()[0]; 
+                const headers = table.columns(visibleColumns).header().toArray().map(h => $(h).text()); 
+                const data = [headers]; 
+                table.rows({ search: 'applied' }).every(function () { 
+                    const rowData = this.data(); 
+                    const visibleData = visibleColumns.map(index => rowData[index]); 
+                    data.push(visibleData); 
+                }); 
+                const wb = XLSX.utils.book_new(); 
+                const ws = XLSX.utils.aoa_to_sheet(data); 
+                XLSX.utils.book_append_sheet(wb, ws, "Drug Master Data"); 
+                XLSX.writeFile(wb, `drug_master_${activeView}_view.xlsx`); 
+                showSwalSuccess('Excel exported successfully!'); 
+            }, { forceReauth: true, view: activeView });
+        });
+        
+        // MODIFIED: promptPassword function updated to handle different password contexts
+        function promptPassword(callback, context = {}) { 
+            const { forceReauth = false, view = null } = context;
+
+            if (passwordVerified && !forceReauth) { 
+                callback(); 
+                return; 
+            } 
+            
+            Swal.fire({ 
+                title: 'Authentication Required', 
+                input: 'password', 
+                inputPlaceholder: 'Enter your password', 
+                inputAttributes: { autocapitalize: 'off', autocorrect: 'off' }, 
+                showCancelButton: true, 
+                confirmButtonText: 'Submit', 
+                showLoaderOnConfirm: true, 
+                preConfirm: (password) => { 
+                    let correctPassword = 'rxccc'; // Default password for viewing restricted columns
+                    if (view && exportPasswords[view]) {
+                        correctPassword = exportPasswords[view]; // Use specific password for export
+                    }
+
+                    if (password === correctPassword) { 
+                        return true; 
+                    } else { 
+                        Swal.showValidationMessage('Incorrect password'); 
+                        return false; 
+                    } 
+                }, 
+                allowOutsideClick: () => !Swal.isLoading() 
+            }).then((result) => { 
+                if (result.isConfirmed) { 
+                    passwordVerified = true; 
+                    callback(); 
+                } 
+            }); 
+        }
+
+        $('#purchasingView').on('click', () => promptPassword(() => setView('purchasing'))); 
+        $('#allView').on('click', () => promptPassword(() => setView('all')));
+
         function showSwalSuccess(message) { Swal.fire({ icon: 'success', title: 'Success!', text: message, timer: 2000, showConfirmButton: false }); }
         
-
         $('.contact-trigger').on('click', function() {
             const drugName = $('#drugDetailModal').data('drug-name');
             const contactForm = $('#contactForm');
