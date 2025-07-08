@@ -206,6 +206,7 @@ const loadingContainer = document.getElementById('loading-container');
 const searchInput = document.getElementById('searchInput');
 const groupFilterContainer = document.getElementById('group-filter-container');
 let allDrugData = [];
+let newestGroupName = ''; // <-- MODIFICATION: Add global variable
 
 // --- CORE DATA HANDLING AND RENDERING FUNCTIONS ---
 function sanitizeHTML(text) { if (!text) return ''; const temp = document.createElement('div'); temp.textContent = text; return temp.innerHTML; }
@@ -270,21 +271,17 @@ async function loadDrugData() {
                     return;
                 }
                 
-                // --- START: MODIFICATION ---
-                // 1. Find the group with the lowest groupOrder to set as default
                 const sortedByGroupOrder = [...allDrugData]
-                	.filter(d => (d.group || '').trim() !== '') // Ensure group exists
+                	.filter(d => (d.group || '').trim() !== '')
                 	.sort((a, b) => getOrder(a.groupOrder) - getOrder(b.groupOrder));
                 
                 const defaultGroupName = sortedByGroupOrder.length > 0 ? sortedByGroupOrder[0].group.trim() : 'all';
-
-                // 2. Setup filters, passing the determined default group
-                setupGroupFilters(defaultGroupName);
                 
-                // 3. Call filterAndRender() to apply the default filter on initial load
-                filterAndRender();
-                // --- END: MODIFICATION ---
+                // --- MODIFICATION: Set the global newest group name ---
+                newestGroupName = defaultGroupName;
 
+                setupGroupFilters(defaultGroupName);
+                filterAndRender();
                 setupEventListeners();
             },
             error: (err) => {
@@ -327,16 +324,27 @@ function renderGroupedCards(drugData) {
         const groupInfo = groupsToRender[groupName];
         const drugsInGroup = groupInfo.drugs.sort((a, b) => getOrder(a.itemOrder) - getOrder(b.itemOrder));
         if (drugsInGroup.length > 0) {
-            fragment.appendChild(document.createRange().createContextualFragment(createGroupHeaderHTML(groupName)));
+            // --- MODIFICATION: Check if the current group is the newest ---
+            const isNew = groupName === newestGroupName;
+            fragment.appendChild(document.createRange().createContextualFragment(createGroupHeaderHTML(groupName, isNew)));
             drugsInGroup.forEach(drug => fragment.appendChild(document.createRange().createContextualFragment(createDrugCardHTML(drug))));
         }
     });
     drugListContainer.appendChild(fragment);
 }
 
-function createGroupHeaderHTML(groupName) {
-    return `<div class="mt-12 mb-5"><h2 class="text-2xl md:text-3xl font-bold text-gray-800 border-b-2 border-gray-400 pb-3">${sanitizeHTML(groupName)}</h2></div>`;
+// --- MODIFICATION: Accept `isNew` parameter to add a badge ---
+function createGroupHeaderHTML(groupName, isNew) {
+    const newBadgeHTML = isNew 
+        ? `<span class="ml-3 text-sm font-bold text-red-600 bg-red-100 px-2.5 py-1 rounded-full animate-pulse">NEW ✨</span>`
+        : '';
+    return `<div class="mt-12 mb-5 flex items-center">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800">${sanitizeHTML(groupName)}</h2>
+                ${newBadgeHTML}
+            </div>
+            <hr class="border-gray-400">`;
 }
+
 
 function createDrugCardHTML(drug) {
     const formatContent = (text, fallback = '-') => (sanitizeHTML(text) || fallback).replace(/\\n|\n/g, '<br>');
@@ -433,26 +441,20 @@ function setupEventListeners() {
     groupFilterContainer.addEventListener('click', handleFilterClick(groupFilterContainer));
 }
 
-// --- START: MODIFICATION ---
-// Modified to accept a default group and apply the 'active' class accordingly
 function setupGroupFilters(defaultGroup) {
     const groups = [...new Set(allDrugData.map(drug => (drug.group || '').trim()).filter(Boolean))];
     
-    // Set 'all' button as active only if it's the default
     const isAllDefault = defaultGroup === 'all';
     let filterHtml = `<button class="filter-btn${isAllDefault ? ' active' : ''}" data-filter="all">ทั้งหมด</button>`;
     
     groups.sort().forEach(group => {
         const buttonText = group.replace(/\s*\(.*\)/, '');
-        // Check if the current group is the default one
         const isActive = group === defaultGroup ? ' active' : '';
         filterHtml += `<button class="filter-btn tag-filter-group${isActive}" data-filter="${group}">${sanitizeHTML(buttonText)}</button>`;
     });
 
     groupFilterContainer.innerHTML = filterHtml;
 }
-// --- END: MODIFICATION ---
-
 
 function filterAndRender() {
     const searchTerm = searchInput.value.toLowerCase().trim();
