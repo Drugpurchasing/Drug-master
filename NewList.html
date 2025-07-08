@@ -213,224 +213,224 @@ function getDrugGroupCode(code) { return ['1', '2', '3', '4', '5'].includes(Stri
 function getOrder(value, fallback = 999) { const num = parseInt(value, 10); return isNaN(num) ? fallback : num; }
 
 function formatNotesAdvanced(text) {
-    if (!text || text.trim() === '') return '-';
-    let processedText = sanitizeHTML(text);
+    if (!text || text.trim() === '') return '-';
+    let processedText = sanitizeHTML(text);
 
-    const styles = {
-        red: 'font-bold text-red-800 px-2.5 py-1 bg-red-100 rounded-lg ring-1 ring-red-200',
-        amber: 'font-bold text-amber-800 px-2.5 py-1 bg-amber-100 rounded-lg ring-1 ring-amber-200',
-        green: 'font-bold text-green-800 px-2.5 py-1 bg-green-100 rounded-lg ring-1 ring-green-200',
-        slate: 'font-bold text-slate-800 px-2.5 py-1 bg-slate-100 rounded-lg ring-1 ring-slate-200',
-        purple: 'font-bold text-purple-700 px-2.5 py-1 bg-purple-100 rounded-md ring-1 ring-purple-200',
-        cyan: 'font-bold text-cyan-700 px-2.5 py-1 bg-cyan-100 rounded-md ring-1 ring-cyan-200'
-    };
+    const styles = {
+        red: 'font-bold text-red-800 px-2.5 py-1 bg-red-100 rounded-lg ring-1 ring-red-200',
+        amber: 'font-bold text-amber-800 px-2.5 py-1 bg-amber-100 rounded-lg ring-1 ring-amber-200',
+        green: 'font-bold text-green-800 px-2.5 py-1 bg-green-100 rounded-lg ring-1 ring-green-200',
+        slate: 'font-bold text-slate-800 px-2.5 py-1 bg-slate-100 rounded-lg ring-1 ring-slate-200',
+        purple: 'font-bold text-purple-700 px-2.5 py-1 bg-purple-100 rounded-md ring-1 ring-purple-200',
+        cyan: 'font-bold text-cyan-700 px-2.5 py-1 bg-cyan-100 rounded-md ring-1 ring-cyan-200'
+    };
 
-    const keywordMap = [
-        { words: ['กำหนดเงื่อนไขการสั่งเฉพาะ', 'ไม่สามารถ', 'เบิกไม่ได้', 'กำหนด', 'จำกัด', 'ห้าม', 'ไม่ ', 'ขอ '], style: styles.red },
-        { words: ['ไม่ควร', 'ควรระวัง', 'หลีกเลี่ยง'], style: styles.amber },
-        { words: ['ใช้แทน', 'เข้าทดแทน'], style: styles.green },
-        { words: ['กรณี', 'เปรียบเทียบ', 'ปริมาณน้อย', 'สำหรับ'], style: styles.slate },
-        { words: ['สำรองจ่าย'], style: styles.cyan },
-        { words: ['Non-stock'], style: styles.purple }
-    ];
+    const keywordMap = [
+        { words: ['กำหนดเงื่อนไขการสั่งเฉพาะ', 'ไม่สามารถ', 'เบิกไม่ได้', 'กำหนด', 'จำกัด', 'ห้าม', 'ไม่ ', 'ขอ '], style: styles.red },
+        { words: ['ไม่ควร', 'ควรระวัง', 'หลีกเลี่ยง'], style: styles.amber },
+        { words: ['ใช้แทน', 'เข้าทดแทน'], style: styles.green },
+        { words: ['กรณี', 'เปรียบเทียบ', 'ปริมาณน้อย', 'สำหรับ'], style: styles.slate },
+        { words: ['สำรองจ่าย'], style: styles.cyan },
+        { words: ['Non-stock'], style: styles.purple }
+    ];
 
-    keywordMap.forEach(group => {
-        const regex = new RegExp(`(${group.words.join('|')})`, 'g');
-        processedText = processedText.replace(regex, `<span class="${group.style}">$1</span>`);
-    });
-    
-    const lines = processedText.split(/\\n|\n/g);
-    let finalHtml = lines.map(line => {
-        let trimmedLine = line.trim();
-        if (/^(\d+\.\d+|\d+\)|\-|\•)\s/.test(trimmedLine)) {
-            return `<div class="pl-5">${trimmedLine}</div>`;
-        }
-        return trimmedLine;
-    }).join('<br />');
+    keywordMap.forEach(group => {
+        const regex = new RegExp(`(${group.words.join('|')})`, 'g');
+        processedText = processedText.replace(regex, `<span class="${group.style}">$1</span>`);
+    });
+    
+    const lines = processedText.split(/\\n|\n/g);
+    let finalHtml = lines.map(line => {
+        let trimmedLine = line.trim();
+        if (/^(\d+\.\d+|\d+\)|\-|\•)\s/.test(trimmedLine)) {
+            return `<div class="pl-5">${trimmedLine}</div>`;
+        }
+        return trimmedLine;
+    }).join('<br />');
 
-    return finalHtml;
+    return finalHtml;
 }
 
 
 async function loadDrugData() {
-    try {
-        const response = await fetch(googleSheetUrl);
-        if (!response.ok) throw new Error(`Network response error: ${response.statusText}`);
-        const csvText = await response.text();
-        Papa.parse(csvText, {
-            header: true,
-            skipEmptyLines: true,
-            trimHeaders: true,
-            complete: (results) => {
-                loadingContainer.style.display = 'none';
-                if (results.errors.length) console.error("CSV Parsing Errors:", results.errors);
-                allDrugData = results.data.filter(row => row.sapCode && row.sapCode.trim() !== '');
-                if (allDrugData.length === 0) {
-                    drugListContainer.innerHTML = '<p class="text-center text-red-500 font-semibold text-xl">ไม่มีข้อมูลที่จะแสดง</p>';
-                    return;
-                }
-                
-                // --- START: MODIFICATION ---
-                // 1. Find the group with the lowest groupOrder to set as default
-                const sortedByGroupOrder = [...allDrugData]
-                	.filter(d => (d.group || '').trim() !== '') // Ensure group exists
-                	.sort((a, b) => getOrder(a.groupOrder) - getOrder(b.groupOrder));
-                
-                const defaultGroupName = sortedByGroupOrder.length > 0 ? sortedByGroupOrder[0].group.trim() : 'all';
+    try {
+        const response = await fetch(googleSheetUrl);
+        if (!response.ok) throw new Error(`Network response error: ${response.statusText}`);
+        const csvText = await response.text();
+        Papa.parse(csvText, {
+            header: true,
+            skipEmptyLines: true,
+            trimHeaders: true,
+            complete: (results) => {
+                loadingContainer.style.display = 'none';
+                if (results.errors.length) console.error("CSV Parsing Errors:", results.errors);
+                allDrugData = results.data.filter(row => row.sapCode && row.sapCode.trim() !== '');
+                if (allDrugData.length === 0) {
+                    drugListContainer.innerHTML = '<p class="text-center text-red-500 font-semibold text-xl">ไม่มีข้อมูลที่จะแสดง</p>';
+                    return;
+                }
+                
+                // --- START: MODIFICATION ---
+                // 1. Find the group with the lowest groupOrder to set as default
+                const sortedByGroupOrder = [...allDrugData]
+                	.filter(d => (d.group || '').trim() !== '') // Ensure group exists
+                	.sort((a, b) => getOrder(a.groupOrder) - getOrder(b.groupOrder));
+                
+                const defaultGroupName = sortedByGroupOrder.length > 0 ? sortedByGroupOrder[0].group.trim() : 'all';
 
-                // 2. Setup filters, passing the determined default group
-                setupGroupFilters(defaultGroupName);
-                
-                // 3. Call filterAndRender() to apply the default filter on initial load
-                filterAndRender();
-                // --- END: MODIFICATION ---
+                // 2. Setup filters, passing the determined default group
+                setupGroupFilters(defaultGroupName);
+                
+                // 3. Call filterAndRender() to apply the default filter on initial load
+                filterAndRender();
+                // --- END: MODIFICATION ---
 
-                setupEventListeners();
-            },
-            error: (err) => {
-                loadingContainer.innerHTML = `<p class="text-red-600 font-bold text-xl">เกิดข้อผิดพลาดในการโหลดข้อมูล: ${err.message}</p>`;
-            }
-        });
-    } catch (error) {
-        loadingContainer.innerHTML = `<p class="text-red-600 font-bold text-xl">เกิดข้อผิดพลาด: ${error.message}</p>`;
-    }
+                setupEventListeners();
+            },
+            error: (err) => {
+                loadingContainer.innerHTML = `<p class="text-red-600 font-bold text-xl">เกิดข้อผิดพลาดในการโหลดข้อมูล: ${err.message}</p>`;
+            }
+        });
+    } catch (error) {
+        loadingContainer.innerHTML = `<p class="text-red-600 font-bold text-xl">เกิดข้อผิดพลาด: ${error.message}</p>`;
+    }
 }
 
 function renderGroupedCards(drugData) {
-    drugListContainer.innerHTML = '';
-    const fragment = document.createDocumentFragment();
-    const activeGroupFilter = groupFilterContainer.querySelector('.active')?.dataset.filter || 'all';
+    drugListContainer.innerHTML = '';
+    const fragment = document.createDocumentFragment();
+    const activeGroupFilter = groupFilterContainer.querySelector('.active')?.dataset.filter || 'all';
 
-    if (drugData.length === 0) {
-        drugListContainer.innerHTML = '<p class="text-center text-gray-500 font-semibold mt-8 text-xl">ไม่พบข้อมูลยาที่ตรงกับเงื่อนไขการค้นหา</p>';
-        return;
-    }
+    if (drugData.length === 0) {
+        drugListContainer.innerHTML = '<p class="text-center text-gray-500 font-semibold mt-8 text-xl">ไม่พบข้อมูลยาที่ตรงกับเงื่อนไขการค้นหา</p>';
+        return;
+    }
 
-    const groupsToRender = drugData.reduce((acc, drug) => {
-        const groupName = (drug.group || 'ไม่ระบุรอบการนำเข้า').trim();
-        if (!acc[groupName]) {
-            acc[groupName] = { drugs: [], groupOrder: drug.groupOrder };
-        }
-        acc[groupName].drugs.push(drug);
-        return acc;
-    }, {});
+    const groupsToRender = drugData.reduce((acc, drug) => {
+        const groupName = (drug.group || 'ไม่ระบุรอบการนำเข้า').trim();
+        if (!acc[groupName]) {
+            acc[groupName] = { drugs: [], groupOrder: drug.groupOrder };
+        }
+        acc[groupName].drugs.push(drug);
+        return acc;
+    }, {});
 
-    const sortedGroupNames = Object.keys(groupsToRender).sort((a, b) => {
-        if (activeGroupFilter !== 'all') {
-            if (a === activeGroupFilter && b !== activeGroupFilter) return -1;
-            if (b === activeGroupFilter && a !== activeGroupFilter) return 1;
-        }
-        return getOrder(groupsToRender[a].groupOrder) - getOrder(groupsToRender[b].groupOrder);
-    });
+    const sortedGroupNames = Object.keys(groupsToRender).sort((a, b) => {
+        if (activeGroupFilter !== 'all') {
+            if (a === activeGroupFilter && b !== activeGroupFilter) return -1;
+            if (b === activeGroupFilter && a !== activeGroupFilter) return 1;
+        }
+        return getOrder(groupsToRender[a].groupOrder) - getOrder(groupsToRender[b].groupOrder);
+    });
 
-    sortedGroupNames.forEach(groupName => {
-        const groupInfo = groupsToRender[groupName];
-        const drugsInGroup = groupInfo.drugs.sort((a, b) => getOrder(a.itemOrder) - getOrder(b.itemOrder));
-        if (drugsInGroup.length > 0) {
-            fragment.appendChild(document.createRange().createContextualFragment(createGroupHeaderHTML(groupName)));
-            drugsInGroup.forEach(drug => fragment.appendChild(document.createRange().createContextualFragment(createDrugCardHTML(drug))));
-        }
-    });
-    drugListContainer.appendChild(fragment);
+    sortedGroupNames.forEach(groupName => {
+        const groupInfo = groupsToRender[groupName];
+        const drugsInGroup = groupInfo.drugs.sort((a, b) => getOrder(a.itemOrder) - getOrder(b.itemOrder));
+        if (drugsInGroup.length > 0) {
+            fragment.appendChild(document.createRange().createContextualFragment(createGroupHeaderHTML(groupName)));
+            drugsInGroup.forEach(drug => fragment.appendChild(document.createRange().createContextualFragment(createDrugCardHTML(drug))));
+        }
+    });
+    drugListContainer.appendChild(fragment);
 }
 
 function createGroupHeaderHTML(groupName) {
-    return `<div class="mt-12 mb-5"><h2 class="text-2xl md:text-3xl font-bold text-gray-800 border-b-2 border-gray-400 pb-3">${sanitizeHTML(groupName)}</h2></div>`;
+    return `<div class="mt-12 mb-5"><h2 class="text-2xl md:text-3xl font-bold text-gray-800 border-b-2 border-gray-400 pb-3">${sanitizeHTML(groupName)}</h2></div>`;
 }
 
 function createDrugCardHTML(drug) {
-    const formatContent = (text, fallback = '-') => (sanitizeHTML(text) || fallback).replace(/\\n|\n/g, '<br>');
-    const druggroup = getDrugGroupCode(drug.code);
-    const sanitizedName = sanitizeHTML(drug.name || '');
-    
-    let drugTypeTagClass = 'tag-default';
-    const drugTypeOriginal = drug.type || '';
-    const drugTypeUpper = drugTypeOriginal.toUpperCase();
-    if (drugTypeUpper.includes('NED') || drugTypeOriginal.includes('เบิกไม่ได้')) {
-        drugTypeTagClass = 'tag-ned';
-    } else if (drugTypeUpper.includes('ED') || drugTypeOriginal.includes('สมุนไพรในบัญชี')) {
-        drugTypeTagClass = 'tag-ed';
-    }
-    const isNonStock = (drug.name || '').toLowerCase().includes('non-stock');
-    const nonStockTag = isNonStock ? `<span class="category-tag tag-nonstock">Non-stock</span>` : '';
+    const formatContent = (text, fallback = '-') => (sanitizeHTML(text) || fallback).replace(/\\n|\n/g, '<br>');
+    const druggroup = getDrugGroupCode(drug.code);
+    const sanitizedName = sanitizeHTML(drug.name || '');
+    
+    let drugTypeTagClass = 'tag-default';
+    const drugTypeOriginal = drug.type || '';
+    const drugTypeUpper = drugTypeOriginal.toUpperCase();
+    if (drugTypeUpper.includes('NED') || drugTypeOriginal.includes('เบิกไม่ได้')) {
+        drugTypeTagClass = 'tag-ned';
+    } else if (drugTypeUpper.includes('ED') || drugTypeOriginal.includes('สมุนไพรในบัญชี')) {
+        drugTypeTagClass = 'tag-ed';
+    }
+    const isNonStock = (drug.name || '').toLowerCase().includes('non-stock');
+    const nonStockTag = isNonStock ? `<span class="category-tag tag-nonstock">Non-stock</span>` : '';
 
-    const imageUrl1 = drug.image && drug.image.trim() !== '' ? drug.image.trim() : '';
-    const imageUrl2 = drug.image2 && drug.image2.trim() !== '' ? drug.image2.trim() : '';
-    let imagesContent = '';
-    const onErrorScript = `this.style.display='none';`;
-    if (imageUrl1) {
-        imagesContent += `<img src="${imageUrl1}" alt="รูปยา ${sanitizedName} 1" class="drug-image" onerror="${onErrorScript}">`;
-    }
-    if (imageUrl2) {
-        imagesContent += `<img src="${imageUrl2}" alt="รูปยา ${sanitizedName} 2" class="drug-image" onerror="${onErrorScript}">`;
-    }
-    if (!imageUrl1 && !imageUrl2) {
-        imagesContent = '<div class="flex items-center justify-center bg-gray-100 w-full h-full rounded-lg text-gray-400">ไม่มีรูปภาพ</div>';
-    }
+    const imageUrl1 = drug.image && drug.image.trim() !== '' ? drug.image.trim() : '';
+    const imageUrl2 = drug.image2 && drug.image2.trim() !== '' ? drug.image2.trim() : '';
+    let imagesContent = '';
+    const onErrorScript = `this.style.display='none';`;
+    if (imageUrl1) {
+        imagesContent += `<img src="${imageUrl1}" alt="รูปยา ${sanitizedName} 1" class="drug-image" onerror="${onErrorScript}">`;
+    }
+    if (imageUrl2) {
+        imagesContent += `<img src="${imageUrl2}" alt="รูปยา ${sanitizedName} 2" class="drug-image" onerror="${onErrorScript}">`;
+    }
+    if (!imageUrl1 && !imageUrl2) {
+        imagesContent = '<div class="flex items-center justify-center bg-gray-100 w-full h-full rounded-lg text-gray-400">ไม่มีรูปภาพ</div>';
+    }
 
-    const indicationHTML = `<div class="flex items-start text-lg mt-4"> <span class="label-indication mt-1"><svg class="h-6 w-6 mr-3 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.963 2.286a.75.75 0 00-1.071 1.052A11.213 11.213 0 0112 15a11.213 11.213 0 01-9.892-11.662.75.75 0 00-1.071-1.052A12.713 12.713 0 001.5 15C1.5 21.627 6.873 27 13.5 27s12-5.373 12-12c0-5.12-3.213-9.489-7.537-11.348z" clip-rule="evenodd" /></svg></span> <div><strong class="font-semibold label-indication">ข้อบ่งชี้:</strong><div class="mt-1 text-gray-700">${formatContent(drug.indication)}</div></div> </div>`;
-    const comparableDrug = formatContent(drug['Comparable drug']);
-    const comparableDrugHTML = comparableDrug && comparableDrug !== '-' 
-        ? `<div class="flex items-start text-base mt-4"> <span class="label-comparable mt-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1z" /></svg></span> <div><strong class="font-semibold label-comparable">ยาในบัญชีฯ ที่ใกล้เคียง:</strong><div class="mt-1 text-gray-700">${comparableDrug}</div></div> </div>` 
-        : '';
-    const foodInteraction = formatContent(drug.food);
-    const foodHTML = foodInteraction && foodInteraction !== '-' 
-        ? `<div class="flex items-start"> <span class="label-food mt-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 00-3 3v2.236l-1.063.807a1 1 0 00.414 1.832L3 13.447V17a1 1 0 001 1h12a1 1 0 001-1v-3.553l1.649-.412a1 1 0 00.553-1.832L17 10.236V6a3 3 0 00-3-3h-3.763L18 3zM16 6v4.062l-.5.125-10-2.5V6a1 1 0 011-1h8a1 1 0 011 1z" /></svg></span> <div><strong class="font-semibold label-food">Food Interaction:</strong><div class="mt-1 text-gray-700">${foodInteraction}</div></div> </div>` 
-        : '';
+    const indicationHTML = `<div class="flex items-start text-lg mt-4"> <span class="label-indication mt-1"><svg class="h-6 w-6 mr-3 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.963 2.286a.75.75 0 00-1.071 1.052A11.213 11.213 0 0112 15a11.213 11.213 0 01-9.892-11.662.75.75 0 00-1.071-1.052A12.713 12.713 0 001.5 15C1.5 21.627 6.873 27 13.5 27s12-5.373 12-12c0-5.12-3.213-9.489-7.537-11.348z" clip-rule="evenodd" /></svg></span> <div><strong class="font-semibold label-indication">ข้อบ่งชี้:</strong><div class="mt-1 text-gray-700">${formatContent(drug.indication)}</div></div> </div>`;
+    const comparableDrug = formatContent(drug['Comparable drug']);
+    const comparableDrugHTML = comparableDrug && comparableDrug !== '-' 
+        ? `<div class="flex items-start text-base mt-4"> <span class="label-comparable mt-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1z" /></svg></span> <div><strong class="font-semibold label-comparable">ยาในบัญชีฯ ที่ใกล้เคียง:</strong><div class="mt-1 text-gray-700">${comparableDrug}</div></div> </div>` 
+        : '';
+    const foodInteraction = formatContent(drug.food);
+    const foodHTML = foodInteraction && foodInteraction !== '-' 
+        ? `<div class="flex items-start"> <span class="label-food mt-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 00-3 3v2.236l-1.063.807a1 1 0 00.414 1.832L3 13.447V17a1 1 0 001 1h12a1 1 0 001-1v-3.553l1.649-.412a1 1 0 00.553-1.832L17 10.236V6a3 3 0 00-3-3h-3.763L18 3zM16 6v4.062l-.5.125-10-2.5V6a1 1 0 011-1h8a1 1 0 011 1z" /></svg></span> <div><strong class="font-semibold label-food">Food Interaction:</strong><div class="mt-1 text-gray-700">${foodInteraction}</div></div> </div>` 
+        : '';
 
-    return `
-    <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 flex flex-col md:flex-row border-l-8 card-druggroup-${druggroup} border-t border-gray-200/80">
-        <div class="md:w-2/5 flex-shrink-0 bg-slate-50 flex items-center justify-center p-4 border-b md:border-b-0 md:border-r border-gray-200">
-            <div class="drug-image-container">${imagesContent}</div>
-        </div>
-        <div class="flex-grow flex flex-col">
-            <div class="p-6 flex-grow">
-                <div class="flex justify-between items-start gap-4">
-                    <div class="flex-grow">
-                        <p class="text-xl font-medium text-gray-600">${formatContent(drug.generic)}</p>
-                        <h3 class="text-2xl md:text-3xl font-bold text-gray-900 mt-1">${formatContent(drug.name)}</h3>
-                        <p class="text-lg text-gray-500 font-mono mt-2">SAP Code: ${formatContent(drug.sapCode)}</p>
-                    </div>
-                    <div class="flex flex-col items-end gap-y-2 flex-shrink-0 mt-1">
-                        <span class="category-tag whitespace-nowrap ${drugTypeTagClass}">${formatContent(drug.type)}</span>
-                        ${nonStockTag}
-                    </div>
-                </div>
-                <hr class="my-5 border-gray-200">
-                ${indicationHTML}
-                ${comparableDrugHTML}
-                <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6 text-lg">
-                    <div class="flex items-start"> <span class="label-dose mt-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7 2a1 1 0 00-1 1v1H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 00-1-1H7zm2 10a1 1 0 100 2h2a1 1 0 100-2H9z" clip-rule="evenodd" /></svg></span> <div><strong class="font-semibold label-dose">ขนาดใช้ยา:</strong><div class="mt-1 text-gray-700">${formatContent(drug.dose)}</div></div> </div>
-                    <div class="flex items-start"> <span class="label-unit mt-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path d="M8.75 3.75a.75.75 0 00-1.5 0v3.5h-3.5a.75.75 0 000 1.5h3.5v3.5a.75.75 0 001.5 0v-3.5h3.5a.75.75 0 000-1.5h-3.5v-3.5zM16 5.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM17.5 16a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM4 17.5a1.5 1.5 0 10-3 0 1.5 1.5 0 003 0zM2.5 4a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" /></svg></span> <div><strong class="font-semibold label-unit">หน่วยจัดซื้อ:</strong><div class="mt-1 text-gray-700">${formatContent(drug.unit)}</div></div> </div>
-                    <div class="flex items-start"> <span class="label-proposer mt-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg></span> <div><strong class="font-semibold label-proposer">แพทย์ผู้เสนอ:</strong><div class="mt-1 text-gray-700">${formatContent(drug.proposer)}</div></div> </div>
-                    <div class="flex items-start"> <span class="label-storage mt-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.05 5.05a.75.75 0 011.06 0l2.5 2.5a.75.75 0 01-1.06 1.06L10 7.06l-1.54 1.55a.75.75 0 11-1.06-1.06l2.5-2.5zM10 12a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 12z" clip-rule="evenodd" /></svg></span> <div><strong class="font-semibold label-storage">การจัดเก็บ:</strong><div class="mt-1 text-gray-700">${formatContent(drug.storage)}</div></div> </div>
-                    ${foodHTML}
-                </div>
-            </div>
-            <div class="bg-rose-50 px-6 py-5 mt-auto border-t-2 border-rose-200/80">
-                <div class="flex items-start text-lg">
-                    <span class="label-notes mt-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg></span>
-                    <div>
-                        <strong class="font-bold underline decoration-2 label-notes">หมายเหตุ:</strong>
-                        <div class="mt-2 text-gray-800 text-lg leading-relaxed">${formatNotesAdvanced(drug.notes)}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>`;
+    return `
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 flex flex-col md:flex-row border-l-8 card-druggroup-${druggroup} border-t border-gray-200/80">
+        <div class="md:w-2/5 flex-shrink-0 bg-slate-50 flex items-center justify-center p-4 border-b md:border-b-0 md:border-r border-gray-200">
+            <div class="drug-image-container">${imagesContent}</div>
+        </div>
+        <div class="flex-grow flex flex-col">
+            <div class="p-6 flex-grow">
+                <div class="flex justify-between items-start gap-4">
+                    <div class="flex-grow">
+                        <p class="text-xl font-medium text-gray-600">${formatContent(drug.generic)}</p>
+                        <h3 class="text-2xl md:text-3xl font-bold text-gray-900 mt-1">${formatContent(drug.name)}</h3>
+                        <p class="text-lg text-gray-500 font-mono mt-2">SAP Code: ${formatContent(drug.sapCode)}</p>
+                    </div>
+                    <div class="flex flex-col items-end gap-y-2 flex-shrink-0 mt-1">
+                        <span class="category-tag whitespace-nowrap ${drugTypeTagClass}">${formatContent(drug.type)}</span>
+                        ${nonStockTag}
+                    </div>
+                </div>
+                <hr class="my-5 border-gray-200">
+                ${indicationHTML}
+                ${comparableDrugHTML}
+                <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6 text-lg">
+                    <div class="flex items-start"> <span class="label-dose mt-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7 2a1 1 0 00-1 1v1H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 00-1-1H7zm2 10a1 1 0 100 2h2a1 1 0 100-2H9z" clip-rule="evenodd" /></svg></span> <div><strong class="font-semibold label-dose">ขนาดใช้ยา:</strong><div class="mt-1 text-gray-700">${formatContent(drug.dose)}</div></div> </div>
+                    <div class="flex items-start"> <span class="label-unit mt-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path d="M8.75 3.75a.75.75 0 00-1.5 0v3.5h-3.5a.75.75 0 000 1.5h3.5v3.5a.75.75 0 001.5 0v-3.5h3.5a.75.75 0 000-1.5h-3.5v-3.5zM16 5.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM17.5 16a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM4 17.5a1.5 1.5 0 10-3 0 1.5 1.5 0 003 0zM2.5 4a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" /></svg></span> <div><strong class="font-semibold label-unit">หน่วยจัดซื้อ:</strong><div class="mt-1 text-gray-700">${formatContent(drug.unit)}</div></div> </div>
+                    <div class="flex items-start"> <span class="label-proposer mt-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg></span> <div><strong class="font-semibold label-proposer">แพทย์ผู้เสนอ:</strong><div class="mt-1 text-gray-700">${formatContent(drug.proposer)}</div></div> </div>
+                    <div class="flex items-start"> <span class="label-storage mt-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.05 5.05a.75.75 0 011.06 0l2.5 2.5a.75.75 0 01-1.06 1.06L10 7.06l-1.54 1.55a.75.75 0 11-1.06-1.06l2.5-2.5zM10 12a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 12z" clip-rule="evenodd" /></svg></span> <div><strong class="font-semibold label-storage">การจัดเก็บ:</strong><div class="mt-1 text-gray-700">${formatContent(drug.storage)}</div></div> </div>
+                    ${foodHTML}
+                </div>
+            </div>
+            <div class="bg-rose-50 px-6 py-5 mt-auto border-t-2 border-rose-200/80">
+                <div class="flex items-start text-lg">
+                    <span class="label-notes mt-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg></span>
+                    <div>
+                        <strong class="font-bold underline decoration-2 label-notes">หมายเหตุ:</strong>
+                        <div class="mt-2 text-gray-800 text-lg leading-relaxed">${formatNotesAdvanced(drug.notes)}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>`;
 }
 
 function setupEventListeners() {
-    searchInput.addEventListener('input', filterAndRender);
-    const handleFilterClick = (container) => (e) => {
-        if (e.target.tagName === 'BUTTON') {
-            const currentActive = container.querySelector('.active');
-            if (currentActive) currentActive.classList.remove('active');
-            e.target.classList.add('active');
-            filterAndRender();
-        }
-    };
-    groupFilterContainer.addEventListener('click', handleFilterClick(groupFilterContainer));
+    searchInput.addEventListener('input', filterAndRender);
+    const handleFilterClick = (container) => (e) => {
+        if (e.target.tagName === 'BUTTON') {
+            const currentActive = container.querySelector('.active');
+            if (currentActive) currentActive.classList.remove('active');
+            e.target.classList.add('active');
+            filterAndRender();
+        }
+    };
+    groupFilterContainer.addEventListener('click', handleFilterClick(groupFilterContainer));
 }
 
 // --- START: MODIFICATION ---
@@ -455,16 +455,16 @@ function setupGroupFilters(defaultGroup) {
 
 
 function filterAndRender() {
-    const searchTerm = searchInput.value.toLowerCase().trim();
-    const activeGroupFilter = groupFilterContainer.querySelector('.active').dataset.filter;
-    
-    const filteredData = allDrugData.filter(drug => {
-        const searchableContent = (drug.name + ' ' + drug.generic + ' ' + drug.sapCode).toLowerCase();
-        const matchesSearch = searchTerm === '' || searchableContent.includes(searchTerm);
-        const matchesGroup = activeGroupFilter === 'all' || (drug.group || '').trim() === activeGroupFilter;
-        return matchesSearch && matchesGroup;
-    });
-    renderGroupedCards(filteredData);
+    const searchTerm = searchInput.value.toLowerCase().trim();
+    const activeGroupFilter = groupFilterContainer.querySelector('.active').dataset.filter;
+    
+    const filteredData = allDrugData.filter(drug => {
+        const searchableContent = (drug.name + ' ' + drug.generic + ' ' + drug.sapCode).toLowerCase();
+        const matchesSearch = searchTerm === '' || searchableContent.includes(searchTerm);
+        const matchesGroup = activeGroupFilter === 'all' || (drug.group || '').trim() === activeGroupFilter;
+        return matchesSearch && matchesGroup;
+    });
+    renderGroupedCards(filteredData);
 }
 
 // ===== FLOATING TOOLBAR & MODAL SCRIPT START =====
@@ -476,14 +476,14 @@ const formCancelBtn = document.querySelector('.form-cancel-btn');
 const reportForm = document.getElementById('reportForm');
 
 window.onscroll = function() {
-    if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
-        scrollToTopBtn.style.display = "flex";
-    } else {
-        scrollToTopBtn.style.display = "none";
-    }
+    if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+        scrollToTopBtn.style.display = "flex";
+    } else {
+        scrollToTopBtn.style.display = "none";
+    }
 };
 scrollToTopBtn.addEventListener('click', function() {
-    window.scrollTo({top: 0, behavior: 'smooth'});
+    window.scrollTo({top: 0, behavior: 'smooth'});
 });
 
 function openModal() { reportModal.classList.remove('hidden'); }
@@ -493,48 +493,48 @@ openReportModalBtn.addEventListener('click', openModal);
 closeReportModalBtn.addEventListener('click', closeModal);
 formCancelBtn.addEventListener('click', closeModal);
 reportModal.addEventListener('click', function(event) {
-    if (event.target === reportModal) {
-        closeModal();
-    }
+    if (event.target === reportModal) {
+        closeModal();
+    }
 });
 
 reportForm.addEventListener('submit', function(event) {
-    event.preventDefault();
-    const webAppUrl = 'https://script.google.com/macros/s/AKfycbyH_ULtPI5Wat_VmNY7smo7Ytq2jfk0DcKgFmjFQU5FXTyG2ICT9-5ro4Bj70TQ0tjS/exec';
-    const formData = new FormData(reportForm);
-    const data = Object.fromEntries(formData.entries());
-    const submitButton = reportForm.querySelector('button[type="submit"]');
+    event.preventDefault();
+    const webAppUrl = 'https://script.google.com/macros/s/AKfycbyH_ULtPI5Wat_VmNY7smo7Ytq2jfk0DcKgFmjFQU5FXTyG2ICT9-5ro4Bj70TQ0tjS/exec';
+    const formData = new FormData(reportForm);
+    const data = Object.fromEntries(formData.entries());
+    const submitButton = reportForm.querySelector('button[type="submit"]');
 
-    if (webAppUrl === 'YOUR_WEB_APP_URL_HERE') {
-        alert('Error: กรุณาตั้งค่า Web App URL ในไฟล์ HTML ก่อนใช้งาน');
-        return;
-    }
+    if (webAppUrl === 'YOUR_WEB_APP_URL_HERE') {
+        alert('Error: กรุณาตั้งค่า Web App URL ในไฟล์ HTML ก่อนใช้งาน');
+        return;
+    }
 
-    submitButton.disabled = true;
-    submitButton.innerHTML = `<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>กำลังส่ง...`;
+    submitButton.disabled = true;
+    submitButton.innerHTML = `<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>กำลังส่ง...`;
 
-    fetch(webAppUrl, {
-        method: 'POST',
-        mode: 'no-cors',
-        cache: 'no-cache',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-        redirect: 'follow'
-    })
-    .then(response => {
-        console.log('Form submitted');
-        alert('ส่งข้อมูลเรียบร้อยแล้ว ขอบคุณสำหรับข้อมูลครับ/ค่ะ');
-        closeModal();
-        reportForm.reset();
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('เกิดข้อผิดพลาดในการส่งข้อมูล: ' + error.message);
-    })
-    .finally(() => {
-        submitButton.disabled = false;
-        submitButton.textContent = 'ส่งเรื่อง';
-    });
+    fetch(webAppUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        cache: 'no-cache',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+        redirect: 'follow'
+    })
+    .then(response => {
+        console.log('Form submitted');
+        alert('ส่งข้อมูลเรียบร้อยแล้ว ขอบคุณสำหรับข้อมูลครับ/ค่ะ');
+        closeModal();
+        reportForm.reset();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('เกิดข้อผิดพลาดในการส่งข้อมูล: ' + error.message);
+    })
+    .finally(() => {
+        submitButton.disabled = false;
+        submitButton.textContent = 'ส่งเรื่อง';
+    });
 });
 // ===== FLOATING TOOLBAR & MODAL SCRIPT END =====
 
