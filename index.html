@@ -319,7 +319,8 @@
         display: flex;
         flex-wrap: wrap;
         gap: 25px;
-        align-items: stretch;
+        /* MODIFIED: Changed from 'stretch' to 'flex-start' to fix infinite stretching */
+        align-items: flex-start;
     }
 
     .chart-wrapper {
