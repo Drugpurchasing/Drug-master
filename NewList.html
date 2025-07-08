@@ -206,7 +206,7 @@ const loadingContainer = document.getElementById('loading-container');
 const searchInput = document.getElementById('searchInput');
 const groupFilterContainer = document.getElementById('group-filter-container');
 let allDrugData = [];
-let newestGroupName = ''; // <-- MODIFICATION: Add global variable
+let newestGroupName = '';
 
 // --- CORE DATA HANDLING AND RENDERING FUNCTIONS ---
 function sanitizeHTML(text) { if (!text) return ''; const temp = document.createElement('div'); temp.textContent = text; return temp.innerHTML; }
@@ -277,7 +277,6 @@ async function loadDrugData() {
                 
                 const defaultGroupName = sortedByGroupOrder.length > 0 ? sortedByGroupOrder[0].group.trim() : 'all';
                 
-                // --- MODIFICATION: Set the global newest group name ---
                 newestGroupName = defaultGroupName;
 
                 setupGroupFilters(defaultGroupName);
@@ -324,7 +323,6 @@ function renderGroupedCards(drugData) {
         const groupInfo = groupsToRender[groupName];
         const drugsInGroup = groupInfo.drugs.sort((a, b) => getOrder(a.itemOrder) - getOrder(b.itemOrder));
         if (drugsInGroup.length > 0) {
-            // --- MODIFICATION: Check if the current group is the newest ---
             const isNew = groupName === newestGroupName;
             fragment.appendChild(document.createRange().createContextualFragment(createGroupHeaderHTML(groupName, isNew)));
             drugsInGroup.forEach(drug => fragment.appendChild(document.createRange().createContextualFragment(createDrugCardHTML(drug))));
@@ -333,7 +331,6 @@ function renderGroupedCards(drugData) {
     drugListContainer.appendChild(fragment);
 }
 
-// --- MODIFICATION: Accept `isNew` parameter to add a badge ---
 function createGroupHeaderHTML(groupName, isNew) {
     const newBadgeHTML = isNew 
         ? `<span class="ml-3 text-sm font-bold text-red-600 bg-red-100 px-2.5 py-1 rounded-full animate-pulse">NEW ✨</span>`
@@ -441,6 +438,7 @@ function setupEventListeners() {
     groupFilterContainer.addEventListener('click', handleFilterClick(groupFilterContainer));
 }
 
+// --- MODIFICATION: Add a (NEW) badge to the button if it's the newest group ---
 function setupGroupFilters(defaultGroup) {
     const groups = [...new Set(allDrugData.map(drug => (drug.group || '').trim()).filter(Boolean))];
     
@@ -448,13 +446,20 @@ function setupGroupFilters(defaultGroup) {
     let filterHtml = `<button class="filter-btn${isAllDefault ? ' active' : ''}" data-filter="all">ทั้งหมด</button>`;
     
     groups.sort().forEach(group => {
-        const buttonText = group.replace(/\s*\(.*\)/, '');
+        let buttonText = sanitizeHTML(group.replace(/\s*\(.*\)/, ''));
         const isActive = group === defaultGroup ? ' active' : '';
-        filterHtml += `<button class="filter-btn tag-filter-group${isActive}" data-filter="${group}">${sanitizeHTML(buttonText)}</button>`;
+
+        // Check if this button is for the newest group
+        if (group === newestGroupName) {
+            buttonText += ` <span class="text-xs font-bold text-red-500">(NEW)</span>`;
+        }
+
+        filterHtml += `<button class="filter-btn tag-filter-group${isActive}" data-filter="${group}">${buttonText}</button>`;
     });
 
     groupFilterContainer.innerHTML = filterHtml;
 }
+
 
 function filterAndRender() {
     const searchTerm = searchInput.value.toLowerCase().trim();
