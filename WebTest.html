@@ -50,7 +50,7 @@
             align-items: center;
             justify-content: space-between;
             background: var(--header-gradient);
-            padding: 10px 20px; /* MODIFIED: Reduced padding */
+            padding: 10px 20px;
             border-radius: 10px;
             color: white;
             margin-bottom: 25px;
@@ -58,7 +58,7 @@
         }
 
         .logo-container img {
-            height: 60px; /* MODIFIED: Reduced height */
+            height: 60px;
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
         }
 
@@ -97,7 +97,7 @@
 
         .filter-section {
             background-color: var(--card-bg);
-            padding: 20px;
+            padding: 15px 20px; /* MODIFIED: Reduced padding */
             border-radius: 10px;
             margin-bottom: 20px;
             border: 1px solid #e3e9f1;
@@ -600,7 +600,7 @@
                         <div class="col-lg-5 col-md-12">
                             <div class="input-group shadow-sm">
                                 <span class="input-group-text bg-white"><i class="fas fa-search text-primary"></i></span>
-                                <input type="text" id="globalSearch" class="form-control form-control-lg" placeholder="ค้นหายา...">
+                                <input type="text" id="globalSearch" class="form-control" placeholder="ค้นหายา...">
                             </div>
                         </div>
                         <div class="col-lg-7 col-md-12">
@@ -744,12 +744,11 @@
         var tooltipMap = {};
         const contactModal = new bootstrap.Modal(document.getElementById('contactModal'));
 
-        // MODIFIED: Added passwords for view-specific exports
         const exportPasswords = {
             'default': 'rxccc',
             'purchasing': 'rxpur',
             'rate': 'rxccc',
-            'all': 'rxpur'
+            'all': 'rxall'
         };
 
         Chart.register(ChartDataLabels);
@@ -870,14 +869,13 @@
         const storageColorMap = { 'below 30°c': 'bg-success', '2°c - 8°c': 'bg-primary', 'below 25°c': 'bg-orange', 'below -20°c': 'bg-info', '-15°c ถึง -25°c': 'bg-info text-dark' };
 
         const columnConfig = [
-                { title: 'Detail View', data: null, defaultContent: '<button class="btn btn-sm btn-primary view-details-btn" data-bs-toggle="tooltip" data-bs-placement="top" title="คลิกเพื่อดูข้อมูลของยาโดยละเอียด"><i class="fas fa-eye"></i></button>', orderable: false, className: 'text-center all-column', width: "95px" },
+                { title: 'Detail View', data: null, defaultContent: '<button class="btn btn-sm btn-primary view-details-btn" data-bs-toggle="tooltip" data-bs-placement="top" title="คลิกเพื่อดูข้อมูลของยาโดยละเอียด"><i class="fas fa-eye"></i></button>', orderable: false, className: 'text-center all-column', width: "60px" }, // MODIFIED
                 { title: 'Material No.', data: 0, className: 'default-column purchasing-column rate-column' },
                 { title: 'SAP Name', data: 1, width: "25%", className: 'default-column purchasing-column rate-column', render: (d, t) => t === 'display' && d ? `<span style="color: var(--primary-color)" class="fw-bold">${d}</span>` : d },
                 { title: 'Generic Name', data: 2, width: "25%", className: 'default-column' },
                 { title: 'TPU', data: 3, className: 'default-column purchasing-column' },
                 { title: 'GPU', data: 4, className: 'default-column' },
                 { title: 'เงื่อนไขการเบิกจ่าย', data: 5, className: 'default-column', width: '180px', render: (d,t) => renderBadge(d, t, {'สำรองจ่าย': 'bg-primary', 'ocpa': 'bg-success', 'เบิกได้': 'bg-success', 'ขรก เบิกไม่ได้': 'bg-danger', 'เบิกนอก': 'bg-info text-dark', 'วัคซีน': 'bg-warning text-dark'}, true) },
-                // MODIFIED: Added new badge color for "วิตามิน อาหารเสริม"
                 { title: 'บัญชียา', data: 6, className: 'default-column', render: (d,t) => renderBadge(d, t, {'ned': 'bg-danger', 'ed': 'bg-success' , 'ค่าสารทึบ': 'bg-orange', 'promotion': 'bg-warning text-dark', 'วิตามิน อาหารเสริม': 'bg-teal'}) },
                 { title: 'Purchasing Unit', data: 7, className: 'purchasing-column default-column' },
                 { title: 'ราคาขาย / หน่วย', data: 8, width: '130px', className: 'default-column purchasing-column rate-column', render: (d, t, row) => `${formatNumber(row[8], 2, 2)} / ${row[9] || 'หน่วย'}` },
@@ -1099,7 +1097,6 @@
             }, { forceReauth: true, view: activeView });
         });
         
-        // MODIFIED: promptPassword function updated to handle different password contexts
         function promptPassword(callback, context = {}) { 
             const { forceReauth = false, view = null } = context;
 
@@ -1117,9 +1114,9 @@
                 confirmButtonText: 'Submit', 
                 showLoaderOnConfirm: true, 
                 preConfirm: (password) => { 
-                    let correctPassword = 'rxccc'; // Default password for viewing restricted columns
+                    let correctPassword = 'rxccc';
                     if (view && exportPasswords[view]) {
-                        correctPassword = exportPasswords[view]; // Use specific password for export
+                        correctPassword = exportPasswords[view];
                     }
 
                     if (password === correctPassword) { 
@@ -1132,7 +1129,10 @@
                 allowOutsideClick: () => !Swal.isLoading() 
             }).then((result) => { 
                 if (result.isConfirmed) { 
-                    passwordVerified = true; 
+                    // Only set global passwordVerified for non-export actions
+                    if (!view) {
+                        passwordVerified = true; 
+                    }
                     callback(); 
                 } 
             }); 
