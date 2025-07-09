@@ -112,10 +112,10 @@
 </head>
 <body class="text-gray-800">
 
-<header class="py-6 shadow-sm bg-gradient-to-b from-white to-slate-100">
+<header class="py-6 shadow-sm bg-gradient-to-r from-orange-300 to-[#f36d28] text-white">
     <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
         <img src="CRAlogo.png" alt="Logo" class="h-14 w-auto">
-        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight text-center flex-grow">สรุปข้อมูลยาเข้าใหม่</h1>
+        <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-center flex-grow">สรุปข้อมูลยาเข้าใหม่</h1>
         <div class="h-14 w-14"></div> </div>
 </header>
 
@@ -209,17 +209,16 @@
             <h3 class="text-xl leading-6 font-bold text-gray-900 mt-4">ข้อควรทราบ</h3>
             <div class="mt-4 px-4 py-3 bg-gray-50 rounded-lg">
                 <p class="text-base text-gray-700">
-                    ข้อมูลยาเข้าใหม่ดังกล่าวเป็นข้อมูลที่ทำ ณ วันที่ยาเข้าบัญชี และอาจมีการเปลี่ยนแปลงในภายหลัง 
-                    (โดยข้อมูล ขนาดใช้ยา แพทย์ผู้เสนอ) จะไม่มีใน Drug master
+                    ข้อมูลยาเข้าใหม่ดังกล่าวเป็นข้อมูลที่ทำ ณ วันที่ยาเข้าบัญชี และอาจมีการเปลี่ยนแปลงในภายหลัง
                 </p>
             </div>
             <div class="mt-6 space-y-3">
                 <p class="text-base text-gray-600">ท่านสามารถติดตามข้อมูลที่อัพเดตล่าสุดได้ที่:</p>
                 <a href="https://drugpurchasing.github.io/Drug-master/" target="_blank" rel="noopener noreferrer" class="inline-block w-full px-4 py-3 bg-blue-600 text-white text-base font-semibold rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all">
-                    ไปที่ Drug Master
+                    ไปที่ Drug Master (ข้อมูลล่าสุด)
                 </a>
                 <button id="closeWarningModalBtn" type="button" class="w-full px-4 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all">
-                    รับทราบ
+                    รับทราบและดูข้อมูลเก่าต่อ
                 </button>
             </div>
         </div>
@@ -462,8 +461,9 @@ function setupEventListeners() {
         if (e.target.tagName === 'BUTTON') {
             const filterValue = e.target.dataset.filter;
 
-            // CORRECTED LOGIC: This condition now correctly ignores the 'all' button.
-            if (filterValue !== 'all' && filterValue !== newestGroupName && !warnedFilters.has(filterValue)) {
+            // ===== 🟠 POINT 1: MODIFIED LOGIC TO WARN ON "ALL" BUTTON AS WELL =====
+            // Now warns if the filter is NOT the newest group and hasn't been warned yet.
+            if (filterValue !== newestGroupName && !warnedFilters.has(filterValue)) {
                 openWarningModal();
                 warnedFilters.add(filterValue);
             }
