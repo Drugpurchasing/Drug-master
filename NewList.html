@@ -112,7 +112,7 @@
 </head>
 <body class="text-gray-800">
 
-<header class="py-6 bg-white shadow-sm">
+<header class="py-6 shadow-sm bg-gradient-to-b from-white to-slate-100">
     <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
         <img src="CRAlogo.png" alt="Logo" class="h-14 w-auto">
         <h1 class="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight text-center flex-grow">สรุปข้อมูลยาเข้าใหม่</h1>
@@ -209,21 +209,23 @@
             <h3 class="text-xl leading-6 font-bold text-gray-900 mt-4">ข้อควรทราบ</h3>
             <div class="mt-4 px-4 py-3 bg-gray-50 rounded-lg">
                 <p class="text-base text-gray-700">
-                    ข้อมูลยาเข้าใหม่ดังกล่าวเป็นข้อมูลที่ทำ ณ วันที่ยาเข้าบัญชี และอาจมีการเปลี่ยนแปลงในภายหลัง
+                    ข้อมูลยาเข้าใหม่ดังกล่าวเป็นข้อมูลที่ทำ ณ วันที่ยาเข้าบัญชี และอาจมีการเปลี่ยนแปลงในภายหลัง 
+                    (โดยข้อมูล ขนาดใช้ยา แพทย์ผู้เสนอ) จะไม่มีใน Drug master
                 </p>
             </div>
             <div class="mt-6 space-y-3">
                 <p class="text-base text-gray-600">ท่านสามารถติดตามข้อมูลที่อัพเดตล่าสุดได้ที่:</p>
                 <a href="https://drugpurchasing.github.io/Drug-master/" target="_blank" rel="noopener noreferrer" class="inline-block w-full px-4 py-3 bg-blue-600 text-white text-base font-semibold rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all">
-                    ไปที่ Drug Master (ข้อมูลล่าสุด)
+                    ไปที่ Drug Master
                 </a>
                 <button id="closeWarningModalBtn" type="button" class="w-full px-4 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all">
-                    รับทราบและดูข้อมูลเก่าต่อ
+                    รับทราบ
                 </button>
             </div>
         </div>
     </div>
 </div>
+
 <script>
 // --- CONSTANTS AND GLOBAL VARIABLES ---
 const googleSheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTv6yIfVLrXZ76oqef80u3iZbheswq3h-igusVAjNryZYucvVhnXc35I2HDNvEZr-4FYf4rwIu9EHn-/pub?gid=0&single=true&output=csv';
@@ -452,16 +454,18 @@ function createDrugCardHTML(drug) {
     </div>`;
 }
 
+// ===== MODIFIED SCRIPT SECTION =====
 function setupEventListeners() {
     searchInput.addEventListener('input', filterAndRender);
+    
     const handleFilterClick = (container) => (e) => {
         if (e.target.tagName === 'BUTTON') {
             const filterValue = e.target.dataset.filter;
 
-            // Check if the filter is for an old group and has not been warned about yet.
+            // CORRECTED LOGIC: This condition now correctly ignores the 'all' button.
             if (filterValue !== 'all' && filterValue !== newestGroupName && !warnedFilters.has(filterValue)) {
-                openWarningModal(); // Show the pop-up
-                warnedFilters.add(filterValue); // Mark this filter as warned to prevent future pop-ups
+                openWarningModal();
+                warnedFilters.add(filterValue);
             }
             
             const currentActive = container.querySelector('.active');
@@ -470,10 +474,10 @@ function setupEventListeners() {
             filterAndRender();
         }
     };
+
     groupFilterContainer.addEventListener('click', handleFilterClick(groupFilterContainer));
 }
 
-// --- MODIFICATION: Add a (NEW) badge to the button if it's the newest group ---
 function setupGroupFilters(defaultGroup) {
     const groups = [...new Set(allDrugData.map(drug => (drug.group || '').trim()).filter(Boolean))];
     
@@ -484,7 +488,6 @@ function setupGroupFilters(defaultGroup) {
         let buttonText = sanitizeHTML(group.replace(/\s*\(.*\)/, ''));
         const isActive = group === defaultGroup ? ' active' : '';
 
-        // Check if this button is for the newest group
         if (group === newestGroupName) {
             buttonText += ` <span class="text-xs font-bold text-red-500">(NEW)</span>`;
         }
@@ -526,7 +529,6 @@ function closeWarningModal() { warningModal.classList.add('hidden'); }
 
 closeWarningModalBtn.addEventListener('click', closeWarningModal);
 warningModal.addEventListener('click', function(event) {
-    // Close modal if overlay is clicked, but not the content inside
     if (event.target === warningModal) {
         closeWarningModal();
     }
