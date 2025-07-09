@@ -112,10 +112,10 @@
 </head>
 <body class="text-gray-800">
 
-<header class="py-6 shadow-lg bg-[#f36d28] text-white">
+<header class="py-6 shadow-sm bg-gradient-to-b from-white to-slate-100">
     <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
         <img src="CRAlogo.png" alt="Logo" class="h-14 w-auto">
-        <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-center flex-grow">สรุปข้อมูลยาเข้าใหม่</h1>
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight text-center flex-grow">สรุปข้อมูลยาเข้าใหม่</h1>
         <div class="h-14 w-14"></div> </div>
 </header>
 
@@ -213,14 +213,12 @@
                 </p>
             </div>
             <div class="mt-6 space-y-3">
+                <p class="text-base text-gray-600">ท่านสามารถติดตามข้อมูลที่อัพเดตล่าสุดได้ที่:</p>
                 <a href="https://drugpurchasing.github.io/Drug-master/" target="_blank" rel="noopener noreferrer" class="inline-block w-full px-4 py-3 bg-blue-600 text-white text-base font-semibold rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all">
                     ไปที่ Drug Master (ข้อมูลล่าสุด)
                 </a>
-                <button id="revertFilterBtn" type="button" class="w-full px-4 py-3 bg-white text-slate-700 border-2 border-slate-300 rounded-lg hover:bg-slate-50 font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500">
-                    ย้อนกลับ (Enter)
-                </button>
-                <button id="closeWarningModalBtn" type="button" class="w-full px-4 py-2 bg-transparent text-gray-600 rounded-lg hover:bg-gray-100 font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transition-all">
-                    รับทราบและดูข้อมูลต่อ
+                <button id="closeWarningModalBtn" type="button" class="w-full px-4 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all">
+                    รับทราบและดูข้อมูลเก่าต่อ
                 </button>
             </div>
         </div>
@@ -237,7 +235,6 @@ const groupFilterContainer = document.getElementById('group-filter-container');
 let allDrugData = [];
 let newestGroupName = '';
 const warnedFilters = new Set();
-let previousFilter = 'all';
 
 // --- CORE DATA HANDLING AND RENDERING FUNCTIONS ---
 function sanitizeHTML(text) { if (!text) return ''; const temp = document.createElement('div'); temp.textContent = text; return temp.innerHTML; }
@@ -258,11 +255,11 @@ function formatNotesAdvanced(text) {
     };
 
     const keywordMap = [
-        { words: ['กำหนดเงื่อนไขการสั่งเฉพาะ', 'ไม่สามารถ', 'เบิกไม่ได้', 'กำหนด', 'จำกัด', 'ห้าม', 'ไม่ ', 'ขอ '], style: styles.red },
+        { words: ['กำหนดเงื่อนไขการสั่งเฉพาะ', 'ไม่สามารถ', 'เบิกไม่ได้', 'กำหนด', 'จำกัด', 'ห้าม', 'ไม่', 'ขอ'], style: styles.red },
         { words: ['ไม่ควร', 'ควรระวัง', 'หลีกเลี่ยง'], style: styles.amber },
         { words: ['ใช้แทน', 'เข้าทดแทน'], style: styles.green },
         { words: ['กรณี', 'เปรียบเทียบ', 'ปริมาณน้อย', 'สำหรับ'], style: styles.slate },
-        { words: ['สำรองจ่าย','ไม่สต๊อค'], style: styles.cyan },
+        { words: ['สำรองจ่าย'], style: styles.cyan },
         { words: ['Non-stock'], style: styles.purple }
     ];
 
@@ -309,7 +306,6 @@ async function loadDrugData() {
                 const defaultGroupName = sortedByGroupOrder.length > 0 ? sortedByGroupOrder[0].group.trim() : 'all';
                 
                 newestGroupName = defaultGroupName;
-                previousFilter = defaultGroupName;
 
                 setupGroupFilters(defaultGroupName);
                 filterAndRender();
@@ -457,24 +453,22 @@ function createDrugCardHTML(drug) {
     </div>`;
 }
 
+// ===== MODIFIED SCRIPT SECTION =====
 function setupEventListeners() {
     searchInput.addEventListener('input', filterAndRender);
     
     const handleFilterClick = (container) => (e) => {
         if (e.target.tagName === 'BUTTON') {
             const filterValue = e.target.dataset.filter;
-            const currentActiveFilterElement = container.querySelector('.active');
 
-            if (currentActiveFilterElement) {
-                previousFilter = currentActiveFilterElement.dataset.filter;
-            }
-
-            if (filterValue !== newestGroupName && !warnedFilters.has(filterValue)) {
+            // CORRECTED LOGIC: This condition now correctly ignores the 'all' button.
+            if (filterValue !== 'all' && filterValue !== newestGroupName && !warnedFilters.has(filterValue)) {
                 openWarningModal();
                 warnedFilters.add(filterValue);
             }
             
-            if (currentActiveFilterElement) currentActiveFilterElement.classList.remove('active');
+            const currentActive = container.querySelector('.active');
+            if (currentActive) currentActive.classList.remove('active');
             e.target.classList.add('active');
             filterAndRender();
         }
@@ -517,21 +511,6 @@ function filterAndRender() {
     renderGroupedCards(filteredData);
 }
 
-function revertToPreviousFilter() {
-    if (warningModal.classList.contains('hidden')) {
-        return;
-    }
-
-    const previousFilterBtn = groupFilterContainer.querySelector(`button[data-filter="${previousFilter}"]`);
-    const currentActiveBtn = groupFilterContainer.querySelector('.active');
-
-    if (currentActiveBtn) currentActiveBtn.classList.remove('active');
-    if (previousFilterBtn) previousFilterBtn.classList.add('active');
-
-    filterAndRender();
-    closeWarningModal();
-}
-
 // ===== FLOATING TOOLBAR & MODAL SCRIPT START =====
 const scrollToTopBtn = document.getElementById('scrollToTopBtn');
 const openReportModalBtn = document.getElementById('openReportModalBtn');
@@ -540,28 +519,20 @@ const closeReportModalBtn = document.getElementById('closeReportModalBtn');
 const formCancelBtn = document.querySelector('.form-cancel-btn');
 const reportForm = document.getElementById('reportForm');
 
+// --- SCRIPT FOR WARNING MODAL ---
 const warningModal = document.getElementById('warningModal');
 const closeWarningModalBtn = document.getElementById('closeWarningModalBtn');
-const revertFilterBtn = document.getElementById('revertFilterBtn');
 
 function openWarningModal() { warningModal.classList.remove('hidden'); }
 function closeWarningModal() { warningModal.classList.add('hidden'); }
 
 closeWarningModalBtn.addEventListener('click', closeWarningModal);
-revertFilterBtn.addEventListener('click', revertToPreviousFilter);
-
 warningModal.addEventListener('click', function(event) {
     if (event.target === warningModal) {
         closeWarningModal();
     }
 });
-
-window.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter' && !warningModal.classList.contains('hidden')) {
-        event.preventDefault();
-        revertToPreviousFilter();
-    }
-});
+// --- END OF SCRIPT ---
 
 window.onscroll = function() {
     if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
