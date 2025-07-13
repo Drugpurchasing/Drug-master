@@ -625,7 +625,7 @@
 <body>
     <div class="app-container">
         <div class="logo-container">
-            <div class="d-flex align-items: center">
+            <div class="d-flex align-items-center">
                 <img src="CRAlogo.png" alt="Logo" class="img-fluid me-3" onerror="this.style.display='none'">
                 <div>
                     <h1 class="app-title">Drug master CRA</h1>
@@ -1261,9 +1261,16 @@
             });
         });
 
-        // --- Logging and Analytics Function (UPDATED) ---
+        // --- Logging and Analytics Function (UPDATED for Debugging) ---
         function logVisitAndTrackTime() {
             const webAppUrl = 'https://script.google.com/macros/s/AKfycbzDSIzvndrlTxCT6hxQIxsKosS5PRphOn4qQmEA8lh1iuvJbW1L0zJaRxfO1EHFa27o_A/exec';
+            console.log("Log Script URL:", webAppUrl);
+
+            if (!webAppUrl || webAppUrl.includes('xxxxx')) {
+                console.error("Web App URL for logging is not set. Logging will be disabled.");
+                return;
+            }
+
             const sessionStartTime = Date.now();
             let totalHiddenTime = 0;
             let lastHiddenTime = 0;
@@ -1277,23 +1284,34 @@
                 language: navigator.language
             };
 
+            console.log("Attempting to log initial visit...", initialLogData);
             fetch(webAppUrl, {
                 method: 'POST',
                 body: JSON.stringify(initialLogData),
                 headers: { 'Content-Type': 'application/json' },
                 redirect: 'follow'
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    // Log the response text to see more details from the server
+                    response.text().then(text => {
+                        console.error('Initial log failed! Server response:', text);
+                    });
+                    throw new Error(`Network response was not ok: ${response.statusText}`);
+                }
+                return response.json();
+            })
             .then(data => {
+                console.log("Initial log successful. Server response:", data);
                 if (data && data.status === 'success' && data.count) {
                     $('#viewCountValue').text(formatNumber(data.count, 0));
                     $('#viewCounter').css('display', 'inline-flex');
                 } else {
-                    throw new Error(data.message || 'Invalid data from server');
+                    throw new Error(data.message || 'Invalid data structure from server');
                 }
             })
             .catch(error => {
-                console.error('Error fetching view count:', error);
+                console.error('Error during initial visit log & view count fetch:', error);
                 $('#viewCounter').hide();
             });
 
@@ -1302,12 +1320,19 @@
                 if (document.visibilityState === 'hidden') {
                     lastHiddenTime = Date.now();
                 } else if (document.visibilityState === 'visible') {
-                    totalHiddenTime += (Date.now() - lastHiddenTime);
+                    if(lastHiddenTime > 0) {
+                       totalHiddenTime += (Date.now() - lastHiddenTime);
+                    }
                 }
             });
 
             // --- Part 3: Send Session Duration on Page Unload ---
-            window.addEventListener('beforeunload', () => {
+            window.addEventListener('beforeunload', (event) => {
+                // If the page was hidden when unloading, add the final hidden duration
+                if (document.visibilityState === 'hidden' && lastHiddenTime > 0) {
+                     totalHiddenTime += (Date.now() - lastHiddenTime);
+                }
+
                 const totalSessionTime = Date.now() - sessionStartTime;
                 const activeDurationSeconds = Math.round((totalSessionTime - totalHiddenTime) / 1000);
 
@@ -1320,10 +1345,19 @@
                     userAgent: navigator.userAgent
                 };
                 
+                console.log("Sending session data on unload:", sessionLogData);
+                
                 // Use navigator.sendBeacon for reliable background sending
                 if (navigator.sendBeacon) {
                     const blob = new Blob([JSON.stringify(sessionLogData)], { type: 'application/json' });
-                    navigator.sendBeacon(webAppUrl, blob);
+                    const sent = navigator.sendBeacon(webAppUrl, blob);
+                    console.log("Beacon sent status:", sent);
+                } else {
+                    // Fallback for older browsers (less reliable)
+                    const xhr = new XMLHttpRequest();
+                    xhr.open("POST", webAppUrl, false); // Synchronous
+                    xhr.setRequestHeader('Content-Type', 'application/json');
+                    xhr.send(JSON.stringify(sessionLogData));
                 }
             });
         }
@@ -1336,3 +1370,4 @@
     </script>
 </body>
 </html>
+
