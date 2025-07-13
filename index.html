@@ -1261,7 +1261,7 @@
             });
         });
 
-        // --- Logging and Analytics Function (UPDATED for Debugging) ---
+        // --- Logging and Analytics Function (UPDATED to fix CORS issue) ---
         function logVisitAndTrackTime() {
             const webAppUrl = 'https://script.google.com/macros/s/AKfycbzDSIzvndrlTxCT6hxQIxsKosS5PRphOn4qQmEA8lh1iuvJbW1L0zJaRxfO1EHFa27o_A/exec';
             console.log("Log Script URL:", webAppUrl);
@@ -1287,13 +1287,16 @@
             console.log("Attempting to log initial visit...", initialLogData);
             fetch(webAppUrl, {
                 method: 'POST',
-                body: JSON.stringify(initialLogData),
-                headers: { 'Content-Type': 'application/json' },
-                redirect: 'follow'
+                mode: 'cors', // Explicitly set mode
+                cache: 'no-cache', // Ensure fresh request
+                headers: {
+                    // Using text/plain avoids a CORS preflight request (OPTIONS)
+                    'Content-Type': 'text/plain;charset=utf-8', 
+                },
+                body: JSON.stringify(initialLogData)
             })
             .then(response => {
                 if (!response.ok) {
-                    // Log the response text to see more details from the server
                     response.text().then(text => {
                         console.error('Initial log failed! Server response:', text);
                     });
@@ -1328,15 +1331,12 @@
 
             // --- Part 3: Send Session Duration on Page Unload ---
             window.addEventListener('beforeunload', (event) => {
-                // If the page was hidden when unloading, add the final hidden duration
                 if (document.visibilityState === 'hidden' && lastHiddenTime > 0) {
                      totalHiddenTime += (Date.now() - lastHiddenTime);
                 }
 
                 const totalSessionTime = Date.now() - sessionStartTime;
                 const activeDurationSeconds = Math.round((totalSessionTime - totalHiddenTime) / 1000);
-
-                // Ensure duration is not negative
                 const finalDuration = Math.max(0, activeDurationSeconds);
 
                 const sessionLogData = {
@@ -1347,17 +1347,11 @@
                 
                 console.log("Sending session data on unload:", sessionLogData);
                 
-                // Use navigator.sendBeacon for reliable background sending
                 if (navigator.sendBeacon) {
-                    const blob = new Blob([JSON.stringify(sessionLogData)], { type: 'application/json' });
+                    // Use a Blob with text/plain to be consistent and avoid preflight issues
+                    const blob = new Blob([JSON.stringify(sessionLogData)], { type: 'text/plain;charset=utf-8' });
                     const sent = navigator.sendBeacon(webAppUrl, blob);
                     console.log("Beacon sent status:", sent);
-                } else {
-                    // Fallback for older browsers (less reliable)
-                    const xhr = new XMLHttpRequest();
-                    xhr.open("POST", webAppUrl, false); // Synchronous
-                    xhr.setRequestHeader('Content-Type', 'application/json');
-                    xhr.send(JSON.stringify(sessionLogData));
                 }
             });
         }
@@ -1370,4 +1364,3 @@
     </script>
 </body>
 </html>
-
