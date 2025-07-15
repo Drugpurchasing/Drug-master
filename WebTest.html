@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Drug Master CRA V4.04</title>
+    <title>Drug Master CRA V4.04 (Modified)</title>
     <base target="_top">
     <link rel="icon" type="image/png" href="favicon-32x32.png">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,9 +16,9 @@
 
 <style>
     :root {
-        --primary-color: #3b82f6;
-        --primary-dark: #2563eb;
-        --secondary-color: #1e40af;
+        --primary-color: #1a4e8e; /* MODIFIED */
+        --primary-dark: #123a6b;   /* MODIFIED */
+        --secondary-color: #1a4e8e; /* MODIFIED */
         --accent-color: #f59e0b;
         --accent-light: #fbbf24;
         --light-bg: #f8fafc;
@@ -37,8 +37,8 @@
         --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
         --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-        --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        --gradient-secondary: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        --gradient-primary: linear-gradient(135deg, #1a4e8e 0%, #2a6ac4 100%); /* MODIFIED */
+        --gradient-secondary: linear-gradient(135deg, #1a4e8e 0%, #8b5cf6 100%); /* MODIFIED */
         --gradient-success: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
         --gradient-danger: linear-gradient(135deg, #ef4444 0%, #ec4899 100%);
     }
@@ -65,8 +65,8 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: 
-            radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+        background:
+            radial-gradient(circle at 20% 50%, rgba(26, 78, 142, 0.1) 0%, transparent 50%), /* MODIFIED */
             radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
             radial-gradient(circle at 40% 20%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
         pointer-events: none;
@@ -81,9 +81,8 @@
         z-index: 1;
     }
 
-    /* Enhanced Logo Container */
     .logo-container {
-        background: var(--gradient-secondary);
+        background: var(--gradient-primary); /* MODIFIED */
         padding: 25px 35px;
         border-radius: 20px;
         color: white;
@@ -159,7 +158,6 @@
         z-index: 2;
     }
 
-    /* Enhanced Cards */
     .card {
         border: none;
         border-radius: 20px;
@@ -211,7 +209,6 @@
         100% { left: 100%; }
     }
 
-    /* Enhanced Filter Section */
     .filter-section {
         background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
         padding: 25px 30px;
@@ -227,7 +224,6 @@
         transform: translateY(-1px);
     }
 
-    /* Enhanced Input Group */
     .input-group {
         border-radius: 12px;
         overflow: hidden;
@@ -236,7 +232,7 @@
     }
 
     .input-group:focus-within {
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        box-shadow: 0 0 0 3px rgba(26, 78, 142, 0.2); /* MODIFIED */
     }
 
     .input-group-text {
@@ -258,7 +254,6 @@
         box-shadow: none;
     }
 
-    /* Enhanced Buttons */
     .btn {
         padding: 10px 20px;
         font-weight: 500;
@@ -289,16 +284,16 @@
     }
 
     .btn-primary {
-        background: var(--gradient-secondary);
+        background: var(--gradient-primary); /* MODIFIED */
         border: none;
         color: white;
-        box-shadow: 0 4px 6px rgba(59, 130, 246, 0.25);
+        box-shadow: 0 4px 6px rgba(26, 78, 142, 0.25); /* MODIFIED */
     }
 
     .btn-primary:hover {
-        background: var(--gradient-secondary);
+        background: var(--gradient-primary); /* MODIFIED */
         transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(59, 130, 246, 0.35);
+        box-shadow: 0 6px 12px rgba(26, 78, 142, 0.35); /* MODIFIED */
     }
 
     .btn-success {
@@ -337,7 +332,6 @@
         box-shadow: 0 6px 12px rgba(139, 92, 246, 0.35);
     }
 
-    /* Enhanced View Toggle Buttons */
     .view-toggle {
         background: white;
         border: 2px solid var(--border-color);
@@ -352,14 +346,13 @@
     }
 
     .view-toggle.active {
-        background: var(--gradient-secondary) !important;
+        background: var(--gradient-primary) !important; /* MODIFIED */
         border-color: transparent !important;
         color: white !important;
-        box-shadow: 0 4px 6px rgba(59, 130, 246, 0.25);
+        box-shadow: 0 4px 6px rgba(26, 78, 142, 0.25); /* MODIFIED */
         transform: scale(1.05);
     }
 
-    /* Enhanced Table */
     .table-responsive {
         border-radius: 16px;
         overflow: hidden;
@@ -387,7 +380,7 @@
     }
 
     table.dataTable tbody tr:hover {
-        background: linear-gradient(90deg, rgba(59, 130, 246, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+        background: linear-gradient(90deg, rgba(26, 78, 142, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%); /* MODIFIED */
         transform: scale(1.01);
     }
 
@@ -398,7 +391,7 @@
     }
 
     .view-details-btn {
-        background: var(--gradient-secondary);
+        background: var(--gradient-primary); /* MODIFIED */
         border: none;
         padding: 6px 12px;
         transition: all 0.3s ease;
@@ -406,10 +399,9 @@
 
     .view-details-btn:hover {
         transform: scale(1.1) rotate(5deg);
-        box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+        box-shadow: 0 4px 8px rgba(26, 78, 142, 0.3); /* MODIFIED */
     }
 
-    /* Enhanced Modal */
     .modal-content {
         border: none;
         border-radius: 20px;
@@ -418,7 +410,7 @@
     }
 
     .modal-header {
-        background: var(--gradient-secondary);
+        background: var(--gradient-primary); /* MODIFIED */
         color: white;
         padding: 20px 25px;
         border: none;
@@ -429,7 +421,6 @@
         background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
     }
 
-    /* Enhanced Detail Items */
     .detail-item {
         background: white;
         border: 1px solid var(--border-color);
@@ -449,7 +440,7 @@
         left: 0;
         width: 5px;
         height: 100%;
-        background: var(--gradient-secondary);
+        background: var(--gradient-primary); /* MODIFIED */
         transition: width 0.3s ease;
     }
 
@@ -483,7 +474,6 @@
         z-index: 2;
     }
 
-    /* Enhanced Badges */
     .badge {
         font-weight: 500;
         padding: 8px 12px;
@@ -499,9 +489,8 @@
         box-shadow: var(--shadow-md);
     }
 
-    /* Badge Colors with Gradients */
     .bg-primary {
-        background: var(--gradient-secondary) !important;
+        background: var(--gradient-primary) !important; /* MODIFIED */
     }
 
     .bg-success {
@@ -546,6 +535,10 @@
         box-shadow: var(--shadow-md);
         border: 1px solid var(--border-color);
         transition: all 0.3s ease;
+        position: relative;      /* FIXED: Added for chart.js */
+        min-height: 400px;       /* FIXED: Added for chart.js */
+        flex: 1;                 /* FIXED: Allow flex item to grow/shrink */
+        min-width: 300px;        /* FIXED: Prevent chart from becoming too small */
     }
 
     .chart-wrapper:hover {
@@ -559,11 +552,10 @@
         margin-bottom: 20px;
         padding-bottom: 12px;
         border-bottom: 2px solid;
-        border-image: var(--gradient-secondary);
+        border-image: var(--gradient-primary); /* MODIFIED */
         border-image-slice: 1;
     }
 
-    /* Enhanced Loading */
     .loading-overlay {
         position: fixed;
         top: 0;
@@ -603,7 +595,6 @@
         border-top-color: var(--purple);
     }
 
-    /* Enhanced Progress Bar */
     .progress {
         height: 30px;
         border-radius: 15px;
@@ -613,13 +604,12 @@
     }
 
     .progress-bar {
-        background: var(--gradient-secondary);
-        box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+        background: var(--gradient-primary); /* MODIFIED */
+        box-shadow: 0 2px 4px rgba(26, 78, 142, 0.3); /* MODIFIED */
         font-size: 14px;
         font-weight: 500;
     }
 
-    /* Enhanced Floating Action Button */
     .floating-action-button {
         position: fixed;
         bottom: 30px;
@@ -660,7 +650,6 @@
         }
     }
 
-    /* Enhanced Footer */
     .app-footer {
         display: flex;
         justify-content: center;
@@ -678,7 +667,7 @@
         display: none;
         align-items: center;
         gap: 8px;
-        background: var(--gradient-secondary);
+        background: var(--gradient-primary); /* MODIFIED */
         color: white;
         padding: 8px 20px;
         border-radius: 30px;
@@ -693,7 +682,6 @@
         box-shadow: var(--shadow-lg);
     }
 
-    /* Enhanced Scrollbar */
     ::-webkit-scrollbar {
         width: 12px;
         height: 12px;
@@ -705,16 +693,15 @@
     }
 
     ::-webkit-scrollbar-thumb {
-        background: var(--gradient-secondary);
+        background: var(--gradient-primary); /* MODIFIED */
         border-radius: 10px;
         box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.1);
     }
 
     ::-webkit-scrollbar-thumb:hover {
-        background: var(--gradient-primary);
+        background: var(--gradient-secondary); /* MODIFIED */
     }
 
-    /* Animations for page elements */
     .filter-section,
     .card,
     .floating-action-button {
@@ -732,7 +719,6 @@
         }
     }
 
-    /* Responsive Design */
     @media (max-width: 992px) {
         .logo-container {
             flex-direction: column;
@@ -740,11 +726,11 @@
             gap: 20px;
             padding: 20px;
         }
-        
+
         .app-title {
             font-size: 28px;
         }
-        
+
         .chart-wrapper {
             min-width: 100%;
         }
@@ -762,24 +748,28 @@
         .app-title {
             font-size: 24px;
         }
-        
+
         .version-info {
             font-size: 14px;
         }
-        
+
         .filter-section {
             padding: 20px;
         }
-        
+
         .detail-item {
             flex: 1 1 100%;
             min-width: 100%;
         }
-        
+
         .floating-action-button {
             bottom: 20px;
             right: 20px;
             padding: 14px 20px;
+        }
+        /* FIXED: On smaller screens, make charts stack vertically */
+        .charts-container, .modal-main-layout {
+            flex-direction: column;
         }
     }
 
@@ -787,15 +777,15 @@
         .logo-container img {
             height: 50px;
         }
-        
+
         .app-title {
             font-size: 20px;
         }
-        
+
         .floating-action-button span {
             display: none;
         }
-        
+
         .floating-action-button {
             width: 56px;
             height: 56px;
@@ -805,7 +795,6 @@
         }
     }
 
-    /* Print styles */
     @media print {
         body {
             background: white;
@@ -818,19 +807,17 @@
         }
     }
 
-    /* Tooltips Enhancement */
     .tooltip {
         font-size: 14px;
     }
 
     .tooltip-inner {
-        background: var(--gradient-secondary);
+        background: var(--gradient-primary); /* MODIFIED */
         padding: 8px 12px;
         border-radius: 8px;
         box-shadow: var(--shadow-md);
     }
 
-    /* SweetAlert2 Customization */
     .swal2-popup {
         border-radius: 20px;
         box-shadow: var(--shadow-xl);
@@ -841,7 +828,7 @@
     }
 
     .swal2-confirm {
-        background: var(--gradient-secondary) !important;
+        background: var(--gradient-primary) !important; /* MODIFIED */
         border-radius: 10px;
         font-weight: 500;
         padding: 10px 24px;
@@ -853,7 +840,6 @@
         padding: 10px 24px;
     }
 
-    /* DataTables Customization */
     .dataTables_wrapper .dataTables_filter input {
         border-radius: 10px;
         padding: 8px 16px;
@@ -863,7 +849,7 @@
 
     .dataTables_wrapper .dataTables_filter input:focus {
         border-color: var(--primary-color);
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        box-shadow: 0 0 0 3px rgba(26, 78, 142, 0.1); /* MODIFIED */
     }
 
     .dataTables_wrapper .dataTables_length select {
@@ -879,7 +865,7 @@
     }
 
     .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-        background: var(--gradient-secondary) !important;
+        background: var(--gradient-primary) !important; /* MODIFIED */
         color: white !important;
         border: none;
         box-shadow: var(--shadow-sm);
@@ -891,7 +877,6 @@
         border: 1px solid var(--primary-color);
     }
 
-    /* Additional hover effects */
     .btn-group .btn {
         position: relative;
         z-index: 1;
@@ -901,7 +886,6 @@
         margin-right: -1px;
     }
 
-    /* Modal animations */
     .modal.fade .modal-dialog {
         transition: transform 0.3s ease-out;
         transform: scale(0.9);
@@ -911,7 +895,6 @@
         transform: scale(1);
     }
 
-    /* Enhanced drug image */
     .drug-image {
         width: 100%;
         height: 320px;
@@ -929,7 +912,6 @@
         box-shadow: var(--shadow-lg);
     }
 
-    /* Price value styles */
     .sale-price-value {
         color: var(--success-color);
         font-size: 1.5rem !important;
@@ -942,7 +924,6 @@
         font-weight: 700 !important;
     }
 
-    /* Status cards special styling */
     .status-card {
         background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
     }
@@ -952,7 +933,6 @@
         padding: 10px 16px !important;
     }
 
-    /* Highlight cards */
     .highlight-card {
         background: linear-gradient(135deg, #fef3c7 0%, #fef9e7 100%);
         border-left-color: var(--accent-color) !important;
@@ -963,25 +943,21 @@
         font-size: 16px !important;
     }
 
-    /* Orange border card */
     .orange-border-card {
         border-left-color: var(--warning-color) !important;
         background: linear-gradient(135deg, #fff7ed 0%, #fffbf5 100%);
     }
 
-    /* Danger border card */
     .danger-border-card {
         border-left-color: var(--danger-color) !important;
         background: linear-gradient(135deg, #fef2f2 0%, #fffafa 100%);
     }
 
-    /* Material number card */
     .material-no-card {
         background: linear-gradient(135deg, #ede9fe 0%, #f5f3ff 100%);
         border-left-color: var(--purple) !important;
     }
 
-    /* Unlock button styling */
     .unlock-cost-btn {
         cursor: pointer;
         color: var(--accent-color);
@@ -995,7 +971,6 @@
         transform: rotate(10deg) scale(1.1);
     }
 
-    /* Stats section */
     #stats-section {
         margin-top: 30px;
         padding-top: 30px;
@@ -1008,11 +983,10 @@
         margin-bottom: 20px;
         padding-bottom: 12px;
         border-bottom: 2px solid;
-        border-image: var(--gradient-secondary);
+        border-image: var(--gradient-primary); /* MODIFIED */
         border-image-slice: 1;
     }
 
-    /* Tables enhancement */
     .table {
         border-radius: 12px;
         overflow: hidden;
@@ -1039,10 +1013,9 @@
     }
 
     .table-hover tbody tr:hover {
-        background: linear-gradient(90deg, rgba(59, 130, 246, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+        background: linear-gradient(90deg, rgba(26, 78, 142, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%); /* MODIFIED */
     }
 
-    /* Contact modal styling */
     #contactModal .form-check {
         padding: 12px 16px;
         border-radius: 10px;
@@ -1068,10 +1041,9 @@
 
     #contactModal textarea:focus {
         border-color: var(--primary-color);
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        box-shadow: 0 0 0 3px rgba(26, 78, 142, 0.1); /* MODIFIED */
     }
 
-    /* Error message styling */
     .inline-error-msg {
         color: var(--danger-color);
         font-size: 14px;
@@ -1085,13 +1057,11 @@
         75% { transform: translateX(5px); }
     }
 
-    /* Loading indicator enhancement */
     #loadingIndicator {
         margin-bottom: 30px;
         animation: slideDown 0.5s ease-out;
     }
 
-    /* Action buttons group */
     .action-buttons {
         display: flex;
         flex-wrap: wrap;
@@ -1110,14 +1080,12 @@
         padding: 12px 20px;
     }
 
-    /* Modal footer enhancement */
     .modal-footer {
         background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
         border-top: 1px solid var(--border-color);
         padding: 20px 25px;
     }
 
-    /* Detail row spacing */
     .detail-row {
         display: flex;
         flex-wrap: wrap;
@@ -1129,7 +1097,6 @@
         margin-bottom: 0;
     }
 
-    /* Charts container */
     .charts-container {
         display: flex;
         flex-wrap: wrap;
@@ -1137,7 +1104,6 @@
         margin-bottom: 30px;
     }
 
-    /* Improved focus states */
     *:focus {
         outline: none;
     }
@@ -1151,7 +1117,6 @@
         outline-offset: 2px;
     }
 
-    /* Transition for all interactive elements */
     a,
     button,
     input,
@@ -1164,7 +1129,6 @@
         transition: all 0.3s ease;
     }
 
-    /* Hover state for links */
     a {
         color: var(--primary-color);
         text-decoration: none;
@@ -1174,20 +1138,17 @@
         color: var(--primary-dark);
     }
 
-    /* Enhanced modal backdrop */
     .modal-backdrop {
         background-color: rgba(0, 0, 0, 0.7);
         backdrop-filter: blur(3px);
     }
 
-    /* Loading spinner enhancement */
     .spinner-border {
         width: 20px;
         height: 20px;
         border-width: 2px;
     }
 
-    /* Enhanced tooltips arrow */
     .bs-tooltip-top .tooltip-arrow::before {
         border-top-color: var(--primary-color);
     }
@@ -1204,12 +1165,13 @@
         border-right-color: var(--primary-color);
     }
 
-    /* Image section enhancement */
     .image-section {
         background: white;
         padding: 25px;
         border-radius: 16px;
         box-shadow: var(--shadow-md);
+        flex: 1; /* MODIFIED: Let image section take up space */
+        min-width: 300px;
     }
 
     .image-section h5 {
@@ -1218,11 +1180,10 @@
         margin-bottom: 20px;
         padding-bottom: 12px;
         border-bottom: 2px solid;
-        border-image: var(--gradient-secondary);
+        border-image: var(--gradient-primary); /* MODIFIED */
         border-image-slice: 1;
     }
 
-    /* Main layout enhancement */
     .modal-main-layout {
         display: flex;
         flex-wrap: wrap;
@@ -1234,18 +1195,15 @@
         min-width: 400px;
     }
 
-    /* Compact card styling */
     .compact-card {
         flex: 0 1 140px !important;
-        background: linear-gradient(135deg, #e0e7ff 0%, #ede9fe 100%);
+        background: linear-gradient(135deg, #eef2ff 0%, #ede9fe 100%); /* MODIFIED */
     }
 
-    /* Value container animation */
     .value-container {
         transition: all 0.3s ease;
     }
 
-    /* Enhanced form controls */
     .form-check-input {
         width: 20px;
         height: 20px;
@@ -1258,7 +1216,6 @@
         border-color: var(--primary-color);
     }
 
-    /* Custom alert styling */
     .alert {
         border-radius: 12px;
         border: none;
@@ -1271,13 +1228,11 @@
         color: var(--primary-dark);
     }
 
-    /* Enhanced pagination info */
     .dataTables_info {
         color: var(--text-muted);
         font-weight: 500;
     }
 
-    /* Final touches */
     .text-primary {
         color: var(--primary-color) !important;
     }
@@ -1302,7 +1257,6 @@
         color: var(--text-muted) !important;
     }
 
-    /* Ensure all animations are smooth */
     * {
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
@@ -1321,7 +1275,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="card">
             <div class="card-header"></div>
             <div class="card-body">
@@ -1364,21 +1318,21 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div id="loadingIndicator" class="progress mb-4" style="height: 25px; display: none;">
                     <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
                         <strong class="text-white"><i class="fas fa-spinner fa-spin me-2"></i>Loading Data... Please Wait</strong>
                     </div>
                 </div>
-                
+
                 <div class="table-responsive">
                     <table id="drugTable" class="table table-hover table-striped w-100"></table>
                 </div>
-                
+
             </div>
         </div>
     </div>
-    
+
     <footer class="app-footer">
         <div id="viewCounter" class="view-counter-widget" title="Total Page Views">
             <i class="fas fa-eye"></i>&nbsp;ยอดเข้าชม:&nbsp;<span id="viewCountValue">...</span>
@@ -1389,13 +1343,13 @@
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
         <span>ติดต่อ/แจ้งปัญหา</span>
     </button>
-    
+
     <div class="modal fade" id="drugDetailModal" tabindex="-1" aria-labelledby="drugDetailModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-dialog modal-fullscreen modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="drugDetailModalLabel">Drug Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="drugDetailModalBody">
                     </div>
@@ -1785,7 +1739,7 @@
                 $('#drugDetailModal').data('drug-name', `${rowData[1]} (Mat No: ${rowData[0]})`);
 
                 if (lineChartInstance) lineChartInstance.destroy(); if (pieChartInstance) pieChartInstance.destroy();
-                if (showUsageStats) { const dataMax = Math.max(...usageData); const suggestedMax = dataMax > 0 ? dataMax * 1.15 : 1; const trendlineData = calculateTrendline(usageData); const lineCtx = document.getElementById('usageLineChart').getContext('2d'); lineChartInstance = new Chart(lineCtx, { type: 'line', data: { labels: rateLabels, datasets: [ { label: 'Usage Rate', data: usageData, borderColor: 'var(--primary-color)', backgroundColor: 'rgba(0, 91, 161, 0.2)', fill: true, tension: 0.1 }, { label: 'Trendline', data: trendlineData, type: 'line', fill: false, borderColor: 'rgba(220, 53, 69, 0.7)', borderWidth: 2, borderDash: [5, 5], pointRadius: 0, datalabels: { display: false } } ] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { ticks: { color: '#000000', font: { weight: 'bold' } } }, y: { ticks: { color: '#000000', font: { weight: 'bold' } }, min: 0, suggestedMax: suggestedMax } }, plugins: { legend: { display: true, position: 'top', labels: { usePointStyle: true } }, datalabels: { align: 'end', anchor: 'end', color: '#555', font: { weight: 'bold', size: 14 }, formatter: (value) => value > 0 ? Math.round(value) : '' } } } }); }
+                if (showUsageStats) { const dataMax = Math.max(...usageData); const suggestedMax = dataMax > 0 ? dataMax * 1.15 : 1; const trendlineData = calculateTrendline(usageData); const lineCtx = document.getElementById('usageLineChart').getContext('2d'); lineChartInstance = new Chart(lineCtx, { type: 'line', data: { labels: rateLabels, datasets: [ { label: 'Usage Rate', data: usageData, borderColor: 'var(--primary-color)', backgroundColor: 'rgba(26, 78, 142, 0.2)', fill: true, tension: 0.1 }, { label: 'Trendline', data: trendlineData, type: 'line', fill: false, borderColor: 'rgba(220, 53, 69, 0.7)', borderWidth: 2, borderDash: [5, 5], pointRadius: 0, datalabels: { display: false } } ] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { ticks: { color: '#000000', font: { weight: 'bold' } } }, y: { ticks: { color: '#000000', font: { weight: 'bold' } }, min: 0, suggestedMax: suggestedMax } }, plugins: { legend: { display: true, position: 'top', labels: { usePointStyle: true } }, datalabels: { align: 'end', anchor: 'end', color: '#555', font: { weight: 'bold', size: 14 }, formatter: (value) => value > 0 ? Math.round(value) : '' } } } }); }
                 if (showUsageStats && showPieChart) { const pieCtx = document.getElementById('payerPieChart').getContext('2d'); pieChartInstance = new Chart(pieCtx, { type: 'pie', data: { labels: payerLabels, datasets: [{ label: 'สัดส่วน', data: payerData, backgroundColor: ['#005ba1', '#dc3545', '#198754', '#6f42c1', '#fd7e14', '#ffc107'], hoverOffset: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#000000', font: { weight: 'bold' } } }, datalabels: { color: '#fff', textStrokeColor: '#000', textStrokeWidth: 2, font: { weight: 'bold', size: 14 }, formatter: (value, ctx) => { if (value === 0) return ''; const total = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); const percentage = (value / total * 100).toFixed(1) + '%'; return percentage; } } } } }); }
                 
                 const modalTooltipTriggerList = [].slice.call(document.querySelectorAll('#drugDetailModal [data-bs-toggle="tooltip"]'));
@@ -1798,7 +1752,7 @@
             $('#drugDetailModal').on('click', '.unlock-cost-btn', function(e) { e.stopPropagation(); const unlockButton = $(this); const valueContainer = unlockButton.closest('.detail-item').find('.value-container'); unlockButton.hide(); const formHtml = `<div class="input-group input-group-sm"><input type="password" class="form-control inline-password-input" placeholder="Password..."><button class="btn btn-primary inline-submit-btn" type="button">OK</button></div><div class="inline-error-msg" style="display:none;">Incorrect Password</div>`; valueContainer.html(formHtml); valueContainer.find('.inline-password-input').focus(); });
             $('#drugDetailModal').on('click', '.inline-submit-btn', function(e) { e.stopPropagation(); const submitButton = $(this); const inputField = submitButton.siblings('.inline-password-input'); const valueContainer = submitButton.closest('.value-container'); const errorMsg = valueContainer.find('.inline-error-msg'); const password = inputField.val(); if (password === 'rxccc') { passwordVerified = true; const realCost = valueContainer.data('real-value'); valueContainer.html(realCost); } else { errorMsg.show().delay(2000).fadeOut(); inputField.val('').focus(); } });
             $('#drugDetailModal').on('keypress', '.inline-password-input', function(e) { if (e.which === 13) { e.preventDefault(); $(this).siblings('.inline-submit-btn').click(); } });
-        
+            
             $('#drugDetailModal').on('hidden.bs.modal', function () {
                 $(this).find('[data-bs-toggle="tooltip"]').tooltip('dispose');
                 if (lineChartInstance) lineChartInstance.destroy();
@@ -1949,7 +1903,6 @@
             });
         });
 
-        // --- Logging and Analytics Function (UPDATED to fix CORS issue) ---
         function logVisitAndTrackTime() {
             const webAppUrl = 'https://script.google.com/macros/s/AKfycbzDSIzvndrlTxCT6hxQIxsKosS5PRphOn4qQmEA8lh1iuvJbW1L0zJaRxfO1EHFa27o_A/exec';
             console.log("Log Script URL:", webAppUrl);
@@ -1963,7 +1916,6 @@
             let totalHiddenTime = 0;
             let lastHiddenTime = 0;
 
-            // --- Part 1: Initial Log on Page Load ---
             const initialLogData = {
                 action: 'log_visit',
                 userAgent: navigator.userAgent,
@@ -1975,10 +1927,9 @@
             console.log("Attempting to log initial visit...", initialLogData);
             fetch(webAppUrl, {
                 method: 'POST',
-                mode: 'cors', // Explicitly set mode
-                cache: 'no-cache', // Ensure fresh request
+                mode: 'cors',
+                cache: 'no-cache',
                 headers: {
-                    // Using text/plain avoids a CORS preflight request (OPTIONS)
                     'Content-Type': 'text/plain;charset=utf-8', 
                 },
                 body: JSON.stringify(initialLogData)
@@ -2006,21 +1957,19 @@
                 $('#viewCounter').hide();
             });
 
-            // --- Part 2: Track Page Visibility to calculate active time ---
             document.addEventListener('visibilitychange', () => {
                 if (document.visibilityState === 'hidden') {
                     lastHiddenTime = Date.now();
                 } else if (document.visibilityState === 'visible') {
                     if(lastHiddenTime > 0) {
-                       totalHiddenTime += (Date.now() - lastHiddenTime);
+                        totalHiddenTime += (Date.now() - lastHiddenTime);
                     }
                 }
             });
 
-            // --- Part 3: Send Session Duration on Page Unload ---
             window.addEventListener('beforeunload', (event) => {
                 if (document.visibilityState === 'hidden' && lastHiddenTime > 0) {
-                     totalHiddenTime += (Date.now() - lastHiddenTime);
+                        totalHiddenTime += (Date.now() - lastHiddenTime);
                 }
 
                 const totalSessionTime = Date.now() - sessionStartTime;
@@ -2036,7 +1985,6 @@
                 console.log("Sending session data on unload:", sessionLogData);
                 
                 if (navigator.sendBeacon) {
-                    // Use a Blob with text/plain to be consistent and avoid preflight issues
                     const blob = new Blob([JSON.stringify(sessionLogData)], { type: 'text/plain;charset=utf-8' });
                     const sent = navigator.sendBeacon(webAppUrl, blob);
                     console.log("Beacon sent status:", sent);
@@ -2044,9 +1992,8 @@
             });
         }
 
-        // --- Initial Load ---
         loadAllDataAndInitTable();
-        logVisitAndTrackTime(); // Call the updated logging function
+        logVisitAndTrackTime();
 
     });
     </script>
