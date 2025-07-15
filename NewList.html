@@ -108,6 +108,47 @@
             border-radius: 8px;
             border: 1px solid #e5e7eb;
         }
+
+        .visitor-counter {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 12px 20px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        z-index: 30;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+    
+    .visitor-counter:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .visitor-icon {
+        width: 20px;
+        height: 20px;
+        color: #3b82f6;
+    }
+    
+    .visitor-count {
+        font-weight: 600;
+        color: #1f2937;
+    }
+    
+    @media (max-width: 640px) {
+        .visitor-counter {
+            bottom: 80px;
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+    }
     </style>
 </head>
 <body class="text-gray-800">
@@ -225,6 +266,14 @@
             </div>
         </div>
     </div>
+</div>
+
+<div class="visitor-counter" id="visitorCounter">
+    <svg class="visitor-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+    </svg>
+    <span>ผู้เข้าชม: <span class="visitor-count" id="visitorCount">-</span></span>
 </div>
 
 <script>
@@ -641,6 +690,100 @@ reportForm.addEventListener('submit', function(event) {
 
 // --- INITIAL LOAD ---
 document.addEventListener('DOMContentLoaded', loadDrugData);
+const ANALYTICS_URL = 'https://script.google.com/macros/s/AKfycby2t4AmusQz1v9t3ZXl4EXjXRUcyBJaTKbd2MxQqXD1wdLgLER_zUpRlNEsjmZ2Hj_B/exec'; // ใส่ URL จาก Google Apps Script
+
+// Function to log visit
+async function logVisit() {
+    try {
+        const visitData = {
+            timestamp: new Date().toISOString(),
+            userAgent: navigator.userAgent,
+            screenResolution: `${screen.width}x${screen.height}`,
+            referrer: document.referrer || 'Direct',
+            language: navigator.language,
+            platform: navigator.platform
+        };
+
+        await fetch(ANALYTICS_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(visitData)
+        });
+    } catch (error) {
+        console.error('Error logging visit:', error);
+    }
+}
+
+// Function to get and display visitor count
+async function updateVisitorCount() {
+    try {
+        const response = await fetch(ANALYTICS_URL);
+        const data = await response.json();
+        
+        const visitorCount = document.getElementById('visitorCount');
+        if (visitorCount && data.totalViews) {
+            visitorCount.textContent = data.totalViews.toLocaleString();
+        }
+    } catch (error) {
+        console.error('Error fetching visitor count:', error);
+        document.getElementById('visitorCount').textContent = 'N/A';
+    }
+}
+
+// Initialize visitor tracking
+document.addEventListener('DOMContentLoaded', function() {
+    // Log this visit
+    logVisit();
+    
+    // Get and display visitor count
+    updateVisitorCount();
+    
+    // Update visitor count every 30 seconds
+    setInterval(updateVisitorCount, 30000);
+});
+
+// Optional: Track specific events
+function trackEvent(eventName, eventData = {}) {
+    if (ANALYTICS_URL === 'YOUR_ANALYTICS_WEB_APP_URL') return;
+    
+    fetch(ANALYTICS_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            ...eventData,
+            event: eventName,
+            timestamp: new Date().toISOString()
+        })
+    }).catch(console.error);
+}
+
+// Track filter usage
+groupFilterContainer.addEventListener('click', (e) => {
+    if (e.target.tagName === 'BUTTON') {
+        trackEvent('filter_used', {
+            filter: e.target.dataset.filter
+        });
+    }
+});
+
+// Track search usage
+let searchTimeout;
+searchInput.addEventListener('input', () => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        if (searchInput.value.trim()) {
+            trackEvent('search_performed', {
+                searchTerm: searchInput.value.trim()
+            });
+        }
+    }, 1000);
+});
 
 </script>
 </body>
