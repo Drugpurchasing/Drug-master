@@ -32,7 +32,7 @@
         }
         
         .card-header h3 {
-             font-size: 1.2rem;
+            font-size: 1.2rem;
         }
 
         .btn i {
@@ -75,7 +75,7 @@
         }
         
         .compare-header {
-             background-color: #D35400; /* Orange */
+            background-color: #D35400; /* Orange */
         }
         
         .btn-compare {
@@ -85,6 +85,58 @@
         .btn-compare:hover {
             background-color: #D35400;
             border-color: #D35400;
+        }
+
+        /* Styles for the modal content */
+        .modal-body .markup-info-content {
+            font-size: 0.9em;
+        }
+
+        .modal-body .markup-info-content h5,
+        .modal-body .markup-info-content h6 {
+            color: #1A5276;
+            font-weight: 600;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            font-size: 1em;
+        }
+        .modal-body .markup-info-content h5 {
+            font-size: 1.1em;
+        }
+
+        .modal-body .markup-info-content table {
+            width: 100%;
+            margin-top: 5px;
+            border-collapse: collapse;
+        }
+
+        .modal-body .markup-info-content th,
+        .modal-body .markup-info-content td {
+            border: 1px solid #dee2e6;
+            padding: 6px 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .modal-body .markup-info-content th {
+            background-color: #f0f4f4;
+            font-weight: 500;
+        }
+        .modal-body .markup-info-content .new-formula-header {
+            background-color: #fff3cd;
+            color: #664d03;
+        }
+        .modal-body .markup-info-content .alert-info {
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+            color: #0c5460;
+            padding: 6px 10px;
+            border-radius: 0.25rem;
+            margin-top: 8px;
+            font-size: 0.9em;
+        }
+        .modal-body .markup-info-content p {
+            margin-bottom: 5px;
         }
 
     </style>
@@ -115,7 +167,7 @@
                         </div>
 
                         <div class="form-check form-switch my-3">
-                            <input class="form-check-input" type="checkbox" role="switch" id="newFormulaToggle" onclick="calculateAll()">
+                            <input class="form-check-input" type="checkbox" role="switch" id="newFormulaToggle" onclick="calculateAll();">
                             <label class="form-check-label" for="newFormulaToggle">
                                 เปิดใช้งานสูตรคำนวณใหม่ <span class="badge bg-warning text-dark">ยังไม่ประกาศใช้</span>
                             </label>
@@ -126,6 +178,9 @@
                             <button class="btn btn-primary" onclick="calculateAll()"><i class="bi bi-arrow-clockwise"></i> คำนวณทั้งหมด</button>
                             <button class="btn btn-info text-white" onclick="exportToExcel()"><i class="bi bi-file-earmark-spreadsheet"></i> Export to Excel</button>
                             <button class="btn btn-danger" onclick="clearAll()"><i class="bi bi-trash"></i> ล้างข้อมูล</button>
+                            <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#markupInfoModal">
+                                <i class="bi bi-info-circle"></i> ดูหลักเกณฑ์การคำนวณ Mark up
+                            </button>
                         </div>
 
                         <div class="shortcut-info">
@@ -156,8 +211,75 @@
                     </div>
                 </div>
             </div>
-             <div class="col-lg-11 col-xl-10 footer">
-                 <p>Developed by BG | Enhanced by Gemini</p>
+            <div class="col-lg-11 col-xl-10 footer">
+                <p>Developed by BG | Enhanced by Gemini</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="markupInfoModal" tabindex="-1" aria-labelledby="markupInfoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="markupInfoModalLabel"><i class="bi bi-info-circle"></i> หลักเกณฑ์การคำนวณ Mark up</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="markup-info-content">
+                        <h5>1. สูตรปัจจุบัน (กรมบัญชีกลาง)</h5>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ราคาต้นทุน/หน่วย (บาท)</th>
+                                    <th>วิธีการคำนวณราคาเบิกจ่าย (Reimbursement)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>0.01 - 0.20</td><td>0.50 บาท</td></tr>
+                                <tr><td>0.21 - 0.50</td><td>1.00 บาท</td></tr>
+                                <tr><td>0.51 - 1.00</td><td>1.50 บาท</td></tr>
+                                <tr><td>1.01 - 10.00</td><td>1.50 + (Cost - 1) × 125%</td></tr>
+                                <tr><td>10.01 - 100.00</td><td>13 + (Cost - 10) × 120%</td></tr>
+                                <tr><td>100.01 - 1000.00</td><td>126 + (Cost - 100) × 115%</td></tr>
+                                <tr><td>> 1000.00</td><td>1161 + (Cost - 1000) × 110%</td></tr>
+                            </tbody>
+                        </table>
+                        <div class="alert alert-info mt-2" role="alert">
+                            <strong>การปัดเศษ:</strong><br>
+                            - ราคาเบิกจ่าย &lt; 10 บาท: ปัดเศษทศนิยมเป็น 0.25<br>
+                            - ราคาเบิกจ่าย 10 - 100 บาท: ปัดเศษทศนิยมเป็น 0.50<เมื่อใดที่ต้องการทราบวิธีการคำนวณ Mark up สำหรับยาและเวชภัณฑ์ตามประกาศของกรมบัญชีกลาง สามารถคลิกที่ปุ่ม "ดูหลักเกณฑ์การคำนวณ Mark up" เพื่อเปิดหน้าต่าง Pop-up แสดงรายละเอียดได้เลย
+                            - ราคาเบิกจ่าย &gt; 100 บาท: ปัดเศษจำนวนเต็ม
+                        </div>
+
+                        <h5 class="mt-4">2. สูตรคำนวณใหม่ (ยังไม่ประกาศใช้)</h5>
+                        <p>สูตรนี้ใช้การเพิ่ม Mark up Percentage เข้าไปที่ **ราคาต้นทุนสุทธิ/หน่วย** ก่อนที่จะนำไปคำนวณด้วยสูตรกรมบัญชีกลางปัจจุบัน</p>
+                        <table>
+                            <thead>
+                                <tr class="new-formula-header">
+                                    <th>ราคาต้นทุนสุทธิ/หน่วย (บาท)</th>
+                                    <th>Markup Percentage (%)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>< 1 - 99</td><td>40%</td></tr>
+                                <tr><td>100 - 999</td><td>30%</td></tr>
+                                <tr><td>1000 - 4999</td><td>20%</td></tr>
+                                <tr><td>5000 - 9999</td><td>20%</td></tr>
+                                <tr><td>10000 - 49999</td><td>15%</td></tr>
+                                <tr><td>50000 - 99999</td><td>15%</td></tr>
+                                <tr><td>> 100000</td><td>10%</td></tr>
+                            </tbody>
+                        </table>
+                        <div class="alert alert-info mt-2" role="alert">
+                            <strong>ขั้นตอนการคำนวณราคาเบิกจ่ายด้วยสูตรใหม่:</strong><br>
+                            1. คำนวณทุนหลัง Mark up: `ทุนหลัง Mark up = ทุนสุทธิ/หน่วย × (1 + Markup Percentage)`<br>
+                            2. นำ "ทุนหลัง Mark up" ที่ได้ไปคำนวณต่อด้วย **สูตรปัจจุบัน (กรมบัญชีกลาง)** และหลักเกณฑ์การปัดเศษตามข้างต้น
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+                </div>
             </div>
         </div>
     </div>
@@ -166,11 +288,14 @@
     // --- START: NEW CALCULATION LOGIC ---
     function getNewMarkupPercentage(cost) {
         cost = parseFloat(cost);
-        if (cost <= 99) return 0.40;
-        if (cost <= 999) return 0.30;
-        if (cost <= 9999) return 0.20;
-        if (cost <= 99999) return 0.15;
-        return 0.10;
+        if (cost >= 0.01 && cost <= 99) return 0.40;
+        if (cost >= 100 && cost <= 999) return 0.30;
+        if (cost >= 1000 && cost <= 4999) return 0.20;
+        if (cost >= 5000 && cost <= 9999) return 0.20;
+        if (cost >= 10000 && cost <= 49999) return 0.15;
+        if (cost >= 50000 && cost <= 99999) return 0.15;
+        if (cost >= 100000) return 0.10;
+        return 0; // Default if no range matches
     }
 
     function calculateNewMarkupCost(cost) {
@@ -213,13 +338,13 @@
         container.appendChild(newRow);
         newRow.querySelector('.remove-row').addEventListener('click', function() {
             newRow.remove();
+            calculateAll(); // Recalculate after removing a row
         });
         if (!cost) {
             newRow.querySelector('.cost-input').focus();
         }
     }
 
-    // --- START: NEW CLEAR ALL FUNCTION ---
     function clearAll() {
         const container = document.getElementById('input-container');
         while (container.children.length > 1) {
@@ -238,14 +363,12 @@
         document.getElementById('newPrice').value = '';
         document.getElementById('newFormulaToggle').checked = false;
     }
-    // --- END: NEW CLEAR ALL FUNCTION ---
 
     function formatNumber(number) {
         if (isNaN(parseFloat(number))) return "0.00";
         return parseFloat(number).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
 
-    // --- START: UPDATED CALCULATE ALL FUNCTION ---
     function calculateAll() {
         const useNewFormula = document.getElementById('newFormulaToggle').checked;
         const resultsContainer = document.getElementById('results-container');
@@ -279,11 +402,12 @@
         const tbody = table.querySelector('tbody');
 
         document.querySelectorAll('.input-row').forEach((row, index) => {
-            const originalCost = parseFloat(row.querySelector('.cost-input').value);
+            const originalCostInput = row.querySelector('.cost-input').value;
+            const originalCost = parseFloat(originalCostInput);
             const bonusPercentage = parseFloat(row.querySelector('.bonus-input').value) || 0;
             const units = parseInt(row.querySelector('.units-per-box').value) || 1;
 
-            if (!isNaN(originalCost)) {
+            if (!isNaN(originalCost) && originalCostInput !== '') {
                 const adjustedCost = originalCost * (100 / (100 + bonusPercentage));
                 const unitCost = adjustedCost / units;
 
@@ -319,11 +443,11 @@
                 tbody.appendChild(tr);
             }
         });
-        resultsContainer.appendChild(table);
+        if (tbody.children.length > 0) {
+             resultsContainer.appendChild(table);
+        }
     }
-    // --- END: UPDATED CALCULATE ALL FUNCTION ---
 
-    // --- START: UPDATED EXPORT TO EXCEL FUNCTION ---
     function exportToExcel() {
         const useNewFormula = document.getElementById('newFormulaToggle').checked;
         let headers = ['#', 'ต้นทุนเดิม', 'ส่วนแถม %', 'จำนวน/หน่วย', 'ทุนสุทธิ/หน่วย', 'ราคาเบิก (เดิม)', 'กำไร (เดิม)', 'กำไร % (เดิม)'];
@@ -333,11 +457,12 @@
         let data = [headers];
 
         document.querySelectorAll('.input-row').forEach((row, index) => {
-            const originalCost = parseFloat(row.querySelector('.cost-input').value);
+            const originalCostInput = row.querySelector('.cost-input').value;
+            const originalCost = parseFloat(originalCostInput);
             const bonusPercentage = parseFloat(row.querySelector('.bonus-input').value) || 0;
             const units = parseInt(row.querySelector('.units-per-box').value) || 1;
 
-            if (!isNaN(originalCost)) {
+            if (!isNaN(originalCost) && originalCostInput !== '') {
                 const adjustedCost = originalCost * (100 / (100 + bonusPercentage));
                 const unitCost = adjustedCost / units;
                 
@@ -380,7 +505,6 @@
         XLSX.utils.book_append_sheet(wb, ws, "Price Calculations");
         XLSX.writeFile(wb, "price_calculations.xlsx");
     }
-    // --- END: UPDATED EXPORT TO EXCEL FUNCTION ---
 
     function comparePrice() {
         const oldPrice = parseFloat(document.getElementById('oldPrice').value) || 0;
@@ -406,9 +530,9 @@
         if (e.key === 'Enter' && e.ctrlKey) { addNewRow(); } 
         else if (e.key === 'Enter') {
              if(document.activeElement.id === 'oldPrice' || document.activeElement.id === 'newPrice'){
-                comparePrice();
+                 comparePrice();
              } else {
-                calculateAll();
+                 calculateAll();
              }
         }
     });
@@ -431,18 +555,25 @@
                  firstRow.querySelector('.units-per-box').value = units;
                  firstRow.querySelector('.bonus-input').value = bonus;
             } else {
-                if (!isNaN(cost)) { addNewRow(cost, units, bonus); }
+                if (!isNaN(cost) && cost !== '') { addNewRow(cost, units, bonus); }
             }
         });
         if(rows.length > 0) calculateAll();
     });
     
-    // Initial remove button
     document.querySelector('.remove-row').addEventListener('click', function(e) {
         if (document.querySelectorAll('.input-row').length > 1) {
             e.target.closest('.input-row').remove();
+            calculateAll();
+        } else {
+            const firstRow = document.querySelector('.input-row');
+            firstRow.querySelector('.cost-input').value = '';
+            firstRow.querySelector('.units-per-box').value = '1';
+            firstRow.querySelector('.bonus-input').value = '0';
+            calculateAll();
         }
     });
+
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
