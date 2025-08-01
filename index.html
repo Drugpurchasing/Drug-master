@@ -1271,6 +1271,25 @@
             contactModal.show();
         });
 
+        $(document).ready(function () {
+        // ... existing code ...
+
+        // NEW: Add a SweetAlert2 popup notification on page load
+        Swal.fire({
+            icon: 'info',
+            title: 'การแจ้งเตือน',
+            html: 'เนื่องจากวันที่ 1 สิงหาคม 2568 มีการปรับปรุงวิธีคำนวนราคาใหม่ ราคาในระบบอยู่ระหว่างการปรับปรุง (ยังคงเป็นราคาเดิม) ขออภัยในความไม่สะดวกครับ',
+            confirmButtonText: 'รับทราบ',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => {
+                // You can add logic here if needed after the modal opens
+            }
+        });
+
+        // ... rest of the existing code ...
+    });
+
         $('#contactForm').on('submit', function(event) {
             event.preventDefault();
             
