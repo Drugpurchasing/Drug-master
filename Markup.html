@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        body {
+     body {
             font-family: 'Sarabun', sans-serif;
             background-color: #f4f7f6;
             padding-top: 20px;
@@ -147,6 +147,7 @@
             margin-top: 5px;
          }
 
+
     </style>
 </head>
 
@@ -239,16 +240,36 @@
                                 <tr><td>0.01 - 0.20</td><td>0.50 บาท</td></tr>
                                 <tr><td>0.21 - 0.50</td><td>1.00 บาท</td></tr>
                                 <tr><td>0.51 - 1.00</td><td>1.50 บาท</td></tr>
-                                <tr><td>1.01 - 10.00</td><td>1.50 + (Cost - 1) × 125%</td></tr>
-                                <tr><td>10.01 - 100.00</td><td>13 + (Cost - 10) × 120%</td></tr>
-                                <tr><td>100.01 - 1000.00</td><td>126 + (Cost - 100) × 115%</td></tr>
-                                <tr><td>> 1000.00</td><td>1161 + (Cost - 1000) × 110%</td></tr>
+                                <tr><td>1.01 - 10.00</td><td>$1.50 + (\text{Cost} - 1) \times 125\%$</td></tr>
+                                <tr><td>10.01 - 100.00</td><td>$13 + (\text{Cost} - 10) \times 120\%$</td></tr>
+                                <tr><td>100.01 - 1000.00</td><td>$126 + (\text{Cost} - 100) \times 115\%$</td></tr>
+                                <tr><td>> 1000.00</td><td>$1161 + (\text{Cost} - 1000) \times 110\%$</td></tr>
                             </tbody>
                         </table>
-                        <div class="alert alert-warning mt-2" role="alert">
-                            <strong>การปัดเศษ (ใหม่):</strong><br>
-                            - เศษทศนิยม <b>0.01 - 0.50</b>: ปัดขึ้นเป็น <b>.50</b> (เช่น 10.25 หรือ 10.49 จะเป็น 10.50)<br>
-                            - เศษทศนิยม <b>> 0.50</b>: ปัดขึ้นเป็น<b>จำนวนเต็มถัดไป</b> (เช่น 10.51 จะเป็น 11.00)
+                        
+                        <div class="alert alert-warning mt-3" role="alert">
+                            <strong>หลักเกณฑ์การปัดเศษราคาขาย (สำหรับราคาเบิก กบก.)</strong>
+                            <p class="mb-1 small">อ้างอิงหลักการปัดเศษตามหลักคณิตศาสตร์ (ปัดเศษเมื่อมากกว่าหรือเท่ากับครึ่งหนึ่งของช่วง)</p>
+                            <hr class="my-2">
+                            <h6>1. ราคาขาย < 10 บาท (ปัดเศษให้เป็นเท่าของ 0.25 บาท)</h6>
+                            <ul style="list-style-type: none; padding-left: 0.5rem; font-size: 0.9em;">
+                                <li>- เศษ <b>&lt; 0.125</b> &rarr; ปัดลงเป็น <b>.00</b></li>
+                                <li>- เศษ <b>&ge; 0.125</b> และ <b>&lt; 0.375</b> &rarr; ปรับเป็น <b>.25</b></li>
+                                <li>- เศษ <b>&ge; 0.375</b> และ <b>&lt; 0.625</b> &rarr; ปรับเป็น <b>.50</b></li>
+                                <li>- เศษ <b>&ge; 0.625</b> และ <b>&lt; 0.875</b> &rarr; ปรับเป็น <b>.75</b></li>
+                                <li>- เศษ <b>&ge; 0.875</b> &rarr; ปัดขึ้นเป็นจำนวนเต็มถัดไป (<b>+1.00</b>)</li>
+                            </ul>
+                            <h6>2. ราคาขาย &ge; 10 บาท แต่ &le; 100 บาท (ปัดเศษให้เป็นเท่าของ 0.50 บาท)</h6>
+                            <ul style="list-style-type: none; padding-left: 0.5rem; font-size: 0.9em;">
+                                <li>- เศษ <b>&lt; 0.25</b> &rarr; ปัดลงเป็น <b>.00</b></li>
+                                <li>- เศษ <b>&ge; 0.25</b> และ <b>&lt; 0.75</b> &rarr; ปรับเป็น <b>.50</b></li>
+                                <li>- เศษ <b>&ge; 0.75</b> &rarr; ปัดขึ้นเป็นจำนวนเต็มถัดไป (<b>+1.00</b>)</li>
+                            </ul>
+                            <h6>3. ราคาขาย > 100 บาท (ปัดเศษเป็นจำนวนเต็ม)</h6>
+                            <ul style="list-style-type: none; padding-left: 0.5rem; font-size: 0.9em;">
+                                <li>- เศษ <b>&lt; 0.50</b> &rarr; ปัดลงเป็นจำนวนเต็ม (<b>.00</b>)</li>
+                                <li>- เศษ <b>&ge; 0.50</b> &rarr; ปัดขึ้นเป็นจำนวนเต็มถัดไป (<b>+1.00</b>)</li>
+                            </ul>
                         </div>
 
                         <h5 class="mt-4">2. สูตรคำนวณใหม่ (พิจารณาใช้ประกอบ)</h5>
@@ -261,7 +282,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr><td>< 1 - 99.99</td><td>40%</td></tr>
+                                <tr><td>&lt; 1 - 99.99</td><td>40%</td></tr>
                                 <tr><td>100 - 999.99</td><td>30%</td></tr>
                                 <tr><td>1000 - 4999.99</td><td>20%</td></tr>
                                 <tr><td>5000 - 9999.99</td><td>20%</td></tr>
@@ -273,8 +294,12 @@
                         <div class="alert alert-info mt-2" role="alert">
                             <strong>ขั้นตอนการคำนวณราคาขายสูตรใหม่:</strong><br>
                             1. คำนวณส่วนต่างราคาเบิก: `ส่วนต่าง = (ราคาเบิกจากทุนหลัง Mark up) - (ราคาเบิกจากทุนสุทธิ)`<br>
-                            2. คำนวณราคาใหม่: `ราคาใหม่ = ทุนสุทธิ/หน่วย + ส่วนต่าง`<br>
-                            3. นำราคาใหม่ที่ได้ไปปัดเศษตามเกณฑ์ใหม่ข้างต้น
+                            2. คำนวณราคาใหม่: `ราคาใหม่ = ราคาเบิก กบก. + (ส่วนต่าง / 2)`<br>
+                            3. นำราคาใหม่ที่ได้ไปปัดเศษตามเกณฑ์ใหม่:
+                               <ul class="mb-0" style="list-style-type: none; padding-left: 0.5rem; font-size: 0.95em;">
+                                 <li>- ถ้าเศษสตางค์ลงท้ายด้วย <b>.25, .50, .75</b> ให้คงค่านั้นไว้</li>
+                                 <li>- กรณีอื่นๆ ให้ปัดเศษไปหาค่า <b>.50</b> ที่ใกล้ที่สุด</li>
+                               </ul>
                         </div>
                     </div>
                 </div>
@@ -320,54 +345,97 @@
         const markup = getNewMarkupPercentageValue(cost);
         return cost * (1 + markup);
     }
-    
+
     /**
-     * Applies the new custom rounding logic.
-     * - If decimal is > 0 and <= 0.50, rounds up to .50.
-     * - If decimal is > 0.50, rounds up to the next integer.
-     * @param {number} price The price to round.
-     * @returns {number} The rounded price.
+     * Applies the official tiered rounding logic for CGD reimbursement price.
      */
     function applyRounding(price) {
         price = parseFloat(price);
+        if (isNaN(price)) return 0;
+
         const integerPart = Math.floor(price);
         const decimalPart = price - integerPart;
+        const epsilon = 1e-9; 
 
-        // Use a small epsilon for floating point comparisons
-        const epsilon = 0.00001;
-
-        // If decimal part is essentially zero, return the integer part.
-        if (decimalPart < epsilon) {
-            return integerPart;
+        // Case 1: Price < 10 Baht (Round to nearest 0.25)
+        if (price < 10) {
+            if (decimalPart < 0.125 - epsilon) {
+                return integerPart; 
+            } else if (decimalPart < 0.375 - epsilon) {
+                return integerPart + 0.25;
+            } else if (decimalPart < 0.625 - epsilon) {
+                return integerPart + 0.50;
+            } else if (decimalPart < 0.875 - epsilon) {
+                return integerPart + 0.75;
+            } else {
+                return integerPart + 1; 
+            }
         }
-        
-        // If 0 < decimal <= 0.50, round up to .5
-        if (decimalPart > 0 && decimalPart <= (0.5 + epsilon)) {
-            return integerPart + 0.5;
+        // Case 2: Price >= 10 and <= 100 Baht (Round to nearest 0.50)
+        else if (price <= 100) {
+            if (decimalPart < 0.25 - epsilon) {
+                return integerPart; 
+            } else if (decimalPart < 0.75 - epsilon) {
+                return integerPart + 0.50;
+            } else {
+                return integerPart + 1; 
+            }
         }
-
-        // If decimal > 0.50, round up to the next integer
-        if (decimalPart > 0.5) {
-            return integerPart + 1;
+        // Case 3: Price > 100 Baht (Standard rounding to nearest whole number)
+        else {
+            if (decimalPart < 0.5 - epsilon) { // Less than .50 rounds down
+                return integerPart;
+            } else { // .50 or greater rounds up
+                return integerPart + 1;
+            }
         }
-
-        // Fallback, should not be reached with the logic above
-        return price;
     }
+    
+    /**
+     * --- UPDATE: New special rounding for the New Formula Price ---
+     * Keeps .25, .50, .75 as is. Otherwise, rounds to the nearest 0.50.
+     */
+    function applyNewRounding(price) {
+        price = parseFloat(price);
+        if (isNaN(price)) return 0;
+
+        const integerPart = Math.floor(price);
+        const decimalPart = price - integerPart;
+        const epsilon = 1e-9; 
+
+        // 1. Check for exceptions: .25, .50, .75
+        const isException = Math.abs(decimalPart - 0.25) < epsilon ||
+                            Math.abs(decimalPart - 0.50) < epsilon ||
+                            Math.abs(decimalPart - 0.75) < epsilon;
+
+        if (isException) {
+            return price; // Keep the value as is
+        }
+
+        // 2. For all other cases, round to the nearest 0.50
+        if (decimalPart < 0.25 - epsilon) {
+            return integerPart; // round down to .00
+        } else if (decimalPart < 0.75 - epsilon) {
+            return integerPart + 0.50; // round to .50
+        } else {
+            return integerPart + 1; // round up to 1.00
+        }
+    }
+
 
     function calculateSingle(cost) {
         let reimbursement = 0;
         cost = parseFloat(cost);
 
-        if (cost >= 0.01 && cost <= 0.20) { reimbursement = 0.50; } 
-        else if (cost <= 0.50) { reimbursement = 1.00; } 
-        else if (cost <= 1.00) { reimbursement = 1.50; } 
-        else if (cost <= 10.00) { reimbursement = 1.50 + ((cost - 1) * 1.25); } 
-        else if (cost <= 100.00) { reimbursement = 13 + ((cost - 10) * 1.20); } 
-        else if (cost <= 1000.00) { reimbursement = 126 + ((cost - 100) * 1.15); } 
+        if (cost >= 0.01 && cost <= 0.20) { reimbursement = 0.50; }
+        else if (cost <= 0.50) { reimbursement = 1.00; }
+        else if (cost <= 1.00) { reimbursement = 1.50; }
+        else if (cost <= 10.00) { reimbursement = 1.50 + ((cost - 1) * 1.25); }
+        else if (cost <= 100.00) { reimbursement = 13 + ((cost - 10) * 1.20); }
+        else if (cost <= 1000.00) { reimbursement = 126 + ((cost - 100) * 1.15); }
         else if (cost > 1000){ reimbursement = 1161 + ((cost - 1000) * 1.10); }
         else { reimbursement = 0; }
-        
+
         return applyRounding(reimbursement);
     }
     // --- END: CALCULATION LOGIC ---
@@ -460,24 +528,20 @@
                 const adjustedCost = originalCost * (100 / (100 + bonusPercentage));
                 const unitCost = adjustedCost / units;
 
-                // --- CALCULATIONS START ---
-                // 1. CGD Formula (Old)
                 const cgdReimbursement = calculateSingle(unitCost);
                 
-                // 2. New Formula
-                const newMarkupPercent = getNewMarkupPercentageValue(unitCost);
                 const costAfterMarkup = calculateNewMarkupCost(unitCost);
-                const markupReimbursement = calculateSingle(costAfterMarkup);
+                const markupReimbursement = calculateSingle(costAfterMarkup); 
                 const reimbursementDifference = markupReimbursement - cgdReimbursement;
-                const preliminaryNewPrice = unitCost + reimbursementDifference;
-                const newFormulaReimbursement = applyRounding(preliminaryNewPrice);
-                // --- CALCULATIONS END ---
+                
+                const preliminaryNewPrice = cgdReimbursement + (reimbursementDifference / 2);
+                
+                const newFormulaReimbursement = applyNewRounding(preliminaryNewPrice);
 
-                // Prepare data for the detail view modal
                 const detailParams = {
                     unitCost: unitCost,
                     cgdPrice: cgdReimbursement,
-                    markupPercent: newMarkupPercent * 100,
+                    markupPercent: getNewMarkupPercentageValue(unitCost) * 100,
                     costAfterMarkup: costAfterMarkup,
                     markupReimbursement: markupReimbursement,
                     reimbursementDifference: reimbursementDifference,
@@ -510,13 +574,13 @@
     function showCalculationDetails(params) {
         const modalBody = document.getElementById('calculationDetailBody');
         modalBody.innerHTML = `
-            <h6><i class="bi bi-journal-bookmark-fill"></i> ราคาเบิก กบก.</h6>
+            <h6><i class="bi bi-journal-bookmark-fill"></i> ราคาเบิก กบก. (สูตรปัจจุบัน)</h6>
             <div class="calc-step">
                 <span class="label">ทุนสุทธิ/หน่วย:</span>
                 <span class="value">${formatNumberDetailed(params.unitCost)}</span>
             </div>
             <div class="calc-step final-result">
-                <span class="label">ราคาเบิก กบก.:</span>
+                <span class="label">ราคาเบิก กบก. (ปัดเศษตามเกณฑ์):</span>
                 <span class="value">${formatNumber(params.cgdPrice)}</span>
             </div>
             
@@ -526,32 +590,28 @@
                 <span class="value">${formatNumberDetailed(params.costAfterMarkup)}</span>
             </div>
             <div class="calc-step sub-result">
-                <span class="label">ราคาเบิก (จากทุนหลัง Mark up):</span>
+                <span class="label">ราคาเบิกจากทุน Mark up:</span>
                 <span class="value">${formatNumber(params.markupReimbursement)}</span>
             </div>
-            <div class="calc-step sub-result">
-                <span class="label">ราคาเบิก (จากทุนสุทธิ):</span>
-                <span class="value">-${formatNumber(params.cgdPrice)}</span>
-            </div>
             <div class="calc-step">
-                <span class="label fw-bold">ส่วนต่างราคาเบิก:</span>
-                <span class="value fw-bold">${formatNumberDetailed(params.reimbursementDifference)}</span>
+                <span class="label fw-bold">ส่วนต่างราคาเบิก (ผลต่าง):</span>
+                <span class="value fw-bold">${formatNumber(params.reimbursementDifference)}</span>
             </div>
             <hr class="my-2">
-             <div class="calc-step">
-                <span class="label">ทุนสุทธิ/หน่วย:</span>
-                <span class="value">${formatNumberDetailed(params.unitCost)}</span>
+            <div class="calc-step">
+                <span class="label">ราคาเบิก กบก.:</span>
+                <span class="value">${formatNumber(params.cgdPrice)}</span>
             </div>
             <div class="calc-step">
-                <span class="label">บวก ส่วนต่างราคาเบิก:</span>
-                <span class="value">+${formatNumberDetailed(params.reimbursementDifference)}</span>
+                <span class="label">บวก (ส่วนต่างราคาเบิก / 2):</span>
+                <span class="value">+ ${formatNumber(params.reimbursementDifference / 2)}</span>
             </div>
             <div class="calc-step sub-result">
-                <span class="label">ราคาก่อนปัดเศษ:</span>
+                <span class="label">ราคาขายสูตรใหม่ (ก่อนปัดเศษ):</span>
                 <span class="value">${formatNumberDetailed(params.preliminaryNewPrice)}</span>
             </div>
             <div class="calc-step final-result">
-                <span class="label">ราคาขายสูตรใหม่ (หลังปัดเศษ):</span>
+                <span class="label">ราคาขายสูตรใหม่ (ปัดเศษเกณฑ์ใหม่):</span>
                 <span class="value">${formatNumber(params.newFormulaPrice)}</span>
             </div>
         `;
@@ -562,7 +622,7 @@
 
 
     function exportToExcel() {
-        let headers = ['#', 'ต้นทุนเดิม', 'ส่วนแถม %', 'จำนวน/หน่วย', 'ทุนสุทธิ/หน่วย', 'ราคาเบิก กบก.', 'ราคาขายสูตรใหม่'];
+        let headers = ['#', 'ต้นทุนเดิม', 'ส่วนแถม %', 'จำนวน/กล่อง', 'ทุนสุทธิ/หน่วย', 'ราคาเบิก กบก.', 'ราคาขายสูตรใหม่'];
         let data = [headers];
 
         document.querySelectorAll('.input-row').forEach((row, index) => {
@@ -579,8 +639,10 @@
                 const costAfterMarkup = calculateNewMarkupCost(unitCost);
                 const markupReimbursement = calculateSingle(costAfterMarkup);
                 const reimbursementDifference = markupReimbursement - cgdReimbursement;
-                const preliminaryNewPrice = unitCost + reimbursementDifference;
-                const newFormulaReimbursement = applyRounding(preliminaryNewPrice);
+
+                const preliminaryNewPrice = cgdReimbursement + (reimbursementDifference / 2);
+                
+                const newFormulaReimbursement = applyNewRounding(preliminaryNewPrice);
                 
                 let rowData = [
                     index + 1,
@@ -652,10 +714,10 @@
             const bonus = parseFloat(values[2]) || '0';
             
             if (index === 0) {
-                 const firstRow = document.querySelector('.input-row');
-                 firstRow.querySelector('.cost-input').value = cost;
-                 firstRow.querySelector('.units-per-box').value = units;
-                 firstRow.querySelector('.bonus-input').value = bonus;
+                const firstRow = document.querySelector('.input-row');
+                firstRow.querySelector('.cost-input').value = cost;
+                firstRow.querySelector('.units-per-box').value = units;
+                firstRow.querySelector('.bonus-input').value = bonus;
             } else {
                 if (!isNaN(cost) && cost !== '') { addNewRow(cost, units, bonus); }
             }
@@ -681,5 +743,4 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
 
