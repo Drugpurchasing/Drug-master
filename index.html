@@ -958,7 +958,7 @@
             { title: 'เงื่อนไขการเบิกจ่าย', data: 5, className: 'default-column', width: '180px', render: (d,t) => renderBadge(d, t, {'สำรองจ่าย': 'bg-primary', 'ocpa': 'bg-success', 'เบิกได้': 'bg-success', 'ขรก เบิกไม่ได้': 'bg-danger', 'เบิกนอก': 'bg-info text-dark', 'วัคซีน': 'bg-warning text-dark'}, true) },
             { title: 'บัญชียา', data: 6, className: 'default-column', render: (d,t) => renderBadge(d, t, {'ned': 'bg-danger', 'ed': 'bg-success' , 'ค่าสารทึบ': 'bg-orange', 'promotion': 'bg-warning text-dark', 'วิตามิน อาหารเสริม': 'bg-teal'}) },
             { title: 'Purchasing Unit', data: 7, className: 'purchasing-column default-column' },
-            { title: 'ราคาขาย / หน่วย <span class="ml-3 text-sm font-bold text-red-600 px-2.5 py-1 rounded-full">NEW ✨</span>', data: 8, width: '130px', className: 'default-column purchasing-column rate-column', render: (d, t, row) => `${formatNumber(row[8], 2, 2)} / ${row[9] || 'หน่วย'}` },
+            { title: 'ราคาขาย <span class="ml-3 text-sm font-bold text-red-600 px-2.5 py-1 rounded-full">NEW ✨</span> / หน่วย ', data: 8, width: '130px', className: 'default-column purchasing-column rate-column', render: (d, t, row) => `${formatNumber(row[8], 2, 2)} / ${row[9] || 'หน่วย'}` },
             { title: 'Storage', data: 28, className: 'default-column', render: (d,t) => renderBadge(d, t, storageColorMap, true) },
             { title: 'ราคาทุน / หน่วย', data: 10, width: '130px', className: 'purchasing-column', render: (d, t, row) => `${formatNumber(row[10], 2, 2)} / ${row[11] || 'หน่วย'}` },
             { title: 'Status', data: 12, className: 'default-column rate-column', render: (d,t) => renderBadge(d, t, {'ในบัญชี(ns)': 'bg-primary','ในบัญชี(วถ)': 'bg-info text-dark','ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}) },
@@ -1271,24 +1271,6 @@
             contactModal.show();
         });
 
-        $(document).ready(function () {
-        // ... existing code ...
-
-        // NEW: Add a SweetAlert2 popup notification on page load
-        Swal.fire({
-            icon: 'info',
-            title: 'การแจ้งเตือน',
-            html: 'เนื่องจากวันที่ 1 สิงหาคม 2568 มีการปรับปรุงวิธีคำนวนราคาใหม่ ราคาในระบบอยู่ระหว่างการปรับปรุง (ยังคงเป็นราคาเดิม) ขออภัยในความไม่สะดวกครับ',
-            confirmButtonText: 'รับทราบ',
-            allowOutsideClick: false,
-            allowEscapeKey: false,
-            didOpen: () => {
-                // You can add logic here if needed after the modal opens
-            }
-        });
-
-        // ... rest of the existing code ...
-    });
 
         $('#contactForm').on('submit', function(event) {
             event.preventDefault();
@@ -1452,5 +1434,6 @@
     </script>
 </body>
 </html>
+
 
 
