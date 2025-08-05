@@ -958,7 +958,7 @@
             { title: 'เงื่อนไขการเบิกจ่าย', data: 5, className: 'default-column', width: '180px', render: (d,t) => renderBadge(d, t, {'สำรองจ่าย': 'bg-primary', 'ocpa': 'bg-success', 'เบิกได้': 'bg-success', 'ขรก เบิกไม่ได้': 'bg-danger', 'เบิกนอก': 'bg-info text-dark', 'วัคซีน': 'bg-warning text-dark'}, true) },
             { title: 'บัญชียา', data: 6, className: 'default-column', render: (d,t) => renderBadge(d, t, {'ned': 'bg-danger', 'ed': 'bg-success' , 'ค่าสารทึบ': 'bg-orange', 'promotion': 'bg-warning text-dark', 'วิตามิน อาหารเสริม': 'bg-teal'}) },
             { title: 'Purchasing Unit', data: 7, className: 'purchasing-column default-column' },
-            { title: 'ราคาขาย / หน่วย <span class="badge bg-warning text-dark ms-1">NEW</span>', data: 8, width: '130px', className: 'default-column purchasing-column rate-column', render: (d, t, row) => `${formatNumber(row[8], 2, 2)} / ${row[9] || 'หน่วย'}` },
+            { title: 'ราคาขาย / หน่วย <span class="ml-3 text-sm font-bold text-red-600 px-2.5 py-1 rounded-full">NEW ✨</span>', data: 8, width: '130px', className: 'default-column purchasing-column rate-column', render: (d, t, row) => `${formatNumber(row[8], 2, 2)} / ${row[9] || 'หน่วย'}` },
             { title: 'Storage', data: 28, className: 'default-column', render: (d,t) => renderBadge(d, t, storageColorMap, true) },
             { title: 'ราคาทุน / หน่วย', data: 10, width: '130px', className: 'purchasing-column', render: (d, t, row) => `${formatNumber(row[10], 2, 2)} / ${row[11] || 'หน่วย'}` },
             { title: 'Status', data: 12, className: 'default-column rate-column', render: (d,t) => renderBadge(d, t, {'ในบัญชี(ns)': 'bg-primary','ในบัญชี(วถ)': 'bg-info text-dark','ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}) },
@@ -1452,4 +1452,5 @@
     </script>
 </body>
 </html>
+
 
