@@ -678,30 +678,33 @@
                             </div>
                         </div>
                     </div>
-                     <div id="drugGroupFilterContainer" class="mt-3 p-3 border rounded bg-light" style="display: none;">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h6 class="mb-0 fw-bold text-secondary">Filter by Drug Group</h6>
-                            <div>
-                                <button class="btn btn-sm btn-outline-primary py-0" id="selectAllGroups">Select All</button>
-                                <button class="btn btn-sm btn-outline-secondary py-0" id="deselectAllGroups">Deselect All</button>
-                            </div>
+                </div>
+                 
+                 <div id="drugGroupFilterContainer" class="mt-3 p-3 border rounded bg-light" style="display: none;">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-6">
+                            <label for="drugGroupFilter" class="form-label fw-bold text-secondary">Drug Group</label>
+                            <select id="drugGroupFilter" class="form-select"></select>
                         </div>
-                        <div id="drugGroupCheckboxes" class="d-flex flex-wrap" style="gap: 1rem 1.5rem;">
-                            </div>
+                        <div class="col-md-6">
+                            <label for="drugSubgroupFilter" class="form-label fw-bold text-secondary">Drug Subgroup</label>
+                            <select id="drugSubgroupFilter" class="form-select" disabled></select>
+                        </div>
                     </div>
                 </div>
-                
-                <div id="loadingIndicator" class="progress mb-4" style="height: 25px; display: none;">
-                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
-                        <strong class="text-white"><i class="fas fa-spinner fa-spin me-2"></i>Loading Data... Please Wait</strong>
-                    </div>
-                </div>
-                
-                <div class="table-responsive">
-                    <table id="drugTable" class="table table-hover table-striped w-100"></table>
-                </div>
-                
+
             </div>
+            
+            <div id="loadingIndicator" class="progress mb-4" style="height: 25px; display: none;">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                    <strong class="text-white"><i class="fas fa-spinner fa-spin me-2"></i>Loading Data... Please Wait</strong>
+                </div>
+            </div>
+            
+            <div class="table-responsive">
+                <table id="drugTable" class="table table-hover table-striped w-100"></table>
+            </div>
+            
         </div>
     </div>
     
@@ -806,8 +809,27 @@
         var tooltipMap = {};
         const contactModal = new bootstrap.Modal(document.getElementById('contactModal'));
 
-        // CHANGE: Added variable to store selected groups for filtering
-        var selectedGroups = [];
+        // ADDED: Data mapping for Drug Group to Subgroups
+        const drugSubgroupMap = {
+            'Gastro-intestinal system': ['-','"Antacids and other drugs for dyspepsia"','Antispasmodics and other drugs altering gut motility','Ulcer-healing drugs and drugs used in variceal bleeding','Drugs used in acute diarrhea','Drugs used in chronic bowel disorders','Laxatives','Local preparations for anal and rectal disorders','Drugs affecting intestinal secretions'],
+            'Cardiovascular system': ['-','Positive inotropic drugs','Diuretics','Anti-arrhythmic drugs','Beta-adrenoceptor blocking drugs','Vasodilator antihypertensive drugs','Centrally acting antihypertensive drugs','Alpha-adrenoceptor blocking drugs','Angiotensin-converting enzyme inhibitors','Angiotensin-II receptor antagonists','Nitrates','Calcium-channel blockers','Other vasodilators','Inotropic sympathomimetics','Vasoconstrictor sympathomimetics','Drugs used in cardiopulmonary resuscitation','Anticoagulants','Antiplatelet drugs','Fibrinolytic drugs','Hemostatics','Lipid-regulating drugs'],
+            'Respiratory system': ['Adrenoceptor agonists','Compound antimuscarinic bronchodilators','Theophylline','Corticosteroids','Leukotriene receptor antagonists','Antihistamines','Pulmonary surfactants','Cough suppressants','Expectorant and demulcent cough preparations','Systemic nasal decongestants','Other respiratory preparations'],
+            'Central nervous system': ['-','Hypnotics and anxiolytics','Antipsychotic drugs','Antimanic drugs','Antidepressant drugs','Central nervous system stimulants','Drugs used in nausea and vomiting','Drugs used in vestibular disorders','Analgesics and antipyretics','Opioid analgesics','Drugs for neuropathic pain','Antimigraine drugs','Drugs used in the control of epilepsy','Drugs used in status epilepticus','Drugs used in movement disorders','Drugs used in alcohol dependence','Drugs used in smoking cessation','Drugs used in opioid dependence','Drug used in dementia'],
+            'Infections': ['Penicillins','Cephalosporins, cephamycins and other beta-lactams','Tetracyclines','Aminoglycosides','Macrolides','Quinolones','Some other antibacterials','Sulphonamides and trimethoprim','Antituberculous drugs','Antileprotic drugs','Antifungal drugs','Non-antiretrovirals','Antiretrovirals','Viral hepatitis','Antimalarials','Other antiprotozoal drugs','Anthelmintics','Antiseptics'],
+            'Endocrine system': ['-','Insulins','Oral antidiabetic drugs','Treatment of hypoglycemia','Thyroid hormones','Antithyroid drugs','Corticosteroids','Female sex hormones','Male sex hormones and antagonists','Hypothalamic and anterior pituitary hormones','Posterior pituitary hormones and antagonists','Drugs affecting bone metabolism','Bromocriptine and other dopaminergic drugs','Drugs affecting gonadotrophins','Drugs used in endogenous glucocorticoid and androgen overproduction'],
+            'Obstetrics, gynaecology and urinary-tract disorders': ['Prostaglandins, prostaglandins antagonists and oxytocics','Myometrial relaxants','Premature labor','Treatment of vaginal and vulval conditions','Contraceptives','Drugs for benign prostatic hyperplasia','Drugs for urinary frequency enuresis, and incontinence','Drugs used in alkalinisation of urine'],
+            'Malignant disease and immunosuppression': ['Alkylating drugs','Cytotoxic antibiotics','Antimetabolites','Vinca alkaloids and etoposide','Other antineoplastic drugs','Drugs affecting the immune response','Progestogens, anti-estrogens and enzyme inhibitors','Prostate cancer'],
+            'Nutrition and blood': ['-','Whole blood and blood products','Drugs used in hypoplastic, haemolytic and renal anemias','Drugs used in bone marrow transplantation','Fluids and electrolytes','Vitamins','Intravenous nutrition','Minerals','Vitamins and minerals for pregnancy and lactating mothers','Metabolic disorders'],
+            'Musculoskeletal and joint diseases': ['-','Non-steroidal anti-inflammatory drugs (NSAIDs)','Disease-modifying antirheumatic drugs (DMARDs)','Drugs for treatment of gout and hyperuricaemia','Drugs which enhance neuromuscular transmission','Skeletal muscle relaxants','Rubifacients'],
+            'Eye': ['Antibacterials and eye wash solution','Antibacterials with corticosteroids','Antifungals','Antivirals','Corticosteroids and other anti-inflammatory preparations','Mydriatics and cycloplegics','Drugs for treatment of glaucoma','Local anaesthetics','Tear deficiency, ocular lubricants and astringents','Ocular diagnostic and peri-operative preparations and photodynamic treatment'],
+            'Ear, nose, oropharynx and oral cavity': ['Otitis externa and otitis media','Drugs used in otomycosis','Other drugs acting on the ear','Drugs used in nasal allergy','Topical nasal decongestants','Drugs used in treatment of oral ulcer','Oropharyngeal antifungal drugs','Antiseptics for root canal treatment','Drugs used in prevention and treatment of dental plaque and caries','Other dental preparations'],
+            'Skin': ['-','Antibacterial preparations','Antifungal preparations','Parasiticidal preparations','Emollient and barrier preparations','Topical antipruritics','Topical corticosteroids','Other preparations for psoriasis (excluding topical corticosteroids)','Preparations for warts and calluses','Preparations for hyperhidrosis'],
+            'Immunological products and vaccines': ['-'],
+            'Anesthesia': ['Intravenous anesthetics','Inhalational anesthetics','Muscle relaxants (Neuromuscular blocking drugs)','Sedative and analgesic peri-operative drugs','Anticholinesterases and antimuscarinic drugs used in anesthesia','Drugs for malignant hyperthermia','Local anesthesia'],
+            'Drugs used in poisoning and toxicology': ['Snakebite poisoning','Mushroom and microbial poisoning','Pesticide & herbicide poisoning','Corrosive Poisoning','Methanol poisoning','Heavy metal poisoning','Cyanide and Hydrogen sulfide poisoning','Methemoglobinemia','Drug poisoning','Drugs used for absorption inhibition and elimination of toxin'],
+            'Contrast media and Radiopharmaceuticals': ['Water soluble non-ionic iodinated contrast media for intravascular administration','Water soluble non-ionic iodinated contrast media for intra-cavitary administration','Water soluble non-ionic iodinated contrast media for myelography','Non-iodinated gastrointestinal X-ray contrast media','Magnetic resonance contrast media','Drug use for interventional radiology','Radiopharmaceuticals'],
+            'Other': ['-']
+        };
 
         const exportPasswords = {
             'default': 'rxccc',
@@ -822,18 +844,23 @@
             selector: '[data-bs-toggle="tooltip"]'
         });
 
-        // CHANGE: Added custom search function for DataTables
-        // This function filters rows based on the selected drug groups.
+        // MODIFIED: Custom search function for dependent dropdowns
         $.fn.dataTable.ext.search.push(
             function(settings, data, dataIndex) {
                 if (settings.nTable.id !== 'drugTable') {
                     return true;
                 }
-                if (selectedGroups.length === 0) {
-                    return true;
-                }
-                const rowDrugGroup = table.row(dataIndex).data()[25] || '';
-                return selectedGroups.includes(rowDrugGroup);
+                const selectedGroup = $('#drugGroupFilter').val();
+                const selectedSubgroup = $('#drugSubgroupFilter').val();
+
+                // data[25] is Drug Group, data[45] is new Drug Subgroup
+                const rowGroup = table.row(dataIndex).data()[25] || '';
+                const rowSubgroup = table.row(dataIndex).data()[45] || '';
+                
+                const groupMatch = !selectedGroup || (rowGroup === selectedGroup);
+                const subgroupMatch = !selectedSubgroup || (rowSubgroup === selectedSubgroup);
+
+                return groupMatch && subgroupMatch;
             }
         );
 
@@ -966,8 +993,9 @@
             { title: '10/67', data: 16, className: 'rate-column' }, { title: '11/67', data: 17, className: 'rate-column' }, { title: '12/67', data: 18, className: 'rate-column' },
             { title: '01/68', data: 19, className: 'rate-column' }, { title: '02/68', data: 20, className: 'rate-column' }, { title: '03/68', data: 21, className: 'rate-column' },
             { title: '04/68', data: 22, className: 'rate-column' }, { title: '05/68', data: 23, className: 'rate-column' }, { title: '06/68', data: 24, className: 'rate-column' },
-            // CHANGE: Added 'default-column' class to make Drug Group visible in the essential view.
             { title: 'Drug Group', data: 25, className: 'default-column', render: (d, t) => renderBadge(d, t, drugGroupColorMap, true) },
+            // ADDED: Drug Subgroup column. Reads from data index 45. User must add this column to their Google Sheet.
+            { title: 'Drug Subgroup', data: 45, className: 'default-column purchasing-column' },
             { title: 'ราคากลาง', data: 26, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
             { title: 'Fee Schedule', data: 27, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
             { title: 'รหัสยาทดแทน', data: 29, className: 'purchasing-column' },
@@ -1025,41 +1053,44 @@
                 } 
             });
             
-            // --- NEW FEATURE: Drug Group Filter Setup ---
+            // --- MODIFIED: Dependent Dropdown Filter Setup ---
             
-            // 1. Populate the drug group filter checkboxes from the full dataset
+            // 1. Populate the main drug group dropdown
             const drugGroups = [...new Set(data.map(row => row[25]).filter(Boolean))].sort();
-            const checkboxesHtml = drugGroups.map(group => {
-                const groupId = `filter-${group.replace(/[^a-zA-Z0-9]/g, '')}`; // Create a valid ID
-                return `
-                    <div class="form-check">
-                      <input class="form-check-input drug-group-filter" type="checkbox" value="${group}" id="${groupId}">
-                      <label class="form-check-label" for="${groupId}">${group}</label>
-                    </div>`;
-            }).join('');
-            $('#drugGroupCheckboxes').html(checkboxesHtml);
+            const $groupSelect = $('#drugGroupFilter');
+            $groupSelect.html('<option value="">-- Select Drug Group --</option>');
+            drugGroups.forEach(group => {
+                $groupSelect.append(`<option value="${group}">${group}</option>`);
+            });
 
-            // 2. Helper function to update the filter and redraw the table
-            function updateSelectedGroupsAndDraw() {
-                selectedGroups = $('.drug-group-filter:checked').map(function() {
-                    return $(this).val();
-                }).get();
-                table.draw(); // Redraws the table, applying the custom search function
-            }
+            // 2. Event listener for the Drug Group dropdown
+            $groupSelect.on('change', function() {
+                const selectedGroup = $(this).val();
+                const $subgroupSelect = $('#drugSubgroupFilter');
+                
+                // Clear and disable subgroup dropdown
+                $subgroupSelect.html('<option value="">-- Select Subgroup --</option>').prop('disabled', true);
 
-            // 3. Attach event listeners for the filter controls
+                if (selectedGroup && drugSubgroupMap[selectedGroup]) {
+                    const subgroups = drugSubgroupMap[selectedGroup];
+                    subgroups.forEach(subgroup => {
+                        $subgroupSelect.append(`<option value="${subgroup}">${subgroup}</option>`);
+                    });
+                    $subgroupSelect.prop('disabled', false);
+                }
+                
+                table.draw(); // Redraw table on group change
+            });
+
+            // 3. Event listener for the Subgroup dropdown
+            $('#drugSubgroupFilter').on('change', function() {
+                table.draw(); // Redraw table on subgroup change
+            });
+
+            // 4. Toggle visibility of the filter container
             $('#toggleFilterBtn').on('click', () => $('#drugGroupFilterContainer').slideToggle());
-            $('#selectAllGroups').on('click', () => {
-                $('.drug-group-filter').prop('checked', true);
-                updateSelectedGroupsAndDraw();
-            });
-            $('#deselectAllGroups').on('click', () => {
-                $('.drug-group-filter').prop('checked', false);
-                updateSelectedGroupsAndDraw();
-            });
-            $('#drugGroupCheckboxes').on('change', '.drug-group-filter', updateSelectedGroupsAndDraw);
             
-            // --- End of New Feature Code ---
+            // --- End of Filter Code ---
 
             $('#globalSearch').on('keyup', function () { table.search(this.value).draw(); });
             setView('default');
@@ -1086,9 +1117,15 @@
                 row2Html += createDetailCard({ title: 'เงื่อนไขการเบิกจ่าย', value: renderBadge(rowData[5], 'display', {'สำรองจ่าย': 'bg-primary', 'ocpa': 'bg-success', 'เบิกได้': 'bg-success', 'ขรก เบิกไม่ได้': 'bg-danger', 'เบิกนอก': 'bg-info text-dark', 'วัคซีน': 'bg-warning text-dark'}, true), itemClass: 'status-card' });
                 row2Html += createDetailCard({ title: 'บัญชียา', value: renderBadge(rowData[6], 'display', {'ned': 'bg-danger', 'ed': 'bg-success', 'ในบัญชี(วถ)': 'bg-info text-dark', 'ค่าสารทึบ': 'bg-primary', 'promotion': 'bg-warning text-dark', 'วิตามิน อาหารเสริม': 'bg-teal'}), itemClass: 'status-card' });
                 row2Html += createDetailCard({ title: 'Status', value: renderBadge(rowData[12], 'display', {'ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}), itemClass: 'status-card' });
-                row2Html += createDetailCard({ title: 'Drug Group', value: renderBadge(rowData[25], 'display', drugGroupColorMap, true) });
                 if (row2Html) detailsHtml += `<div class="detail-row">${row2Html}</div>`;
                 
+                // ADDED: Row for Group and Subgroup
+                let groupRowHtml = '';
+                groupRowHtml += createDetailCard({ title: 'Drug Group', value: renderBadge(rowData[25], 'display', drugGroupColorMap, true) });
+                // Note: rowData[45] is the new subgroup field
+                groupRowHtml += createDetailCard({ title: 'Drug Subgroup', value: rowData[45] });
+                if (groupRowHtml) detailsHtml += `<div class="detail-row">${groupRowHtml}</div>`;
+
                 // Row 3
                 let row3Html = ''; 
                 row3Html += createDetailCard({ title: 'ราคาขาย', value: `${formatNumber(rowData[8], 2, 2)} / ${rowData[9] || 'หน่วย'}`, valueClass: 'sale-price-value', itemClass: 'highlight-card' }); 
@@ -1394,7 +1431,7 @@
                     lastHiddenTime = Date.now();
                 } else if (document.visibilityState === 'visible') {
                     if(lastHiddenTime > 0) {
-                       totalHiddenTime += (Date.now() - lastHiddenTime);
+                        totalHiddenTime += (Date.now() - lastHiddenTime);
                     }
                 }
             });
@@ -1402,7 +1439,7 @@
             // --- Part 3: Send Session Duration on Page Unload ---
             window.addEventListener('beforeunload', (event) => {
                 if (document.visibilityState === 'hidden' && lastHiddenTime > 0) {
-                       totalHiddenTime += (Date.now() - lastHiddenTime);
+                        totalHiddenTime += (Date.now() - lastHiddenTime);
                 }
 
                 const totalSessionTime = Date.now() - sessionStartTime;
@@ -1434,6 +1471,7 @@
     </script>
 </body>
 </html>
+
 
 
 
