@@ -1058,6 +1058,7 @@ $(document).ready(function () {
     function createStatsTable(stats) { return ` <h5 class="mt-4">Usage Statistics</h5> <div class="table-responsive"> <table class="table table-sm table-bordered text-center"> <thead class="table-light"> <tr> <th>Average</th> <th>3-Month Avg</th> <th>Median</th> <th>Min / Max</th> <th>Std. Dev</th> <th>Total</th> </tr> </thead> <tbody> <tr> <td>${formatNumber(stats.mean, 2, 2)}</td> <td>${formatNumber(stats.avgLast3, 2, 2)}</td> <td>${formatNumber(stats.median, 2, 2)}</td> <td>${formatNumber(stats.min, 0, 0)} / ${formatNumber(stats.max, 0, 0)}</td> <td>${formatNumber(stats.stdDev, 2, 2)}</td> <td>${formatNumber(stats.total, 0, 0)}</td> </tr> </tbody> </table> </div>`; }
 
     // MODIFIED: This entire function is replaced with the new logic
+    // MODIFIED: This entire function is replaced with the new, more robust version
     function initializeDataTable(data) {
         $('#loadingIndicator').hide();
         table = $('#drugTable').DataTable({ 
@@ -1086,30 +1087,41 @@ $(document).ready(function () {
         const $drugGroupFilter = $('#drugGroupFilter');
         const $drugSubgroupFilter = $('#drugSubgroupFilter');
 
-        // ADDED: Create a map from subgroup to its parent group's color class
+        // ADDED: Create a normalized color map to handle potential whitespace/casing issues.
+        // This makes the color matching much more reliable.
+        const normalizedDrugGroupColorMap = {};
+        for (const key in drugGroupColorMap) {
+            normalizedDrugGroupColorMap[key.trim().toLowerCase()] = drugGroupColorMap[key];
+        }
+
+        // MODIFIED: Use the normalized map and trimmed keys for more robust color assignment.
         const subgroupColorMap = {};
         allData.forEach(row => {
             const group = row[25];
             const subgroup = row[26];
-            if (group && subgroup && !subgroupColorMap[subgroup]) {
-                const groupKey = group.toLowerCase().trim();
-                subgroupColorMap[subgroup] = drugGroupColorMap[groupKey] || 'bg-secondary';
+            if (group && subgroup) {
+                const subgroupKey = subgroup.trim(); // Use trimmed key for the subgroup
+                if (!subgroupColorMap[subgroupKey]) {
+                    const groupKey = group.trim().toLowerCase(); // Use trimmed, lowercase key for the group
+                    subgroupColorMap[subgroupKey] = normalizedDrugGroupColorMap[groupKey] || 'bg-secondary';
+                }
             }
         });
         
-        // ADDED: Function to format Subgroup options as colored badges
-        function formatSubgroupState(state) {
-            if (!state.id) { return state.text; }
-            const colorClass = subgroupColorMap[state.id] || 'bg-secondary';
-            return $(`<span><span class="badge ${colorClass}">${state.text}</span></span>`);
-        };
-
-        // Function to format Drug Group options as colored badges
+        // MODIFIED: This function now uses the more reliable normalized map and key cleaning.
         function formatGroupState(state) {
             if (!state.id) { return state.text; }
-            const key = state.id.toLowerCase().trim();
-            const cls = drugGroupColorMap[key] || 'bg-secondary';
+            const key = state.id.trim().toLowerCase();
+            const cls = normalizedDrugGroupColorMap[key] || 'bg-secondary';
             return $(`<span><span class="badge ${cls}">${state.text}</span></span>`);
+        };
+
+        // MODIFIED: This function now uses a cleaned key for lookup.
+        function formatSubgroupState(state) {
+            if (!state.id) { return state.text; }
+            const key = state.id.trim();
+            const colorClass = subgroupColorMap[key] || 'bg-secondary';
+            return $(`<span><span class="badge ${colorClass}">${state.text}</span></span>`);
         };
         
         // 1. Populate and Initialize Drug Group Filter
@@ -1138,26 +1150,24 @@ $(document).ready(function () {
             templateSelection: formatSubgroupState
         });
 
-        // 3. Event Listeners
+        // 3. Event Listeners (This logic remains the same)
         $('#toggleFilterBtn').on('click', () => $('#filterPanel').slideToggle());
 
-        // On Group Change -> Update Subgroup Options
         $drugGroupFilter.on('change', function() {
             selectedGroups = $(this).val() || [];
             
             const currentSubgroupSelection = $drugSubgroupFilter.val() || [];
-            $drugSubgroupFilter.empty(); // Clear existing options
+            $drugSubgroupFilter.empty(); 
 
             let relevantSubgroups;
             if (selectedGroups.length > 0) {
-                // Filter subgroups based on selected groups
+                const selectedGroupsClean = selectedGroups.map(g => g.trim());
                 relevantSubgroups = [...new Set(
                     allData
-                        .filter(row => selectedGroups.includes(row[25]))
+                        .filter(row => row[25] && selectedGroupsClean.includes(row[25].trim()))
                         .map(row => row[26])
                 )].filter(Boolean).sort();
             } else {
-                // No group selected, show all subgroups
                 relevantSubgroups = allSubgroups;
             }
             
@@ -1165,20 +1175,17 @@ $(document).ready(function () {
                 $drugSubgroupFilter.append(new Option(subgroup, subgroup));
             });
 
-            // Restore selection for subgroups that are still in the list
             const newValidSelection = currentSubgroupSelection.filter(sg => relevantSubgroups.includes(sg));
             $drugSubgroupFilter.val(newValidSelection).trigger('change.select2');
             
             table.draw();
         });
 
-        // On Subgroup Change -> Filter Table
         $drugSubgroupFilter.on('change', function() {
             selectedSubgroups = $(this).val() || [];
             table.draw();
         });
 
-        // Clear buttons
         $('#clearGroupFilter').on('click', function() {
             $drugGroupFilter.val(null).trigger('change');
         });
@@ -1186,7 +1193,7 @@ $(document).ready(function () {
             $drugSubgroupFilter.val(null).trigger('change');
         });
 
-        // --- End of New Filter Code ---
+        // --- End of Filter Code ---
 
         $('#globalSearch').on('keyup', function () { table.search(this.value).draw(); });
         setView('default');
@@ -1217,7 +1224,7 @@ $(document).ready(function () {
             
             let row3Html = ''; 
             row3Html += createDetailCard({ title: 'Drug Group', value: renderBadge(rowData[25], 'display', drugGroupColorMap, true) });
-            row3Html += createDetailCard({ title: 'Drug Subgroup', value: renderBadge(rowData[26], 'display', drugGroupColorMap, true) });
+            row3Html += createDetailCard({ title: 'Drug Subgroup', value: renderBadge(rowData[26], 'display', subgroupColorMap, true) });
             row3Html += createDetailCard({ title: 'ราคาขาย', value: `${formatNumber(rowData[8], 2, 2)} / ${rowData[9] || 'หน่วย'}`, valueClass: 'sale-price-value', itemClass: 'highlight-card' }); 
             const realCostValue = `${formatNumber(rowData[10], 2, 2)} / ${rowData[11] || 'หน่วย'}`; 
             row3Html += createDetailCard({ title: 'ราคาทุน', value: realCostValue, valueClass: 'cost-price-value', itemClass: 'highlight-card', isProtected: true, realValue: realCostValue }); 
@@ -1481,6 +1488,7 @@ $(document).ready(function () {
 </script>
 </body>
 </html>
+
 
 
 
