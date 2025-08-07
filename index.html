@@ -678,16 +678,29 @@
                             </div>
                         </div>
                     </div>
-                     <div id="drugGroupFilterContainer" class="mt-3 p-3 border rounded bg-light" style="display: none;">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h6 class="mb-0 fw-bold text-secondary">Filter by Drug Group</h6>
-                            <div>
-                                <button class="btn btn-sm btn-outline-primary py-0" id="selectAllGroups">Select All</button>
-                                <button class="btn btn-sm btn-outline-secondary py-0" id="deselectAllGroups">Deselect All</button>
+                     <div id="filterPanel" class="mt-3" style="display: none;">
+                        <div id="drugGroupFilterContainer" class="p-3 border rounded bg-light mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="mb-0 fw-bold text-secondary">Filter by Drug Group</h6>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-primary py-0" id="selectAllGroups">Select All</button>
+                                    <button class="btn btn-sm btn-outline-secondary py-0" id="deselectAllGroups">Deselect All</button>
+                                </div>
                             </div>
+                            <div id="drugGroupCheckboxes" class="d-flex flex-wrap" style="gap: 1rem 1.5rem;">
+                                </div>
                         </div>
-                        <div id="drugGroupCheckboxes" class="d-flex flex-wrap" style="gap: 1rem 1.5rem;">
+                        <div id="drugSubgroupFilterContainer" class="p-3 border rounded bg-light" style="display: none;">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="mb-0 fw-bold text-secondary">Filter by Drug Subgroup</h6>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-primary py-0" id="selectAllSubgroups">Select All</button>
+                                    <button class="btn btn-sm btn-outline-secondary py-0" id="deselectAllSubgroups">Deselect All</button>
+                                </div>
                             </div>
+                            <div id="drugSubgroupCheckboxes" class="d-flex flex-wrap" style="gap: 1rem 1.5rem;">
+                                </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -806,8 +819,9 @@
         var tooltipMap = {};
         const contactModal = new bootstrap.Modal(document.getElementById('contactModal'));
 
-        // CHANGE: Added variable to store selected groups for filtering
+        // CHANGE: Variables for dependent filters
         var selectedGroups = [];
+        var selectedSubgroups = [];
 
         const exportPasswords = {
             'default': 'rxccc',
@@ -822,18 +836,37 @@
             selector: '[data-bs-toggle="tooltip"]'
         });
 
-        // CHANGE: Added custom search function for DataTables
-        // This function filters rows based on the selected drug groups.
+        // CHANGE: Updated custom search function for dependent filters
         $.fn.dataTable.ext.search.push(
             function(settings, data, dataIndex) {
                 if (settings.nTable.id !== 'drugTable') {
                     return true;
                 }
+                
+                // If no group is selected, show all rows
                 if (selectedGroups.length === 0) {
                     return true;
                 }
-                const rowDrugGroup = table.row(dataIndex).data()[25] || '';
-                return selectedGroups.includes(rowDrugGroup);
+
+                const rowData = table.row(dataIndex).data();
+                const rowDrugGroup = rowData[25] || '';
+                const rowDrugSubgroup = rowData[26] || '';
+
+                // Check if the row's drug group is in the selected groups
+                const groupMatch = selectedGroups.includes(rowDrugGroup);
+
+                // If the group doesn't match, don't show the row
+                if (!groupMatch) {
+                    return false;
+                }
+
+                // If group matches, but no subgroups are selected, show the row
+                if (selectedSubgroups.length === 0) {
+                    return true;
+                }
+                
+                // If group matches and subgroups are selected, check for subgroup match
+                return selectedSubgroups.includes(rowDrugSubgroup);
             }
         );
 
@@ -948,6 +981,9 @@
         
         const storageColorMap = { 'below 30°c': 'bg-success', '2°c - 8°c': 'bg-primary', 'below 25°c': 'bg-orange', 'below -20°c': 'bg-info', '-15°c ถึง -25°c': 'bg-info text-dark' };
 
+        // CHANGE: Updated column configuration with new Drug Subgroup and shifted indices.
+        // **IMPORTANT**: Assumes "Drug Subgroup" is in column AA (index 26) in your Google Sheet.
+        // All subsequent columns are shifted by 1.
         const columnConfig = [
             { title: 'Detail View', data: null, defaultContent: '<button class="btn btn-sm btn-primary view-details-btn" data-bs-toggle="tooltip" data-bs-placement="top" title="คลิกเพื่อดูข้อมูลของยาโดยละเอียด"><i class="fas fa-eye"></i></button>', orderable: false, className: 'text-center all-column', width: "60px" },
             { title: 'Material No.', data: 0, className: 'default-column purchasing-column rate-column' },
@@ -966,23 +1002,24 @@
             { title: '10/67', data: 16, className: 'rate-column' }, { title: '11/67', data: 17, className: 'rate-column' }, { title: '12/67', data: 18, className: 'rate-column' },
             { title: '01/68', data: 19, className: 'rate-column' }, { title: '02/68', data: 20, className: 'rate-column' }, { title: '03/68', data: 21, className: 'rate-column' },
             { title: '04/68', data: 22, className: 'rate-column' }, { title: '05/68', data: 23, className: 'rate-column' }, { title: '06/68', data: 24, className: 'rate-column' },
-            // CHANGE: Added 'default-column' class to make Drug Group visible in the essential view.
             { title: 'Drug Group', data: 25, className: 'default-column', render: (d, t) => renderBadge(d, t, drugGroupColorMap, true) },
-            { title: 'ราคากลาง', data: 26, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
-            { title: 'Fee Schedule', data: 27, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
-            { title: 'รหัสยาทดแทน', data: 29, className: 'purchasing-column' },
-            { title: 'การรับเข้าบัญชี', data: 30, className: 'purchasing-column' },
-            { title: 'Distributor', data: 31, className: 'purchasing-column' },
-            { title: 'ข้าราชการ', data: 32, visible: false, className: 'modal-only' }, { title: 'จ่ายเอง', data: 33, visible: false, className: 'modal-only' },
-            { title: 'ปกส', data: 34, visible: false, className: 'modal-only' }, { title: 'รัฐวิสาหกิจ', data: 35, visible: false, className: 'modal-only' },
-            { title: 'สปสช', data: 36, visible: false, className: 'modal-only' }, { title: 'สวัสดิการเจ้าหน้าที่', data: 37, visible: false, className: 'modal-only' },
-            { title: 'เงื่อนไขบัญชียาหลัก', data: 38, visible: false, className: 'modal-only' }, 
-            { title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', data: 39, visible: false, className: 'modal-only' },
-            { title: 'คำเตือน/หมายเหตุ/จำกัดแพทย์', data: 40, visible: false, className: 'modal-only' },
-            { title: 'PAP', data: 41, visible: false, className: 'modal-only' },
-            { title: 'Image 1', data: 42, visible: false, className: 'modal-only' },
-            { title: 'Image 2', data: 43, visible: false, className: 'modal-only' },
-            { title: 'Image 3', data: 44, visible: false, className: 'modal-only' }
+            { title: 'Drug Subgroup', data: 26, visible: false, className: 'modal-only' }, // ADDED: Drug Subgroup
+            { title: 'ราคากลาง', data: 27, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) }, // Index shifted
+            { title: 'Fee Schedule', data: 28, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) }, // Index shifted
+            { title: 'Storage', data: 29, className: 'purchasing-column default-column', render: (d,t) => renderBadge(d, t, storageColorMap, true) }, // Index shifted
+            { title: 'รหัสยาทดแทน', data: 30, className: 'purchasing-column' }, // Index shifted
+            { title: 'การรับเข้าบัญชี', data: 31, className: 'purchasing-column' }, // Index shifted
+            { title: 'Distributor', data: 32, className: 'purchasing-column' }, // Index shifted
+            { title: 'ข้าราชการ', data: 33, visible: false, className: 'modal-only' }, { title: 'จ่ายเอง', data: 34, visible: false, className: 'modal-only' },
+            { title: 'ปกส', data: 35, visible: false, className: 'modal-only' }, { title: 'รัฐวิสาหกิจ', data: 36, visible: false, className: 'modal-only' },
+            { title: 'สปสช', data: 37, visible: false, className: 'modal-only' }, { title: 'สวัสดิการเจ้าหน้าที่', data: 38, visible: false, className: 'modal-only' },
+            { title: 'เงื่อนไขบัญชียาหลัก', data: 39, visible: false, className: 'modal-only' }, 
+            { title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', data: 40, visible: false, className: 'modal-only' },
+            { title: 'คำเตือน/หมายเหตุ/จำกัดแพทย์', data: 41, visible: false, className: 'modal-only' },
+            { title: 'PAP', data: 42, visible: false, className: 'modal-only' },
+            { title: 'Image 1', data: 43, visible: false, className: 'modal-only' },
+            { title: 'Image 2', data: 44, visible: false, className: 'modal-only' },
+            { title: 'Image 3', data: 45, visible: false, className: 'modal-only' }
         ];
         
         function renderBadge(data, type, map, textWrap = false) {
@@ -1025,41 +1062,95 @@
                 } 
             });
             
-            // --- NEW FEATURE: Drug Group Filter Setup ---
+            // --- NEW: Dependent Filter Setup ---
             
-            // 1. Populate the drug group filter checkboxes from the full dataset
+            // 1. Populate the Drug Group filter
             const drugGroups = [...new Set(data.map(row => row[25]).filter(Boolean))].sort();
-            const checkboxesHtml = drugGroups.map(group => {
-                const groupId = `filter-${group.replace(/[^a-zA-Z0-9]/g, '')}`; // Create a valid ID
+            const groupCheckboxesHtml = drugGroups.map(group => {
+                const groupId = `filter-group-${group.replace(/[^a-zA-Z0-9]/g, '')}`;
                 return `
                     <div class="form-check">
                       <input class="form-check-input drug-group-filter" type="checkbox" value="${group}" id="${groupId}">
                       <label class="form-check-label" for="${groupId}">${group}</label>
                     </div>`;
             }).join('');
-            $('#drugGroupCheckboxes').html(checkboxesHtml);
+            $('#drugGroupCheckboxes').html(groupCheckboxesHtml);
 
-            // 2. Helper function to update the filter and redraw the table
-            function updateSelectedGroupsAndDraw() {
-                selectedGroups = $('.drug-group-filter:checked').map(function() {
-                    return $(this).val();
-                }).get();
-                table.draw(); // Redraws the table, applying the custom search function
+            // 2. Function to update the Subgroup filter based on selected Groups
+            function updateSubgroupFilter() {
+                selectedGroups = $('.drug-group-filter:checked').map(function() { return $(this).val(); }).get();
+
+                if (selectedGroups.length === 0) {
+                    $('#drugSubgroupFilterContainer').slideUp();
+                    selectedSubgroups = []; // Clear subgroup selection
+                    return;
+                }
+
+                // Find all unique subgroups for the selected groups
+                const allTableData = table.rows({ search: 'applied' }).data().toArray();
+                const relevantSubgroups = [...new Set(
+                    allTableData
+                        .filter(row => selectedGroups.includes(row[25]))
+                        .map(row => row[26])
+                )].filter(Boolean).sort();
+
+                if (relevantSubgroups.length > 0) {
+                    const subgroupCheckboxesHtml = relevantSubgroups.map(subgroup => {
+                         const subgroupId = `filter-subgroup-${subgroup.replace(/[^a-zA-Z0-9]/g, '')}`;
+                         // Keep checkbox checked if it was previously selected
+                         const isChecked = selectedSubgroups.includes(subgroup) ? 'checked' : '';
+                         return `
+                            <div class="form-check">
+                                <input class="form-check-input drug-subgroup-filter" type="checkbox" value="${subgroup}" id="${subgroupId}" ${isChecked}>
+                                <label class="form-check-label" for="${subgroupId}">${subgroup}</label>
+                            </div>`;
+                    }).join('');
+                    $('#drugSubgroupCheckboxes').html(subgroupCheckboxesHtml);
+                    $('#drugSubgroupFilterContainer').slideDown();
+                } else {
+                    $('#drugSubgroupFilterContainer').slideUp();
+                    $('#drugSubgroupCheckboxes').html('<p class="text-muted">No subgroups found for selected group(s).</p>');
+                }
             }
-
-            // 3. Attach event listeners for the filter controls
-            $('#toggleFilterBtn').on('click', () => $('#drugGroupFilterContainer').slideToggle());
+            
+            // 3. Attach event listeners
+            $('#toggleFilterBtn').on('click', () => $('#filterPanel').slideToggle());
+            
+            // Group Listeners
             $('#selectAllGroups').on('click', () => {
                 $('.drug-group-filter').prop('checked', true);
-                updateSelectedGroupsAndDraw();
+                updateSubgroupFilter();
+                table.draw();
             });
             $('#deselectAllGroups').on('click', () => {
                 $('.drug-group-filter').prop('checked', false);
-                updateSelectedGroupsAndDraw();
+                updateSubgroupFilter();
+                table.draw();
             });
-            $('#drugGroupCheckboxes').on('change', '.drug-group-filter', updateSelectedGroupsAndDraw);
+            $('#drugGroupCheckboxes').on('change', '.drug-group-filter', function() {
+                // When group selection changes, reset subgroup selection and update the filter display
+                selectedSubgroups = [];
+                updateSubgroupFilter();
+                table.draw();
+            });
+
+            // Subgroup Listeners
+            $('#selectAllSubgroups').on('click', () => {
+                $('.drug-subgroup-filter').prop('checked', true);
+                selectedSubgroups = $('.drug-subgroup-filter:checked').map(function() { return $(this).val(); }).get();
+                table.draw();
+            });
+            $('#deselectAllSubgroups').on('click', () => {
+                $('.drug-subgroup-filter').prop('checked', false);
+                selectedSubgroups = [];
+                table.draw();
+            });
+            $('#drugSubgroupCheckboxes').on('change', '.drug-subgroup-filter', function() {
+                selectedSubgroups = $('.drug-subgroup-filter:checked').map(function() { return $(this).val(); }).get();
+                table.draw();
+            });
             
-            // --- End of New Feature Code ---
+            // --- End of New Filter Code ---
 
             $('#globalSearch').on('keyup', function () { table.search(this.value).draw(); });
             setView('default');
@@ -1087,6 +1178,8 @@
                 row2Html += createDetailCard({ title: 'บัญชียา', value: renderBadge(rowData[6], 'display', {'ned': 'bg-danger', 'ed': 'bg-success', 'ในบัญชี(วถ)': 'bg-info text-dark', 'ค่าสารทึบ': 'bg-primary', 'promotion': 'bg-warning text-dark', 'วิตามิน อาหารเสริม': 'bg-teal'}), itemClass: 'status-card' });
                 row2Html += createDetailCard({ title: 'Status', value: renderBadge(rowData[12], 'display', {'ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}), itemClass: 'status-card' });
                 row2Html += createDetailCard({ title: 'Drug Group', value: renderBadge(rowData[25], 'display', drugGroupColorMap, true) });
+                // ADDED: Display Drug Subgroup in the modal
+                row2Html += createDetailCard({ title: 'Drug Subgroup', value: rowData[26] });
                 if (row2Html) detailsHtml += `<div class="detail-row">${row2Html}</div>`;
                 
                 // Row 3
@@ -1094,39 +1187,39 @@
                 row3Html += createDetailCard({ title: 'ราคาขาย', value: `${formatNumber(rowData[8], 2, 2)} / ${rowData[9] || 'หน่วย'}`, valueClass: 'sale-price-value', itemClass: 'highlight-card' }); 
                 const realCostValue = `${formatNumber(rowData[10], 2, 2)} / ${rowData[11] || 'หน่วย'}`; 
                 row3Html += createDetailCard({ title: 'ราคาทุน', value: realCostValue, valueClass: 'cost-price-value', itemClass: 'highlight-card', isProtected: true, realValue: realCostValue }); 
-                row3Html += createDetailCard({ title: 'ราคากลาง', value: formatNumber(rowData[26], 2, 2) }); 
-                row3Html += createDetailCard({ title: 'Fee Schedule', value: formatNumber(rowData[27], 2, 2) });
-                row3Html += createDetailCard({ title: 'การรับเข้าบัญชี', value: rowData[30] });
+                row3Html += createDetailCard({ title: 'ราคากลาง', value: formatNumber(rowData[27], 2, 2) }); 
+                row3Html += createDetailCard({ title: 'Fee Schedule', value: formatNumber(rowData[28], 2, 2) });
+                row3Html += createDetailCard({ title: 'การรับเข้าบัญชี', value: rowData[31] });
                 if (row3Html) detailsHtml += `<div class="detail-row">${row3Html}</div>`;
 
                 // Row 4
                 let row4Html = '';
                 row4Html += createDetailCard({ title: 'Purchasing Unit', value: rowData[7] });
-                row4Html += createDetailCard({ title: 'Distributor', value: rowData[31] });
-                row4Html += createDetailCard({ title: 'Storage', value: renderBadge(rowData[28], 'display', storageColorMap, true) });
-                row4Html += createDetailCard({ title: 'รหัสยาทดแทน', value: rowData[29] }); 
+                row4Html += createDetailCard({ title: 'Distributor', value: rowData[32] });
+                row4Html += createDetailCard({ title: 'Storage', value: renderBadge(rowData[29], 'display', storageColorMap, true) });
+                row4Html += createDetailCard({ title: 'รหัสยาทดแทน', value: rowData[30] }); 
                 if (row4Html) detailsHtml += `<div class="detail-row">${row4Html}</div>`;
 
                 // Row 5
                 let row5Html = ''; 
-                let conditions = rowData[38]; if (conditions) conditions = conditions.replace(/\n/g, '<br>'); 
+                let conditions = rowData[39]; if (conditions) conditions = conditions.replace(/\n/g, '<br>'); 
                 row5Html += createDetailCard({ title: 'เงื่อนไขบัญชียาหลัก', value: conditions, itemClass: 'orange-border-card' }); 
-                let indications = rowData[39]; if (indications) indications = indications.replace(/\n/g, '<br>'); 
+                let indications = rowData[40]; if (indications) indications = indications.replace(/\n/g, '<br>'); 
                 row5Html += createDetailCard({ title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', value: indications }); 
-                let papValue = rowData[41]; if (papValue) papValue = papValue.replace(/\n/g, '<br>'); 
+                let papValue = rowData[42]; if (papValue) papValue = papValue.replace(/\n/g, '<br>'); 
                 row5Html += createDetailCard({ title: 'PAP', value: papValue, itemClass: 'orange-border-card' }); 
                 if (row5Html) detailsHtml += `<div class="detail-row">${row5Html}</div>`;
                 
                 // Row 6
                 let row6Html = '';
-                let warningNote = rowData[40]; if (warningNote) warningNote = warningNote.replace(/\n/g, '<br>');
+                let warningNote = rowData[41]; if (warningNote) warningNote = warningNote.replace(/\n/g, '<br>');
                 row6Html += createDetailCard({ title: 'คำเตือน/หมายเหตุ/จำกัดแพทย์', value: warningNote, itemClass: 'danger-border-card' });
                 if (row6Html) detailsHtml += `<div class="detail-row">${row6Html}</div>`;
                 
                 let imageHtml = '';
-                if (rowData[42]) imageHtml += `<img src="${rowData[42]}" class="drug-image img-fluid" alt="Drug Image 1" onerror="this.style.display='none'">`;
-                if (rowData[43]) imageHtml += `<img src="${rowData[43]}" class="drug-image img-fluid" alt="Drug Image 2" onerror="this.style.display='none'">`;
-                if (rowData[44]) imageHtml += `<img src="${rowData[44]}" class="drug-image img-fluid" alt="Drug Image 3" onerror="this.style.display='none'">`;
+                if (rowData[43]) imageHtml += `<img src="${rowData[43]}" class="drug-image img-fluid" alt="Drug Image 1" onerror="this.style.display='none'">`;
+                if (rowData[44]) imageHtml += `<img src="${rowData[44]}" class="drug-image img-fluid" alt="Drug Image 2" onerror="this.style.display='none'">`;
+                if (rowData[45]) imageHtml += `<img src="${rowData[45]}" class="drug-image img-fluid" alt="Drug Image 3" onerror="this.style.display='none'">`;
 
                 const rateLabels = [], usageData = [], caseData = [];
                 columnConfig.forEach(col => {
@@ -1140,8 +1233,8 @@
 
                 const payerLabels = ['ข้าราชการ', 'จ่ายเอง', 'ปกส', 'รัฐวิสาหกิจ', 'สปสช', 'สวัสดิการเจ้าหน้าที่'];
                 const payerData = [
-                    parseFloat(rowData[32] || 0), parseFloat(rowData[33] || 0), parseFloat(rowData[34] || 0),
-                    parseFloat(rowData[35] || 0), parseFloat(rowData[36] || 0), parseFloat(rowData[37] || 0)
+                    parseFloat(rowData[33] || 0), parseFloat(rowData[34] || 0), parseFloat(rowData[35] || 0),
+                    parseFloat(rowData[36] || 0), parseFloat(rowData[37] || 0), parseFloat(rowData[38] || 0)
                 ];
                 const showUsageStats = usageData.some(d => d > 0);
                 const showPieChart = payerData.some(d => d > 0);
