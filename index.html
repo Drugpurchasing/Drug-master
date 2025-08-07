@@ -455,9 +455,10 @@
     .bg-orange { background-color: var(--warning-color) !important; }
     .danger-border-card { border-left-color: var(--danger-color) !important; }
     
+    /* --- Styles for Footer and View Counter (Updated) --- */
     .app-footer {
         display: flex;
-        justify-content: flex-start;
+        justify-content: flex-start; /* Align item to the left */
         align-items: center;
         padding: 20px 15px;
         margin-top: 25px;
@@ -468,21 +469,21 @@
     }
 
     .view-counter-widget {
-        display: none;
+        display: none; /* Hide by default, show with JS */
         align-items: center;
         justify-content: center;
-        gap: 0.4rem;
+        gap: 0.4rem; /* Reduced gap */
         display: inline-flex;
         background-color: var(--light-bg);
         color: var(--secondary-color);
-        padding: 0.4rem 0.8rem;
-        border-radius: 20px;
+        padding: 0.4rem 0.8rem; /* Reduced padding */
+        border-radius: 20px; /* Slightly smaller radius */
         box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-        font-size: 0.8rem;
+        font-size: 0.8rem; /* Reduced font size */
         font-weight: 500;
     }
 
-    /* Select2 Custom Styles */
+    /* ADDED: Select2 Custom Styles */
     .select2-container--bootstrap-5 .select2-selection {
         box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
         border-radius: 8px !important;
@@ -515,42 +516,138 @@
             text-align: center;
             gap: 15px;
         }
-        .app-title { font-size: 24px; }
-        .charts-container { flex-direction: column; }
-        .chart-wrapper { min-width: 100%; }
+        
+        .app-title {
+            font-size: 24px;
+        }
+        
+        .charts-container {
+            flex-direction: column;
+        }
+        
+        .chart-wrapper {
+            min-width: 100%;
+        }
     }
 
     @media (max-width: 768px) {
-        body { font-size: 0.9rem; }
-        .app-title { font-size: 22px; }
-        .version-info { font-size: 14px; }
-        .filter-section .row > div { margin-bottom: 15px; }
-        .action-buttons .btn { min-width: 100%; }
-        .detail-item { flex: 1 1 45%; padding: 10px; min-width: 140px; }
-        .detail-row { gap: 10px; margin-bottom: 10px; }
-        .modal-main-layout { flex-direction: column; }
-        .floating-action-button { bottom: 1rem; right: 1rem; padding: 0.7rem 1.2rem; font-size: 0.9rem; }
-        .floating-action-button svg { width: 18px; height: 18px; }
-        .detail-item div { font-size: 0.95rem; }
-        .drug-image { height: 220px; }
-        .chart-wrapper { max-height: 250px; }
+        body {
+            font-size: 0.9rem;
+        }
+
+        .app-title {
+            font-size: 22px;
+        }
+        
+        .version-info {
+            font-size: 14px;
+        }
+        
+        .filter-section .row > div {
+            margin-bottom: 15px;
+        }
+        
+        .action-buttons .btn {
+            min-width: 100%;
+        }
+        
+        .detail-item {
+            flex: 1 1 45%; 
+            padding: 10px;
+            min-width: 140px;
+        }
+        
+        .detail-row {
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .modal-main-layout {
+            flex-direction: column;
+        }
+        
+        .floating-action-button {
+            bottom: 1rem;
+            right: 1rem;
+            padding: 0.7rem 1.2rem;
+            font-size: 0.9rem;
+        }
+        
+        .floating-action-button svg {
+            width: 18px;
+            height: 18px;
+        }
+        
+        .detail-item div {
+            font-size: 0.95rem;
+        }
+        
+        .drug-image {
+            height: 220px;
+        }
+
+        .chart-wrapper {
+            max-height: 250px;
+        }
     }
 
     @media (max-width: 576px) {
-        .logo-container img { height: 50px; }
-        .app-title { font-size: 20px; }
-        .version-info { font-size: 13px; }
-        .floating-action-button span { display: none; }
-        .floating-action-button { width: 50px; height: 50px; padding: 0; border-radius: 50%; }
-        .detail-item { flex-basis: 100%; }
-        .main-title-value { font-size: 1.1rem !important; }
-        .sale-price-value, .cost-price-value { font-size: 1.15rem !important; }
-        .detail-item strong { font-size: 0.85rem; }
+        .logo-container img {
+            height: 50px;
+        }
+        
+        .app-title {
+            font-size: 20px;
+        }
+        
+        .version-info {
+            font-size: 13px;
+        }
+        
+        .floating-action-button span {
+            display: none;
+        }
+        
+        .floating-action-button {
+            width: 50px;
+            height: 50px;
+            padding: 0;
+            border-radius: 50%;
+        }
+
+        .detail-item {
+            flex-basis: 100%;
+        }
+        
+        .main-title-value {
+            font-size: 1.1rem !important;
+        }
+        
+        .sale-price-value, .cost-price-value {
+            font-size: 1.15rem !important;
+        }
+        
+        .detail-item strong {
+            font-size: 0.85rem;
+        }
     }
 
-    .table-hover tbody tr:hover { background-color: rgba(13, 110, 253, 0.05); }
-    .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter, .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_paginate { padding: 10px 15px; }
-    .dataTables_wrapper .dataTables_filter input { border-radius: 6px; padding: 5px 10px; border: 1px solid #ced4da; }
+    .table-hover tbody tr:hover {
+        background-color: rgba(13, 110, 253, 0.05);
+    }
+    
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter,
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_paginate {
+        padding: 10px 15px;
+    }
+    
+    .dataTables_wrapper .dataTables_filter input {
+        border-radius: 6px;
+        padding: 5px 10px;
+        border: 1px solid #ced4da;
+    }
 </style>
 </head>
 
@@ -561,7 +658,7 @@
                 <img src="CRAlogo.png" alt="Logo" class="img-fluid me-3" onerror="this.style.display='none'">
                 <div>
                     <h1 class="app-title">Drug master CRA</h1>
-                    <p class="version-info mb-0 fw-bold">Latest update 07/08/2025 | Version 4.10</p>
+                    <p class="version-info mb-0 fw-bold">Latest update 05/08/2025 | Version 4.05</p>
                 </div>
             </div>
         </div>
@@ -616,28 +713,28 @@
                                 <label for="drugGroupFilter" class="form-label fw-bold text-secondary">Filter by Drug Group</label>
                                 <div class="d-flex gap-2">
                                      <select id="drugGroupFilter" class="form-select" multiple="multiple" style="width: 100%;"></select>
-                                     <button class="btn btn-outline-secondary btn-sm" id="clearGroupFilter" title="Clear Group Filter" data-bs-toggle="tooltip"><i class="fas fa-times"></i></button>
+                                     <button class="btn btn-outline-secondary btn-sm" id="clearGroupFilter" title="Clear Group Filter"><i class="fas fa-times"></i></button>
                                 </div>
                             </div>
-                             <div class="col-md-6">
+                             <div class="col-md-6" id="drugSubgroupFilterContainer" style="display: none;">
                                 <label for="drugSubgroupFilter" class="form-label fw-bold text-secondary">Filter by Drug Subgroup</label>
                                 <div class="d-flex gap-2">
                                     <select id="drugSubgroupFilter" class="form-select" multiple="multiple" style="width: 100%;"></select>
-                                    <button class="btn btn-outline-secondary btn-sm" id="clearSubgroupFilter" title="Clear Subgroup Filter" data-bs-toggle="tooltip"><i class="fas fa-times"></i></button>
+                                    <button class="btn btn-outline-secondary btn-sm" id="clearSubgroupFilter" title="Clear Subgroup Filter"><i class="fas fa-times"></i></button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <div id="loadingIndicator" class="progress mb-4" style="height: 25px;">
+                <div id="loadingIndicator" class="progress mb-4" style="height: 25px; display: none;">
                     <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
                         <strong class="text-white"><i class="fas fa-spinner fa-spin me-2"></i>Loading Data... Please Wait</strong>
                     </div>
                 </div>
                 
                 <div class="table-responsive">
-                    <table id="drugTable" class="table table-hover table-striped w-100" style="display:none;"></table>
+                    <table id="drugTable" class="table table-hover table-striped w-100"></table>
                 </div>
                 
             </div>
@@ -655,8 +752,73 @@
         <span>ติดต่อ/แจ้งปัญหา</span>
     </button>
     
-    <div class="modal fade" id="drugDetailModal" tabindex="-1" aria-labelledby="drugDetailModalLabel" aria-hidden="true"> <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title" id="drugDetailModalLabel">Drug Details</h5> <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> </div> <div class="modal-body" id="drugDetailModalBody"> </div> <div class="modal-footer"> <button type="button" class="btn btn-info me-auto contact-trigger"> <i class="fas fa-comments me-1"></i>แจ้งปัญหาเกี่ยวกับยานี้ </button> <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> </div> </div> </div> </div>
-    <div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true"> <div class="modal-dialog modal-lg modal-dialog-centered"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title" id="contactModalLabel"><i class="fas fa-comments me-2"></i>ติดต่อผู้ดูแลระบบ</h5> <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> </div> <div class="modal-body"> <p class="text-secondary mb-4">เลือกหัวข้อและกรอกรายละเอียดที่ต้องการแจ้ง</p> <form id="contactForm"> <div class="mb-4"> <label class="form-label fw-bold">หัวข้อการติดต่อ:</label> <div class="row"> <div class="col-md-6"> <div class="form-check mb-3"> <input class="form-check-input" type="radio" name="topic" id="topic1" value="ขอแก้ไขข้อมูลยา" checked> <label class="form-check-label" for="topic1">ขอแก้ไขข้อมูลยา</label> </div> <div class="form-check mb-3"> <input class="form-check-input" type="radio" name="topic" id="topic2" value="พบปัญหาการใช้งาน"> <label class="form-check-label" for="topic2">พบปัญหาการใช้งาน</label> </div> </div> <div class="col-md-6"> <div class="form-check mb-3"> <input class="form-check-input" type="radio" name="topic" id="topic3" value="คำถาม"> <label class="form-check-label" for="topic3">คำถาม</label> </div> <div class="form-check mb-3"> <input class="form-check-input" type="radio" name="topic" id="topic4" value="ข้อเสนอแนะ"> <label class="form-check-label" for="topic4">ข้อเสนอแนะ</label> </div> </div> </div> </div> <div class="mb-4"> <label for="message" class="form-label fw-bold">รายละเอียด:</label> <textarea class="form-control" id="message" name="message" rows="5" placeholder="กรุณาระบุรายละเอียด เช่น ชื่อยาที่ต้องการแก้ไข หรือปัญหาที่พบ..." required></textarea> </div> <div class="modal-footer pb-0"> <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button> <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane me-2"></i>ส่งเรื่อง</button> </div> </form> </div> </div> </div> </div>
+    <div class="modal fade" id="drugDetailModal" tabindex="-1" aria-labelledby="drugDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="drugDetailModalLabel">Drug Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="drugDetailModalBody">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info me-auto contact-trigger">
+                        <i class="fas fa-comments me-1"></i>แจ้งปัญหาเกี่ยวกับยานี้
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="contactModalLabel"><i class="fas fa-comments me-2"></i>ติดต่อผู้ดูแลระบบ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-secondary mb-4">เลือกหัวข้อและกรอกรายละเอียดที่ต้องการแจ้ง</p>
+                    <form id="contactForm">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">หัวข้อการติดต่อ:</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="radio" name="topic" id="topic1" value="ขอแก้ไขข้อมูลยา" checked>
+                                        <label class="form-check-label" for="topic1">ขอแก้ไขข้อมูลยา</label>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="radio" name="topic" id="topic2" value="พบปัญหาการใช้งาน">
+                                        <label class="form-check-label" for="topic2">พบปัญหาการใช้งาน</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="radio" name="topic" id="topic3" value="คำถาม">
+                                        <label class="form-check-label" for="topic3">คำถาม</label>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="radio" name="topic" id="topic4" value="ข้อเสนอแนะ">
+                                        <label class="form-check-label" for="topic4">ข้อเสนอแนะ</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="message" class="form-label fw-bold">รายละเอียด:</label>
+                            <textarea class="form-control" id="message" name="message" rows="5" placeholder="กรุณาระบุรายละเอียด เช่น ชื่อยาที่ต้องการแก้ไข หรือปัญหาที่พบ..." required></textarea>
+                        </div>
+                        <div class="modal-footer pb-0">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane me-2"></i>ส่งเรื่อง</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -667,6 +829,7 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 
@@ -682,48 +845,133 @@
         var tooltipMap = {};
         const contactModal = new bootstrap.Modal(document.getElementById('contactModal'));
 
+        // Variables for dropdown filters
         var selectedGroups = [];
         var selectedSubgroups = [];
 
         const exportPasswords = {
-            'default': 'rxccc', 'purchasing': 'rxpur', 'rate': 'rxccc', 'all': 'rxall'
+            'default': 'rxccc',
+            'purchasing': 'rxpur',
+            'rate': 'rxccc',
+            'all': 'rxall'
         };
-
-        const drugGroupColorMap = {
-            'gastro-intestinal system': 'bg-success', 'cardiovascular system': 'bg-danger', 'respiratory system': 'bg-info text-dark',
-            'central nervous system': 'bg-purple', 'infections': 'bg-warning text-dark', 'endocrine system': 'bg-orange', 'obstetrics': 'bg-pink',
-            'malignant disease': 'bg-dark', 'nutrition and blood': 'bg-primary', 'musculoskeletal': 'bg-teal', 'eye': 'bg-secondary',
-            'ear, nose, and oropharynx': 'bg-light text-dark', 'skin': 'bg-warning text-dark', 'immunological': 'bg-info text-dark',
-            'anesthesia': 'bg-purple', 'antidotes': 'bg-danger', 'contrast media': 'bg-primary', 'other': 'bg-secondary'
-        };
-        const subgroupColorMap = {}; // Will be populated dynamically
 
         Chart.register(ChartDataLabels);
         
-        $('body').tooltip({ selector: '[data-bs-toggle="tooltip"]' });
+        $('body').tooltip({
+            selector: '[data-bs-toggle="tooltip"]'
+        });
 
-        // Independent search function
+        // Updated custom search function for dropdown filters
         $.fn.dataTable.ext.search.push(
             function(settings, data, dataIndex) {
-                if (settings.nTable.id !== 'drugTable') return true;
+                if (settings.nTable.id !== 'drugTable') {
+                    return true;
+                }
+                
+                const hasGroupFilter = selectedGroups && selectedGroups.length > 0;
+                const hasSubgroupFilter = selectedSubgroups && selectedSubgroups.length > 0;
+
+                if (!hasGroupFilter && !hasSubgroupFilter) {
+                    return true; // No filters active
+                }
 
                 const rowData = table.row(dataIndex).data();
                 const rowDrugGroup = rowData[25] || '';
                 const rowDrugSubgroup = rowData[26] || '';
 
-                const groupMatch = selectedGroups.length === 0 || selectedGroups.includes(rowDrugGroup);
-                const subgroupMatch = selectedSubgroups.length === 0 || selectedSubgroups.includes(rowDrugSubgroup);
+                const groupMatch = hasGroupFilter ? selectedGroups.includes(rowDrugGroup) : true;
+                const subgroupMatch = hasSubgroupFilter ? selectedSubgroups.includes(rowDrugSubgroup) : true;
 
+                if(hasGroupFilter && !hasSubgroupFilter) {
+                    return groupMatch;
+                }
+                
                 return groupMatch && subgroupMatch;
             }
         );
 
-        function formatNumber(data, minDecimals = 0, maxDecimals = 0) { const number = parseFloat(data); if (isNaN(number)) return data === null || data === '' ? '-' : data; return number.toLocaleString('en-US', { minimumFractionDigits: minDecimals, maximumFractionDigits: maxDecimals }); }
-        function robustCsvParser(csvText) { const rows = []; let currentRow = []; let currentField = ''; let inQuotes = false; const text = csvText.trim().replace(/\r\n/g, '\n'); for (let i = 0; i < text.length; i++) { const char = text[i]; if (inQuotes) { if (char === '"') { if (i + 1 < text.length && text[i + 1] === '"') { currentField += '"'; i++; } else { inQuotes = false; } } else { currentField += char; } } else { switch (char) { case '"': inQuotes = true; break; case ',': currentRow.push(currentField); currentField = ''; break; case '\n': currentRow.push(currentField); rows.push(currentRow); currentRow = []; currentField = ''; break; default: currentField += char; } } } if (currentField || currentRow.length > 0) { currentRow.push(currentField); rows.push(currentRow); } return rows; }
-        async function loadTooltipData(url) { try { const response = await fetch(url); if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`); const csvData = await response.text(); const parsedData = robustCsvParser(csvData); const map = {}; for (let i = 1; i < parsedData.length; i++) { const row = parsedData[i]; if (row && row[0]) { const key = row[0].toLowerCase().trim(); const value = row[1] || ''; map[key] = value.trim(); } } return map; } catch (error) { console.error("Tooltip Data Load/Parse Error:", error); Swal.fire({ icon: 'warning', title: 'Tooltip Load Error', text: 'Failed to load tooltip descriptions.' }); return {}; } }
-        async function loadMainData(url) { const response = await fetch(url); if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`); const csvData = await response.text(); const parsedDataWithHeader = robustCsvParser(csvData); return parsedDataWithHeader.slice(1); }
+        function formatNumber(data, minDecimals = 0, maxDecimals = 0) {
+            const number = parseFloat(data);
+            if (isNaN(number)) return data === null || data === '' ? '-' : data;
+            return number.toLocaleString('en-US', { minimumFractionDigits: minDecimals, maximumFractionDigits: maxDecimals });
+        }
+        
+        function robustCsvParser(csvText) { 
+            const rows = []; 
+            let currentRow = []; 
+            let currentField = ''; 
+            let inQuotes = false; 
+            const text = csvText.trim().replace(/\r\n/g, '\n'); 
+            
+            for (let i = 0; i < text.length; i++) { 
+                const char = text[i]; 
+                if (inQuotes) { 
+                    if (char === '"') { 
+                        if (i + 1 < text.length && text[i + 1] === '"') { 
+                            currentField += '"'; 
+                            i++; 
+                        } else { 
+                            inQuotes = false; 
+                        } 
+                    } else { 
+                        currentField += char; 
+                    } 
+                } else { 
+                    switch (char) { 
+                        case '"': inQuotes = true; break; 
+                        case ',': currentRow.push(currentField); currentField = ''; break; 
+                        case '\n': currentRow.push(currentField); rows.push(currentRow); currentRow = []; currentField = ''; break; 
+                        default: currentField += char; 
+                    } 
+                } 
+            } 
+            
+            if (currentField || currentRow.length > 0) { 
+                currentRow.push(currentField); 
+                rows.push(currentRow); 
+            } 
+            
+            return rows; 
+        }
+
+        async function loadTooltipData(url) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const csvData = await response.text();
+                const parsedData = robustCsvParser(csvData);
+                const map = {};
+                for (let i = 1; i < parsedData.length; i++) {
+                    const row = parsedData[i];
+                    if (row && row[0]) {
+                        const key = row[0].toLowerCase().trim();
+                        const value = row[1] || '';
+                        map[key] = value.trim();
+                    }
+                }
+                return map;
+            } catch (error) {
+                console.error("Tooltip Data Load/Parse Error:", error);
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Tooltip Load Error',
+                    text: 'Failed to load tooltip descriptions from the sheet. Check the publish settings.'
+                });
+                return {};
+            }
+        }
+        
+        async function loadMainData(url) {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const csvData = await response.text();
+            const parsedDataWithHeader = robustCsvParser(csvData);
+            return parsedDataWithHeader.slice(1);
+        }
 
         async function loadAllDataAndInitTable() {
+            $('#loadingIndicator').show();
             try {
                 const [mainData, loadedTooltips] = await Promise.all([
                     loadMainData(mainDataUrl),
@@ -732,118 +980,483 @@
                 
                 tooltipMap = loadedTooltips;
                 initializeDataTable(mainData);
-                $('#loadingIndicator').hide();
-                $('#drugTable').show();
 
             } catch (error) {
                 $('#loadingIndicator').hide();
                 console.error("Data Load/Parse Error:", error);
-                Swal.fire({ icon: 'error', title: 'Data Load Error', text: 'Failed to load primary data. Please check your internet connection.' });
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Data Load Error',
+                    text: 'Failed to load primary data. Please check your internet connection and sheet settings.'
+                });
             }
         }
 
-        const columnConfig = [ { title: 'Detail View', data: null, defaultContent: '<button class="btn btn-sm btn-primary view-details-btn" data-bs-toggle="tooltip" data-bs-placement="top" title="คลิกเพื่อดูข้อมูลของยาโดยละเอียด"><i class="fas fa-eye"></i></button>', orderable: false, className: 'text-center all-column', width: "60px" }, { title: 'Material No.', data: 0, className: 'default-column purchasing-column rate-column' }, { title: 'SAP Name', data: 1, width: "25%", className: 'default-column purchasing-column rate-column', render: (d, t) => t === 'display' && d ? `<span style="color: var(--primary-color)" class="fw-bold">${d}</span>` : d }, { title: 'Generic Name', data: 2, width: "25%", className: 'default-column' }, { title: 'TPU', data: 3, className: 'default-column purchasing-column' }, { title: 'GPU', data: 4, className: 'default-column' }, { title: 'เงื่อนไขการเบิกจ่าย', data: 5, className: 'default-column', width: '180px', render: (d,t) => renderBadge(d, t, {'สำรองจ่าย': 'bg-primary', 'ocpa': 'bg-success', 'เบิกได้': 'bg-success', 'ขรก เบิกไม่ได้': 'bg-danger', 'เบิกนอก': 'bg-info text-dark', 'วัคซีน': 'bg-warning text-dark'}, true) }, { title: 'บัญชียา', data: 6, className: 'default-column', render: (d,t) => renderBadge(d, t, {'ned': 'bg-danger', 'ed': 'bg-success' , 'ค่าสารทึบ': 'bg-orange', 'promotion': 'bg-warning text-dark', 'วิตามิน อาหารเสริม': 'bg-teal'}) }, { title: 'Purchasing Unit', data: 7, className: 'purchasing-column default-column' }, { title: 'ราคาขาย / หน่วย', data: 8, width: '130px', className: 'default-column purchasing-column rate-column', render: (d, t, row) => `${formatNumber(row[8], 2, 2)} / ${row[9] || 'หน่วย'}` }, { title: 'Storage', data: 28, className: 'default-column' }, { title: 'ราคาทุน / หน่วย', data: 10, width: '130px', className: 'purchasing-column', render: (d, t, row) => `${formatNumber(row[10], 2, 2)} / ${row[11] || 'หน่วย'}` }, { title: 'Status', data: 12, className: 'default-column rate-column', render: (d,t) => renderBadge(d, t, {'ในบัญชี(ns)': 'bg-primary','ในบัญชี(วถ)': 'bg-info text-dark','ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}) }, { title: '07/67', data: 13, className: 'rate-column' }, { title: '08/67', data: 14, className: 'rate-column' }, { title: '09/67', data: 15, className: 'rate-column' }, { title: '10/67', data: 16, className: 'rate-column' }, { title: '11/67', data: 17, className: 'rate-column' }, { title: '12/67', data: 18, className: 'rate-column' }, { title: '01/68', data: 19, className: 'rate-column' }, { title: '02/68', data: 20, className: 'rate-column' }, { title: '03/68', data: 21, className: 'rate-column' }, { title: '04/68', data: 22, className: 'rate-column' }, { title: '05/68', data: 23, className: 'rate-column' }, { title: '06/68', data: 24, className: 'rate-column' }, { title: 'Drug Group', data: 25, className: 'default-column' }, { title: 'Drug Subgroup', data: 26, visible: false, className: 'modal-only' }, { title: 'ราคากลาง', data: 27, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) }, { title: 'Fee Schedule', data: 28, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) }, { title: 'Storage', data: 29, className: 'purchasing-column default-column' }, { title: 'รหัสยาทดแทน', data: 30, className: 'purchasing-column' }, { title: 'การรับเข้าบัญชี', data: 31, className: 'purchasing-column' }, { title: 'Distributor', data: 32, className: 'purchasing-column' }, { title: 'ข้าราชการ', data: 33, visible: false, className: 'modal-only' }, { title: 'จ่ายเอง', data: 34, visible: false, className: 'modal-only' }, { title: 'ปกส', data: 35, visible: false, className: 'modal-only' }, { title: 'รัฐวิสาหกิจ', data: 36, visible: false, className: 'modal-only' }, { title: 'สปสช', data: 37, visible: false, className: 'modal-only' }, { title: 'สวัสดิการเจ้าหน้าที่', data: 38, visible: false, className: 'modal-only' }, { title: 'เงื่อนไขบัญชียาหลัก', data: 39, visible: false, className: 'modal-only' }, { title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', data: 40, visible: false, className: 'modal-only' }, { title: 'คำเตือน/หมายเหตุ/จำกัดแพทย์', data: 41, visible: false, className: 'modal-only' }, { title: 'PAP', data: 42, visible: false, className: 'modal-only' }, { title: 'Image 1', data: 43, visible: false, className: 'modal-only' }, { title: 'Image 2', data: 44, visible: false, className: 'modal-only' }, { title: 'Image 3', data: 45, visible: false, className: 'modal-only' } ];
-        function renderBadge(data, type, map, textWrap = false) { if (type === 'display' && data) { const status = data.toLowerCase().trim(); const key = Object.keys(map).find(k => status.includes(k.toLowerCase())); const cls = key ? map[key] : 'bg-secondary'; const tooltipKey = Object.keys(tooltipMap).find(k => status.includes(k.toLowerCase())); const tooltipHtml = tooltipKey ? `data-bs-toggle="tooltip" data-bs-placement="top" title="${tooltipMap[tooltipKey]}"` : ''; return `<span class="badge ${cls} ${textWrap ? 'text-wrap' : ''}" ${tooltipHtml}>${data}</span>`; } return data; }
+        const drugGroupColorMap = {
+            'gastro-intestinal system': 'bg-success', 'cardiovascular system': 'bg-danger', 'respiratory system': 'bg-info text-dark',
+            'central nervous system': 'bg-purple', 'infections': 'bg-warning text-dark', 'endocrine system': 'bg-orange', 'obstetrics': 'bg-pink',
+            'malignant disease': 'bg-dark', 'nutrition and blood': 'bg-primary', 'musculoskeletal': 'bg-teal', 'eye': 'bg-secondary',
+            'ear, nose, and oropharynx': 'bg-light text-dark', 'skin': 'bg-warning text-dark', 'immunological': 'bg-info text-dark',
+            'anesthesia': 'bg-purple', 'antidotes': 'bg-danger', 'contrast media': 'bg-primary', 'other': 'bg-secondary'
+        };
         
+        const storageColorMap = { 'below 30°c': 'bg-success', '2°c - 8°c': 'bg-primary', 'below 25°c': 'bg-orange', 'below -20°c': 'bg-info', '-15°c ถึง -25°c': 'bg-info text-dark' };
+
+        // **IMPORTANT**: Assumes "Drug Subgroup" is in column AA (index 26) in your Google Sheet.
+        const columnConfig = [
+            { title: 'Detail View', data: null, defaultContent: '<button class="btn btn-sm btn-primary view-details-btn" data-bs-toggle="tooltip" data-bs-placement="top" title="คลิกเพื่อดูข้อมูลของยาโดยละเอียด"><i class="fas fa-eye"></i></button>', orderable: false, className: 'text-center all-column', width: "60px" },
+            { title: 'Material No.', data: 0, className: 'default-column purchasing-column rate-column' },
+            { title: 'SAP Name', data: 1, width: "25%", className: 'default-column purchasing-column rate-column', render: (d, t) => t === 'display' && d ? `<span style="color: var(--primary-color)" class="fw-bold">${d}</span>` : d },
+            { title: 'Generic Name', data: 2, width: "25%", className: 'default-column' },
+            { title: 'TPU', data: 3, className: 'default-column purchasing-column' },
+            { title: 'GPU', data: 4, className: 'default-column' },
+            { title: 'เงื่อนไขการเบิกจ่าย', data: 5, className: 'default-column', width: '180px', render: (d,t) => renderBadge(d, t, {'สำรองจ่าย': 'bg-primary', 'ocpa': 'bg-success', 'เบิกได้': 'bg-success', 'ขรก เบิกไม่ได้': 'bg-danger', 'เบิกนอก': 'bg-info text-dark', 'วัคซีน': 'bg-warning text-dark'}, true) },
+            { title: 'บัญชียา', data: 6, className: 'default-column', render: (d,t) => renderBadge(d, t, {'ned': 'bg-danger', 'ed': 'bg-success' , 'ค่าสารทึบ': 'bg-orange', 'promotion': 'bg-warning text-dark', 'วิตามิน อาหารเสริม': 'bg-teal'}) },
+            { title: 'Purchasing Unit', data: 7, className: 'purchasing-column default-column' },
+            { title: 'ราคาขาย <span class="ml-3 text-sm font-bold text-red-600 px-2.5 py-1 rounded-full">NEW ✨</span> / หน่วย ', data: 8, width: '130px', className: 'default-column purchasing-column rate-column', render: (d, t, row) => `${formatNumber(row[8], 2, 2)} / ${row[9] || 'หน่วย'}` },
+            { title: 'Storage', data: 28, className: 'default-column', render: (d,t) => renderBadge(d, t, storageColorMap, true) },
+            { title: 'ราคาทุน / หน่วย', data: 10, width: '130px', className: 'purchasing-column', render: (d, t, row) => `${formatNumber(row[10], 2, 2)} / ${row[11] || 'หน่วย'}` },
+            { title: 'Status', data: 12, className: 'default-column rate-column', render: (d,t) => renderBadge(d, t, {'ในบัญชี(ns)': 'bg-primary','ในบัญชี(วถ)': 'bg-info text-dark','ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}) },
+            { title: '07/67', data: 13, className: 'rate-column' }, { title: '08/67', data: 14, className: 'rate-column' }, { title: '09/67', data: 15, className: 'rate-column' },
+            { title: '10/67', data: 16, className: 'rate-column' }, { title: '11/67', data: 17, className: 'rate-column' }, { title: '12/67', data: 18, className: 'rate-column' },
+            { title: '01/68', data: 19, className: 'rate-column' }, { title: '02/68', data: 20, className: 'rate-column' }, { title: '03/68', data: 21, className: 'rate-column' },
+            { title: '04/68', data: 22, className: 'rate-column' }, { title: '05/68', data: 23, className: 'rate-column' }, { title: '06/68', data: 24, className: 'rate-column' },
+            { title: 'Drug Group', data: 25, className: 'default-column', render: (d, t) => renderBadge(d, t, drugGroupColorMap, true) },
+            { title: 'Drug Subgroup', data: 26, visible: false, className: 'modal-only' },
+            { title: 'ราคากลาง', data: 27, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
+            { title: 'Fee Schedule', data: 28, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
+            { title: 'Storage', data: 29, className: 'purchasing-column default-column', render: (d,t) => renderBadge(d, t, storageColorMap, true) },
+            { title: 'รหัสยาทดแทน', data: 30, className: 'purchasing-column' },
+            { title: 'การรับเข้าบัญชี', data: 31, className: 'purchasing-column' },
+            { title: 'Distributor', data: 32, className: 'purchasing-column' },
+            { title: 'ข้าราชการ', data: 33, visible: false, className: 'modal-only' }, { title: 'จ่ายเอง', data: 34, visible: false, className: 'modal-only' },
+            { title: 'ปกส', data: 35, visible: false, className: 'modal-only' }, { title: 'รัฐวิสาหกิจ', data: 36, visible: false, className: 'modal-only' },
+            { title: 'สปสช', data: 37, visible: false, className: 'modal-only' }, { title: 'สวัสดิการเจ้าหน้าที่', data: 38, visible: false, className: 'modal-only' },
+            { title: 'เงื่อนไขบัญชียาหลัก', data: 39, visible: false, className: 'modal-only' }, 
+            { title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', data: 40, visible: false, className: 'modal-only' },
+            { title: 'คำเตือน/หมายเหตุ/จำกัดแพทย์', data: 41, visible: false, className: 'modal-only' },
+            { title: 'PAP', data: 42, visible: false, className: 'modal-only' },
+            { title: 'Image 1', data: 43, visible: false, className: 'modal-only' },
+            { title: 'Image 2', data: 44, visible: false, className: 'modal-only' },
+            { title: 'Image 3', data: 45, visible: false, className: 'modal-only' }
+        ];
+        
+        function renderBadge(data, type, map, textWrap = false) {
+            if (type === 'display' && data) {
+                const status = data.toLowerCase().trim();
+                const key = Object.keys(map).find(k => status.includes(k.toLowerCase()));
+                const cls = key ? map[key] : 'bg-secondary';
+                
+                const tooltipKey = Object.keys(tooltipMap).find(k => status.includes(k.toLowerCase()));
+                const tooltipHtml = tooltipKey ? `data-bs-toggle="tooltip" data-bs-placement="top" title="${tooltipMap[tooltipKey]}"` : '';
+
+                return `<span class="badge ${cls} ${textWrap ? 'text-wrap' : ''}" ${tooltipHtml}>${data}</span>`;
+            }
+            return data;
+        }
+
+        function calculateTrendline(data) { if (!data || data.length < 2) return []; const n = data.length; let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0; for (let i = 0; i < n; i++) { sumX += i; sumY += data[i]; sumXY += i * data[i]; sumXX += i * i; } const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX); const intercept = (sumY - slope * sumX) / n; return data.map((_, i) => slope * i + intercept); }
+        function calculateStatistics(data) { const filteredData = data.filter(d => typeof d === 'number' && d > 0); if (filteredData.length === 0) return { mean: 0, avgLast3: 0, median: 0, min: 0, max: 0, stdDev: 0, total: 0 }; const total = data.reduce((sum, val) => sum + (val || 0), 0); const mean = filteredData.reduce((a, b) => a + b, 0) / filteredData.length; const last3 = data.slice(-3); const avgLast3 = last3.reduce((sum, val) => sum + (val || 0), 0) / last3.length; const sorted = [...filteredData].sort((a, b) => a - b); const mid = Math.floor(sorted.length / 2); const median = sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2; const min = Math.min(...filteredData); const max = Math.max(...filteredData); const stdDev = Math.sqrt(filteredData.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b, 0) / filteredData.length); return { mean, avgLast3, median, min, max, stdDev, total }; }
+        function createStatsTable(stats) { return ` <h5 class="mt-4">Usage Statistics</h5> <div class="table-responsive"> <table class="table table-sm table-bordered text-center"> <thead class="table-light"> <tr> <th>Average</th> <th>3-Month Avg</th> <th>Median</th> <th>Min / Max</th> <th>Std. Dev</th> <th>Total</th> </tr> </thead> <tbody> <tr> <td>${formatNumber(stats.mean, 2, 2)}</td> <td>${formatNumber(stats.avgLast3, 2, 2)}</td> <td>${formatNumber(stats.median, 2, 2)}</td> <td>${formatNumber(stats.min, 0, 0)} / ${formatNumber(stats.max, 0, 0)}</td> <td>${formatNumber(stats.stdDev, 2, 2)}</td> <td>${formatNumber(stats.total, 0, 0)}</td> </tr> </tbody> </table> </div>`; }
+
         function initializeDataTable(data) {
+            $('#loadingIndicator').hide();
             table = $('#drugTable').DataTable({ 
-                data: data, columns: columnConfig, dom: 'rt<"bottom d-flex justify-content-between align-items-center mt-3"lip>', pageLength: 10, lengthMenu: [10, 25, 50, 100], scrollX: true, responsive: false, language: { info: "Showing _START_ to _END_ of _TOTAL_ entries", lengthMenu: "Show _MENU_ entries", paginate: { first: "First", last: "Last", next: "Next", previous: "Previous" } } 
+                data: data, 
+                columns: columnConfig, 
+                dom: 'rt<"bottom d-flex justify-content-between align-items-center mt-3"lip>', 
+                pageLength: 10, 
+                lengthMenu: [10, 25, 50, 100], 
+                scrollX: true, 
+                responsive: false, 
+                language: { 
+                    info: "Showing _START_ to _END_ of _TOTAL_ entries", 
+                    lengthMenu: "Show _MENU_ entries", 
+                    paginate: { 
+                        first: "First", 
+                        last: "Last", 
+                        next: "Next", 
+                        previous: "Previous" 
+                    } 
+                } 
             });
             
-            // --- Select2 Dropdown Filter Setup ---
+            // --- NEW: Select2 Dropdown Filter Setup ---
+
+            // Function to format Select2 options as colored badges
+            function formatState(state) {
+                if (!state.id) { return state.text; }
+                const key = state.id.toLowerCase().trim();
+                const cls = drugGroupColorMap[key] || 'bg-secondary';
+                return $(`<span><span class="badge ${cls}">${state.text}</span></span>`);
+            };
+            
+            // 1. Populate and Initialize Drug Group Filter
+            const allData = table.rows().data().toArray();
+            const drugGroups = [...new Set(allData.map(row => row[25]).filter(Boolean))].sort();
+            drugGroups.forEach(group => {
+                $('#drugGroupFilter').append(new Option(group, group));
+            });
+
             const $drugGroupFilter = $('#drugGroupFilter');
             const $drugSubgroupFilter = $('#drugSubgroupFilter');
 
-            // 1. Create color map for subgroups
-            // FIX: Use the 'data' parameter directly instead of querying the table
-            data.forEach(row => {
-                const group = row[25];
-                const subgroup = row[26];
-                if (group && subgroup && !subgroupColorMap[subgroup]) {
-                    const groupKey = group.toLowerCase().trim();
-                    subgroupColorMap[subgroup] = drugGroupColorMap[groupKey] || 'bg-secondary';
-                }
+            $drugGroupFilter.select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Select Drug Groups',
+                closeOnSelect: false,
+                templateResult: formatState,
+                templateSelection: formatState
             });
 
-            // 2. Define template functions for Select2
-            function formatGroupState(state) {
-                if (!state.id) return state.text;
-                const cls = drugGroupColorMap[state.id.toLowerCase().trim()] || 'bg-secondary';
-                return $(`<span><span class="badge ${cls}">${state.text}</span></span>`);
-            };
-            function formatSubgroupState(state) {
-                if (!state.id) return state.text;
-                const cls = subgroupColorMap[state.id] || 'bg-secondary';
-                return $(`<span><span class="badge ${cls}">${state.text}</span></span>`);
-            };
+            // 2. Initialize Subgroup Filter (initially empty and hidden)
+            $drugSubgroupFilter.select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Select Subgroups',
+                closeOnSelect: false
+            });
 
-            // 3. Populate and Initialize both filters
-            // FIX: Use the 'data' parameter directly instead of querying the table
-            const allGroups = [...new Set(data.map(row => row[25]).filter(Boolean))].sort();
-            const allSubgroups = [...new Set(data.map(row => row[26]).filter(Boolean))].sort();
-
-            allGroups.forEach(group => $drugGroupFilter.append(new Option(group, group)));
-            allSubgroups.forEach(subgroup => $drugSubgroupFilter.append(new Option(subgroup, subgroup)));
-
-            $drugGroupFilter.select2({ theme: 'bootstrap-5', placeholder: 'Filter by Drug Group', closeOnSelect: false, templateResult: formatGroupState, templateSelection: formatGroupState });
-            $drugSubgroupFilter.select2({ theme: 'bootstrap-5', placeholder: 'Filter by Subgroup', closeOnSelect: false, templateResult: formatSubgroupState, templateSelection: formatSubgroupState });
-
-            // 4. Event Listeners
+            // 3. Event Listeners
             $('#toggleFilterBtn').on('click', () => $('#filterPanel').slideToggle());
-            
+
+            // On Group Change -> Update Subgroup Options
             $drugGroupFilter.on('change', function() {
                 selectedGroups = $(this).val() || [];
+                
+                // Reset and hide subgroup filter first
+                $drugSubgroupFilter.empty().trigger('change');
+                
+                if (selectedGroups.length > 0) {
+                    const relevantSubgroups = [...new Set(
+                        allData
+                            .filter(row => selectedGroups.includes(row[25]))
+                            .map(row => row[26])
+                    )].filter(Boolean).sort();
+                    
+                    relevantSubgroups.forEach(subgroup => {
+                         $drugSubgroupFilter.append(new Option(subgroup, subgroup));
+                    });
+                    
+                    $('#drugSubgroupFilterContainer').slideDown();
+                } else {
+                    $('#drugSubgroupFilterContainer').slideUp();
+                }
+                
+                selectedSubgroups = []; // Clear subgroup selection when group changes
                 table.draw();
             });
+
+            // On Subgroup Change -> Filter Table
             $drugSubgroupFilter.on('change', function() {
                 selectedSubgroups = $(this).val() || [];
                 table.draw();
             });
 
-            $('#clearGroupFilter').on('click', () => $drugGroupFilter.val(null).trigger('change'));
-            $('#clearSubgroupFilter').on('click', () => $drugSubgroupFilter.val(null).trigger('change'));
+            // Clear buttons
+            $('#clearGroupFilter').on('click', function() {
+                $drugGroupFilter.val(null).trigger('change');
+            });
+            $('#clearSubgroupFilter').on('click', function() {
+                $drugSubgroupFilter.val(null).trigger('change');
+            });
 
-            // Other initializations...
+            // --- End of New Filter Code ---
+
             $('#globalSearch').on('keyup', function () { table.search(this.value).draw(); });
             setView('default');
             
-            // --- Modal Details on Row Click ---
             $('#drugTable tbody').on('click', 'button.view-details-btn', function () {
-                 // This large block of code for modal generation is unchanged 
-                const row = table.row($(this).closest('tr')); if (!row.any()) return; const rowData = row.data(); $('#drugDetailModalLabel').html(`<strong>${rowData[1] || ''}</strong> <small class="text-white-50 fw-normal">(${rowData[2] || 'N/A'})</small>`); function createDetailCard(options) { const { title, value, valueClass, itemClass, isProtected, realValue } = { valueClass: '', itemClass: '', isProtected: false, realValue: '', ...options }; if (!value || value.toString().trim() === '-' || value.toString().trim() === '') return ''; let titleHtml = `<strong>${title}</strong>`; let valueHtml = `<div class="value-container ${valueClass}" data-real-value="${realValue}">${value}</div>`; if (isProtected && !passwordVerified) { titleHtml = `<strong>${title} <i class="fas fa-lock unlock-cost-btn" title="ปลดล็อคเพื่อดูราคาทุน"></i></strong>`; valueHtml = `<div class="value-container ${valueClass}" data-real-value="${realValue}">****</div>`; } return `<div class="detail-item ${itemClass}">${titleHtml}${valueHtml}</div>`; } let detailsHtml = ''; let row1Html = ''; row1Html += createDetailCard({ title: 'Material No.', value: rowData[0], valueClass: 'main-title-value', itemClass: 'material-no-card' }); row1Html += createDetailCard({ title: 'SAP Name', value: rowData[1], valueClass: 'main-title-value' }); row1Html += createDetailCard({ title: 'Generic Name', value: rowData[2], valueClass: 'main-title-value' }); if (row1Html) detailsHtml += `<div class="detail-row">${row1Html}</div>`; let row2Html = ''; row2Html += createDetailCard({ title: 'TPU', value: rowData[3], itemClass: 'compact-card' }); row2Html += createDetailCard({ title: 'GPU', value: rowData[4], itemClass: 'compact-card' }); row2Html += createDetailCard({ title: 'เงื่อนไขการเบิกจ่าย', value: renderBadge(rowData[5], 'display', {'สำรองจ่าย': 'bg-primary', 'ocpa': 'bg-success', 'เบิกได้': 'bg-success', 'ขรก เบิกไม่ได้': 'bg-danger', 'เบิกนอก': 'bg-info text-dark', 'วัคซีน': 'bg-warning text-dark'}, true), itemClass: 'status-card' }); row2Html += createDetailCard({ title: 'บัญชียา', value: renderBadge(rowData[6], 'display', {'ned': 'bg-danger', 'ed': 'bg-success', 'ในบัญชี(วถ)': 'bg-info text-dark', 'ค่าสารทึบ': 'bg-primary', 'promotion': 'bg-warning text-dark', 'วิตามิน อาหารเสริม': 'bg-teal'}), itemClass: 'status-card' }); row2Html += createDetailCard({ title: 'Status', value: renderBadge(rowData[12], 'display', {'ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}), itemClass: 'status-card' }); row2Html += createDetailCard({ title: 'Drug Group', value: renderBadge(rowData[25], 'display', drugGroupColorMap, true) }); row2Html += createDetailCard({ title: 'Drug Subgroup', value: rowData[26] }); if (row2Html) detailsHtml += `<div class="detail-row">${row2Html}</div>`; let row3Html = ''; row3Html += createDetailCard({ title: 'ราคาขาย', value: `${formatNumber(rowData[8], 2, 2)} / ${rowData[9] || 'หน่วย'}`, valueClass: 'sale-price-value', itemClass: 'highlight-card' }); const realCostValue = `${formatNumber(rowData[10], 2, 2)} / ${rowData[11] || 'หน่วย'}`; row3Html += createDetailCard({ title: 'ราคาทุน', value: realCostValue, valueClass: 'cost-price-value', itemClass: 'highlight-card', isProtected: true, realValue: realCostValue }); row3Html += createDetailCard({ title: 'ราคากลาง', value: formatNumber(rowData[27], 2, 2) }); row3Html += createDetailCard({ title: 'Fee Schedule', value: formatNumber(rowData[28], 2, 2) }); row3Html += createDetailCard({ title: 'การรับเข้าบัญชี', value: rowData[31] }); if (row3Html) detailsHtml += `<div class="detail-row">${row3Html}</div>`; let row4Html = ''; row4Html += createDetailCard({ title: 'Purchasing Unit', value: rowData[7] }); row4Html += createDetailCard({ title: 'Distributor', value: rowData[32] }); row4Html += createDetailCard({ title: 'Storage', value: renderBadge(rowData[29], 'display', {'below 30°c': 'bg-success', '2°c - 8°c': 'bg-primary', 'below 25°c': 'bg-orange', 'below -20°c': 'bg-info', '-15°c ถึง -25°c': 'bg-info text-dark'}, true) }); row4Html += createDetailCard({ title: 'รหัสยาทดแทน', value: rowData[30] }); if (row4Html) detailsHtml += `<div class="detail-row">${row4Html}</div>`; let row5Html = ''; let conditions = rowData[39]; if (conditions) conditions = conditions.replace(/\n/g, '<br>'); row5Html += createDetailCard({ title: 'เงื่อนไขบัญชียาหลัก', value: conditions, itemClass: 'orange-border-card' }); let indications = rowData[40]; if (indications) indications = indications.replace(/\n/g, '<br>'); row5Html += createDetailCard({ title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', value: indications }); let papValue = rowData[42]; if (papValue) papValue = papValue.replace(/\n/g, '<br>'); row5Html += createDetailCard({ title: 'PAP', value: papValue, itemClass: 'orange-border-card' }); if (row5Html) detailsHtml += `<div class="detail-row">${row5Html}</div>`; let row6Html = ''; let warningNote = rowData[41]; if (warningNote) warningNote = warningNote.replace(/\n/g, '<br>'); row6Html += createDetailCard({ title: 'คำเตือน/หมายเหตุ/จำกัดแพทย์', value: warningNote, itemClass: 'danger-border-card' }); if (row6Html) detailsHtml += `<div class="detail-row">${row6Html}</div>`; let imageHtml = ''; if (rowData[43]) imageHtml += `<img src="${rowData[43]}" class="drug-image img-fluid" alt="Drug Image 1" onerror="this.style.display='none'">`; if (rowData[44]) imageHtml += `<img src="${rowData[44]}" class="drug-image img-fluid" alt="Drug Image 2" onerror="this.style.display='none'">`; if (rowData[45]) imageHtml += `<img src="${rowData[45]}" class="drug-image img-fluid" alt="Drug Image 3" onerror="this.style.display='none'">`; const rateLabels = [], usageData = [], caseData = []; columnConfig.forEach(col => { if (/\d{2}\/\d{2}/.test(col.title)) { const rawValue = rowData[col.data] || ''; usageData.push(parseFloat(rawValue.match(/^[0-9.]+/)?.[0] || 0)); caseData.push(parseInt(rawValue.match(/\((\d+)\)/)?.[1] || 0, 10)); rateLabels.push(col.title); } }); const payerLabels = ['ข้าราชการ', 'จ่ายเอง', 'ปกส', 'รัฐวิสาหกิจ', 'สปสช', 'สวัสดิการเจ้าหน้าที่']; const payerData = [ parseFloat(rowData[33] || 0), parseFloat(rowData[34] || 0), parseFloat(rowData[35] || 0), parseFloat(rowData[36] || 0), parseFloat(rowData[37] || 0), parseFloat(rowData[38] || 0) ]; const showUsageStats = usageData.some(d => d > 0); const showPieChart = payerData.some(d => d > 0); let statsHtml = ''; if (showUsageStats) { const stats = (data) => { const filtered = data.filter(d => typeof d === 'number' && d > 0); if (filtered.length === 0) return { mean: 0, avgLast3: 0, median: 0, min: 0, max: 0, stdDev: 0, total: 0 }; const total = data.reduce((s, v) => s + (v || 0), 0); const mean = filtered.reduce((a, b) => a + b, 0) / filtered.length; const last3 = data.slice(-3); const avgLast3 = last3.reduce((s, v) => s + (v || 0), 0) / last3.length; const sorted = [...filtered].sort((a, b) => a - b); const mid = Math.floor(sorted.length / 2); const median = sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2; const min = Math.min(...filtered); const max = Math.max(...filtered); const stdDev = Math.sqrt(filtered.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b, 0) / filtered.length); return { mean, avgLast3, median, min, max, stdDev, total }; }; const s = stats(usageData); statsHtml = `<div id="stats-section"><div class="charts-container"><div class="chart-wrapper"><h5 class="mb-3">อัตราการใช้ยาย้อนหลัง 12 เดือน</h5><canvas id="usageLineChart"></canvas></div>${showPieChart ? `<div class="chart-wrapper"><h5 class="mb-3">สัดส่วนการใช้ตามสิทธิ์</h5><canvas id="payerPieChart"></canvas></div>` : ''}</div><div class="tables-container mt-5">${(s) => `<h5 class="mt-4">Usage Statistics</h5> <div class="table-responsive"> <table class="table table-sm table-bordered text-center"> <thead class="table-light"> <tr> <th>Average</th> <th>3-Month Avg</th> <th>Median</th> <th>Min / Max</th> <th>Std. Dev</th> <th>Total</th> </tr> </thead> <tbody> <tr> <td>${formatNumber(s.mean, 2, 2)}</td> <td>${formatNumber(s.avgLast3, 2, 2)}</td> <td>${formatNumber(s.median, 2, 2)}</td> <td>${formatNumber(s.min, 0, 0)} / ${formatNumber(s.max, 0, 0)}</td> <td>${formatNumber(s.stdDev, 2, 2)}</td> <td>${formatNumber(s.total, 0, 0)}</td> </tr> </tbody> </table> </div>` (s)}<h5 class="mt-4">จำนวนเคส</h5><div class="table-responsive"><table class="table table-sm table-bordered text-center"><thead><tr>${rateLabels.map(l => `<th>${l}</th>`).join('')}</tr></thead><tbody><tr>${caseData.map(d => `<td>${formatNumber(d, 0, 0)}</td>`).join('')}</tr></tbody></table></div></div></div>`; } else { statsHtml = '<div id="stats-section"><h5>ข้อมูลสถิติ</h5><p class="text-center text-muted mt-3">ไม่มีข้อมูลย้อนหลัง 1 ปี</p></div>'; } const finalModalHtml = `<div class="modal-main-layout"><div class="details-section">${detailsHtml}${statsHtml}</div>${imageHtml ? `<div class="image-section"><h5>รูปภาพประกอบ</h5>${imageHtml}</div>` : ''}</div>`; $('#drugDetailModalBody').html(finalModalHtml); $('#drugDetailModal').data('drug-name', `${rowData[1]} (Mat No: ${rowData[0]})`); if (lineChartInstance) lineChartInstance.destroy(); if (pieChartInstance) pieChartInstance.destroy(); if (showUsageStats) { const trendline = (data) => { if (!data || data.length < 2) return []; const n = data.length; let sx = 0, sy = 0, sxy = 0, sxx = 0; for (let i = 0; i < n; i++) { sx += i; sy += data[i]; sxy += i * data[i]; sxx += i * i; } const m = (n * sxy - sx * sy) / (n * sxx - sx * sx); const b = (sy - m * sx) / n; return data.map((_, i) => m * i + b); }; const lineCtx = document.getElementById('usageLineChart').getContext('2d'); lineChartInstance = new Chart(lineCtx, { type: 'line', data: { labels: rateLabels, datasets: [{ label: 'Usage Rate', data: usageData, borderColor: 'var(--primary-color)', backgroundColor: 'rgba(0, 91, 161, 0.2)', fill: true, tension: 0.1 }, { label: 'Trendline', data: trendline(usageData), type: 'line', fill: false, borderColor: 'rgba(220, 53, 69, 0.7)', borderWidth: 2, borderDash: [5, 5], pointRadius: 0, datalabels: { display: false } }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, suggestedMax: Math.max(...usageData) > 0 ? Math.max(...usageData) * 1.15 : 1 } }, plugins: { datalabels: { align: 'end', anchor: 'end', color: '#555', font: { weight: 'bold', size: 14 }, formatter: (v) => v > 0 ? Math.round(v) : '' } } } }); } if (showUsageStats && showPieChart) { const pieCtx = document.getElementById('payerPieChart').getContext('2d'); pieChartInstance = new Chart(pieCtx, { type: 'pie', data: { labels: payerLabels, datasets: [{ label: 'สัดส่วน', data: payerData, backgroundColor: ['#005ba1', '#dc3545', '#198754', '#6f42c1', '#fd7e14', '#ffc107'], hoverOffset: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { datalabels: { color: '#fff', textStrokeColor: '#000', textStrokeWidth: 2, font: { weight: 'bold', size: 14 }, formatter: (v, ctx) => { if (v === 0) return ''; const total = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); return (v / total * 100).toFixed(1) + '%'; } } } } }); } new bootstrap.Tooltip(document.querySelector('#drugDetailModal [data-bs-toggle="tooltip"]')); $('#drugDetailModal').modal('show');
+                const row = table.row($(this).closest('tr')); if (!row.any()) return;
+                const rowData = row.data();
+                $('#drugDetailModalLabel').html(`<strong>${rowData[1] || ''}</strong> <small class="text-white-50 fw-normal">(${rowData[2] || 'N/A'})</small>`);
+                
+                function createDetailCard(options) { const { title, value, valueClass, itemClass, isProtected, realValue } = { valueClass: '', itemClass: '', isProtected: false, realValue: '', ...options }; if (!value || value.toString().trim() === '-' || value.toString().trim() === '') return ''; let titleHtml = `<strong>${title}</strong>`; let valueHtml = `<div class="value-container ${valueClass}" data-real-value="${realValue}">${value}</div>`; if (isProtected && !passwordVerified) { titleHtml = `<strong>${title} <i class="fas fa-lock unlock-cost-btn" title="ปลดล็อคเพื่อดูราคาทุน"></i></strong>`; valueHtml = `<div class="value-container ${valueClass}" data-real-value="${realValue}">****</div>`; } return `<div class="detail-item ${itemClass}">${titleHtml}${valueHtml}</div>`; }
+                let detailsHtml = '';
+
+                // Row 1
+                let row1Html = ''; 
+                row1Html += createDetailCard({ title: 'Material No.', value: rowData[0], valueClass: 'main-title-value', itemClass: 'material-no-card' }); 
+                row1Html += createDetailCard({ title: 'SAP Name', value: rowData[1], valueClass: 'main-title-value' }); 
+                row1Html += createDetailCard({ title: 'Generic Name', value: rowData[2], valueClass: 'main-title-value' }); 
+                if (row1Html) detailsHtml += `<div class="detail-row">${row1Html}</div>`;
+                
+                // Row 2
+                let row2Html = '';
+                row2Html += createDetailCard({ title: 'TPU', value: rowData[3], itemClass: 'compact-card' });
+                row2Html += createDetailCard({ title: 'GPU', value: rowData[4], itemClass: 'compact-card' });
+                row2Html += createDetailCard({ title: 'เงื่อนไขการเบิกจ่าย', value: renderBadge(rowData[5], 'display', {'สำรองจ่าย': 'bg-primary', 'ocpa': 'bg-success', 'เบิกได้': 'bg-success', 'ขรก เบิกไม่ได้': 'bg-danger', 'เบิกนอก': 'bg-info text-dark', 'วัคซีน': 'bg-warning text-dark'}, true), itemClass: 'status-card' });
+                row2Html += createDetailCard({ title: 'บัญชียา', value: renderBadge(rowData[6], 'display', {'ned': 'bg-danger', 'ed': 'bg-success', 'ในบัญชี(วถ)': 'bg-info text-dark', 'ค่าสารทึบ': 'bg-primary', 'promotion': 'bg-warning text-dark', 'วิตามิน อาหารเสริม': 'bg-teal'}), itemClass: 'status-card' });
+                row2Html += createDetailCard({ title: 'Status', value: renderBadge(rowData[12], 'display', {'ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}), itemClass: 'status-card' });
+                row2Html += createDetailCard({ title: 'Drug Group', value: renderBadge(rowData[25], 'display', drugGroupColorMap, true) });
+                row2Html += createDetailCard({ title: 'Drug Subgroup', value: rowData[26] });
+                if (row2Html) detailsHtml += `<div class="detail-row">${row2Html}</div>`;
+                
+                // Row 3
+                let row3Html = ''; 
+                row3Html += createDetailCard({ title: 'ราคาขาย', value: `${formatNumber(rowData[8], 2, 2)} / ${rowData[9] || 'หน่วย'}`, valueClass: 'sale-price-value', itemClass: 'highlight-card' }); 
+                const realCostValue = `${formatNumber(rowData[10], 2, 2)} / ${rowData[11] || 'หน่วย'}`; 
+                row3Html += createDetailCard({ title: 'ราคาทุน', value: realCostValue, valueClass: 'cost-price-value', itemClass: 'highlight-card', isProtected: true, realValue: realCostValue }); 
+                row3Html += createDetailCard({ title: 'ราคากลาง', value: formatNumber(rowData[27], 2, 2) }); 
+                row3Html += createDetailCard({ title: 'Fee Schedule', value: formatNumber(rowData[28], 2, 2) });
+                row3Html += createDetailCard({ title: 'การรับเข้าบัญชี', value: rowData[31] });
+                if (row3Html) detailsHtml += `<div class="detail-row">${row3Html}</div>`;
+
+                // Row 4
+                let row4Html = '';
+                row4Html += createDetailCard({ title: 'Purchasing Unit', value: rowData[7] });
+                row4Html += createDetailCard({ title: 'Distributor', value: rowData[32] });
+                row4Html += createDetailCard({ title: 'Storage', value: renderBadge(rowData[29], 'display', storageColorMap, true) });
+                row4Html += createDetailCard({ title: 'รหัสยาทดแทน', value: rowData[30] }); 
+                if (row4Html) detailsHtml += `<div class="detail-row">${row4Html}</div>`;
+
+                // Row 5
+                let row5Html = ''; 
+                let conditions = rowData[39]; if (conditions) conditions = conditions.replace(/\n/g, '<br>'); 
+                row5Html += createDetailCard({ title: 'เงื่อนไขบัญชียาหลัก', value: conditions, itemClass: 'orange-border-card' }); 
+                let indications = rowData[40]; if (indications) indications = indications.replace(/\n/g, '<br>'); 
+                row5Html += createDetailCard({ title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', value: indications }); 
+                let papValue = rowData[42]; if (papValue) papValue = papValue.replace(/\n/g, '<br>'); 
+                row5Html += createDetailCard({ title: 'PAP', value: papValue, itemClass: 'orange-border-card' }); 
+                if (row5Html) detailsHtml += `<div class="detail-row">${row5Html}</div>`;
+                
+                // Row 6
+                let row6Html = '';
+                let warningNote = rowData[41]; if (warningNote) warningNote = warningNote.replace(/\n/g, '<br>');
+                row6Html += createDetailCard({ title: 'คำเตือน/หมายเหตุ/จำกัดแพทย์', value: warningNote, itemClass: 'danger-border-card' });
+                if (row6Html) detailsHtml += `<div class="detail-row">${row6Html}</div>`;
+                
+                let imageHtml = '';
+                if (rowData[43]) imageHtml += `<img src="${rowData[43]}" class="drug-image img-fluid" alt="Drug Image 1" onerror="this.style.display='none'">`;
+                if (rowData[44]) imageHtml += `<img src="${rowData[44]}" class="drug-image img-fluid" alt="Drug Image 2" onerror="this.style.display='none'">`;
+                if (rowData[45]) imageHtml += `<img src="${rowData[45]}" class="drug-image img-fluid" alt="Drug Image 3" onerror="this.style.display='none'">`;
+
+                const rateLabels = [], usageData = [], caseData = [];
+                columnConfig.forEach(col => {
+                    if (/\d{2}\/\d{2}/.test(col.title)) {
+                        const rawValue = rowData[col.data] || '';
+                        usageData.push(parseFloat(rawValue.match(/^[0-9.]+/)?.[0] || 0));
+                        caseData.push(parseInt(rawValue.match(/\((\d+)\)/)?.[1] || 0, 10));
+                        rateLabels.push(col.title);
+                    }
+                });
+
+                const payerLabels = ['ข้าราชการ', 'จ่ายเอง', 'ปกส', 'รัฐวิสาหกิจ', 'สปสช', 'สวัสดิการเจ้าหน้าที่'];
+                const payerData = [
+                    parseFloat(rowData[33] || 0), parseFloat(rowData[34] || 0), parseFloat(rowData[35] || 0),
+                    parseFloat(rowData[36] || 0), parseFloat(rowData[37] || 0), parseFloat(rowData[38] || 0)
+                ];
+                const showUsageStats = usageData.some(d => d > 0);
+                const showPieChart = payerData.some(d => d > 0);
+                
+                let statsHtml = '';
+                if (showUsageStats) {
+                    let chartsHtml = `<div class="charts-container"> <div class="chart-wrapper"><h5 class="mb-3">อัตราการใช้ยาย้อนหลัง 12 เดือน</h5><canvas id="usageLineChart"></canvas></div> ${showPieChart ? `<div class="chart-wrapper"><h5 class="mb-3">สัดส่วนการใช้ตามสิทธิ์</h5><canvas id="payerPieChart"></canvas></div>` : ''} </div>`;
+                    const stats = calculateStatistics(usageData);
+                    const statsTable = createStatsTable(stats);
+                    let caseTable = `<h5 class="mt-4">จำนวนเคส (Case Count)</h5><div class="table-responsive"><table class="table table-sm table-bordered text-center"><thead><tr>`;
+                    rateLabels.forEach(label => caseTable += `<th>${label}</th>`);
+                    caseTable += `</tr></thead><tbody><tr>${caseData.map(d => `<td>${formatNumber(d, 0, 0)}</td>`).join('')}</tr></tbody></table></div>`;
+                    let tablesHtml = `<div class="tables-container mt-5">${statsTable}${caseTable}</div>`;
+                    statsHtml = `<div id="stats-section">${chartsHtml}${tablesHtml}</div>`;
+                } else {
+                    statsHtml = '<div id="stats-section"><h5>ข้อมูลสถิติ</h5><p class="text-center text-muted mt-3">ไม่มีข้อมูลย้อนหลัง 1 ปี</p></div>';
+                }
+                
+                const finalModalHtml = `<div class="modal-main-layout"><div class="details-section">${detailsHtml}${statsHtml}</div>${imageHtml ? `<div class="image-section"><h5>รูปภาพประกอบ</h5>${imageHtml}</div>` : ''}</div>`;
+                $('#drugDetailModalBody').html(finalModalHtml);
+
+                $('#drugDetailModal').data('drug-name', `${rowData[1]} (Mat No: ${rowData[0]})`);
+
+                if (lineChartInstance) lineChartInstance.destroy(); if (pieChartInstance) pieChartInstance.destroy();
+                if (showUsageStats) { const dataMax = Math.max(...usageData); const suggestedMax = dataMax > 0 ? dataMax * 1.15 : 1; const trendlineData = calculateTrendline(usageData); const lineCtx = document.getElementById('usageLineChart').getContext('2d'); lineChartInstance = new Chart(lineCtx, { type: 'line', data: { labels: rateLabels, datasets: [ { label: 'Usage Rate', data: usageData, borderColor: 'var(--primary-color)', backgroundColor: 'rgba(0, 91, 161, 0.2)', fill: true, tension: 0.1 }, { label: 'Trendline', data: trendlineData, type: 'line', fill: false, borderColor: 'rgba(220, 53, 69, 0.7)', borderWidth: 2, borderDash: [5, 5], pointRadius: 0, datalabels: { display: false } } ] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { ticks: { color: '#000000', font: { weight: 'bold' } } }, y: { ticks: { color: '#000000', font: { weight: 'bold' } }, min: 0, suggestedMax: suggestedMax } }, plugins: { legend: { display: true, position: 'top', labels: { usePointStyle: true } }, datalabels: { align: 'end', anchor: 'end', color: '#555', font: { weight: 'bold', size: 14 }, formatter: (value) => value > 0 ? Math.round(value) : '' } } } }); }
+                if (showUsageStats && showPieChart) { const pieCtx = document.getElementById('payerPieChart').getContext('2d'); pieChartInstance = new Chart(pieCtx, { type: 'pie', data: { labels: payerLabels, datasets: [{ label: 'สัดส่วน', data: payerData, backgroundColor: ['#005ba1', '#dc3545', '#198754', '#6f42c1', '#fd7e14', '#ffc107'], hoverOffset: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#000000', font: { weight: 'bold' } } }, datalabels: { color: '#fff', textStrokeColor: '#000', textStrokeWidth: 2, font: { weight: 'bold', size: 14 }, formatter: (value, ctx) => { if (value === 0) return ''; const total = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); const percentage = (value / total * 100).toFixed(1) + '%'; return percentage; } } } } }); }
+                
+                const modalTooltipTriggerList = [].slice.call(document.querySelectorAll('#drugDetailModal [data-bs-toggle="tooltip"]'));
+                modalTooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+
+                $('#drugDetailModal').modal('show');
+            });
+            $('#drugDetailModal').on('click', '.unlock-cost-btn', function(e) { e.stopPropagation(); const unlockButton = $(this); const valueContainer = unlockButton.closest('.detail-item').find('.value-container'); unlockButton.hide(); const formHtml = `<div class="input-group input-group-sm"><input type="password" class="form-control inline-password-input" placeholder="Password..."><button class="btn btn-primary inline-submit-btn" type="button">OK</button></div><div class="inline-error-msg" style="display:none;">Incorrect Password</div>`; valueContainer.html(formHtml); valueContainer.find('.inline-password-input').focus(); });
+            $('#drugDetailModal').on('click', '.inline-submit-btn', function(e) { e.stopPropagation(); const submitButton = $(this); const inputField = submitButton.siblings('.inline-password-input'); const valueContainer = submitButton.closest('.value-container'); const errorMsg = valueContainer.find('.inline-error-msg'); const password = inputField.val(); if (password === 'rxccc') { passwordVerified = true; const realCost = valueContainer.data('real-value'); valueContainer.html(realCost); } else { errorMsg.show().delay(2000).fadeOut(); inputField.val('').focus(); } });
+            $('#drugDetailModal').on('keypress', '.inline-password-input', function(e) { if (e.which === 13) { e.preventDefault(); $(this).siblings('.inline-submit-btn').click(); } });
+        
+            $('#drugDetailModal').on('hidden.bs.modal', function () {
+                $(this).find('[data-bs-toggle="tooltip"]').tooltip('dispose');
+                if (lineChartInstance) lineChartInstance.destroy();
+                if (pieChartInstance) pieChartInstance.destroy();
+                $(this).data('drug-name', '');
             });
         }
         
         function setView(viewType) { if (!table) return; $('.view-toggle').removeClass('active'); $(`#${viewType}View`).addClass('active'); if (viewType === 'all') { table.columns(':not(.modal-only)').visible(true); table.columns('.modal-only').visible(false); } else { table.columns().visible(false); table.columns('.all-column').visible(true); if (viewType === 'default') table.columns('.default-column').visible(true); else if (viewType === 'purchasing') table.columns('.purchasing-column').visible(true); else if (viewType === 'rate') table.columns('.rate-column').visible(true); } table.columns.adjust().draw(false); }
-        $('#defaultView').on('click', () => setView('default')); 
-        $('#rateView').on('click', () => setView('rate'));
-        
-        function promptPassword(callback, context = {}) { const { forceReauth = false, view = null } = context; if (passwordVerified && !forceReauth) { callback(); return; } Swal.fire({ title: 'Authentication Required', input: 'password', inputPlaceholder: 'Enter your password', inputAttributes: { autocapitalize: 'off', autocorrect: 'off' }, showCancelButton: true, confirmButtonText: 'Submit', showLoaderOnConfirm: true, preConfirm: (password) => { let correctPassword = 'rxccc'; if (view && exportPasswords[view]) { correctPassword = exportPasswords[view]; } if (password === correctPassword) { return true; } else { Swal.showValidationMessage('Incorrect password'); return false; } }, allowOutsideClick: () => !Swal.isLoading() }).then((result) => { if (result.isConfirmed) { if (!view) { passwordVerified = true; } callback(); } }); }
-        $('#purchasingView').on('click', () => promptPassword(() => setView('purchasing'))); 
-        $('#allView').on('click', () => promptPassword(() => setView('all')));
+        $('#defaultView').on('click', () => setView('default')); $('#rateView').on('click', () => setView('rate'));
         
         $('#exportButton').on('click', () => {
-             let activeView = 'default';
-             if ($('#purchasingView').hasClass('active')) activeView = 'purchasing';
-             else if ($('#rateView').hasClass('active')) activeView = 'rate';
-             else if ($('#allView').hasClass('active')) activeView = 'all';
-             promptPassword(() => { const visibleColumns = table.columns(':visible').toArray()[0]; const headers = table.columns(visibleColumns).header().toArray().map(h => $(h).text()); const data = [headers]; table.rows({ search: 'applied' }).every(function () { const rowData = this.data(); const visibleData = visibleColumns.map(index => rowData[index]); data.push(visibleData); }); const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet(data); XLSX.utils.book_append_sheet(wb, ws, "Drug Master Data"); XLSX.writeFile(wb, `drug_master_${activeView}_view.xlsx`); Swal.fire({ icon: 'success', title: 'Success!', text: 'Excel exported successfully!', timer: 2000, showConfirmButton: false }); }, { forceReauth: true, view: activeView });
+            let activeView = 'default';
+            if ($('#purchasingView').hasClass('active')) activeView = 'purchasing';
+            else if ($('#rateView').hasClass('active')) activeView = 'rate';
+            else if ($('#allView').hasClass('active')) activeView = 'all';
+
+            promptPassword(() => { 
+                const visibleColumns = table.columns(':visible').toArray()[0]; 
+                const headers = table.columns(visibleColumns).header().toArray().map(h => $(h).text()); 
+                const data = [headers]; 
+                table.rows({ search: 'applied' }).every(function () { 
+                    const rowData = this.data(); 
+                    const visibleData = visibleColumns.map(index => rowData[index]); 
+                    data.push(visibleData); 
+                }); 
+                const wb = XLSX.utils.book_new(); 
+                const ws = XLSX.utils.aoa_to_sheet(data); 
+                XLSX.utils.book_append_sheet(wb, ws, "Drug Master Data"); 
+                XLSX.writeFile(wb, `drug_master_${activeView}_view.xlsx`); 
+                showSwalSuccess('Excel exported successfully!'); 
+            }, { forceReauth: true, view: activeView });
+        });
+        
+        function promptPassword(callback, context = {}) { 
+            const { forceReauth = false, view = null } = context;
+
+            if (passwordVerified && !forceReauth) { 
+                callback(); 
+                return; 
+            } 
+            
+            Swal.fire({ 
+                title: 'Authentication Required', 
+                input: 'password', 
+                inputPlaceholder: 'Enter your password', 
+                inputAttributes: { autocapitalize: 'off', autocorrect: 'off' }, 
+                showCancelButton: true, 
+                confirmButtonText: 'Submit', 
+                showLoaderOnConfirm: true, 
+                preConfirm: (password) => { 
+                    let correctPassword = 'rxccc';
+                    if (view && exportPasswords[view]) {
+                        correctPassword = exportPasswords[view];
+                    }
+
+                    if (password === correctPassword) { 
+                        return true; 
+                    } else { 
+                        Swal.showValidationMessage('Incorrect password'); 
+                        return false; 
+                    } 
+                }, 
+                allowOutsideClick: () => !Swal.isLoading() 
+            }).then((result) => { 
+                if (result.isConfirmed) { 
+                    if (!view) {
+                        passwordVerified = true; 
+                    }
+                    callback(); 
+                } 
+            }); 
+        }
+
+        $('#purchasingView').on('click', () => promptPassword(() => setView('purchasing'))); 
+        $('#allView').on('click', () => promptPassword(() => setView('all')));
+
+        function showSwalSuccess(message) { Swal.fire({ icon: 'success', title: 'Success!', text: message, timer: 2000, showConfirmButton: false }); }
+        
+        $('.contact-trigger').on('click', function() {
+            const drugName = $('#drugDetailModal').data('drug-name');
+            const contactForm = $('#contactForm');
+            contactForm.trigger('reset');
+
+            if (drugName) {
+                contactForm.find('input[name="topic"][value="ขอแก้ไขข้อมูลยา"]').prop('checked', true);
+                contactForm.find('#message').val(`[Drug: ${drugName}]\n\n`);
+            }
+            contactModal.show();
         });
 
-        $('.contact-trigger').on('click', function() { const drugName = $('#drugDetailModal').data('drug-name'); const contactForm = $('#contactForm'); contactForm.trigger('reset'); if (drugName) { contactForm.find('input[name="topic"][value="ขอแก้ไขข้อมูลยา"]').prop('checked', true); contactForm.find('#message').val(`[Drug: ${drugName}]\n\n`); } contactModal.show(); });
-        $('#contactForm').on('submit', function(event) { event.preventDefault(); const webAppUrl = 'https://script.google.com/macros/s/AKfycbyH_ULtPI5Wat_VmNY7smo7Ytq2jfk0DcKgFmjFQU5FXTyG2ICT9-5ro4Bj70TQ0tjS/exec'; const form = this; const submitButton = $(form).find('button[type="submit"]'); const originalButtonText = submitButton.html(); if (webAppUrl.includes('YOUR_WEB_APP_URL')) { Swal.fire({icon:'error', title:'ตั้งค่าไม่สมบูรณ์', text:'กรุณาตั้งค่า Web App URL'}); return; } submitButton.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> กำลังส่ง...'); const formData = new FormData(form); const data = Object.fromEntries(formData.entries()); data.source = 'Drug Master'; fetch(webAppUrl, { method: 'POST', mode: 'no-cors', cache: 'no-cache', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data), redirect: 'follow' }).then(() => { contactModal.hide(); form.reset(); Swal.fire({ icon: 'success', title: 'ส่งข้อมูลสำเร็จ', text: 'ขอบคุณสำหรับข้อมูลครับ', timer: 2000, showConfirmButton: false }); }).catch(error => { console.error('Error:', error); Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: 'ไม่สามารถส่งข้อมูลได้: ' + error.message }); }).finally(() => { submitButton.prop('disabled', false).html(originalButtonText); }); });
-        function logVisitAndTrackTime() { const webAppUrl = 'https://script.google.com/macros/s/AKfycbzDSIzvndrlTxCT6hxQIxsKosS5PRphOn4qQmEA8lh1iuvJbW1L0zJaRxfO1EHFa27o_A/exec'; if (!webAppUrl || webAppUrl.includes('xxxxx')) { console.error("Web App URL for logging is not set."); return; } const sessionStartTime = Date.now(); let totalHiddenTime = 0, lastHiddenTime = 0; fetch(webAppUrl, { method: 'POST', mode: 'cors', cache: 'no-cache', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'log_visit', userAgent: navigator.userAgent, screenResolution: `${screen.width}x${screen.height}`, viewportSize: `${window.innerWidth}x${window.innerHeight}`, language: navigator.language }) }).then(response => response.ok ? response.json() : response.text().then(text => Promise.reject(new Error(text)))).then(data => { if (data && data.status === 'success' && data.count) { $('#viewCountValue').text(formatNumber(data.count, 0)); $('#viewCounter').css('display', 'inline-flex'); } else { throw new Error(data.message || 'Invalid data'); }}).catch(error => { console.error('Error during visit log:', error); $('#viewCounter').hide(); }); document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { lastHiddenTime = Date.now(); } else if (document.visibilityState === 'visible' && lastHiddenTime > 0) { totalHiddenTime += (Date.now() - lastHiddenTime); }}); window.addEventListener('beforeunload', () => { if (document.visibilityState === 'hidden' && lastHiddenTime > 0) { totalHiddenTime += (Date.now() - lastHiddenTime); } const activeDurationSeconds = Math.round((Date.now() - sessionStartTime - totalHiddenTime) / 1000); if (navigator.sendBeacon) { navigator.sendBeacon(webAppUrl, new Blob([JSON.stringify({ action: 'log_session', duration: Math.max(0, activeDurationSeconds), userAgent: navigator.userAgent })], { type: 'text/plain;charset=utf-8' })); }}); }
+
+        $('#contactForm').on('submit', function(event) {
+            event.preventDefault();
+            
+            const webAppUrl = 'https://script.google.com/macros/s/AKfycbyH_ULtPI5Wat_VmNY7smo7Ytq2jfk0DcKgFmjFQU5FXTyG2ICT9-5ro4Bj70TQ0tjS/exec'; 
+
+            const form = this;
+            const submitButton = $(form).find('button[type="submit"]');
+            const originalButtonText = submitButton.html();
+
+            if (webAppUrl === 'YOUR_WEB_APP_URL_HERE') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'ตั้งค่าไม่สมบูรณ์',
+                    text: 'กรุณาตั้งค่า Web App URL ในไฟล์ HTML ก่อน (แจ้ง Developer)'
+                });
+                return;
+            }
+
+            submitButton.prop('disabled', true);
+            submitButton.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> กำลังส่ง...');
+
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            data.source = 'Drug Master';
+
+            fetch(webAppUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                cache: 'no-cache',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+                redirect: 'follow'
+            })
+            .then(response => {
+                contactModal.hide();
+                form.reset();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'ส่งข้อมูลสำเร็จ',
+                    text: 'ขอบคุณสำหรับข้อมูลครับ',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'เกิดข้อผิดพลาด',
+                    text: 'ไม่สามารถส่งข้อมูลได้: ' + error.message,
+                });
+            })
+            .finally(() => {
+                submitButton.prop('disabled', false);
+                submitButton.html(originalButtonText);
+            });
+        });
+
+        function logVisitAndTrackTime() {
+            const webAppUrl = 'https://script.google.com/macros/s/AKfycbzDSIzvndrlTxCT6hxQIxsKosS5PRphOn4qQmEA8lh1iuvJbW1L0zJaRxfO1EHFa27o_A/exec';
+            if (!webAppUrl || webAppUrl.includes('xxxxx')) {
+                console.error("Web App URL for logging is not set.");
+                return;
+            }
+            const sessionStartTime = Date.now();
+            let totalHiddenTime = 0, lastHiddenTime = 0;
+            fetch(webAppUrl, { method: 'POST', mode: 'cors', cache: 'no-cache', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'log_visit', userAgent: navigator.userAgent, screenResolution: `${screen.width}x${screen.height}`, viewportSize: `${window.innerWidth}x${window.innerHeight}`, language: navigator.language }) })
+            .then(response => response.ok ? response.json() : response.text().then(text => Promise.reject(new Error(text))))
+            .then(data => { if (data && data.status === 'success' && data.count) { $('#viewCountValue').text(formatNumber(data.count, 0)); $('#viewCounter').css('display', 'inline-flex'); } else { throw new Error(data.message || 'Invalid data'); }})
+            .catch(error => { console.error('Error during visit log:', error); $('#viewCounter').hide(); });
+            document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { lastHiddenTime = Date.now(); } else if (document.visibilityState === 'visible' && lastHiddenTime > 0) { totalHiddenTime += (Date.now() - lastHiddenTime); }});
+            window.addEventListener('beforeunload', () => { if (document.visibilityState === 'hidden' && lastHiddenTime > 0) { totalHiddenTime += (Date.now() - lastHiddenTime); } const activeDurationSeconds = Math.round((Date.now() - sessionStartTime - totalHiddenTime) / 1000); if (navigator.sendBeacon) { navigator.sendBeacon(webAppUrl, new Blob([JSON.stringify({ action: 'log_session', duration: Math.max(0, activeDurationSeconds), userAgent: navigator.userAgent })], { type: 'text/plain;charset=utf-8' })); }});
+        }
 
         // --- Initial Load ---
         loadAllDataAndInitTable();
         logVisitAndTrackTime();
 
     });
-</script>
+    </script>
 </body>
 </html>
-
-
 
 
 
