@@ -14,6 +14,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5.min.css" />
+
 <style>
     :root {
         --primary-color: #0d6efd;
@@ -480,6 +483,32 @@
         font-weight: 500;
     }
 
+    /* ADDED: Select2 Custom Styles */
+    .select2-container--bootstrap-5 .select2-selection {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
+        border-radius: 8px !important;
+    }
+    .select2-container--bootstrap-5 .select2-dropdown {
+        border-radius: 8px !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+    }
+    .select2-results__option .badge {
+        font-size: 0.85rem;
+        padding: 0.4em 0.7em;
+    }
+    .select2-selection__choice .badge {
+        font-size: 0.8rem !important;
+        padding: 0.3em 0.6em !important;
+        margin: 0 !important;
+    }
+    .select2-selection__choice {
+        background-color: transparent !important;
+        border: none !important;
+        padding-top: 5px !important;
+        padding-bottom: 5px !important;
+    }
+
+
     /* Responsive adjustments */
     @media (max-width: 992px) {
         .logo-container {
@@ -679,27 +708,21 @@
                         </div>
                     </div>
                      <div id="filterPanel" class="mt-3" style="display: none;">
-                        <div id="drugGroupFilterContainer" class="p-3 border rounded bg-light mb-3">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h6 class="mb-0 fw-bold text-secondary">Filter by Drug Group</h6>
-                                <div>
-                                    <button class="btn btn-sm btn-outline-primary py-0" id="selectAllGroups">Select All</button>
-                                    <button class="btn btn-sm btn-outline-secondary py-0" id="deselectAllGroups">Deselect All</button>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="drugGroupFilter" class="form-label fw-bold text-secondary">Filter by Drug Group</label>
+                                <div class="d-flex gap-2">
+                                     <select id="drugGroupFilter" class="form-select" multiple="multiple" style="width: 100%;"></select>
+                                     <button class="btn btn-outline-secondary btn-sm" id="clearGroupFilter" title="Clear Group Filter"><i class="fas fa-times"></i></button>
                                 </div>
                             </div>
-                            <div id="drugGroupCheckboxes" class="d-flex flex-wrap" style="gap: 1rem 1.5rem;">
-                                </div>
-                        </div>
-                        <div id="drugSubgroupFilterContainer" class="p-3 border rounded bg-light" style="display: none;">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h6 class="mb-0 fw-bold text-secondary">Filter by Drug Subgroup</h6>
-                                <div>
-                                    <button class="btn btn-sm btn-outline-primary py-0" id="selectAllSubgroups">Select All</button>
-                                    <button class="btn btn-sm btn-outline-secondary py-0" id="deselectAllSubgroups">Deselect All</button>
+                             <div class="col-md-6" id="drugSubgroupFilterContainer" style="display: none;">
+                                <label for="drugSubgroupFilter" class="form-label fw-bold text-secondary">Filter by Drug Subgroup</label>
+                                <div class="d-flex gap-2">
+                                    <select id="drugSubgroupFilter" class="form-select" multiple="multiple" style="width: 100%;"></select>
+                                    <button class="btn btn-outline-secondary btn-sm" id="clearSubgroupFilter" title="Clear Subgroup Filter"><i class="fas fa-times"></i></button>
                                 </div>
                             </div>
-                            <div id="drugSubgroupCheckboxes" class="d-flex flex-wrap" style="gap: 1rem 1.5rem;">
-                                </div>
                         </div>
                     </div>
                 </div>
@@ -806,6 +829,9 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 
     <script>
     $(document).ready(function () {
@@ -819,7 +845,7 @@
         var tooltipMap = {};
         const contactModal = new bootstrap.Modal(document.getElementById('contactModal'));
 
-        // CHANGE: Variables for dependent filters
+        // Variables for dropdown filters
         var selectedGroups = [];
         var selectedSubgroups = [];
 
@@ -836,37 +862,32 @@
             selector: '[data-bs-toggle="tooltip"]'
         });
 
-        // CHANGE: Updated custom search function for dependent filters
+        // Updated custom search function for dropdown filters
         $.fn.dataTable.ext.search.push(
             function(settings, data, dataIndex) {
                 if (settings.nTable.id !== 'drugTable') {
                     return true;
                 }
                 
-                // If no group is selected, show all rows
-                if (selectedGroups.length === 0) {
-                    return true;
+                const hasGroupFilter = selectedGroups && selectedGroups.length > 0;
+                const hasSubgroupFilter = selectedSubgroups && selectedSubgroups.length > 0;
+
+                if (!hasGroupFilter && !hasSubgroupFilter) {
+                    return true; // No filters active
                 }
 
                 const rowData = table.row(dataIndex).data();
                 const rowDrugGroup = rowData[25] || '';
                 const rowDrugSubgroup = rowData[26] || '';
 
-                // Check if the row's drug group is in the selected groups
-                const groupMatch = selectedGroups.includes(rowDrugGroup);
+                const groupMatch = hasGroupFilter ? selectedGroups.includes(rowDrugGroup) : true;
+                const subgroupMatch = hasSubgroupFilter ? selectedSubgroups.includes(rowDrugSubgroup) : true;
 
-                // If the group doesn't match, don't show the row
-                if (!groupMatch) {
-                    return false;
-                }
-
-                // If group matches, but no subgroups are selected, show the row
-                if (selectedSubgroups.length === 0) {
-                    return true;
+                if(hasGroupFilter && !hasSubgroupFilter) {
+                    return groupMatch;
                 }
                 
-                // If group matches and subgroups are selected, check for subgroup match
-                return selectedSubgroups.includes(rowDrugSubgroup);
+                return groupMatch && subgroupMatch;
             }
         );
 
@@ -981,9 +1002,7 @@
         
         const storageColorMap = { 'below 30°c': 'bg-success', '2°c - 8°c': 'bg-primary', 'below 25°c': 'bg-orange', 'below -20°c': 'bg-info', '-15°c ถึง -25°c': 'bg-info text-dark' };
 
-        // CHANGE: Updated column configuration with new Drug Subgroup and shifted indices.
         // **IMPORTANT**: Assumes "Drug Subgroup" is in column AA (index 26) in your Google Sheet.
-        // All subsequent columns are shifted by 1.
         const columnConfig = [
             { title: 'Detail View', data: null, defaultContent: '<button class="btn btn-sm btn-primary view-details-btn" data-bs-toggle="tooltip" data-bs-placement="top" title="คลิกเพื่อดูข้อมูลของยาโดยละเอียด"><i class="fas fa-eye"></i></button>', orderable: false, className: 'text-center all-column', width: "60px" },
             { title: 'Material No.', data: 0, className: 'default-column purchasing-column rate-column' },
@@ -1003,13 +1022,13 @@
             { title: '01/68', data: 19, className: 'rate-column' }, { title: '02/68', data: 20, className: 'rate-column' }, { title: '03/68', data: 21, className: 'rate-column' },
             { title: '04/68', data: 22, className: 'rate-column' }, { title: '05/68', data: 23, className: 'rate-column' }, { title: '06/68', data: 24, className: 'rate-column' },
             { title: 'Drug Group', data: 25, className: 'default-column', render: (d, t) => renderBadge(d, t, drugGroupColorMap, true) },
-            { title: 'Drug Subgroup', data: 26, visible: false, className: 'modal-only' }, // ADDED: Drug Subgroup
-            { title: 'ราคากลาง', data: 27, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) }, // Index shifted
-            { title: 'Fee Schedule', data: 28, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) }, // Index shifted
-            { title: 'Storage', data: 29, className: 'purchasing-column default-column', render: (d,t) => renderBadge(d, t, storageColorMap, true) }, // Index shifted
-            { title: 'รหัสยาทดแทน', data: 30, className: 'purchasing-column' }, // Index shifted
-            { title: 'การรับเข้าบัญชี', data: 31, className: 'purchasing-column' }, // Index shifted
-            { title: 'Distributor', data: 32, className: 'purchasing-column' }, // Index shifted
+            { title: 'Drug Subgroup', data: 26, visible: false, className: 'modal-only' },
+            { title: 'ราคากลาง', data: 27, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
+            { title: 'Fee Schedule', data: 28, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
+            { title: 'Storage', data: 29, className: 'purchasing-column default-column', render: (d,t) => renderBadge(d, t, storageColorMap, true) },
+            { title: 'รหัสยาทดแทน', data: 30, className: 'purchasing-column' },
+            { title: 'การรับเข้าบัญชี', data: 31, className: 'purchasing-column' },
+            { title: 'Distributor', data: 32, className: 'purchasing-column' },
             { title: 'ข้าราชการ', data: 33, visible: false, className: 'modal-only' }, { title: 'จ่ายเอง', data: 34, visible: false, className: 'modal-only' },
             { title: 'ปกส', data: 35, visible: false, className: 'modal-only' }, { title: 'รัฐวิสาหกิจ', data: 36, visible: false, className: 'modal-only' },
             { title: 'สปสช', data: 37, visible: false, className: 'modal-only' }, { title: 'สวัสดิการเจ้าหน้าที่', data: 38, visible: false, className: 'modal-only' },
@@ -1062,94 +1081,85 @@
                 } 
             });
             
-            // --- NEW: Dependent Filter Setup ---
+            // --- NEW: Select2 Dropdown Filter Setup ---
+
+            // Function to format Select2 options as colored badges
+            function formatState(state) {
+                if (!state.id) { return state.text; }
+                const key = state.id.toLowerCase().trim();
+                const cls = drugGroupColorMap[key] || 'bg-secondary';
+                return $(`<span><span class="badge ${cls}">${state.text}</span></span>`);
+            };
             
-            // 1. Populate the Drug Group filter
-            const drugGroups = [...new Set(data.map(row => row[25]).filter(Boolean))].sort();
-            const groupCheckboxesHtml = drugGroups.map(group => {
-                const groupId = `filter-group-${group.replace(/[^a-zA-Z0-9]/g, '')}`;
-                return `
-                    <div class="form-check">
-                      <input class="form-check-input drug-group-filter" type="checkbox" value="${group}" id="${groupId}">
-                      <label class="form-check-label" for="${groupId}">${group}</label>
-                    </div>`;
-            }).join('');
-            $('#drugGroupCheckboxes').html(groupCheckboxesHtml);
+            // 1. Populate and Initialize Drug Group Filter
+            const allData = table.rows().data().toArray();
+            const drugGroups = [...new Set(allData.map(row => row[25]).filter(Boolean))].sort();
+            drugGroups.forEach(group => {
+                $('#drugGroupFilter').append(new Option(group, group));
+            });
 
-            // 2. Function to update the Subgroup filter based on selected Groups
-            function updateSubgroupFilter() {
-                selectedGroups = $('.drug-group-filter:checked').map(function() { return $(this).val(); }).get();
+            const $drugGroupFilter = $('#drugGroupFilter');
+            const $drugSubgroupFilter = $('#drugSubgroupFilter');
 
-                if (selectedGroups.length === 0) {
-                    $('#drugSubgroupFilterContainer').slideUp();
-                    selectedSubgroups = []; // Clear subgroup selection
-                    return;
-                }
+            $drugGroupFilter.select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Select Drug Groups',
+                closeOnSelect: false,
+                templateResult: formatState,
+                templateSelection: formatState
+            });
 
-                // Find all unique subgroups for the selected groups
-                const allTableData = table.rows({ search: 'applied' }).data().toArray();
-                const relevantSubgroups = [...new Set(
-                    allTableData
-                        .filter(row => selectedGroups.includes(row[25]))
-                        .map(row => row[26])
-                )].filter(Boolean).sort();
+            // 2. Initialize Subgroup Filter (initially empty and hidden)
+            $drugSubgroupFilter.select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Select Subgroups',
+                closeOnSelect: false
+            });
 
-                if (relevantSubgroups.length > 0) {
-                    const subgroupCheckboxesHtml = relevantSubgroups.map(subgroup => {
-                         const subgroupId = `filter-subgroup-${subgroup.replace(/[^a-zA-Z0-9]/g, '')}`;
-                         // Keep checkbox checked if it was previously selected
-                         const isChecked = selectedSubgroups.includes(subgroup) ? 'checked' : '';
-                         return `
-                            <div class="form-check">
-                                <input class="form-check-input drug-subgroup-filter" type="checkbox" value="${subgroup}" id="${subgroupId}" ${isChecked}>
-                                <label class="form-check-label" for="${subgroupId}">${subgroup}</label>
-                            </div>`;
-                    }).join('');
-                    $('#drugSubgroupCheckboxes').html(subgroupCheckboxesHtml);
+            // 3. Event Listeners
+            $('#toggleFilterBtn').on('click', () => $('#filterPanel').slideToggle());
+
+            // On Group Change -> Update Subgroup Options
+            $drugGroupFilter.on('change', function() {
+                selectedGroups = $(this).val() || [];
+                
+                // Reset and hide subgroup filter first
+                $drugSubgroupFilter.empty().trigger('change');
+                
+                if (selectedGroups.length > 0) {
+                    const relevantSubgroups = [...new Set(
+                        allData
+                            .filter(row => selectedGroups.includes(row[25]))
+                            .map(row => row[26])
+                    )].filter(Boolean).sort();
+                    
+                    relevantSubgroups.forEach(subgroup => {
+                         $drugSubgroupFilter.append(new Option(subgroup, subgroup));
+                    });
+                    
                     $('#drugSubgroupFilterContainer').slideDown();
                 } else {
                     $('#drugSubgroupFilterContainer').slideUp();
-                    $('#drugSubgroupCheckboxes').html('<p class="text-muted">No subgroups found for selected group(s).</p>');
                 }
-            }
-            
-            // 3. Attach event listeners
-            $('#toggleFilterBtn').on('click', () => $('#filterPanel').slideToggle());
-            
-            // Group Listeners
-            $('#selectAllGroups').on('click', () => {
-                $('.drug-group-filter').prop('checked', true);
-                updateSubgroupFilter();
-                table.draw();
-            });
-            $('#deselectAllGroups').on('click', () => {
-                $('.drug-group-filter').prop('checked', false);
-                updateSubgroupFilter();
-                table.draw();
-            });
-            $('#drugGroupCheckboxes').on('change', '.drug-group-filter', function() {
-                // When group selection changes, reset subgroup selection and update the filter display
-                selectedSubgroups = [];
-                updateSubgroupFilter();
+                
+                selectedSubgroups = []; // Clear subgroup selection when group changes
                 table.draw();
             });
 
-            // Subgroup Listeners
-            $('#selectAllSubgroups').on('click', () => {
-                $('.drug-subgroup-filter').prop('checked', true);
-                selectedSubgroups = $('.drug-subgroup-filter:checked').map(function() { return $(this).val(); }).get();
+            // On Subgroup Change -> Filter Table
+            $drugSubgroupFilter.on('change', function() {
+                selectedSubgroups = $(this).val() || [];
                 table.draw();
             });
-            $('#deselectAllSubgroups').on('click', () => {
-                $('.drug-subgroup-filter').prop('checked', false);
-                selectedSubgroups = [];
-                table.draw();
+
+            // Clear buttons
+            $('#clearGroupFilter').on('click', function() {
+                $drugGroupFilter.val(null).trigger('change');
             });
-            $('#drugSubgroupCheckboxes').on('change', '.drug-subgroup-filter', function() {
-                selectedSubgroups = $('.drug-subgroup-filter:checked').map(function() { return $(this).val(); }).get();
-                table.draw();
+            $('#clearSubgroupFilter').on('click', function() {
+                $drugSubgroupFilter.val(null).trigger('change');
             });
-            
+
             // --- End of New Filter Code ---
 
             $('#globalSearch').on('keyup', function () { table.search(this.value).draw(); });
@@ -1178,7 +1188,6 @@
                 row2Html += createDetailCard({ title: 'บัญชียา', value: renderBadge(rowData[6], 'display', {'ned': 'bg-danger', 'ed': 'bg-success', 'ในบัญชี(วถ)': 'bg-info text-dark', 'ค่าสารทึบ': 'bg-primary', 'promotion': 'bg-warning text-dark', 'วิตามิน อาหารเสริม': 'bg-teal'}), itemClass: 'status-card' });
                 row2Html += createDetailCard({ title: 'Status', value: renderBadge(rowData[12], 'display', {'ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}), itemClass: 'status-card' });
                 row2Html += createDetailCard({ title: 'Drug Group', value: renderBadge(rowData[25], 'display', drugGroupColorMap, true) });
-                // ADDED: Display Drug Subgroup in the modal
                 row2Html += createDetailCard({ title: 'Drug Subgroup', value: rowData[26] });
                 if (row2Html) detailsHtml += `<div class="detail-row">${row2Html}</div>`;
                 
@@ -1424,110 +1433,30 @@
             });
         });
 
-        // --- Logging and Analytics Function (UPDATED to fix CORS issue) ---
         function logVisitAndTrackTime() {
             const webAppUrl = 'https://script.google.com/macros/s/AKfycbzDSIzvndrlTxCT6hxQIxsKosS5PRphOn4qQmEA8lh1iuvJbW1L0zJaRxfO1EHFa27o_A/exec';
-            console.log("Log Script URL:", webAppUrl);
-
             if (!webAppUrl || webAppUrl.includes('xxxxx')) {
-                console.error("Web App URL for logging is not set. Logging will be disabled.");
+                console.error("Web App URL for logging is not set.");
                 return;
             }
-
             const sessionStartTime = Date.now();
-            let totalHiddenTime = 0;
-            let lastHiddenTime = 0;
-
-            // --- Part 1: Initial Log on Page Load ---
-            const initialLogData = {
-                action: 'log_visit',
-                userAgent: navigator.userAgent,
-                screenResolution: `${screen.width}x${screen.height}`,
-                viewportSize: `${window.innerWidth}x${window.innerHeight}`,
-                language: navigator.language
-            };
-
-            console.log("Attempting to log initial visit...", initialLogData);
-            fetch(webAppUrl, {
-                method: 'POST',
-                mode: 'cors', // Explicitly set mode
-                cache: 'no-cache', // Ensure fresh request
-                headers: {
-                    // Using text/plain avoids a CORS preflight request (OPTIONS)
-                    'Content-Type': 'text/plain;charset=utf-8', 
-                },
-                body: JSON.stringify(initialLogData)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    response.text().then(text => {
-                        console.error('Initial log failed! Server response:', text);
-                    });
-                    throw new Error(`Network response was not ok: ${response.statusText}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log("Initial log successful. Server response:", data);
-                if (data && data.status === 'success' && data.count) {
-                    $('#viewCountValue').text(formatNumber(data.count, 0));
-                    $('#viewCounter').css('display', 'inline-flex');
-                } else {
-                    throw new Error(data.message || 'Invalid data structure from server');
-                }
-            })
-            .catch(error => {
-                console.error('Error during initial visit log & view count fetch:', error);
-                $('#viewCounter').hide();
-            });
-
-            // --- Part 2: Track Page Visibility to calculate active time ---
-            document.addEventListener('visibilitychange', () => {
-                if (document.visibilityState === 'hidden') {
-                    lastHiddenTime = Date.now();
-                } else if (document.visibilityState === 'visible') {
-                    if(lastHiddenTime > 0) {
-                       totalHiddenTime += (Date.now() - lastHiddenTime);
-                    }
-                }
-            });
-
-            // --- Part 3: Send Session Duration on Page Unload ---
-            window.addEventListener('beforeunload', (event) => {
-                if (document.visibilityState === 'hidden' && lastHiddenTime > 0) {
-                       totalHiddenTime += (Date.now() - lastHiddenTime);
-                }
-
-                const totalSessionTime = Date.now() - sessionStartTime;
-                const activeDurationSeconds = Math.round((totalSessionTime - totalHiddenTime) / 1000);
-                const finalDuration = Math.max(0, activeDurationSeconds);
-
-                const sessionLogData = {
-                    action: 'log_session',
-                    duration: finalDuration,
-                    userAgent: navigator.userAgent
-                };
-                
-                console.log("Sending session data on unload:", sessionLogData);
-                
-                if (navigator.sendBeacon) {
-                    // Use a Blob with text/plain to be consistent and avoid preflight issues
-                    const blob = new Blob([JSON.stringify(sessionLogData)], { type: 'text/plain;charset=utf-8' });
-                    const sent = navigator.sendBeacon(webAppUrl, blob);
-                    console.log("Beacon sent status:", sent);
-                }
-            });
+            let totalHiddenTime = 0, lastHiddenTime = 0;
+            fetch(webAppUrl, { method: 'POST', mode: 'cors', cache: 'no-cache', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'log_visit', userAgent: navigator.userAgent, screenResolution: `${screen.width}x${screen.height}`, viewportSize: `${window.innerWidth}x${window.innerHeight}`, language: navigator.language }) })
+            .then(response => response.ok ? response.json() : response.text().then(text => Promise.reject(new Error(text))))
+            .then(data => { if (data && data.status === 'success' && data.count) { $('#viewCountValue').text(formatNumber(data.count, 0)); $('#viewCounter').css('display', 'inline-flex'); } else { throw new Error(data.message || 'Invalid data'); }})
+            .catch(error => { console.error('Error during visit log:', error); $('#viewCounter').hide(); });
+            document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { lastHiddenTime = Date.now(); } else if (document.visibilityState === 'visible' && lastHiddenTime > 0) { totalHiddenTime += (Date.now() - lastHiddenTime); }});
+            window.addEventListener('beforeunload', () => { if (document.visibilityState === 'hidden' && lastHiddenTime > 0) { totalHiddenTime += (Date.now() - lastHiddenTime); } const activeDurationSeconds = Math.round((Date.now() - sessionStartTime - totalHiddenTime) / 1000); if (navigator.sendBeacon) { navigator.sendBeacon(webAppUrl, new Blob([JSON.stringify({ action: 'log_session', duration: Math.max(0, activeDurationSeconds), userAgent: navigator.userAgent })], { type: 'text/plain;charset=utf-8' })); }});
         }
 
         // --- Initial Load ---
         loadAllDataAndInitTable();
-        logVisitAndTrackTime(); // Call the updated logging function
+        logVisitAndTrackTime();
 
     });
     </script>
 </body>
 </html>
-
 
 
 
