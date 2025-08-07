@@ -1217,9 +1217,7 @@ $(document).ready(function () {
             
             let row3Html = ''; 
             row3Html += createDetailCard({ title: 'Drug Group', value: renderBadge(rowData[25], 'display', drugGroupColorMap, true) });
-            row3Html += createDetailCard({ title: 'Drug Subgroup', value: rowData[26], 'display', drugGroupColorMap, true) });
-            row3Html += createDetailCard({ title: 'Drug Group', value: renderBadge(rowData[25], 'display', drugGroupColorMap, true) });
-            row3Html += createDetailCard({ title: 'Drug Subgroup', value: rowData[26] }
+            row3Html += createDetailCard({ title: 'Drug Subgroup', value: renderBadge(rowData[26], 'display', drugGroupColorMap, true) });
             row3Html += createDetailCard({ title: 'ราคาขาย', value: `${formatNumber(rowData[8], 2, 2)} / ${rowData[9] || 'หน่วย'}`, valueClass: 'sale-price-value', itemClass: 'highlight-card' }); 
             const realCostValue = `${formatNumber(rowData[10], 2, 2)} / ${rowData[11] || 'หน่วย'}`; 
             row3Html += createDetailCard({ title: 'ราคาทุน', value: realCostValue, valueClass: 'cost-price-value', itemClass: 'highlight-card', isProtected: true, realValue: realCostValue }); 
@@ -1483,6 +1481,7 @@ $(document).ready(function () {
 </script>
 </body>
 </html>
+
 
 
 
