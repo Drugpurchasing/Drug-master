@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Drug Master CRA V4.04 (Modified)</title>
+    <title>Drug master CRA</title>
     <base target="_top">
     <link rel="icon" type="image/png" href="favicon-32x32.png">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,1255 +12,113 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5.min.css" />
 
 <style>
-    :root {
-        --primary-color: #1a4e8e; /* MODIFIED */
-        --primary-dark: #123a6b;   /* MODIFIED */
-        --secondary-color: #1a4e8e; /* MODIFIED */
-        --accent-color: #f59e0b;
-        --accent-light: #fbbf24;
-        --light-bg: #f8fafc;
-        --card-bg: #ffffff;
-        --text-color: #1e293b;
-        --text-muted: #64748b;
-        --success-color: #10b981;
-        --warning-color: #f59e0b;
-        --danger-color: #ef4444;
-        --info-color: #06b6d4;
-        --purple: #8b5cf6;
-        --pink: #ec4899;
-        --teal: #14b8a6;
-        --border-color: #e2e8f0;
-        --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-        --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-        --gradient-primary: linear-gradient(135deg, #1a4e8e 0%, #2a6ac4 100%); /* MODIFIED */
-        --gradient-secondary: linear-gradient(135deg, #1a4e8e 0%, #8b5cf6 100%); /* MODIFIED */
-        --gradient-success: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
-        --gradient-danger: linear-gradient(135deg, #ef4444 0%, #ec4899 100%);
-    }
-
-    * {
-        box-sizing: border-box;
-    }
-
-    body {
-        font-family: 'Sarabun', sans-serif;
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        min-height: 100vh;
-        color: var(--text-color);
-        line-height: 1.6;
-        font-size: 16px;
-        position: relative;
-        overflow-x: hidden;
-    }
-
-    body::before {
-        content: '';
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background:
-            radial-gradient(circle at 20% 50%, rgba(26, 78, 142, 0.1) 0%, transparent 50%), /* MODIFIED */
-            radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 40% 20%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
-        pointer-events: none;
-        z-index: 0;
-    }
-
-    .app-container {
-        max-width: 1800px;
-        margin: 0 auto;
-        padding: 20px;
-        position: relative;
-        z-index: 1;
-    }
-
-    .logo-container {
-        background: var(--gradient-primary); /* MODIFIED */
-        padding: 25px 35px;
-        border-radius: 20px;
-        color: white;
-        margin-bottom: 30px;
-        box-shadow: var(--shadow-xl);
-        position: relative;
-        overflow: hidden;
-        animation: slideDown 0.6s ease-out;
-    }
-
-    .logo-container::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-        animation: float 20s infinite linear;
-    }
-
-    @keyframes float {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-
-    @keyframes slideDown {
-        from {
-            opacity: 0;
-            transform: translateY(-30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .logo-container img {
-        height: 70px;
-        filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
-        transition: transform 0.3s ease;
-        position: relative;
-        z-index: 2;
-    }
-
-    .logo-container img:hover {
-        transform: scale(1.05);
-    }
-
-    .app-title {
-        font-family: 'Kanit', sans-serif;
-        font-size: 32px;
-        font-weight: 700;
-        color: white;
-        margin: 0;
-        text-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
-        letter-spacing: -0.5px;
-        position: relative;
-        z-index: 2;
-    }
-
-    .version-info {
-        font-size: 16px;
-        color: var(--accent-light);
-        font-weight: 500;
-        background: rgba(255, 255, 255, 0.2);
-        padding: 6px 16px;
-        border-radius: 30px;
-        margin-top: 8px;
-        backdrop-filter: blur(10px);
-        display: inline-block;
-        position: relative;
-        z-index: 2;
-    }
-
-    .card {
-        border: none;
-        border-radius: 20px;
-        box-shadow: var(--shadow-lg);
-        margin-bottom: 30px;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        overflow: hidden;
-        transition: all 0.3s ease;
-        animation: fadeIn 0.8s ease-out;
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .card:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-xl);
-    }
-
-    .card-header {
-        background: var(--gradient-primary);
-        padding: 12px 25px;
-        border: none;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .card-header::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-        animation: shimmer 3s infinite;
-    }
-
-    @keyframes shimmer {
-        100% { left: 100%; }
-    }
-
-    .filter-section {
-        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-        padding: 25px 30px;
-        border-radius: 16px;
-        margin-bottom: 25px;
-        border: 1px solid var(--border-color);
-        box-shadow: var(--shadow-md);
-        transition: all 0.3s ease;
-    }
-
-    .filter-section:hover {
-        box-shadow: var(--shadow-lg);
-        transform: translateY(-1px);
-    }
-
-    .input-group {
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: var(--shadow-sm);
-        transition: all 0.3s ease;
-    }
-
-    .input-group:focus-within {
-        box-shadow: 0 0 0 3px rgba(26, 78, 142, 0.2); /* MODIFIED */
-    }
-
-    .input-group-text {
-        background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
-        border: 1px solid var(--border-color);
-        border-right: none;
-    }
-
-    .form-control {
-        border: 1px solid var(--border-color);
-        border-left: none;
-        padding: 12px 16px;
-        font-size: 16px;
-        transition: all 0.3s ease;
-    }
-
-    .form-control:focus {
-        border-color: var(--primary-color);
-        box-shadow: none;
-    }
-
-    .btn {
-        padding: 10px 20px;
-        font-weight: 500;
-        border-radius: 10px;
-        transition: all 0.3s ease;
-        text-transform: none;
-        letter-spacing: 0.3px;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .btn::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.3);
-        transform: translate(-50%, -50%);
-        transition: width 0.6s, height 0.6s;
-    }
-
-    .btn:active::before {
-        width: 300px;
-        height: 300px;
-    }
-
-    .btn-primary {
-        background: var(--gradient-primary); /* MODIFIED */
-        border: none;
-        color: white;
-        box-shadow: 0 4px 6px rgba(26, 78, 142, 0.25); /* MODIFIED */
-    }
-
-    .btn-primary:hover {
-        background: var(--gradient-primary); /* MODIFIED */
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(26, 78, 142, 0.35); /* MODIFIED */
-    }
-
-    .btn-success {
-        background: var(--gradient-success);
-        border: none;
-        box-shadow: 0 4px 6px rgba(16, 185, 129, 0.25);
-    }
-
-    .btn-success:hover {
-        background: var(--gradient-success);
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(16, 185, 129, 0.35);
-    }
-
-    .btn-warning {
-        background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
-        border: none;
-        color: white;
-        box-shadow: 0 4px 6px rgba(245, 158, 11, 0.25);
-    }
-
-    .btn-warning:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(245, 158, 11, 0.35);
-    }
-
-    .btn-purple {
-        background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
-        border: none;
-        color: white;
-        box-shadow: 0 4px 6px rgba(139, 92, 246, 0.25);
-    }
-
-    .btn-purple:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(139, 92, 246, 0.35);
-    }
-
-    .view-toggle {
-        background: white;
-        border: 2px solid var(--border-color);
-        color: var(--text-muted);
-        transition: all 0.3s ease;
-    }
-
-    .view-toggle:hover {
-        background: var(--light-bg);
-        border-color: var(--primary-color);
-        color: var(--primary-color);
-    }
-
-    .view-toggle.active {
-        background: var(--gradient-primary) !important; /* MODIFIED */
-        border-color: transparent !important;
-        color: white !important;
-        box-shadow: 0 4px 6px rgba(26, 78, 142, 0.25); /* MODIFIED */
-        transform: scale(1.05);
-    }
-
-    .table-responsive {
-        border-radius: 16px;
-        overflow: hidden;
-        box-shadow: var(--shadow-md);
-    }
-
-    table.dataTable {
-        border-collapse: separate;
-        border-spacing: 0;
-    }
-
-    table.dataTable thead th {
-        background: var(--gradient-primary);
-        color: white;
-        font-weight: 600;
-        padding: 16px;
-        text-transform: uppercase;
-        font-size: 14px;
-        letter-spacing: 0.5px;
-        border: none;
-    }
-
-    table.dataTable tbody tr {
-        transition: all 0.2s ease;
-    }
-
-    table.dataTable tbody tr:hover {
-        background: linear-gradient(90deg, rgba(26, 78, 142, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%); /* MODIFIED */
-        transform: scale(1.01);
-    }
-
-    table.dataTable tbody td {
-        padding: 14px 16px;
-        border-bottom: 1px solid var(--border-color);
-        vertical-align: middle;
-    }
-
-    .view-details-btn {
-        background: var(--gradient-primary); /* MODIFIED */
-        border: none;
-        padding: 6px 12px;
-        transition: all 0.3s ease;
-    }
-
-    .view-details-btn:hover {
-        transform: scale(1.1) rotate(5deg);
-        box-shadow: 0 4px 8px rgba(26, 78, 142, 0.3); /* MODIFIED */
-    }
-
-    .modal-content {
-        border: none;
-        border-radius: 20px;
-        overflow: hidden;
-        box-shadow: var(--shadow-xl);
-    }
-
-    .modal-header {
-        background: var(--gradient-primary); /* MODIFIED */
-        color: white;
-        padding: 20px 25px;
-        border: none;
-    }
-
-    .modal-body {
-        padding: 30px;
-        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-    }
-
-    .detail-item {
-        background: white;
-        border: 1px solid var(--border-color);
-        border-left: 5px solid;
-        border-radius: 12px;
-        padding: 20px;
-        box-shadow: var(--shadow-sm);
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .detail-item::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 5px;
-        height: 100%;
-        background: var(--gradient-primary); /* MODIFIED */
-        transition: width 0.3s ease;
-    }
-
-    .detail-item:hover {
-        transform: translateY(-3px);
-        box-shadow: var(--shadow-lg);
-    }
-
-    .detail-item:hover::before {
-        width: 100%;
-        opacity: 0.05;
-    }
-
-    .detail-item strong {
-        display: block;
-        color: var(--text-muted);
-        margin-bottom: 10px;
-        font-weight: 600;
-        font-size: 14px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        position: relative;
-        z-index: 2;
-    }
-
-    .detail-item div {
-        font-size: 18px;
-        font-weight: 500;
-        color: var(--text-color);
-        position: relative;
-        z-index: 2;
-    }
-
-    .badge {
-        font-weight: 500;
-        padding: 8px 12px;
-        font-size: 14px;
-        border-radius: 8px;
-        margin: 2px;
-        box-shadow: var(--shadow-sm);
-        transition: all 0.3s ease;
-    }
-
-    .badge:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-md);
-    }
-
-    .bg-primary {
-        background: var(--gradient-primary) !important; /* MODIFIED */
-    }
-
-    .bg-success {
-        background: var(--gradient-success) !important;
-    }
-
-    .bg-danger {
-        background: var(--gradient-danger) !important;
-    }
-
-    .bg-warning {
-        background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%) !important;
-        color: white !important;
-    }
-
-    .bg-info {
-        background: linear-gradient(135deg, #06b6d4 0%, #0ea5e9 100%) !important;
-        color: white !important;
-    }
-
-    .bg-purple {
-        background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%) !important;
-    }
-
-    .bg-pink {
-        background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%) !important;
-    }
-
-    .bg-teal {
-        background: linear-gradient(135deg, #14b8a6 0%, #10b981 100%) !important;
-    }
-
-    .bg-orange {
-        background: linear-gradient(135deg, #f97316 0%, #fb923c 100%) !important;
-    }
-
-    /* Enhanced Charts */
-    .chart-wrapper {
-        background: white;
-        border-radius: 16px;
-        padding: 25px;
-        box-shadow: var(--shadow-md);
-        border: 1px solid var(--border-color);
-        transition: all 0.3s ease;
-        position: relative;      /* FIXED: Added for chart.js */
-        min-height: 400px;       /* FIXED: Added for chart.js */
-        flex: 1;                 /* FIXED: Allow flex item to grow/shrink */
-        min-width: 300px;        /* FIXED: Prevent chart from becoming too small */
-    }
-
-    .chart-wrapper:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-lg);
-    }
-
-    .chart-wrapper h5 {
-        font-weight: 600;
-        color: var(--text-color);
-        margin-bottom: 20px;
-        padding-bottom: 12px;
-        border-bottom: 2px solid;
-        border-image: var(--gradient-primary); /* MODIFIED */
-        border-image-slice: 1;
-    }
-
-    .loading-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(5px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-    }
-
-    .spinner {
-        width: 70px;
-        height: 70px;
-        position: relative;
-    }
-
-    .spinner::before,
-    .spinner::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        border: 4px solid transparent;
-        border-top-color: var(--primary-color);
-        animation: spin 1.2s linear infinite;
-    }
-
-    .spinner::after {
-        animation-delay: 0.2s;
-        border-top-color: var(--purple);
-    }
-
-    .progress {
-        height: 30px;
-        border-radius: 15px;
-        overflow: hidden;
-        background: var(--light-bg);
-        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .progress-bar {
-        background: var(--gradient-primary); /* MODIFIED */
-        box-shadow: 0 2px 4px rgba(26, 78, 142, 0.3); /* MODIFIED */
-        font-size: 14px;
-        font-weight: 500;
-    }
-
-    .floating-action-button {
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        background: var(--gradient-success);
-        color: white;
-        border-radius: 60px;
-        padding: 16px 24px;
-        box-shadow: var(--shadow-xl);
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        z-index: 1050;
-        cursor: pointer;
-        border: none;
-    }
-
-    .floating-action-button:hover {
-        transform: translateY(-5px) scale(1.05);
-        box-shadow: 0 12px 24px rgba(16, 185, 129, 0.4);
-    }
-
-    .floating-action-button svg {
-        width: 24px;
-        height: 24px;
-        animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-        0%, 100% {
-            transform: scale(1);
-        }
-        50% {
-            transform: scale(1.1);
-        }
-    }
-
-    .app-footer {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 30px;
-        margin-top: 40px;
-        color: var(--text-muted);
-        border-top: 1px solid var(--border-color);
-        background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.9) 100%);
-        backdrop-filter: blur(10px);
-        border-radius: 20px 20px 0 0;
-    }
-
-    .view-counter-widget {
-        display: none;
-        align-items: center;
-        gap: 8px;
-        background: var(--gradient-primary); /* MODIFIED */
-        color: white;
-        padding: 8px 20px;
-        border-radius: 30px;
-        box-shadow: var(--shadow-md);
-        font-size: 14px;
-        font-weight: 500;
-        transition: all 0.3s ease;
-    }
-
-    .view-counter-widget:hover {
-        transform: scale(1.05);
-        box-shadow: var(--shadow-lg);
-    }
-
-    ::-webkit-scrollbar {
-        width: 12px;
-        height: 12px;
-    }
-
-    ::-webkit-scrollbar-track {
-        background: var(--light-bg);
-        border-radius: 10px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: var(--gradient-primary); /* MODIFIED */
-        border-radius: 10px;
-        box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.1);
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-        background: var(--gradient-secondary); /* MODIFIED */
-    }
-
-    .filter-section,
-    .card,
-    .floating-action-button {
-        animation: fadeInUp 0.6s ease-out;
-    }
-
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    @media (max-width: 992px) {
-        .logo-container {
-            flex-direction: column;
-            text-align: center;
-            gap: 20px;
-            padding: 20px;
-        }
-
-        .app-title {
-            font-size: 28px;
-        }
-
-        .chart-wrapper {
-            min-width: 100%;
-        }
-    }
-
-    @media (max-width: 768px) {
-        body {
-            font-size: 15px;
-        }
-
-        .app-container {
-            padding: 15px;
-        }
-
-        .app-title {
-            font-size: 24px;
-        }
-
-        .version-info {
-            font-size: 14px;
-        }
-
-        .filter-section {
-            padding: 20px;
-        }
-
-        .detail-item {
-            flex: 1 1 100%;
-            min-width: 100%;
-        }
-
-        .floating-action-button {
-            bottom: 20px;
-            right: 20px;
-            padding: 14px 20px;
-        }
-        /* FIXED: On smaller screens, make charts stack vertically */
-        .charts-container, .modal-main-layout {
-            flex-direction: column;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .logo-container img {
-            height: 50px;
-        }
-
-        .app-title {
-            font-size: 20px;
-        }
-
-        .floating-action-button span {
-            display: none;
-        }
-
-        .floating-action-button {
-            width: 56px;
-            height: 56px;
-            padding: 0;
-            border-radius: 50%;
-            justify-content: center;
-        }
-    }
-
-    @media print {
-        body {
-            background: white;
-        }
-
-        .filter-section,
-        .floating-action-button,
-        .app-footer {
-            display: none;
-        }
-    }
-
-    .tooltip {
-        font-size: 14px;
-    }
-
-    .tooltip-inner {
-        background: var(--gradient-primary); /* MODIFIED */
-        padding: 8px 12px;
-        border-radius: 8px;
-        box-shadow: var(--shadow-md);
-    }
-
-    .swal2-popup {
-        border-radius: 20px;
-        box-shadow: var(--shadow-xl);
-    }
-
-    .swal2-title {
-        font-family: 'Kanit', sans-serif;
-    }
-
-    .swal2-confirm {
-        background: var(--gradient-primary) !important; /* MODIFIED */
-        border-radius: 10px;
-        font-weight: 500;
-        padding: 10px 24px;
-    }
-
-    .swal2-cancel {
-        border-radius: 10px;
-        font-weight: 500;
-        padding: 10px 24px;
-    }
-
-    .dataTables_wrapper .dataTables_filter input {
-        border-radius: 10px;
-        padding: 8px 16px;
-        border: 1px solid var(--border-color);
-        transition: all 0.3s ease;
-    }
-
-    .dataTables_wrapper .dataTables_filter input:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 3px rgba(26, 78, 142, 0.1); /* MODIFIED */
-    }
-
-    .dataTables_wrapper .dataTables_length select {
-        border-radius: 8px;
-        padding: 6px 12px;
-        border: 1px solid var(--border-color);
-    }
-
-    .dataTables_wrapper .dataTables_paginate .paginate_button {
-        border-radius: 8px;
-        margin: 0 4px;
-        transition: all 0.3s ease;
-    }
-
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-        background: var(--gradient-primary) !important; /* MODIFIED */
-        color: white !important;
-        border: none;
-        box-shadow: var(--shadow-sm);
-    }
-
-    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-        background: var(--light-bg) !important;
-        color: var(--primary-color) !important;
-        border: 1px solid var(--primary-color);
-    }
-
-    .btn-group .btn {
-        position: relative;
-        z-index: 1;
-    }
-
-    .btn-group .btn:not(:last-child) {
-        margin-right: -1px;
-    }
-
-    .modal.fade .modal-dialog {
-        transition: transform 0.3s ease-out;
-        transform: scale(0.9);
-    }
-
-    .modal.show .modal-dialog {
-        transform: scale(1);
-    }
-
-    .drug-image {
-        width: 100%;
-        height: 320px;
-        object-fit: contain;
-        background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
-        border-radius: 16px;
-        margin-bottom: 16px;
-        box-shadow: var(--shadow-md);
-        border: 1px solid var(--border-color);
-        transition: all 0.3s ease;
-    }
-
-    .drug-image:hover {
-        transform: scale(1.02);
-        box-shadow: var(--shadow-lg);
-    }
-
-    .sale-price-value {
-        color: var(--success-color);
-        font-size: 1.5rem !important;
-        font-weight: 700 !important;
-    }
-
-    .cost-price-value {
-        color: var(--warning-color);
-        font-size: 1.5rem !important;
-        font-weight: 700 !important;
-    }
-
-    .status-card {
-        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-    }
-
-    .status-card .badge {
-        font-size: 16px !important;
-        padding: 10px 16px !important;
-    }
-
-    .highlight-card {
-        background: linear-gradient(135deg, #fef3c7 0%, #fef9e7 100%);
-        border-left-color: var(--accent-color) !important;
-    }
-
-    .highlight-card strong {
-        color: var(--accent-color);
-        font-size: 16px !important;
-    }
-
-    .orange-border-card {
-        border-left-color: var(--warning-color) !important;
-        background: linear-gradient(135deg, #fff7ed 0%, #fffbf5 100%);
-    }
-
-    .danger-border-card {
-        border-left-color: var(--danger-color) !important;
-        background: linear-gradient(135deg, #fef2f2 0%, #fffafa 100%);
-    }
-
-    .material-no-card {
-        background: linear-gradient(135deg, #ede9fe 0%, #f5f3ff 100%);
-        border-left-color: var(--purple) !important;
-    }
-
-    .unlock-cost-btn {
-        cursor: pointer;
-        color: var(--accent-color);
-        font-size: 0.9em;
-        margin-left: 8px;
-        transition: all 0.3s ease;
-    }
-
-    .unlock-cost-btn:hover {
-        color: var(--accent-light);
-        transform: rotate(10deg) scale(1.1);
-    }
-
-    #stats-section {
-        margin-top: 30px;
-        padding-top: 30px;
-        border-top: 2px solid var(--border-color);
-    }
-
-    #stats-section h5 {
-        font-weight: 600;
-        color: var(--text-color);
-        margin-bottom: 20px;
-        padding-bottom: 12px;
-        border-bottom: 2px solid;
-        border-image: var(--gradient-primary); /* MODIFIED */
-        border-image-slice: 1;
-    }
-
-    .table {
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: var(--shadow-sm);
-    }
-
-    .table thead {
-        background: var(--gradient-primary);
-        color: white;
-    }
-
-    .table thead th {
-        border: none;
-        padding: 14px;
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 13px;
-        letter-spacing: 0.5px;
-    }
-
-    .table tbody td {
-        padding: 12px;
-        border-color: var(--border-color);
-    }
-
-    .table-hover tbody tr:hover {
-        background: linear-gradient(90deg, rgba(26, 78, 142, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%); /* MODIFIED */
-    }
-
-    #contactModal .form-check {
-        padding: 12px 16px;
-        border-radius: 10px;
-        transition: all 0.3s ease;
-        margin-bottom: 12px;
-    }
-
-    #contactModal .form-check:hover {
-        background: var(--light-bg);
-    }
-
-    #contactModal .form-check-input:checked ~ .form-check-label {
-        color: var(--primary-color);
-        font-weight: 600;
-    }
-
-    #contactModal textarea {
-        border-radius: 12px;
-        border: 1px solid var(--border-color);
-        transition: all 0.3s ease;
-        resize: vertical;
-    }
-
-    #contactModal textarea:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 3px rgba(26, 78, 142, 0.1); /* MODIFIED */
-    }
-
-    .inline-error-msg {
-        color: var(--danger-color);
-        font-size: 14px;
-        margin-top: 8px;
-        animation: shake 0.5s ease-in-out;
-    }
-
-    @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        25% { transform: translateX(-5px); }
-        75% { transform: translateX(5px); }
-    }
-
-    #loadingIndicator {
-        margin-bottom: 30px;
-        animation: slideDown 0.5s ease-out;
-    }
-
-    .action-buttons {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-        justify-content: center;
-        margin-top: 20px;
-    }
-
-    .action-buttons .btn {
-        flex: 1;
-        min-width: 140px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        padding: 12px 20px;
-    }
-
-    .modal-footer {
-        background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
-        border-top: 1px solid var(--border-color);
-        padding: 20px 25px;
-    }
-
-    .detail-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-        margin-bottom: 20px;
-    }
-
-    .detail-row:last-child {
-        margin-bottom: 0;
-    }
-
-    .charts-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 30px;
-        margin-bottom: 30px;
-    }
-
-    *:focus {
-        outline: none;
-    }
-
-    button:focus-visible,
-    a:focus-visible,
-    input:focus-visible,
-    select:focus-visible,
-    textarea:focus-visible {
-        outline: 2px solid var(--primary-color);
-        outline-offset: 2px;
-    }
-
-    a,
-    button,
-    input,
-    select,
-    textarea,
-    .btn,
-    .badge,
-    .card,
-    .detail-item {
-        transition: all 0.3s ease;
-    }
-
-    a {
-        color: var(--primary-color);
-        text-decoration: none;
-    }
-
-    a:hover {
-        color: var(--primary-dark);
-    }
-
-    .modal-backdrop {
-        background-color: rgba(0, 0, 0, 0.7);
-        backdrop-filter: blur(3px);
-    }
-
-    .spinner-border {
-        width: 20px;
-        height: 20px;
-        border-width: 2px;
-    }
-
-    .bs-tooltip-top .tooltip-arrow::before {
-        border-top-color: var(--primary-color);
-    }
-
-    .bs-tooltip-bottom .tooltip-arrow::before {
-        border-bottom-color: var(--primary-color);
-    }
-
-    .bs-tooltip-start .tooltip-arrow::before {
-        border-left-color: var(--primary-color);
-    }
-
-    .bs-tooltip-end .tooltip-arrow::before {
-        border-right-color: var(--primary-color);
-    }
-
-    .image-section {
-        background: white;
-        padding: 25px;
-        border-radius: 16px;
-        box-shadow: var(--shadow-md);
-        flex: 1; /* MODIFIED: Let image section take up space */
-        min-width: 300px;
-    }
-
-    .image-section h5 {
-        font-weight: 600;
-        color: var(--text-color);
-        margin-bottom: 20px;
-        padding-bottom: 12px;
-        border-bottom: 2px solid;
-        border-image: var(--gradient-primary); /* MODIFIED */
-        border-image-slice: 1;
-    }
-
-    .modal-main-layout {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 30px;
-    }
-
-    .details-section {
-        flex: 2;
-        min-width: 400px;
-    }
-
-    .compact-card {
-        flex: 0 1 140px !important;
-        background: linear-gradient(135deg, #eef2ff 0%, #ede9fe 100%); /* MODIFIED */
-    }
-
-    .value-container {
-        transition: all 0.3s ease;
-    }
-
-    .form-check-input {
-        width: 20px;
-        height: 20px;
-        margin-top: 2px;
-        cursor: pointer;
-    }
-
-    .form-check-input:checked {
-        background-color: var(--primary-color);
-        border-color: var(--primary-color);
-    }
-
-    .alert {
-        border-radius: 12px;
-        border: none;
-        box-shadow: var(--shadow-sm);
-        padding: 16px 20px;
-    }
-
-    .alert-info {
-        background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
-        color: var(--primary-dark);
-    }
-
-    .dataTables_info {
-        color: var(--text-muted);
-        font-weight: 500;
-    }
-
-    .text-primary {
-        color: var(--primary-color) !important;
-    }
-
-    .text-success {
-        color: var(--success-color) !important;
-    }
-
-    .text-danger {
-        color: var(--danger-color) !important;
-    }
-
-    .text-warning {
-        color: var(--warning-color) !important;
-    }
-
-    .text-info {
-        color: var(--info-color) !important;
-    }
-
-    .text-muted {
-        color: var(--text-muted) !important;
-    }
-
-    * {
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-    }
+  /* ===== Readability & Layout ===== */
+  :root {
+    --app-bg: #f5f7fb;
+    --app-bg-2: #eef2f7;
+    --contrast-ink: #0b2340;
+    --muted-ink: #5b6b7c;
+    --accent-ink: #004b8d;
+    --soft-card: #ffffff;
+    --soft-shadow: 0 8px 24px rgba(13, 110, 253, 0.08);
+  }
+
+  body {
+    font-size: 16px;        /* +legibility for clinicians */
+    line-height: 1.7;       /* more relaxed reading */
+    color: var(--contrast-ink);
+    background: linear-gradient(to bottom, var(--app-bg), var(--app-bg-2));
+  }
+
+  .app-container { max-width: 1800px; }
+
+  .card { box-shadow: var(--soft-shadow); }
+  .card-header { min-height: 8px; }
+
+  /* ===== DataTable – header, zebra, hover, sticky ===== */
+  .table-responsive { max-height: 72vh; overflow: auto; }
+  table.dataTable thead th {
+    position: sticky; top: 0; z-index: 5;
+    background: linear-gradient(180deg, #1668c1 0%, #0d6efd 100%) !important;
+    color: #fff !important; text-transform: none; letter-spacing: .2px;
+    font-weight: 700; font-size: 15px; border-bottom: none;
+  }
+  #drugTable tbody tr:nth-child(odd)  { background-color: #fbfdff; }
+  #drugTable tbody tr:nth-child(even) { background-color: #f6f9ff; }
+  #drugTable tbody tr:hover { background-color: #e9f3ff !important; }
+  #drugTable td, #drugTable th { vertical-align: middle; }
+
+  /* Row status highlighting (applied via JS by row class) */
+  tr.row-status-removed  { background-color: #fff1f1 !important; }
+  tr.row-status-inlist   { background-color: #f3fff6 !important; }
+  tr.row-status-ns       { background-color: #f1f6ff !important; }
+
+  /* ===== Search & Controls ===== */
+  #globalSearch { height: 44px; }
+  .btn, .select2-selection { border-radius: 10px !important; }
+  .btn-group .btn { padding: 0.5rem 0.9rem; }
+
+  /* Toggle buttons – active emphasis */
+  .view-toggle.active {
+    background-color: #0d6efd !important; color: #fff !important;
+    box-shadow: 0 6px 16px rgba(13,110,253,.25);
+  }
+
+  /* ===== Badges & Pills ===== */
+  .badge { font-weight: 600; border-radius: 20px; padding: .45em .8em; }
+
+  /* ===== Modal readability ===== */
+  .modal-content { box-shadow: 0 16px 40px rgba(0,0,0,.15); }
+  #drugDetailModal .modal-header { padding: 16px 20px; }
+  #drugDetailModalLabel { font-size: 1.15rem; }
+  #drugDetailModalBody h5 {
+    font-size: 1.05rem; color: var(--accent-ink);
+    border-bottom: 2px solid rgba(0,75,141,.12); padding-bottom: 6px; margin-bottom: 12px;
+  }
+
+  /* Detail cards – space & clarity */
+  .detail-item { border-color: #eaf0f6; background: #fff; }
+  .detail-item strong { color: #0e3a6b; letter-spacing: .2px; }
+  .detail-item .value-container { font-variant-numeric: tabular-nums; }
+
+  /* Charts – card feel */
+  .chart-wrapper { border: 1px solid #e8eef5; box-shadow: 0 4px 16px rgba(0,0,0,.04); }
+
+  /* Footer widget visibility */
+  .app-footer { background: #fff; box-shadow: 0 -6px 18px rgba(0,0,0,.03); }
+
+  /* ===== Keyboard hints ===== */
+  .kbd-hint { display: inline-flex; gap:6px; align-items:center; font-size: .9rem; color: var(--muted-ink); }
+  .kbd {
+    background: #f4f6fa; border: 1px solid #dfe7f1; border-bottom-width: 2px;
+    padding: 1px 6px; border-radius: 6px; font-weight: 600; font-family: ui-monospace, Menlo, monospace;
+  }
+
+  /* ===== Image lightbox (no external lib) ===== */
+  #imgLightboxOverlay {
+    position: fixed; inset: 0; background: rgba(10,20,30,.88);
+    display: none; align-items: center; justify-content: center; z-index: 20000;
+  }
+  #imgLightboxOverlay img { max-width: 92vw; max-height: 88vh; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,.5); }
+  #imgLightboxOverlay .close-x {
+    position: absolute; top: 14px; right: 18px; color: #fff; font-size: 28px; cursor: pointer; opacity: .9;
+  }
+
+  /* ===== Focus visible for accessibility ===== */
+  :focus-visible { outline: 3px solid rgba(13, 110, 253, .6); outline-offset: 2px; border-radius: 6px; }
+
+  /* ===== Compact on small screens ===== */
+  @media (max-width: 768px) {
+    .table-responsive { max-height: 60vh; }
+    #globalSearch { height: 40px; }
+    .btn-group .btn { padding: 0.45rem 0.7rem; }
+  }
 </style>
 </head>
 
@@ -1271,11 +129,11 @@
                 <img src="CRAlogo.png" alt="Logo" class="img-fluid me-3" onerror="this.style.display='none'">
                 <div>
                     <h1 class="app-title">Drug master CRA</h1>
-                    <p class="version-info mb-0 fw-bold">Latest update 02/07/2025 | Version 4.04</p>
+                    <p class="version-info mb-0 fw-bold">Latest update 07/08/2025 | Version 4.06</p>
                 </div>
             </div>
         </div>
-
+        
         <div class="card">
             <div class="card-header"></div>
             <div class="card-body">
@@ -1299,6 +157,9 @@
                                     <button id="exportButton" class="btn btn-success" data-bs-toggle="tooltip" data-bs-placement="top" title="ส่งออกข้อมูลตารางที่แสดงอยู่เป็นไฟล์ Excel">
                                         <i class="fas fa-file-excel me-1"></i>Excel
                                     </button>
+                                    <button id="toggleFilterBtn" class="btn btn-info" data-bs-toggle="tooltip" data-bs-placement="top" title="Filter by Drug Group">
+                                        <i class="fas fa-filter me-1"></i>Groups
+                                    </button>
                                 </div>
                                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
                                     <button id="defaultView" class="btn btn-outline-primary view-toggle" data-bs-toggle="tooltip" data-bs-placement="top" title="แสดงข้อมูลที่จำเป็นพื้นฐาน">
@@ -1317,22 +178,40 @@
                             </div>
                         </div>
                     </div>
+                    <div id="filterPanel" class="mt-3" style="display: none;">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="drugGroupFilter" class="form-label fw-bold text-secondary">Filter by Drug Group</label>
+                                <div class="d-flex gap-2">
+                                    <select id="drugGroupFilter" class="form-select" multiple="multiple" style="width: 100%;"></select>
+                                    <button class="btn btn-outline-secondary btn-sm" id="clearGroupFilter" title="Clear Group Filter"><i class="fas fa-times"></i></button>
+                                </div>
+                            </div>
+                            <div class="col-md-6" id="drugSubgroupFilterContainer"> 
+                                <label for="drugSubgroupFilter" class="form-label fw-bold text-secondary">Filter by Drug Subgroup</label>
+                                <div class="d-flex gap-2">
+                                    <select id="drugSubgroupFilter" class="form-select" multiple="multiple" style="width: 100%;"></select>
+                                    <button class="btn btn-outline-secondary btn-sm" id="clearSubgroupFilter" title="Clear Subgroup Filter"><i class="fas fa-times"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
+                
                 <div id="loadingIndicator" class="progress mb-4" style="height: 25px; display: none;">
                     <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
                         <strong class="text-white"><i class="fas fa-spinner fa-spin me-2"></i>Loading Data... Please Wait</strong>
                     </div>
                 </div>
-
+                
                 <div class="table-responsive">
                     <table id="drugTable" class="table table-hover table-striped w-100"></table>
                 </div>
-
+                
             </div>
         </div>
     </div>
-
+    
     <footer class="app-footer">
         <div id="viewCounter" class="view-counter-widget" title="Total Page Views">
             <i class="fas fa-eye"></i>&nbsp;ยอดเข้าชม:&nbsp;<span id="viewCountValue">...</span>
@@ -1343,16 +222,16 @@
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
         <span>ติดต่อ/แจ้งปัญหา</span>
     </button>
-
+    
     <div class="modal fade" id="drugDetailModal" tabindex="-1" aria-labelledby="drugDetailModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-fullscreen modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="drugDetailModalLabel">Drug Details</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="drugDetailModalBody">
-                    </div>
+                </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-info me-auto contact-trigger">
                         <i class="fas fa-comments me-1"></i>แจ้งปัญหาเกี่ยวกับยานี้
@@ -1421,581 +300,664 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 
     <script>
-    $(document).ready(function () {
-        const mainDataUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQJpIKf_q4h4h1VEIM0tT1MlMvoEw1PXLYMxMv_c3abXFvAIBS0tWHxLL0sDjuuBrPjbrTP7lJH-NQw/pub?gid=0&single=true&output=csv';
-        const tooltipDataUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQJpIKf_q4h4h1VEIM0tT1MlMvoEw1PXLYMxMv_c3abXFvAIBS0tWHxLL0sDjuuBrPjbrTP7lJH-NQw/pub?gid=1603098884&single=true&output=csv';
-        
-        var table;
-        var passwordVerified = false;
-        var lineChartInstance; 
-        var pieChartInstance;
-        var tooltipMap = {};
-        const contactModal = new bootstrap.Modal(document.getElementById('contactModal'));
+$(document).ready(function () {
+    const mainDataUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQJpIKf_q4h4h1VEIM0tT1MlMvoEw1PXLYMxMv_c3abXFvAIBS0tWHxLL0sDjuuBrPjbrTP7lJH-NQw/pub?gid=0&single=true&output=csv';
+    const tooltipDataUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQJpIKf_q4h4h1VEIM0tT1MlMvoEw1PXLYMxMv_c3abXFvAIBS0tWHxLL0sDjuuBrPjbrTP7lJH-NQw/pub?gid=1603098884&single=true&output=csv';
+    
+    var table;
+    var passwordVerified = false;
+    var lineChartInstance; 
+    var pieChartInstance;
+    var tooltipMap = {};
+    const contactModal = new bootstrap.Modal(document.getElementById('contactModal'));
 
-        const exportPasswords = {
-            'default': 'rxccc',
-            'purchasing': 'rxpur',
-            'rate': 'rxccc',
-            'all': 'rxall'
-        };
+    var selectedGroups = [];
+    var selectedSubgroups = [];
 
-        Chart.register(ChartDataLabels);
-        
-        $('body').tooltip({
-            selector: '[data-bs-toggle="tooltip"]'
-        });
+    const exportPasswords = {
+        'default': 'rxccc',
+        'purchasing': 'rxpur',
+        'rate': 'rxccc',
+        'all': 'rxall'
+    };
 
-        function formatNumber(data, minDecimals = 0, maxDecimals = 0) {
-            const number = parseFloat(data);
-            if (isNaN(number)) return data === null || data === '' ? '-' : data;
-            return number.toLocaleString('en-US', { minimumFractionDigits: minDecimals, maximumFractionDigits: maxDecimals });
-        }
-        
-        function robustCsvParser(csvText) { 
-            const rows = []; 
-            let currentRow = []; 
-            let currentField = ''; 
-            let inQuotes = false; 
-            const text = csvText.trim().replace(/\r\n/g, '\n'); 
+    Chart.register(ChartDataLabels);
+    
+    $('body').tooltip({
+        selector: '[data-bs-toggle="tooltip"]'
+    });
+
+    // MODIFIED: Simplified and more robust custom search function
+    $.fn.dataTable.ext.search.push(
+        function(settings, data, dataIndex) {
+            if (settings.nTable.id !== 'drugTable') {
+                return true;
+            }
             
-            for (let i = 0; i < text.length; i++) { 
-                const char = text[i]; 
-                if (inQuotes) { 
-                    if (char === '"') { 
-                        if (i + 1 < text.length && text[i + 1] === '"') { 
-                            currentField += '"'; 
-                            i++; 
-                        } else { 
-                            inQuotes = false; 
-                        } 
+            const hasGroupFilter = selectedGroups && selectedGroups.length > 0;
+            const hasSubgroupFilter = selectedSubgroups && selectedSubgroups.length > 0;
+
+            if (!hasGroupFilter && !hasSubgroupFilter) {
+                return true; // No filters active, show all
+            }
+
+            const rowData = table.row(dataIndex).data();
+            const rowDrugGroup = rowData[25] || '';
+            const rowDrugSubgroup = rowData[26] || '';
+
+            // If a group filter is active, the row's group must be in the selection.
+            const groupMatch = !hasGroupFilter || selectedGroups.includes(rowDrugGroup);
+            
+            // If a subgroup filter is active, the row's subgroup must be in the selection.
+            const subgroupMatch = !hasSubgroupFilter || selectedSubgroups.includes(rowDrugSubgroup);
+
+            // The row is displayed only if it matches all active filters.
+            return groupMatch && subgroupMatch;
+        }
+    );
+
+    function formatNumber(data, minDecimals = 0, maxDecimals = 0) {
+        const number = parseFloat(data);
+        if (isNaN(number)) return data === null || data === '' ? '-' : data;
+        return number.toLocaleString('en-US', { minimumFractionDigits: minDecimals, maximumFractionDigits: maxDecimals });
+    }
+    
+    function robustCsvParser(csvText) { 
+        const rows = []; 
+        let currentRow = []; 
+        let currentField = ''; 
+        let inQuotes = false; 
+        const text = csvText.trim().replace(/\r\n/g, '\n'); 
+        
+        for (let i = 0; i < text.length; i++) { 
+            const char = text[i]; 
+            if (inQuotes) { 
+                if (char === '"') { 
+                    if (i + 1 < text.length && text[i + 1] === '"') { 
+                        currentField += '"'; 
+                        i++; 
                     } else { 
-                        currentField += char; 
+                        inQuotes = false; 
                     } 
                 } else { 
-                    switch (char) { 
-                        case '"': inQuotes = true; break; 
-                        case ',': currentRow.push(currentField); currentField = ''; break; 
-                        case '\n': currentRow.push(currentField); rows.push(currentRow); currentRow = []; currentField = ''; break; 
-                        default: currentField += char; 
-                    } 
+                    currentField += char; 
+                } 
+            } else { 
+                switch (char) { 
+                    case '"': inQuotes = true; break; 
+                    case ',': currentRow.push(currentField); currentField = ''; break; 
+                    case '\n': currentRow.push(currentField); rows.push(currentRow); currentRow = []; currentField = ''; break; 
+                    default: currentField += char; 
                 } 
             } 
-            
-            if (currentField || currentRow.length > 0) { 
-                currentRow.push(currentField); 
-                rows.push(currentRow); 
-            } 
-            
-            return rows; 
-        }
-
-        async function loadTooltipData(url) {
-            try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                const csvData = await response.text();
-                const parsedData = robustCsvParser(csvData);
-                const map = {};
-                for (let i = 1; i < parsedData.length; i++) {
-                    const row = parsedData[i];
-                    if (row && row[0]) {
-                        const key = row[0].toLowerCase().trim();
-                        const value = row[1] || '';
-                        map[key] = value.trim();
-                    }
-                }
-                return map;
-            } catch (error) {
-                console.error("Tooltip Data Load/Parse Error:", error);
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Tooltip Load Error',
-                    text: 'Failed to load tooltip descriptions from the sheet. Check the publish settings.'
-                });
-                return {};
-            }
-        }
+        } 
         
-        async function loadMainData(url) {
+        if (currentField || currentRow.length > 0) { 
+            currentRow.push(currentField); 
+            rows.push(currentRow); 
+        } 
+        
+        return rows; 
+    }
+
+    async function loadTooltipData(url) {
+        try {
             const response = await fetch(url);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const csvData = await response.text();
-            const parsedDataWithHeader = robustCsvParser(csvData);
-            return parsedDataWithHeader.slice(1);
-        }
-
-        async function loadAllDataAndInitTable() {
-            $('#loadingIndicator').show();
-            try {
-                const [mainData, loadedTooltips] = await Promise.all([
-                    loadMainData(mainDataUrl),
-                    loadTooltipData(tooltipDataUrl)
-                ]);
-                
-                tooltipMap = loadedTooltips;
-                initializeDataTable(mainData);
-
-            } catch (error) {
-                $('#loadingIndicator').hide();
-                console.error("Data Load/Parse Error:", error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Data Load Error',
-                    text: 'Failed to load primary data. Please check your internet connection and sheet settings.'
-                });
+            const parsedData = robustCsvParser(csvData);
+            const map = {};
+            for (let i = 1; i < parsedData.length; i++) {
+                const row = parsedData[i];
+                if (row && row[0]) {
+                    const key = row[0].toLowerCase().trim();
+                    const value = row[1] || '';
+                    map[key] = value.trim();
+                }
             }
+            return map;
+        } catch (error) {
+            console.error("Tooltip Data Load/Parse Error:", error);
+            Swal.fire({
+                icon: 'warning',
+                title: 'Tooltip Load Error',
+                text: 'Failed to load tooltip descriptions from the sheet. Check the publish settings.'
+            });
+            return {};
+        }
+    }
+    
+    async function loadMainData(url) {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const csvData = await response.text();
+        const parsedDataWithHeader = robustCsvParser(csvData);
+        return parsedDataWithHeader.slice(1);
+    }
+
+    async function loadAllDataAndInitTable() {
+        $('#loadingIndicator').show();
+        try {
+            const [mainData, loadedTooltips] = await Promise.all([
+                loadMainData(mainDataUrl),
+                loadTooltipData(tooltipDataUrl)
+            ]);
+            
+            tooltipMap = loadedTooltips;
+            initializeDataTable(mainData);
+
+        } catch (error) {
+            $('#loadingIndicator').hide();
+            console.error("Data Load/Parse Error:", error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Data Load Error',
+                text: 'Failed to load primary data. Please check your internet connection and sheet settings.'
+            });
+        }
+    }
+
+    const drugGroupColorMap = {
+        'gastro-intestinal system': 'bg-success', 'cardiovascular system': 'bg-danger', 'respiratory system': 'bg-info text-dark',
+        'central nervous system': 'bg-purple', 'infections': 'bg-warning text-dark', 'endocrine system': 'bg-orange', 'obstetrics': 'bg-pink',
+        'malignant disease': 'bg-dark', 'nutrition and blood': 'bg-primary', 'musculoskeletal': 'bg-teal', 'eye': 'bg-secondary',
+        'ear, nose, and oropharynx': 'bg-light text-dark', 'skin': 'bg-warning text-dark', 'immunological': 'bg-info text-dark',
+        'anesthesia': 'bg-purple', 'antidotes': 'bg-danger', 'contrast media': 'bg-primary', 'other': 'bg-secondary'
+    };
+    
+    const storageColorMap = { 'below 30°c': 'bg-success', '2°c - 8°c': 'bg-primary', 'below 25°c': 'bg-orange', 'below -20°c': 'bg-info', '-15°c ถึง -25°c': 'bg-info text-dark' };
+
+    const columnConfig = [
+        { title: 'Detail View', data: null, defaultContent: '<button class="btn btn-sm btn-primary view-details-btn" data-bs-toggle="tooltip" data-bs-placement="top" title="คลิกเพื่อดูข้อมูลของยาโดยละเอียด"><i class="fas fa-eye"></i></button>', orderable: false, className: 'text-center all-column', width: "60px" },
+        { title: 'Material No.', data: 0, className: 'default-column purchasing-column rate-column' },
+        { title: 'SAP Name', data: 1, width: "25%", className: 'default-column purchasing-column rate-column', render: (d, t) => t === 'display' && d ? `<span style="color: var(--primary-color)" class="fw-bold">${d}</span>` : d },
+        { title: 'Generic Name', data: 2, width: "25%", className: 'default-column' },
+        { title: 'TPU', data: 3, className: 'default-column purchasing-column' },
+        { title: 'GPU', data: 4, className: 'default-column' },
+        { title: 'เงื่อนไขการเบิกจ่าย', data: 5, className: 'default-column', width: '180px', render: (d,t) => renderBadge(d, t, {'สำรองจ่าย': 'bg-primary', 'ocpa': 'bg-success', 'เบิกได้': 'bg-success', 'ขรก เบิกไม่ได้': 'bg-danger', 'เบิกนอก': 'bg-info text-dark', 'วัคซีน': 'bg-warning text-dark'}, true) },
+        { title: 'บัญชียา', data: 6, className: 'default-column', render: (d,t) => renderBadge(d, t, {'ned': 'bg-danger', 'ed': 'bg-success' , 'ค่าสารทึบ': 'bg-orange', 'promotion': 'bg-warning text-dark', 'วิตามิน อาหารเสริม': 'bg-teal'}) },
+        { title: 'Purchasing Unit', data: 7, className: 'purchasing-column default-column' },
+        { title: 'ราคาขาย <span class="ml-3 text-sm font-bold text-red-600 px-2.5 py-1 rounded-full">NEW ✨</span> / หน่วย ', data: 8, width: '130px', className: 'default-column purchasing-column rate-column', render: (d, t, row) => `${formatNumber(row[8], 2, 2)} / ${row[9] || 'หน่วย'}` },
+        { title: 'ราคาทุน / หน่วย', data: 10, width: '130px', className: 'purchasing-column', render: (d, t, row) => `${formatNumber(row[10], 2, 2)} / ${row[11] || 'หน่วย'}` },
+        { title: 'Status', data: 12, className: 'default-column rate-column', render: (d,t) => renderBadge(d, t, {'ในบัญชี(ns)': 'bg-primary','ในบัญชี(วถ)': 'bg-info text-dark','ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}) },
+        { title: '08/67', data: 13, className: 'rate-column' }, { title: '09/67', data: 14, className: 'rate-column' }, { title: '10/67', data: 15, className: 'rate-column' },
+        { title: '11/67', data: 16, className: 'rate-column' }, { title: '12/67', data: 17, className: 'rate-column' }, { title: '01/68', data: 18, className: 'rate-column' },
+        { title: '02/68', data: 19, className: 'rate-column' }, { title: '03/68', data: 20, className: 'rate-column' }, { title: '04/68', data: 21, className: 'rate-column' },
+        { title: '05/68', data: 22, className: 'rate-column' }, { title: '06/68', data: 23, className: 'rate-column' }, { title: '07/68', data: 24, className: 'rate-column' },
+        { title: 'Drug Group', data: 25, className: 'default-column', render: (d, t) => renderBadge(d, t, drugGroupColorMap, true) },
+        { title: 'Drug Subgroup', data: 26, visible: false, className: 'modal-only' },
+        { title: 'ราคากลาง', data: 27, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
+        { title: 'Fee Schedule', data: 28, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
+        { title: 'Storage', data: 29, className: 'purchasing-column default-column', render: (d,t) => renderBadge(d, t, storageColorMap, true) },
+        { title: 'รหัสยาทดแทน', data: 30, className: 'purchasing-column' },
+        { title: 'การรับเข้าบัญชี', data: 31, className: 'purchasing-column' },
+        { title: 'Distributor', data: 32, className: 'purchasing-column' },
+        { title: 'ข้าราชการ', data: 33, visible: false, className: 'modal-only' }, { title: 'จ่ายเอง', data: 34, visible: false, className: 'modal-only' },
+        { title: 'ปกส', data: 35, visible: false, className: 'modal-only' }, { title: 'รัฐวิสาหกิจ', data: 36, visible: false, className: 'modal-only' },
+        { title: 'สปสช', data: 37, visible: false, className: 'modal-only' }, { title: 'สวัสดิการเจ้าหน้าที่', data: 38, visible: false, className: 'modal-only' },
+        { title: 'เงื่อนไขบัญชียาหลัก', data: 39, visible: false, className: 'modal-only' }, 
+        { title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', data: 40, visible: false, className: 'modal-only' },
+        { title: 'คำเตือน/หมายเหตุ/จำกัดแพทย์', data: 41, visible: false, className: 'modal-only' },
+        { title: 'PAP', data: 42, visible: false, className: 'modal-only' },
+        { title: 'Image 1', data: 43, visible: false, className: 'modal-only' },
+        { title: 'Image 2', data: 44, visible: false, className: 'modal-only' },
+        { title: 'Image 3', data: 45, visible: false, className: 'modal-only' }
+    ];
+    
+    function renderBadge(data, type, map, textWrap = false) {
+        if (type === 'display' && data) {
+            const status = data.toLowerCase().trim();
+            const key = Object.keys(map).find(k => status.includes(k.toLowerCase()));
+            const cls = key ? map[key] : 'bg-secondary';
+            
+            const tooltipKey = Object.keys(tooltipMap).find(k => status.includes(k.toLowerCase()));
+            const tooltipHtml = tooltipKey ? `data-bs-toggle="tooltip" data-bs-placement="top" title="${tooltipMap[tooltipKey]}"` : '';
+
+            return `<span class="badge ${cls} ${textWrap ? 'text-wrap' : ''}" ${tooltipHtml}>${data}</span>`;
+        }
+        return data;
+    }
+
+    function calculateTrendline(data) { if (!data || data.length < 2) return []; const n = data.length; let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0; for (let i = 0; i < n; i++) { sumX += i; sumY += data[i]; sumXY += i * data[i]; sumXX += i * i; } const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX); const intercept = (sumY - slope * sumX) / n; return data.map((_, i) => slope * i + intercept); }
+    function calculateStatistics(data) { const filteredData = data.filter(d => typeof d === 'number' && d > 0); if (filteredData.length === 0) return { mean: 0, avgLast3: 0, median: 0, min: 0, max: 0, stdDev: 0, total: 0 }; const total = data.reduce((sum, val) => sum + (val || 0), 0); const mean = filteredData.reduce((a, b) => a + b, 0) / filteredData.length; const last3 = data.slice(-3); const avgLast3 = last3.reduce((sum, val) => sum + (val || 0), 0) / last3.length; const sorted = [...filteredData].sort((a, b) => a - b); const mid = Math.floor(sorted.length / 2); const median = sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2; const min = Math.min(...filteredData); const max = Math.max(...filteredData); const stdDev = Math.sqrt(filteredData.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b, 0) / filteredData.length); return { mean, avgLast3, median, min, max, stdDev, total }; }
+    function createStatsTable(stats) { return ` <h5 class="mt-4">Usage Statistics</h5> <div class="table-responsive"> <table class="table table-sm table-bordered text-center"> <thead class="table-light"> <tr> <th>Average</th> <th>3-Month Avg</th> <th>Median</th> <th>Min / Max</th> <th>Std. Dev</th> <th>Total</th> </tr> </thead> <tbody> <tr> <td>${formatNumber(stats.mean, 2, 2)}</td> <td>${formatNumber(stats.avgLast3, 2, 2)}</td> <td>${formatNumber(stats.median, 2, 2)}</td> <td>${formatNumber(stats.min, 0, 0)} / ${formatNumber(stats.max, 0, 0)}</td> <td>${formatNumber(stats.stdDev, 2, 2)}</td> <td>${formatNumber(stats.total, 0, 0)}</td> </tr> </tbody> </table> </div>`; }
+
+    // MODIFIED: This entire function is replaced with the new logic
+    // MODIFIED: This entire function is replaced with the new, more robust version
+    function initializeDataTable(data) {
+        $('#loadingIndicator').hide();
+        table = $('#drugTable').DataTable({ 
+            data: data, 
+            columns: columnConfig, 
+            dom: 'rt<"bottom d-flex justify-content-between align-items-center mt-3"lip>', 
+            pageLength: 10, 
+            lengthMenu: [10, 25, 50, 100], 
+            scrollX: true, 
+            responsive: false, 
+            language: { 
+                info: "Showing _START_ to _END_ of _TOTAL_ entries", 
+                lengthMenu: "Show _MENU_ entries", 
+                paginate: { 
+                    first: "First", 
+                    last: "Last", 
+                    next: "Next", 
+                    previous: "Previous" 
+                } 
+            } 
+        });
+        
+        // --- Select2 Dropdown Filter Setup ---
+
+        const allData = table.rows().data().toArray();
+        const $drugGroupFilter = $('#drugGroupFilter');
+        const $drugSubgroupFilter = $('#drugSubgroupFilter');
+
+        // ADDED: Create a normalized color map to handle potential whitespace/casing issues.
+        // This makes the color matching much more reliable.
+        const normalizedDrugGroupColorMap = {};
+        for (const key in drugGroupColorMap) {
+            normalizedDrugGroupColorMap[key.trim().toLowerCase()] = drugGroupColorMap[key];
         }
 
-        const drugGroupColorMap = {
-            'gastro-intestinal system': 'bg-success', 'cardiovascular system': 'bg-danger', 'respiratory system': 'bg-info text-dark',
-            'central nervous system': 'bg-purple', 'infections': 'bg-warning text-dark', 'endocrine system': 'bg-orange', 'obstetrics': 'bg-pink',
-            'malignant disease': 'bg-dark', 'nutrition and blood': 'bg-primary', 'musculoskeletal': 'bg-teal', 'eye': 'bg-secondary',
-            'ear, nose, and oropharynx': 'bg-light text-dark', 'skin': 'bg-warning text-dark', 'immunological': 'bg-info text-dark',
-            'anesthesia': 'bg-purple', 'antidotes': 'bg-danger', 'contrast media': 'bg-primary', 'other': 'bg-secondary'
+        // MODIFIED: Use the normalized map and trimmed keys for more robust color assignment.
+        const subgroupColorMap = {};
+        allData.forEach(row => {
+            const group = row[25];
+            const subgroup = row[26];
+            if (group && subgroup) {
+                const subgroupKey = subgroup.trim(); // Use trimmed key for the subgroup
+                if (!subgroupColorMap[subgroupKey]) {
+                    const groupKey = group.trim().toLowerCase(); // Use trimmed, lowercase key for the group
+                    subgroupColorMap[subgroupKey] = normalizedDrugGroupColorMap[groupKey] || 'bg-secondary';
+                }
+            }
+        });
+        
+        // MODIFIED: This function now uses the more reliable normalized map and key cleaning.
+        function formatGroupState(state) {
+            if (!state.id) { return state.text; }
+            const key = state.id.trim().toLowerCase();
+            const cls = normalizedDrugGroupColorMap[key] || 'bg-secondary';
+            return $(`<span><span class="badge ${cls}">${state.text}</span></span>`);
+        };
+
+        // MODIFIED: This function now uses a cleaned key for lookup.
+        function formatSubgroupState(state) {
+            if (!state.id) { return state.text; }
+            const key = state.id.trim();
+            const colorClass = subgroupColorMap[key] || 'bg-secondary';
+            return $(`<span><span class="badge ${colorClass}">${state.text}</span></span>`);
         };
         
-        const storageColorMap = { 'below 30°c': 'bg-success', '2°c - 8°c': 'bg-primary', 'below 25°c': 'bg-orange', 'below -20°c': 'bg-info', '-15°c ถึง -25°c': 'bg-info text-dark' };
+        // 1. Populate and Initialize Drug Group Filter
+        const drugGroups = [...new Set(allData.map(row => row[25]).filter(Boolean))].sort();
+        drugGroups.forEach(group => {
+            $drugGroupFilter.append(new Option(group, group));
+        });
+        $drugGroupFilter.select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Select Drug Groups',
+            closeOnSelect: false,
+            templateResult: formatGroupState,
+            templateSelection: formatGroupState
+        });
 
-        const columnConfig = [
-                { title: 'Detail View', data: null, defaultContent: '<button class="btn btn-sm btn-primary view-details-btn" data-bs-toggle="tooltip" data-bs-placement="top" title="คลิกเพื่อดูข้อมูลของยาโดยละเอียด"><i class="fas fa-eye"></i></button>', orderable: false, className: 'text-center all-column', width: "60px" },
-                { title: 'Material No.', data: 0, className: 'default-column purchasing-column rate-column' },
-                { title: 'SAP Name', data: 1, width: "25%", className: 'default-column purchasing-column rate-column', render: (d, t) => t === 'display' && d ? `<span style="color: var(--primary-color)" class="fw-bold">${d}</span>` : d },
-                { title: 'Generic Name', data: 2, width: "25%", className: 'default-column' },
-                { title: 'TPU', data: 3, className: 'default-column purchasing-column' },
-                { title: 'GPU', data: 4, className: 'default-column' },
-                { title: 'เงื่อนไขการเบิกจ่าย', data: 5, className: 'default-column', width: '180px', render: (d,t) => renderBadge(d, t, {'สำรองจ่าย': 'bg-primary', 'ocpa': 'bg-success', 'เบิกได้': 'bg-success', 'ขรก เบิกไม่ได้': 'bg-danger', 'เบิกนอก': 'bg-info text-dark', 'วัคซีน': 'bg-warning text-dark'}, true) },
-                { title: 'บัญชียา', data: 6, className: 'default-column', render: (d,t) => renderBadge(d, t, {'ned': 'bg-danger', 'ed': 'bg-success' , 'ค่าสารทึบ': 'bg-orange', 'promotion': 'bg-warning text-dark', 'วิตามิน อาหารเสริม': 'bg-teal'}) },
-                { title: 'Purchasing Unit', data: 7, className: 'purchasing-column default-column' },
-                { title: 'ราคาขาย / หน่วย', data: 8, width: '130px', className: 'default-column purchasing-column rate-column', render: (d, t, row) => `${formatNumber(row[8], 2, 2)} / ${row[9] || 'หน่วย'}` },
-                { title: 'Storage', data: 28, className: 'default-column', render: (d,t) => renderBadge(d, t, storageColorMap, true) },
-                { title: 'ราคาทุน / หน่วย', data: 10, width: '130px', className: 'purchasing-column', render: (d, t, row) => `${formatNumber(row[10], 2, 2)} / ${row[11] || 'หน่วย'}` },
-                { title: 'Status', data: 12, className: 'default-column rate-column', render: (d,t) => renderBadge(d, t, {'ในบัญชี(ns)': 'bg-primary','ในบัญชี(วถ)': 'bg-info text-dark','ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}) },
-                { title: '07/67', data: 13, className: 'rate-column' }, { title: '08/67', data: 14, className: 'rate-column' }, { title: '09/67', data: 15, className: 'rate-column' },
-                { title: '10/67', data: 16, className: 'rate-column' }, { title: '11/67', data: 17, className: 'rate-column' }, { title: '12/67', data: 18, className: 'rate-column' },
-                { title: '01/68', data: 19, className: 'rate-column' }, { title: '02/68', data: 20, className: 'rate-column' }, { title: '03/68', data: 21, className: 'rate-column' },
-                { title: '04/68', data: 22, className: 'rate-column' }, { title: '05/68', data: 23, className: 'rate-column' }, { title: '06/68', data: 24, className: 'rate-column' },
-                { title: 'Drug Group', data: 25, className: '', render: (d, t) => renderBadge(d, t, drugGroupColorMap, true) },
-                { title: 'ราคากลาง', data: 26, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
-                { title: 'Fee Schedule', data: 27, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) },
-                { title: 'รหัสยาทดแทน', data: 29, className: 'purchasing-column' },
-                { title: 'การรับเข้าบัญชี', data: 30, className: 'purchasing-column' },
-                { title: 'Distributor', data: 31, className: 'purchasing-column' },
-                { title: 'ข้าราชการ', data: 32, visible: false, className: 'modal-only' }, { title: 'จ่ายเอง', data: 33, visible: false, className: 'modal-only' },
-                { title: 'ปกส', data: 34, visible: false, className: 'modal-only' }, { title: 'รัฐวิสาหกิจ', data: 35, visible: false, className: 'modal-only' },
-                { title: 'สปสช', data: 36, visible: false, className: 'modal-only' }, { title: 'สวัสดิการเจ้าหน้าที่', data: 37, visible: false, className: 'modal-only' },
-                { title: 'เงื่อนไขบัญชียาหลัก', data: 38, visible: false, className: 'modal-only' }, 
-                { title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', data: 39, visible: false, className: 'modal-only' },
-                { title: 'คำเตือน/หมายเหตุ/จำกัดแพทย์', data: 40, visible: false, className: 'modal-only' },
-                { title: 'PAP', data: 41, visible: false, className: 'modal-only' },
-                { title: 'Image 1', data: 42, visible: false, className: 'modal-only' },
-                { title: 'Image 2', data: 43, visible: false, className: 'modal-only' },
-                { title: 'Image 3', data: 44, visible: false, className: 'modal-only' }
+        // 2. Populate and Initialize Subgroup Filter
+        const allSubgroups = [...new Set(allData.map(row => row[26]).filter(Boolean))].sort();
+        allSubgroups.forEach(subgroup => {
+            $drugSubgroupFilter.append(new Option(subgroup, subgroup));
+        });
+        $drugSubgroupFilter.select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Select Subgroups',
+            closeOnSelect: false,
+            templateResult: formatSubgroupState,
+            templateSelection: formatSubgroupState
+        });
+
+        // 3. Event Listeners (This logic remains the same)
+        $('#toggleFilterBtn').on('click', () => $('#filterPanel').slideToggle());
+
+        $drugGroupFilter.on('change', function() {
+            selectedGroups = $(this).val() || [];
+            
+            const currentSubgroupSelection = $drugSubgroupFilter.val() || [];
+            $drugSubgroupFilter.empty(); 
+
+            let relevantSubgroups;
+            if (selectedGroups.length > 0) {
+                const selectedGroupsClean = selectedGroups.map(g => g.trim());
+                relevantSubgroups = [...new Set(
+                    allData
+                        .filter(row => row[25] && selectedGroupsClean.includes(row[25].trim()))
+                        .map(row => row[26])
+                )].filter(Boolean).sort();
+            } else {
+                relevantSubgroups = allSubgroups;
+            }
+            
+            relevantSubgroups.forEach(subgroup => {
+                $drugSubgroupFilter.append(new Option(subgroup, subgroup));
+            });
+
+            const newValidSelection = currentSubgroupSelection.filter(sg => relevantSubgroups.includes(sg));
+            $drugSubgroupFilter.val(newValidSelection).trigger('change.select2');
+            
+            table.draw();
+        });
+
+        $drugSubgroupFilter.on('change', function() {
+            selectedSubgroups = $(this).val() || [];
+            table.draw();
+        });
+
+        $('#clearGroupFilter').on('click', function() {
+            $drugGroupFilter.val(null).trigger('change');
+        });
+        $('#clearSubgroupFilter').on('click', function() {
+            $drugSubgroupFilter.val(null).trigger('change');
+        });
+
+        // --- End of Filter Code ---
+
+        $('#globalSearch').on('keyup', function () { table.search(this.value).draw(); });
+        setView('default');
+        
+        $('#drugTable tbody').on('click', 'button.view-details-btn', function () {
+            const row = table.row($(this).closest('tr')); if (!row.any()) return;
+            const rowData = row.data();
+            $('#drugDetailModalLabel').html(`<strong>${rowData[1] || ''}</strong> <small class="text-white-50 fw-normal">(${rowData[2] || 'N/A'})</small>`);
+            
+            function createDetailCard(options) { const { title, value, valueClass, itemClass, isProtected, realValue } = { valueClass: '', itemClass: '', isProtected: false, realValue: '', ...options }; if (!value || value.toString().trim() === '-' || value.toString().trim() === '') return ''; let titleHtml = `<strong>${title}</strong>`; let valueHtml = `<div class="value-container ${valueClass}" data-real-value="${realValue}">${value}</div>`; if (isProtected && !passwordVerified) { titleHtml = `<strong>${title} <i class="fas fa-lock unlock-cost-btn" title="ปลดล็อคเพื่อดูราคาทุน"></i></strong>`; valueHtml = `<div class="value-container ${valueClass}" data-real-value="${realValue}">****</div>`; } return `<div class="detail-item ${itemClass}">${titleHtml}${valueHtml}</div>`; }
+            let detailsHtml = '';
+
+            // Details rows creation... (This part remains unchanged)
+            let row1Html = ''; 
+            row1Html += createDetailCard({ title: 'Material No.', value: rowData[0], valueClass: 'main-title-value', itemClass: 'material-no-card' }); 
+            row1Html += createDetailCard({ title: 'SAP Name', value: rowData[1], valueClass: 'main-title-value' }); 
+            row1Html += createDetailCard({ title: 'Generic Name', value: rowData[2], valueClass: 'main-title-value' }); 
+            if (row1Html) detailsHtml += `<div class="detail-row">${row1Html}</div>`;
+            
+            let row2Html = '';
+            row2Html += createDetailCard({ title: 'TPU', value: rowData[3], itemClass: 'compact-card' });
+            row2Html += createDetailCard({ title: 'GPU', value: rowData[4], itemClass: 'compact-card' });
+            row2Html += createDetailCard({ title: 'เงื่อนไขการเบิกจ่าย', value: renderBadge(rowData[5], 'display', {'สำรองจ่าย': 'bg-primary', 'ocpa': 'bg-success', 'เบิกได้': 'bg-success', 'ขรก เบิกไม่ได้': 'bg-danger', 'เบิกนอก': 'bg-info text-dark', 'วัคซีน': 'bg-warning text-dark'}, true), itemClass: 'status-card' });
+            row2Html += createDetailCard({ title: 'บัญชียา', value: renderBadge(rowData[6], 'display', {'ned': 'bg-danger', 'ed': 'bg-success', 'ในบัญชี(วถ)': 'bg-info text-dark', 'ค่าสารทึบ': 'bg-primary', 'promotion': 'bg-warning text-dark', 'วิตามิน อาหารเสริม': 'bg-teal'}), itemClass: 'status-card' });
+            row2Html += createDetailCard({ title: 'Status', value: renderBadge(rowData[12], 'display', {'ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}), itemClass: 'status-card' });
+
+            if (row2Html) detailsHtml += `<div class="detail-row">${row2Html}</div>`;
+            
+            let row3Html = ''; 
+            row3Html += createDetailCard({ title: 'Drug Group', value: renderBadge(rowData[25], 'display', drugGroupColorMap, true) });
+            row3Html += createDetailCard({ title: 'Drug Subgroup', value: renderBadge(rowData[26], 'display', subgroupColorMap, true) });
+            row3Html += createDetailCard({ title: 'ราคาขาย', value: `${formatNumber(rowData[8], 2, 2)} / ${rowData[9] || 'หน่วย'}`, valueClass: 'sale-price-value', itemClass: 'highlight-card' }); 
+            const realCostValue = `${formatNumber(rowData[10], 2, 2)} / ${rowData[11] || 'หน่วย'}`; 
+            row3Html += createDetailCard({ title: 'ราคาทุน', value: realCostValue, valueClass: 'cost-price-value', itemClass: 'highlight-card', isProtected: true, realValue: realCostValue }); 
+            row3Html += createDetailCard({ title: 'ราคากลาง', value: formatNumber(rowData[27], 2, 2) }); 
+            row3Html += createDetailCard({ title: 'Fee Schedule', value: formatNumber(rowData[28], 2, 2) });
+            row3Html += createDetailCard({ title: 'การรับเข้าบัญชี', value: rowData[31] });
+            if (row3Html) detailsHtml += `<div class="detail-row">${row3Html}</div>`;
+
+            let row4Html = '';
+            row4Html += createDetailCard({ title: 'Purchasing Unit', value: rowData[7] });
+            row4Html += createDetailCard({ title: 'Distributor', value: rowData[32] });
+            row4Html += createDetailCard({ title: 'Storage', value: renderBadge(rowData[29], 'display', storageColorMap, true) });
+            row4Html += createDetailCard({ title: 'รหัสยาทดแทน', value: rowData[30] }); 
+            if (row4Html) detailsHtml += `<div class="detail-row">${row4Html}</div>`;
+
+            let row5Html = ''; 
+            let conditions = rowData[39]; if (conditions) conditions = conditions.replace(/\n/g, '<br>'); 
+            row5Html += createDetailCard({ title: 'เงื่อนไขบัญชียาหลัก', value: conditions, itemClass: 'orange-border-card' }); 
+            let indications = rowData[40]; if (indications) indications = indications.replace(/\n/g, '<br>'); 
+            row5Html += createDetailCard({ title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', value: indications }); 
+            let papValue = rowData[42]; if (papValue) papValue = papValue.replace(/\n/g, '<br>'); 
+            row5Html += createDetailCard({ title: 'PAP', value: papValue, itemClass: 'orange-border-card' }); 
+            if (row5Html) detailsHtml += `<div class="detail-row">${row5Html}</div>`;
+            
+            let row6Html = '';
+            let warningNote = rowData[41]; if (warningNote) warningNote = warningNote.replace(/\n/g, '<br>');
+            row6Html += createDetailCard({ title: 'คำเตือน/หมายเหตุ/จำกัดแพทย์', value: warningNote, itemClass: 'danger-border-card' });
+            if (row6Html) detailsHtml += `<div class="detail-row">${row6Html}</div>`;
+
+            // Rest of the modal logic remains unchanged...
+            let imageHtml = '';
+            if (rowData[43]) imageHtml += `<img src="${rowData[43]}" class="drug-image img-fluid" alt="Drug Image 1" onerror="this.style.display='none'">`;
+            if (rowData[44]) imageHtml += `<img src="${rowData[44]}" class="drug-image img-fluid" alt="Drug Image 2" onerror="this.style.display='none'">`;
+            if (rowData[45]) imageHtml += `<img src="${rowData[45]}" class="drug-image img-fluid" alt="Drug Image 3" onerror="this.style.display='none'">`;
+
+            const rateLabels = [], usageData = [], caseData = [];
+            columnConfig.forEach(col => {
+                if (/\d{2}\/\d{2}/.test(col.title)) {
+                    const rawValue = rowData[col.data] || '';
+                    usageData.push(parseFloat(rawValue.match(/^[0-9.]+/)?.[0] || 0));
+                    caseData.push(parseInt(rawValue.match(/\((\d+)\)/)?.[1] || 0, 10));
+                    rateLabels.push(col.title);
+                }
+            });
+
+            const payerLabels = ['ข้าราชการ', 'จ่ายเอง', 'ปกส', 'รัฐวิสาหกิจ', 'สปสช', 'สวัสดิการเจ้าหน้าที่'];
+            const payerData = [
+                parseFloat(rowData[33] || 0), parseFloat(rowData[34] || 0), parseFloat(rowData[35] || 0),
+                parseFloat(rowData[36] || 0), parseFloat(rowData[37] || 0), parseFloat(rowData[38] || 0)
             ];
-        
-        function renderBadge(data, type, map, textWrap = false) {
-            if (type === 'display' && data) {
-                const status = data.toLowerCase().trim();
-                const key = Object.keys(map).find(k => status.includes(k.toLowerCase()));
-                const cls = key ? map[key] : 'bg-secondary';
-                
-                const tooltipKey = Object.keys(tooltipMap).find(k => status.includes(k.toLowerCase()));
-                const tooltipHtml = tooltipKey ? `data-bs-toggle="tooltip" data-bs-placement="top" title="${tooltipMap[tooltipKey]}"` : '';
-
-                return `<span class="badge ${cls} ${textWrap ? 'text-wrap' : ''}" ${tooltipHtml}>${data}</span>`;
+            const showUsageStats = usageData.some(d => d > 0);
+            const showPieChart = payerData.some(d => d > 0);
+            
+            let statsHtml = '';
+            if (showUsageStats) {
+                let chartsHtml = `<div class="charts-container"> <div class="chart-wrapper"><h5 class="mb-3">อัตราการใช้ยาย้อนหลัง 12 เดือน</h5><canvas id="usageLineChart"></canvas></div> ${showPieChart ? `<div class="chart-wrapper"><h5 class="mb-3">สัดส่วนการใช้ตามสิทธิ์</h5><canvas id="payerPieChart"></canvas></div>` : ''} </div>`;
+                const stats = calculateStatistics(usageData);
+                const statsTable = createStatsTable(stats);
+                let caseTable = `<h5 class="mt-4">จำนวนเคส (Case Count)</h5><div class="table-responsive"><table class="table table-sm table-bordered text-center"><thead><tr>`;
+                rateLabels.forEach(label => caseTable += `<th>${label}</th>`);
+                caseTable += `</tr></thead><tbody><tr>${caseData.map(d => `<td>${formatNumber(d, 0, 0)}</td>`).join('')}</tr></tbody></table></div>`;
+                let tablesHtml = `<div class="tables-container mt-5">${statsTable}${caseTable}</div>`;
+                statsHtml = `<div id="stats-section">${chartsHtml}${tablesHtml}</div>`;
+            } else {
+                statsHtml = '<div id="stats-section"><h5>ข้อมูลสถิติ</h5><p class="text-center text-muted mt-3">ไม่มีข้อมูลย้อนหลัง 1 ปี</p></div>';
             }
-            return data;
-        }
-
-        function calculateTrendline(data) { if (!data || data.length < 2) return []; const n = data.length; let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0; for (let i = 0; i < n; i++) { sumX += i; sumY += data[i]; sumXY += i * data[i]; sumXX += i * i; } const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX); const intercept = (sumY - slope * sumX) / n; return data.map((_, i) => slope * i + intercept); }
-        function calculateStatistics(data) { const filteredData = data.filter(d => typeof d === 'number' && d > 0); if (filteredData.length === 0) return { mean: 0, avgLast3: 0, median: 0, min: 0, max: 0, stdDev: 0, total: 0 }; const total = data.reduce((sum, val) => sum + (val || 0), 0); const mean = filteredData.reduce((a, b) => a + b, 0) / filteredData.length; const last3 = data.slice(-3); const avgLast3 = last3.reduce((sum, val) => sum + (val || 0), 0) / last3.length; const sorted = [...filteredData].sort((a, b) => a - b); const mid = Math.floor(sorted.length / 2); const median = sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2; const min = Math.min(...filteredData); const max = Math.max(...filteredData); const stdDev = Math.sqrt(filteredData.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b, 0) / filteredData.length); return { mean, avgLast3, median, min, max, stdDev, total }; }
-        function createStatsTable(stats) { return ` <h5 class="mt-4">Usage Statistics</h5> <div class="table-responsive"> <table class="table table-sm table-bordered text-center"> <thead class="table-light"> <tr> <th>Average</th> <th>3-Month Avg</th> <th>Median</th> <th>Min / Max</th> <th>Std. Dev</th> <th>Total</th> </tr> </thead> <tbody> <tr> <td>${formatNumber(stats.mean, 2, 2)}</td> <td>${formatNumber(stats.avgLast3, 2, 2)}</td> <td>${formatNumber(stats.median, 2, 2)}</td> <td>${formatNumber(stats.min, 0, 0)} / ${formatNumber(stats.max, 0, 0)}</td> <td>${formatNumber(stats.stdDev, 2, 2)}</td> <td>${formatNumber(stats.total, 0, 0)}</td> </tr> </tbody> </table> </div>`; }
-
-        function initializeDataTable(data) {
-            $('#loadingIndicator').hide();
-            table = $('#drugTable').DataTable({ 
-                data: data, 
-                columns: columnConfig, 
-                dom: 'rt<"bottom d-flex justify-content-between align-items-center mt-3"lip>', 
-                pageLength: 10, 
-                lengthMenu: [10, 25, 50, 100], 
-                scrollX: true, 
-                responsive: false, 
-                language: { 
-                    info: "Showing _START_ to _END_ of _TOTAL_ entries", 
-                    lengthMenu: "Show _MENU_ entries", 
-                    paginate: { 
-                        first: "First", 
-                        last: "Last", 
-                        next: "Next", 
-                        previous: "Previous" 
-                    } 
-                } 
-            });
             
-            $('#globalSearch').on('keyup', function () { table.search(this.value).draw(); });
-            setView('default');
+            const finalModalHtml = `<div class="modal-main-layout"><div class="details-section">${detailsHtml}${statsHtml}</div>${imageHtml ? `<div class="image-section"><h5>รูปภาพประกอบ</h5>${imageHtml}</div>` : ''}</div>`;
+            $('#drugDetailModalBody').html(finalModalHtml);
+
+            $('#drugDetailModal').data('drug-name', `${rowData[1]} (Mat No: ${rowData[0]})`);
+
+            if (lineChartInstance) lineChartInstance.destroy(); if (pieChartInstance) pieChartInstance.destroy();
+            if (showUsageStats) { const dataMax = Math.max(...usageData); const suggestedMax = dataMax > 0 ? dataMax * 1.15 : 1; const trendlineData = calculateTrendline(usageData); const lineCtx = document.getElementById('usageLineChart').getContext('2d'); lineChartInstance = new Chart(lineCtx, { type: 'line', data: { labels: rateLabels, datasets: [ { label: 'Usage Rate', data: usageData, borderColor: 'var(--primary-color)', backgroundColor: 'rgba(0, 91, 161, 0.2)', fill: true, tension: 0.1 }, { label: 'Trendline', data: trendlineData, type: 'line', fill: false, borderColor: 'rgba(220, 53, 69, 0.7)', borderWidth: 2, borderDash: [5, 5], pointRadius: 0, datalabels: { display: false } } ] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { ticks: { color: '#000000', font: { weight: 'bold' } } }, y: { ticks: { color: '#000000', font: { weight: 'bold' } }, min: 0, suggestedMax: suggestedMax } }, plugins: { legend: { display: true, position: 'top', labels: { usePointStyle: true } }, datalabels: { align: 'end', anchor: 'end', color: '#555', font: { weight: 'bold', size: 14 }, formatter: (value) => value > 0 ? Math.round(value) : '' } } } }); }
+            if (showUsageStats && showPieChart) { const pieCtx = document.getElementById('payerPieChart').getContext('2d'); pieChartInstance = new Chart(pieCtx, { type: 'pie', data: { labels: payerLabels, datasets: [{ label: 'สัดส่วน', data: payerData, backgroundColor: ['#005ba1', '#dc3545', '#198754', '#6f42c1', '#fd7e14', '#ffc107'], hoverOffset: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#000000', font: { weight: 'bold' } } }, datalabels: { color: '#fff', textStrokeColor: '#000', textStrokeWidth: 2, font: { weight: 'bold', size: 14 }, formatter: (value, ctx) => { if (value === 0) return ''; const total = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); const percentage = (value / total * 100).toFixed(1) + '%'; return percentage; } } } } }); }
             
-            $('#drugTable tbody').on('click', 'button.view-details-btn', function () {
-                const row = table.row($(this).closest('tr')); if (!row.any()) return;
-                const rowData = row.data();
-                $('#drugDetailModalLabel').html(`<strong>${rowData[1] || ''}</strong> <small class="text-white-50 fw-normal">(${rowData[2] || 'N/A'})</small>`);
-                
-                function createDetailCard(options) { const { title, value, valueClass, itemClass, isProtected, realValue } = { valueClass: '', itemClass: '', isProtected: false, realValue: '', ...options }; if (!value || value.toString().trim() === '-' || value.toString().trim() === '') return ''; let titleHtml = `<strong>${title}</strong>`; let valueHtml = `<div class="value-container ${valueClass}" data-real-value="${realValue}">${value}</div>`; if (isProtected && !passwordVerified) { titleHtml = `<strong>${title} <i class="fas fa-lock unlock-cost-btn" title="ปลดล็อคเพื่อดูราคาทุน"></i></strong>`; valueHtml = `<div class="value-container ${valueClass}" data-real-value="${realValue}">****</div>`; } return `<div class="detail-item ${itemClass}">${titleHtml}${valueHtml}</div>`; }
-                let detailsHtml = '';
-
-                // Row 1
-                let row1Html = ''; 
-                row1Html += createDetailCard({ title: 'Material No.', value: rowData[0], valueClass: 'main-title-value', itemClass: 'material-no-card' }); 
-                row1Html += createDetailCard({ title: 'SAP Name', value: rowData[1], valueClass: 'main-title-value' }); 
-                row1Html += createDetailCard({ title: 'Generic Name', value: rowData[2], valueClass: 'main-title-value' }); 
-                if (row1Html) detailsHtml += `<div class="detail-row">${row1Html}</div>`;
-                
-                // Row 2
-                let row2Html = '';
-                row2Html += createDetailCard({ title: 'TPU', value: rowData[3], itemClass: 'compact-card' });
-                row2Html += createDetailCard({ title: 'GPU', value: rowData[4], itemClass: 'compact-card' });
-                row2Html += createDetailCard({ title: 'เงื่อนไขการเบิกจ่าย', value: renderBadge(rowData[5], 'display', {'สำรองจ่าย': 'bg-primary', 'ocpa': 'bg-success', 'เบิกได้': 'bg-success', 'ขรก เบิกไม่ได้': 'bg-danger', 'เบิกนอก': 'bg-info text-dark', 'วัคซีน': 'bg-warning text-dark'}, true), itemClass: 'status-card' });
-                row2Html += createDetailCard({ title: 'บัญชียา', value: renderBadge(rowData[6], 'display', {'ned': 'bg-danger', 'ed': 'bg-success', 'ในบัญชี(วถ)': 'bg-info text-dark', 'ค่าสารทึบ': 'bg-primary', 'promotion': 'bg-warning text-dark', 'วิตามิน อาหารเสริม': 'bg-teal'}), itemClass: 'status-card' });
-                row2Html += createDetailCard({ title: 'Status', value: renderBadge(rowData[12], 'display', {'ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}), itemClass: 'status-card' });
-                row2Html += createDetailCard({ title: 'Drug Group', value: renderBadge(rowData[25], 'display', drugGroupColorMap, true) });
-                if (row2Html) detailsHtml += `<div class="detail-row">${row2Html}</div>`;
-                
-                // Row 3
-                let row3Html = ''; 
-                row3Html += createDetailCard({ title: 'ราคาขาย', value: `${formatNumber(rowData[8], 2, 2)} / ${rowData[9] || 'หน่วย'}`, valueClass: 'sale-price-value', itemClass: 'highlight-card' }); 
-                const realCostValue = `${formatNumber(rowData[10], 2, 2)} / ${rowData[11] || 'หน่วย'}`; 
-                row3Html += createDetailCard({ title: 'ราคาทุน', value: realCostValue, valueClass: 'cost-price-value', itemClass: 'highlight-card', isProtected: true, realValue: realCostValue }); 
-                row3Html += createDetailCard({ title: 'ราคากลาง', value: formatNumber(rowData[26], 2, 2) }); 
-                row3Html += createDetailCard({ title: 'Fee Schedule', value: formatNumber(rowData[27], 2, 2) });
-                row3Html += createDetailCard({ title: 'การรับเข้าบัญชี', value: rowData[30] });
-                if (row3Html) detailsHtml += `<div class="detail-row">${row3Html}</div>`;
-
-                // Row 4
-                let row4Html = '';
-                row4Html += createDetailCard({ title: 'Purchasing Unit', value: rowData[7] });
-                row4Html += createDetailCard({ title: 'Distributor', value: rowData[31] });
-                row4Html += createDetailCard({ title: 'Storage', value: renderBadge(rowData[28], 'display', storageColorMap, true) });
-                row4Html += createDetailCard({ title: 'รหัสยาทดแทน', value: rowData[29] }); 
-                if (row4Html) detailsHtml += `<div class="detail-row">${row4Html}</div>`;
-
-                // Row 5
-                let row5Html = ''; 
-                let conditions = rowData[38]; if (conditions) conditions = conditions.replace(/\n/g, '<br>'); 
-                row5Html += createDetailCard({ title: 'เงื่อนไขบัญชียาหลัก', value: conditions, itemClass: 'orange-border-card' }); 
-                let indications = rowData[39]; if (indications) indications = indications.replace(/\n/g, '<br>'); 
-                row5Html += createDetailCard({ title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', value: indications }); 
-                let papValue = rowData[41]; if (papValue) papValue = papValue.replace(/\n/g, '<br>'); 
-                row5Html += createDetailCard({ title: 'PAP', value: papValue, itemClass: 'orange-border-card' }); 
-                if (row5Html) detailsHtml += `<div class="detail-row">${row5Html}</div>`;
-                
-                // Row 6
-                let row6Html = '';
-                let warningNote = rowData[40]; if (warningNote) warningNote = warningNote.replace(/\n/g, '<br>');
-                row6Html += createDetailCard({ title: 'คำเตือน/หมายเหตุ/จำกัดแพทย์', value: warningNote, itemClass: 'danger-border-card' });
-                if (row6Html) detailsHtml += `<div class="detail-row">${row6Html}</div>`;
-                
-                let imageHtml = '';
-                if (rowData[42]) imageHtml += `<img src="${rowData[42]}" class="drug-image img-fluid" alt="Drug Image 1" onerror="this.style.display='none'">`;
-                if (rowData[43]) imageHtml += `<img src="${rowData[43]}" class="drug-image img-fluid" alt="Drug Image 2" onerror="this.style.display='none'">`;
-                if (rowData[44]) imageHtml += `<img src="${rowData[44]}" class="drug-image img-fluid" alt="Drug Image 3" onerror="this.style.display='none'">`;
-
-                const rateLabels = [], usageData = [], caseData = [];
-                columnConfig.forEach(col => {
-                    if (/\d{2}\/\d{2}/.test(col.title)) {
-                        const rawValue = rowData[col.data] || '';
-                        usageData.push(parseFloat(rawValue.match(/^[0-9.]+/)?.[0] || 0));
-                        caseData.push(parseInt(rawValue.match(/\((\d+)\)/)?.[1] || 0, 10));
-                        rateLabels.push(col.title);
-                    }
-                });
-
-                const payerLabels = ['ข้าราชการ', 'จ่ายเอง', 'ปกส', 'รัฐวิสาหกิจ', 'สปสช', 'สวัสดิการเจ้าหน้าที่'];
-                const payerData = [
-                    parseFloat(rowData[32] || 0), parseFloat(rowData[33] || 0), parseFloat(rowData[34] || 0),
-                    parseFloat(rowData[35] || 0), parseFloat(rowData[36] || 0), parseFloat(rowData[37] || 0)
-                ];
-                const showUsageStats = usageData.some(d => d > 0);
-                const showPieChart = payerData.some(d => d > 0);
-                
-                let statsHtml = '';
-                if (showUsageStats) {
-                    let chartsHtml = `<div class="charts-container"> <div class="chart-wrapper"><h5 class="mb-3">อัตราการใช้ยาย้อนหลัง 12 เดือน</h5><canvas id="usageLineChart"></canvas></div> ${showPieChart ? `<div class="chart-wrapper"><h5 class="mb-3">สัดส่วนการใช้ตามสิทธิ์</h5><canvas id="payerPieChart"></canvas></div>` : ''} </div>`;
-                    const stats = calculateStatistics(usageData);
-                    const statsTable = createStatsTable(stats);
-                    let caseTable = `<h5 class="mt-4">จำนวนเคส (Case Count)</h5><div class="table-responsive"><table class="table table-sm table-bordered text-center"><thead><tr>`;
-                    rateLabels.forEach(label => caseTable += `<th>${label}</th>`);
-                    caseTable += `</tr></thead><tbody><tr>${caseData.map(d => `<td>${formatNumber(d, 0, 0)}</td>`).join('')}</tr></tbody></table></div>`;
-                    let tablesHtml = `<div class="tables-container mt-5">${statsTable}${caseTable}</div>`;
-                    statsHtml = `<div id="stats-section">${chartsHtml}${tablesHtml}</div>`;
-                } else {
-                    statsHtml = '<div id="stats-section"><h5>ข้อมูลสถิติ</h5><p class="text-center text-muted mt-3">ไม่มีข้อมูลย้อนหลัง 1 ปี</p></div>';
-                }
-                
-                const finalModalHtml = `<div class="modal-main-layout"><div class="details-section">${detailsHtml}${statsHtml}</div>${imageHtml ? `<div class="image-section"><h5>รูปภาพประกอบ</h5>${imageHtml}</div>` : ''}</div>`;
-                $('#drugDetailModalBody').html(finalModalHtml);
-
-                $('#drugDetailModal').data('drug-name', `${rowData[1]} (Mat No: ${rowData[0]})`);
-
-                if (lineChartInstance) lineChartInstance.destroy(); if (pieChartInstance) pieChartInstance.destroy();
-                if (showUsageStats) { const dataMax = Math.max(...usageData); const suggestedMax = dataMax > 0 ? dataMax * 1.15 : 1; const trendlineData = calculateTrendline(usageData); const lineCtx = document.getElementById('usageLineChart').getContext('2d'); lineChartInstance = new Chart(lineCtx, { type: 'line', data: { labels: rateLabels, datasets: [ { label: 'Usage Rate', data: usageData, borderColor: 'var(--primary-color)', backgroundColor: 'rgba(26, 78, 142, 0.2)', fill: true, tension: 0.1 }, { label: 'Trendline', data: trendlineData, type: 'line', fill: false, borderColor: 'rgba(220, 53, 69, 0.7)', borderWidth: 2, borderDash: [5, 5], pointRadius: 0, datalabels: { display: false } } ] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { ticks: { color: '#000000', font: { weight: 'bold' } } }, y: { ticks: { color: '#000000', font: { weight: 'bold' } }, min: 0, suggestedMax: suggestedMax } }, plugins: { legend: { display: true, position: 'top', labels: { usePointStyle: true } }, datalabels: { align: 'end', anchor: 'end', color: '#555', font: { weight: 'bold', size: 14 }, formatter: (value) => value > 0 ? Math.round(value) : '' } } } }); }
-                if (showUsageStats && showPieChart) { const pieCtx = document.getElementById('payerPieChart').getContext('2d'); pieChartInstance = new Chart(pieCtx, { type: 'pie', data: { labels: payerLabels, datasets: [{ label: 'สัดส่วน', data: payerData, backgroundColor: ['#005ba1', '#dc3545', '#198754', '#6f42c1', '#fd7e14', '#ffc107'], hoverOffset: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#000000', font: { weight: 'bold' } } }, datalabels: { color: '#fff', textStrokeColor: '#000', textStrokeWidth: 2, font: { weight: 'bold', size: 14 }, formatter: (value, ctx) => { if (value === 0) return ''; const total = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); const percentage = (value / total * 100).toFixed(1) + '%'; return percentage; } } } } }); }
-                
-                const modalTooltipTriggerList = [].slice.call(document.querySelectorAll('#drugDetailModal [data-bs-toggle="tooltip"]'));
-                modalTooltipTriggerList.map(function (tooltipTriggerEl) {
-                    return new bootstrap.Tooltip(tooltipTriggerEl);
-                });
-
-                $('#drugDetailModal').modal('show');
+            const modalTooltipTriggerList = [].slice.call(document.querySelectorAll('#drugDetailModal [data-bs-toggle="tooltip"]'));
+            modalTooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
             });
-            $('#drugDetailModal').on('click', '.unlock-cost-btn', function(e) { e.stopPropagation(); const unlockButton = $(this); const valueContainer = unlockButton.closest('.detail-item').find('.value-container'); unlockButton.hide(); const formHtml = `<div class="input-group input-group-sm"><input type="password" class="form-control inline-password-input" placeholder="Password..."><button class="btn btn-primary inline-submit-btn" type="button">OK</button></div><div class="inline-error-msg" style="display:none;">Incorrect Password</div>`; valueContainer.html(formHtml); valueContainer.find('.inline-password-input').focus(); });
-            $('#drugDetailModal').on('click', '.inline-submit-btn', function(e) { e.stopPropagation(); const submitButton = $(this); const inputField = submitButton.siblings('.inline-password-input'); const valueContainer = submitButton.closest('.value-container'); const errorMsg = valueContainer.find('.inline-error-msg'); const password = inputField.val(); if (password === 'rxccc') { passwordVerified = true; const realCost = valueContainer.data('real-value'); valueContainer.html(realCost); } else { errorMsg.show().delay(2000).fadeOut(); inputField.val('').focus(); } });
-            $('#drugDetailModal').on('keypress', '.inline-password-input', function(e) { if (e.which === 13) { e.preventDefault(); $(this).siblings('.inline-submit-btn').click(); } });
-            
-            $('#drugDetailModal').on('hidden.bs.modal', function () {
-                $(this).find('[data-bs-toggle="tooltip"]').tooltip('dispose');
-                if (lineChartInstance) lineChartInstance.destroy();
-                if (pieChartInstance) pieChartInstance.destroy();
-                $(this).data('drug-name', '');
-            });
-        }
-        
-        function setView(viewType) { if (!table) return; $('.view-toggle').removeClass('active'); $(`#${viewType}View`).addClass('active'); if (viewType === 'all') { table.columns(':not(.modal-only)').visible(true); table.columns('.modal-only').visible(false); } else { table.columns().visible(false); table.columns('.all-column').visible(true); if (viewType === 'default') table.columns('.default-column').visible(true); else if (viewType === 'purchasing') table.columns('.purchasing-column').visible(true); else if (viewType === 'rate') table.columns('.rate-column').visible(true); } table.columns.adjust().draw(false); }
-        $('#defaultView').on('click', () => setView('default')); $('#rateView').on('click', () => setView('rate'));
-        
-        $('#exportButton').on('click', () => {
-            let activeView = 'default';
-            if ($('#purchasingView').hasClass('active')) activeView = 'purchasing';
-            else if ($('#rateView').hasClass('active')) activeView = 'rate';
-            else if ($('#allView').hasClass('active')) activeView = 'all';
 
-            promptPassword(() => { 
-                const visibleColumns = table.columns(':visible').toArray()[0]; 
-                const headers = table.columns(visibleColumns).header().toArray().map(h => $(h).text()); 
-                const data = [headers]; 
-                table.rows({ search: 'applied' }).every(function () { 
-                    const rowData = this.data(); 
-                    const visibleData = visibleColumns.map(index => rowData[index]); 
-                    data.push(visibleData); 
-                }); 
-                const wb = XLSX.utils.book_new(); 
-                const ws = XLSX.utils.aoa_to_sheet(data); 
-                XLSX.utils.book_append_sheet(wb, ws, "Drug Master Data"); 
-                XLSX.writeFile(wb, `drug_master_${activeView}_view.xlsx`); 
-                showSwalSuccess('Excel exported successfully!'); 
-            }, { forceReauth: true, view: activeView });
+            $('#drugDetailModal').modal('show');
         });
-        
-        function promptPassword(callback, context = {}) { 
-            const { forceReauth = false, view = null } = context;
+        $('#drugDetailModal').on('click', '.unlock-cost-btn', function(e) { e.stopPropagation(); const unlockButton = $(this); const valueContainer = unlockButton.closest('.detail-item').find('.value-container'); unlockButton.hide(); const formHtml = `<div class="input-group input-group-sm"><input type="password" class="form-control inline-password-input" placeholder="Password..."><button class="btn btn-primary inline-submit-btn" type="button">OK</button></div><div class="inline-error-msg" style="display:none;">Incorrect Password</div>`; valueContainer.html(formHtml); valueContainer.find('.inline-password-input').focus(); });
+        $('#drugDetailModal').on('click', '.inline-submit-btn', function(e) { e.stopPropagation(); const submitButton = $(this); const inputField = submitButton.siblings('.inline-password-input'); const valueContainer = submitButton.closest('.value-container'); const errorMsg = valueContainer.find('.inline-error-msg'); const password = inputField.val(); if (password === 'rxccc') { passwordVerified = true; const realCost = valueContainer.data('real-value'); valueContainer.html(realCost); } else { errorMsg.show().delay(2000).fadeOut(); inputField.val('').focus(); } });
+        $('#drugDetailModal').on('keypress', '.inline-password-input', function(e) { if (e.which === 13) { e.preventDefault(); $(this).siblings('.inline-submit-btn').click(); } });
+    
+        $('#drugDetailModal').on('hidden.bs.modal', function () {
+            $(this).find('[data-bs-toggle="tooltip"]').tooltip('dispose');
+            if (lineChartInstance) lineChartInstance.destroy();
+            if (pieChartInstance) pieChartInstance.destroy();
+            $(this).data('drug-name', '');
+        });
+    }
+    
+    // The rest of the script remains unchanged
+    function setView(viewType) { if (!table) return; $('.view-toggle').removeClass('active'); $(`#${viewType}View`).addClass('active'); if (viewType === 'all') { table.columns(':not(.modal-only)').visible(true); table.columns('.modal-only').visible(false); } else { table.columns().visible(false); table.columns('.all-column').visible(true); if (viewType === 'default') table.columns('.default-column').visible(true); else if (viewType === 'purchasing') table.columns('.purchasing-column').visible(true); else if (viewType === 'rate') table.columns('.rate-column').visible(true); } table.columns.adjust().draw(false); }
+    $('#defaultView').on('click', () => setView('default')); $('#rateView').on('click', () => setView('rate'));
+    
+    $('#exportButton').on('click', () => {
+        let activeView = 'default';
+        if ($('#purchasingView').hasClass('active')) activeView = 'purchasing';
+        else if ($('#rateView').hasClass('active')) activeView = 'rate';
+        else if ($('#allView').hasClass('active')) activeView = 'all';
 
-            if (passwordVerified && !forceReauth) { 
-                callback(); 
-                return; 
-            } 
-            
-            Swal.fire({ 
-                title: 'Authentication Required', 
-                input: 'password', 
-                inputPlaceholder: 'Enter your password', 
-                inputAttributes: { autocapitalize: 'off', autocorrect: 'off' }, 
-                showCancelButton: true, 
-                confirmButtonText: 'Submit', 
-                showLoaderOnConfirm: true, 
-                preConfirm: (password) => { 
-                    let correctPassword = 'rxccc';
-                    if (view && exportPasswords[view]) {
-                        correctPassword = exportPasswords[view];
-                    }
-
-                    if (password === correctPassword) { 
-                        return true; 
-                    } else { 
-                        Swal.showValidationMessage('Incorrect password'); 
-                        return false; 
-                    } 
-                }, 
-                allowOutsideClick: () => !Swal.isLoading() 
-            }).then((result) => { 
-                if (result.isConfirmed) { 
-                    if (!view) {
-                        passwordVerified = true; 
-                    }
-                    callback(); 
-                } 
+        promptPassword(() => { 
+            const visibleColumns = table.columns(':visible').toArray()[0]; 
+            const headers = table.columns(visibleColumns).header().toArray().map(h => $(h).text()); 
+            const data = [headers]; 
+            table.rows({ search: 'applied' }).every(function () { 
+                const rowData = this.data(); 
+                const visibleData = visibleColumns.map(index => rowData[index]); 
+                data.push(visibleData); 
             }); 
-        }
-
-        $('#purchasingView').on('click', () => promptPassword(() => setView('purchasing'))); 
-        $('#allView').on('click', () => promptPassword(() => setView('all')));
-
-        function showSwalSuccess(message) { Swal.fire({ icon: 'success', title: 'Success!', text: message, timer: 2000, showConfirmButton: false }); }
-        
-        $('.contact-trigger').on('click', function() {
-            const drugName = $('#drugDetailModal').data('drug-name');
-            const contactForm = $('#contactForm');
-            contactForm.trigger('reset');
-
-            if (drugName) {
-                contactForm.find('input[name="topic"][value="ขอแก้ไขข้อมูลยา"]').prop('checked', true);
-                contactForm.find('#message').val(`[Drug: ${drugName}]\n\n`);
-            }
-            contactModal.show();
-        });
-
-        $('#contactForm').on('submit', function(event) {
-            event.preventDefault();
-            
-            const webAppUrl = 'https://script.google.com/macros/s/AKfycbyH_ULtPI5Wat_VmNY7smo7Ytq2jfk0DcKgFmjFQU5FXTyG2ICT9-5ro4Bj70TQ0tjS/exec'; 
-
-            const form = this;
-            const submitButton = $(form).find('button[type="submit"]');
-            const originalButtonText = submitButton.html();
-
-            if (webAppUrl === 'YOUR_WEB_APP_URL_HERE') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'ตั้งค่าไม่สมบูรณ์',
-                    text: 'กรุณาตั้งค่า Web App URL ในไฟล์ HTML ก่อน (แจ้ง Developer)'
-                });
-                return;
-            }
-
-            submitButton.prop('disabled', true);
-            submitButton.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> กำลังส่ง...');
-
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
-
-            data.source = 'Drug Master';
-
-            fetch(webAppUrl, {
-                method: 'POST',
-                mode: 'no-cors',
-                cache: 'no-cache',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
-                redirect: 'follow'
-            })
-            .then(response => {
-                contactModal.hide();
-                form.reset();
-                Swal.fire({
-                    icon: 'success',
-                    title: 'ส่งข้อมูลสำเร็จ',
-                    text: 'ขอบคุณสำหรับข้อมูลครับ',
-                    timer: 2000,
-                    showConfirmButton: false
-                });
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'เกิดข้อผิดพลาด',
-                    text: 'ไม่สามารถส่งข้อมูลได้: ' + error.message,
-                });
-            })
-            .finally(() => {
-                submitButton.prop('disabled', false);
-                submitButton.html(originalButtonText);
-            });
-        });
-
-        function logVisitAndTrackTime() {
-            const webAppUrl = 'https://script.google.com/macros/s/AKfycbzDSIzvndrlTxCT6hxQIxsKosS5PRphOn4qQmEA8lh1iuvJbW1L0zJaRxfO1EHFa27o_A/exec';
-            console.log("Log Script URL:", webAppUrl);
-
-            if (!webAppUrl || webAppUrl.includes('xxxxx')) {
-                console.error("Web App URL for logging is not set. Logging will be disabled.");
-                return;
-            }
-
-            const sessionStartTime = Date.now();
-            let totalHiddenTime = 0;
-            let lastHiddenTime = 0;
-
-            const initialLogData = {
-                action: 'log_visit',
-                userAgent: navigator.userAgent,
-                screenResolution: `${screen.width}x${screen.height}`,
-                viewportSize: `${window.innerWidth}x${window.innerHeight}`,
-                language: navigator.language
-            };
-
-            console.log("Attempting to log initial visit...", initialLogData);
-            fetch(webAppUrl, {
-                method: 'POST',
-                mode: 'cors',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'text/plain;charset=utf-8', 
-                },
-                body: JSON.stringify(initialLogData)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    response.text().then(text => {
-                        console.error('Initial log failed! Server response:', text);
-                    });
-                    throw new Error(`Network response was not ok: ${response.statusText}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log("Initial log successful. Server response:", data);
-                if (data && data.status === 'success' && data.count) {
-                    $('#viewCountValue').text(formatNumber(data.count, 0));
-                    $('#viewCounter').css('display', 'inline-flex');
-                } else {
-                    throw new Error(data.message || 'Invalid data structure from server');
-                }
-            })
-            .catch(error => {
-                console.error('Error during initial visit log & view count fetch:', error);
-                $('#viewCounter').hide();
-            });
-
-            document.addEventListener('visibilitychange', () => {
-                if (document.visibilityState === 'hidden') {
-                    lastHiddenTime = Date.now();
-                } else if (document.visibilityState === 'visible') {
-                    if(lastHiddenTime > 0) {
-                        totalHiddenTime += (Date.now() - lastHiddenTime);
-                    }
-                }
-            });
-
-            window.addEventListener('beforeunload', (event) => {
-                if (document.visibilityState === 'hidden' && lastHiddenTime > 0) {
-                        totalHiddenTime += (Date.now() - lastHiddenTime);
-                }
-
-                const totalSessionTime = Date.now() - sessionStartTime;
-                const activeDurationSeconds = Math.round((totalSessionTime - totalHiddenTime) / 1000);
-                const finalDuration = Math.max(0, activeDurationSeconds);
-
-                const sessionLogData = {
-                    action: 'log_session',
-                    duration: finalDuration,
-                    userAgent: navigator.userAgent
-                };
-                
-                console.log("Sending session data on unload:", sessionLogData);
-                
-                if (navigator.sendBeacon) {
-                    const blob = new Blob([JSON.stringify(sessionLogData)], { type: 'text/plain;charset=utf-8' });
-                    const sent = navigator.sendBeacon(webAppUrl, blob);
-                    console.log("Beacon sent status:", sent);
-                }
-            });
-        }
-
-        loadAllDataAndInitTable();
-        logVisitAndTrackTime();
-
+            const wb = XLSX.utils.book_new(); 
+            const ws = XLSX.utils.aoa_to_sheet(data); 
+            XLSX.utils.book_append_sheet(wb, ws, "Drug Master Data"); 
+            XLSX.writeFile(wb, `drug_master_${activeView}_view.xlsx`); 
+            showSwalSuccess('Excel exported successfully!'); 
+        }, { forceReauth: true, view: activeView });
     });
-    </script>
+    
+    function promptPassword(callback, context = {}) { 
+        const { forceReauth = false, view = null } = context;
+
+        if (passwordVerified && !forceReauth) { 
+            callback(); 
+            return; 
+        } 
+        
+        Swal.fire({ 
+            title: 'Authentication Required', 
+            input: 'password', 
+            inputPlaceholder: 'Enter your password', 
+            inputAttributes: { autocapitalize: 'off', autocorrect: 'off' }, 
+            showCancelButton: true, 
+            confirmButtonText: 'Submit', 
+            showLoaderOnConfirm: true, 
+            preConfirm: (password) => { 
+                let correctPassword = 'rxccc';
+                if (view && exportPasswords[view]) {
+                    correctPassword = exportPasswords[view];
+                }
+
+                if (password === correctPassword) { 
+                    return true; 
+                } else { 
+                    Swal.showValidationMessage('Incorrect password'); 
+                    return false; 
+                } 
+            }, 
+            allowOutsideClick: () => !Swal.isLoading() 
+        }).then((result) => { 
+            if (result.isConfirmed) { 
+                if (!view) {
+                    passwordVerified = true; 
+                }
+                callback(); 
+            } 
+        }); 
+    }
+
+    $('#purchasingView').on('click', () => promptPassword(() => setView('purchasing'))); 
+    $('#allView').on('click', () => promptPassword(() => setView('all')));
+
+    function showSwalSuccess(message) { Swal.fire({ icon: 'success', title: 'Success!', text: message, timer: 2000, showConfirmButton: false }); }
+    
+    $('.contact-trigger').on('click', function() {
+        const drugName = $('#drugDetailModal').data('drug-name');
+        const contactForm = $('#contactForm');
+        contactForm.trigger('reset');
+
+        if (drugName) {
+            contactForm.find('input[name="topic"][value="ขอแก้ไขข้อมูลยา"]').prop('checked', true);
+            contactForm.find('#message').val(`[Drug: ${drugName}]\n\n`);
+        }
+        contactModal.show();
+    });
+
+
+    $('#contactForm').on('submit', function(event) {
+        event.preventDefault();
+        
+        const webAppUrl = 'https://script.google.com/macros/s/AKfycbyH_ULtPI5Wat_VmNY7smo7Ytq2jfk0DcKgFmjFQU5FXTyG2ICT9-5ro4Bj70TQ0tjS/exec'; 
+
+        const form = this;
+        const submitButton = $(form).find('button[type="submit"]');
+        const originalButtonText = submitButton.html();
+
+        if (webAppUrl === 'YOUR_WEB_APP_URL_HERE') {
+            Swal.fire({
+                icon: 'error',
+                title: 'ตั้งค่าไม่สมบูรณ์',
+                text: 'กรุณาตั้งค่า Web App URL ในไฟล์ HTML ก่อน (แจ้ง Developer)'
+            });
+            return;
+        }
+
+        submitButton.prop('disabled', true);
+        submitButton.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> กำลังส่ง...');
+
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        data.source = 'Drug Master';
+
+        fetch(webAppUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            cache: 'no-cache',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+            redirect: 'follow'
+        })
+        .then(response => {
+            contactModal.hide();
+            form.reset();
+            Swal.fire({
+                icon: 'success',
+                title: 'ส่งข้อมูลสำเร็จ',
+                text: 'ขอบคุณสำหรับข้อมูลครับ',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'เกิดข้อผิดพลาด',
+                text: 'ไม่สามารถส่งข้อมูลได้: ' + error.message,
+            });
+        })
+        .finally(() => {
+            submitButton.prop('disabled', false);
+            submitButton.html(originalButtonText);
+        });
+    });
+
+    function logVisitAndTrackTime() {
+        const webAppUrl = 'https://script.google.com/macros/s/AKfycbzDSIzvndrlTxCT6hxQIxsKosS5PRphOn4qQmEA8lh1iuvJbW1L0zJaRxfO1EHFa27o_A/exec';
+        if (!webAppUrl || webAppUrl.includes('xxxxx')) {
+            console.error("Web App URL for logging is not set.");
+            return;
+        }
+        const sessionStartTime = Date.now();
+        let totalHiddenTime = 0, lastHiddenTime = 0;
+        fetch(webAppUrl, { method: 'POST', mode: 'cors', cache: 'no-cache', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'log_visit', userAgent: navigator.userAgent, screenResolution: `${screen.width}x${screen.height}`, viewportSize: `${window.innerWidth}x${window.innerHeight}`, language: navigator.language }) })
+        .then(response => response.ok ? response.json() : response.text().then(text => Promise.reject(new Error(text))))
+        .then(data => { if (data && data.status === 'success' && data.count) { $('#viewCountValue').text(formatNumber(data.count, 0)); $('#viewCounter').css('display', 'inline-flex'); } else { throw new Error(data.message || 'Invalid data'); }})
+        .catch(error => { console.error('Error during visit log:', error); $('#viewCounter').hide(); });
+        document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { lastHiddenTime = Date.now(); } else if (document.visibilityState === 'visible' && lastHiddenTime > 0) { totalHiddenTime += (Date.now() - lastHiddenTime); }});
+        window.addEventListener('beforeunload', () => { if (document.visibilityState === 'hidden' && lastHiddenTime > 0) { totalHiddenTime += (Date.now() - lastHiddenTime); } const activeDurationSeconds = Math.round((Date.now() - sessionStartTime - totalHiddenTime) / 1000); if (navigator.sendBeacon) { navigator.sendBeacon(webAppUrl, new Blob([JSON.stringify({ action: 'log_session', duration: Math.max(0, activeDurationSeconds), userAgent: navigator.userAgent })], { type: 'text/plain;charset=utf-8' })); }});
+    }
+
+    // --- Initial Load ---
+    loadAllDataAndInitTable();
+    logVisitAndTrackTime();
+
+});
+</script>
 </body>
 </html>
+
+
+
