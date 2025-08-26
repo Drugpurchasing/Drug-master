@@ -334,43 +334,61 @@ function formatNotesAdvanced(text) {
 }
 
 
-async function loadDrugData() {
-    try {
-        const response = await fetch(googleSheetUrl);
-        if (!response.ok) throw new Error(`Network response error: ${response.statusText}`);
-        const csvText = await response.text();
-        Papa.parse(csvText, {
-            header: true,
-            skipEmptyLines: true,
-            trimHeaders: true,
-            complete: (results) => {
-                loadingContainer.style.display = 'none';
-                if (results.errors.length) console.error("CSV Parsing Errors:", results.errors);
-                allDrugData = results.data.filter(row => row.sapCode && row.sapCode.trim() !== '');
-                if (allDrugData.length === 0) {
-                    drugListContainer.innerHTML = '<p class="text-center text-red-500 font-semibold text-xl">ไม่มีข้อมูลที่จะแสดง</p>';
-                    return;
-                }
-                
-                const sortedByGroupOrder = [...allDrugData]
-                    .filter(d => (d.group || '').trim() !== '')
-                    .sort((a, b) => getOrder(a.groupOrder) - getOrder(b.groupOrder));
-                
-                const defaultGroupName = sortedByGroupOrder.length > 0 ? sortedByGroupOrder[0].group.trim() : 'all';
-                
-                newestGroupName = defaultGroupName;
-                previousFilter = defaultGroupName;
+// --- CONSTANTS AND GLOBAL VARIABLES ---
 
-                setupGroupFilters(defaultGroupName);
-                filterAndRender();
-                setupEventListeners();
-            },
-            error: (err) => {
-                loadingContainer.innerHTML = `<p class="text-red-600 font-bold text-xl">เกิดข้อผิดพลาดในการโหลดข้อมูล: ${err.message}</p>`;
-            }
-        });
+// 1. REPLACE this URL with the one you just deployed from Google Apps Script
+const jsonApiUrl = 'https://script.google.com/macros/s/AKfycby2t4AmusQz1v9t3ZXl4EXjXRUcyBJaTKbd2MxQqXD1wdLgLER_zUpRlNEsjmZ2Hj_B/exec'; 
+
+const drugListContainer = document.getElementById('drug-list');
+// ... (the rest of your constants remain the same) ...
+let allDrugData = [];
+let newestGroupName = '';
+const warnedFilters = new Set();
+let previousFilter = 'all'; 
+let filterThatTriggeredWarning = null;
+
+
+// 2. REPLACE your entire 'loadDrugData' function with this new one
+async function loadDrugData() {
+    if (jsonApiUrl === 'https://script.google.com/macros/s/AKfycby2t4AmusQz1v9t3ZXl4EXjXRUcyBJaTKbd2MxQqXD1wdLgLER_zUpRlNEsjmZ2Hj_B/exec') {
+        loadingContainer.innerHTML = `<p class="text-red-600 font-bold text-xl">Error: Please set the jsonApiUrl in the script.</p>`;
+        return;
+    }
+
+    try {
+        const response = await fetch(jsonApiUrl);
+        if (!response.ok) {
+            throw new Error(`Network response error: ${response.statusText}`);
+        }
+
+        const apiResponse = await response.json();
+        if (apiResponse.status !== 'success') {
+            throw new Error(`API Error: ${apiResponse.message}`);
+        }
+
+        loadingContainer.style.display = 'none';
+        allDrugData = apiResponse.data.filter(row => row.sapCode && row.sapCode.trim() !== '');
+
+        if (allDrugData.length === 0) {
+            drugListContainer.innerHTML = '<p class="text-center text-red-500 font-semibold text-xl">ไม่มีข้อมูลที่จะแสดง</p>';
+            return;
+        }
+
+        const sortedByGroupOrder = [...allDrugData]
+            .filter(d => (d.group || '').trim() !== '')
+            .sort((a, b) => getOrder(a.groupOrder) - getOrder(b.groupOrder));
+
+        const defaultGroupName = sortedByGroupOrder.length > 0 ? sortedByGroupOrder[0].group.trim() : 'all';
+
+        newestGroupName = defaultGroupName;
+        previousFilter = defaultGroupName;
+
+        setupGroupFilters(defaultGroupName);
+        filterAndRender();
+        setupEventListeners();
+
     } catch (error) {
-        loadingContainer.innerHTML = `<p class="text-red-600 font-bold text-xl">เกิดข้อผิดพลาด: ${error.message}</p>`;
+        loadingContainer.innerHTML = `<p class="text-red-600 font-bold text-xl">เกิดข้อผิดพลาดในการโหลดข้อมูล: ${error.message}</p>`;
     }
 }
 
