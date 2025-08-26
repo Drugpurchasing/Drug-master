@@ -334,10 +334,14 @@ function formatNotesAdvanced(text) {
 }
 
 
-// --- CONSTANTS AND GLOBAL VARIABLES ---
+// --- CONSTANTS AND GLOBAL VARIABLES --
 
-// 1. REPLACE this URL with the one you just deployed from Google Apps Script
-const jsonApiUrl = 'https://script.google.com/macros/s/AKfycby2t4AmusQz1v9t3ZXl4EXjXRUcyBJaTKbd2MxQqXD1wdLgLER_zUpRlNEsjmZ2Hj_B/exec'; 
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby2t4AmusQz1v9t3ZXl4EXjXRUcyBJaTKbd2MxQqXD1wdLgLER_zUpRlNEsjmZ2Hj_B/exec';
+
+// For loading drug data, add '?action=getDrugData'
+const jsonApiUrl = `${WEB_APP_URL}?action=getDrugData`
+
+const ANALYTICS_URL = WEB_APP_URL; 
 
 const drugListContainer = document.getElementById('drug-list');
 // ... (the rest of your constants remain the same) ...
