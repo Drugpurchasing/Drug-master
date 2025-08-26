@@ -897,43 +897,6 @@ $(document).ready(function () {
         return number.toLocaleString('en-US', { minimumFractionDigits: minDecimals, maximumFractionDigits: maxDecimals });
     }
     
-    function robustCsvParser(csvText) { 
-        const rows = []; 
-        let currentRow = []; 
-        let currentField = ''; 
-        let inQuotes = false; 
-        const text = csvText.trim().replace(/\r\n/g, '\n'); 
-        
-        for (let i = 0; i < text.length; i++) { 
-            const char = text[i]; 
-            if (inQuotes) { 
-                if (char === '"') { 
-                    if (i + 1 < text.length && text[i + 1] === '"') { 
-                        currentField += '"'; 
-                        i++; 
-                    } else { 
-                        inQuotes = false; 
-                    } 
-                } else { 
-                    currentField += char; 
-                } 
-            } else { 
-                switch (char) { 
-                    case '"': inQuotes = true; break; 
-                    case ',': currentRow.push(currentField); currentField = ''; break; 
-                    case '\n': currentRow.push(currentField); rows.push(currentRow); currentRow = []; currentField = ''; break; 
-                    default: currentField += char; 
-                } 
-            } 
-        } 
-        
-        if (currentField || currentRow.length > 0) { 
-            currentRow.push(currentField); 
-            rows.push(currentRow); 
-        } 
-        
-        return rows; 
-    }
 
     async function loadTooltipData(url) {
         try {
@@ -980,65 +943,84 @@ $(document).ready(function () {
     }
 
     // REPLACEMENT: Replace your entire 'loadAllDataAndInitTable' function with this one
-    async function loadAllDataAndInitTable() {
-        $('#loadingIndicator').show();
-        updateProgress(0, 'Starting...');
+    // PASTE YOUR NEW WEB APP URL HERE
+const webAppUrl = 'https://script.google.com/macros/s/AKfycbzDSIzvndrlTxCT6hxQIxsKosS5PRphOn4qQmEA8lh1iuvJbW1L0zJaRxfO1EHFa27o_A/exec'; 
 
-        const cacheKey = 'drugMasterDataCache_v4.06'; // Change version to force-recache
-        const cacheDuration = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
+// MODIFIED: Helper function to update the progress bar
+function updateProgress(percentage, text) {
+    const progressBar = $('#loadingIndicator .progress-bar');
+    const progressText = $('#progressText');
 
-        try {
-            const cachedData = localStorage.getItem(cacheKey);
-            if (cachedData) {
-                const { timestamp, mainData, loadedTooltips } = JSON.parse(cachedData);
-                if (Date.now() - timestamp < cacheDuration) {
-                    updateProgress(50, 'Loading from cache...');
-                    tooltipMap = loadedTooltips;
-                    initializeDataTable(mainData);
-                    updateProgress(100, 'Finished');
-                    // Hide progress bar after a short delay
-                    setTimeout(() => $('#loadingIndicator').hide(), 500); 
-                    return; // Stop execution, loaded from cache
-                }
-            }
+    progressBar.css('width', percentage + '%').attr('aria-valuenow', percentage);
+    progressText.html(`<i class="fas fa-spinner fa-spin me-2"></i>${text} (${percentage}%)`);
+}
 
-            // --- If not in cache or expired, fetch from network ---
-            updateProgress(10, 'Fetching main data...');
-            const mainDataPromise = loadMainData(mainDataUrl);
-            
-            updateProgress(30, 'Fetching tooltip data...');
-            const tooltipDataPromise = loadTooltipData(tooltipDataUrl);
+// REPLACEMENT: A new, simpler function to load data from the JSON endpoint
+async function loadAllDataAndInitTable() {
+    $('#loadingIndicator').show();
+    updateProgress(0, 'Starting...');
 
-            const [mainData, loadedTooltips] = await Promise.all([
-                mainDataPromise,
-                tooltipDataPromise
-            ]);
-            
-            updateProgress(75, 'Data received, preparing table...');
-            tooltipMap = loadedTooltips;
+    // Update the cache key to prevent using old CSV-based cache
+    const cacheKey = 'drugMasterDataCache_v4.06_JSON'; 
+    const cacheDuration = 4 * 60 * 60 * 1000; // 4 hours
 
-            // Save the newly fetched data to cache
-            const dataToCache = {
-                timestamp: Date.now(),
-                mainData: mainData,
-                loadedTooltips: loadedTooltips
-            };
-            localStorage.setItem(cacheKey, JSON.stringify(dataToCache));
-
-            initializeDataTable(mainData);
-            updateProgress(100, 'Finished');
-            setTimeout(() => $('#loadingIndicator').hide(), 500);
-
-        } catch (error) {
-            $('#loadingIndicator').hide();
-            console.error("Data Load/Parse Error:", error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Data Load Error',
-                text: 'Failed to load data. Please check your internet connection and sheet settings.'
-            });
-        }
+    if (webAppUrl === 'YOUR_WEB_APP_URL_HERE') {
+        $('#loadingIndicator').hide();
+        Swal.fire('Configuration Needed', 'Please paste the Google Web App URL into the `webAppUrl` constant in the script.', 'warning');
+        return;
     }
+
+    try {
+        // Check cache first
+        const cachedData = localStorage.getItem(cacheKey);
+        if (cachedData) {
+            const { timestamp, apiResponse } = JSON.parse(cachedData);
+            if (Date.now() - timestamp < cacheDuration) {
+                updateProgress(50, 'Loading from cache...');
+                tooltipMap = apiResponse.tooltips; // Load tooltips from cached response
+                initializeDataTable(apiResponse.data); // Load main data from cached response
+                updateProgress(100, 'Finished');
+                setTimeout(() => $('#loadingIndicator').hide(), 500);
+                return;
+            }
+        }
+
+        // --- If not in cache, fetch from network ---
+        updateProgress(25, 'Fetching data from API...');
+        const response = await fetch(webAppUrl);
+        if (!response.ok) {
+            throw new Error(`Network error: ${response.statusText}`);
+        }
+        const apiResponse = await response.json();
+
+        if (apiResponse.status !== 'success') {
+            throw new Error(`API Error: ${apiResponse.message}`);
+        }
+
+        updateProgress(75, 'Data received, preparing table...');
+        tooltipMap = apiResponse.tooltips; // Set global tooltip map
+
+        // Save the newly fetched response to cache
+        const dataToCache = {
+            timestamp: Date.now(),
+            apiResponse: apiResponse
+        };
+        localStorage.setItem(cacheKey, JSON.stringify(dataToCache));
+
+        initializeDataTable(apiResponse.data); // Initialize table with main data
+        updateProgress(100, 'Finished');
+        setTimeout(() => $('#loadingIndicator').hide(), 500);
+
+    } catch (error) {
+        $('#loadingIndicator').hide();
+        console.error("JSON Data Load Error:", error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Data Load Error',
+            text: `Failed to load JSON data. Details: ${error.message}`
+        });
+    }
+}
 
     const drugGroupColorMap = {
         'gastro-intestinal system': 'bg-success', 'cardiovascular system': 'bg-danger', 'respiratory system': 'bg-info text-dark',
@@ -1536,6 +1518,7 @@ $(document).ready(function () {
 </script>
 </body>
 </html>
+
 
 
 
