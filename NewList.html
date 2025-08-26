@@ -350,7 +350,7 @@ let filterThatTriggeredWarning = null;
 
 // 2. REPLACE your entire 'loadDrugData' function with this new one
 async function loadDrugData() {
-    if (jsonApiUrl === 'https://script.google.com/macros/s/AKfycby2t4AmusQz1v9t3ZXl4EXjXRUcyBJaTKbd2MxQqXD1wdLgLER_zUpRlNEsjmZ2Hj_B/exec') {
+    if (jsonApiUrl === '') {
         loadingContainer.innerHTML = `<p class="text-red-600 font-bold text-xl">Error: Please set the jsonApiUrl in the script.</p>`;
         return;
     }
