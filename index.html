@@ -956,68 +956,72 @@ function updateProgress(percentage, text) {
 }
 
 // REPLACEMENT: A new, simpler function to load data from the JSON endpoint
+// REPLACEMENT: A new function with checksum validation logic
 async function loadAllDataAndInitTable() {
     $('#loadingIndicator').show();
-    updateProgress(0, 'Starting...');
+    updateProgress(0, 'Initializing...');
 
-    // Update the cache key to prevent using old CSV-based cache
-    const cacheKey = 'drugMasterDataCache_v4.06_JSON'; 
-    const cacheDuration = 4 * 60 * 60 * 1000; // 4 hours
+    const cacheKey = 'drugMasterDataCache_v4.06_JSON';
 
     if (webAppUrl === 'YOUR_WEB_APP_URL_HERE') {
         $('#loadingIndicator').hide();
-        Swal.fire('Configuration Needed', 'Please paste the Google Web App URL into the `webAppUrl` constant in the script.', 'warning');
+        Swal.fire('Configuration Needed', 'Please paste the Google Web App URL into the `webAppUrl` constant.', 'warning');
         return;
     }
 
     try {
-        // Check cache first
-        const cachedData = localStorage.getItem(cacheKey);
-        if (cachedData) {
-            const { timestamp, apiResponse } = JSON.parse(cachedData);
-            if (Date.now() - timestamp < cacheDuration) {
-                updateProgress(50, 'Loading from cache...');
-                tooltipMap = apiResponse.tooltips; // Load tooltips from cached response
-                initializeDataTable(apiResponse.data); // Load main data from cached response
+        const cachedItem = localStorage.getItem(cacheKey);
+
+        if (cachedItem) {
+            updateProgress(10, 'Verifying cache...');
+            const { checksum: cachedChecksum } = JSON.parse(cachedItem);
+            
+            // 1. Perform a lightweight check for the new checksum
+            const checkResponse = await fetch(`${webAppUrl}?action=check`);
+            const serverStatus = await checkResponse.json();
+
+            // 2. Compare checksums
+            if (serverStatus.checksum === cachedChecksum) {
+                // CHECKSUMS MATCH: Load from cache
+                updateProgress(50, 'Cache is fresh. Loading...');
+                const { apiResponse } = JSON.parse(cachedItem);
+                tooltipMap = apiResponse.tooltips;
+                initializeDataTable(apiResponse.data);
                 updateProgress(100, 'Finished');
                 setTimeout(() => $('#loadingIndicator').hide(), 500);
-                return;
+                return; // All done!
             }
         }
 
-        // --- If not in cache, fetch from network ---
-        updateProgress(25, 'Fetching data from API...');
-        const response = await fetch(webAppUrl);
-        if (!response.ok) {
-            throw new Error(`Network error: ${response.statusText}`);
-        }
+        // 3. CACHE MISS or STALE: Fetch the full data
+        updateProgress(25, 'Fetching updated data...');
+        const response = await fetch(webAppUrl); // No parameters needed for full fetch
+        if (!response.ok) throw new Error(`Network error: ${response.statusText}`);
+        
         const apiResponse = await response.json();
-
-        if (apiResponse.status !== 'success') {
-            throw new Error(`API Error: ${apiResponse.message}`);
-        }
+        if (apiResponse.status !== 'success') throw new Error(`API Error: ${apiResponse.message}`);
 
         updateProgress(75, 'Data received, preparing table...');
-        tooltipMap = apiResponse.tooltips; // Set global tooltip map
+        tooltipMap = apiResponse.tooltips;
 
-        // Save the newly fetched response to cache
+        // 4. Save the new, complete response to the cache
         const dataToCache = {
-            timestamp: Date.now(),
-            apiResponse: apiResponse
+            checksum: apiResponse.checksum, // Store the new checksum
+            apiResponse: apiResponse       // Store the full payload
         };
         localStorage.setItem(cacheKey, JSON.stringify(dataToCache));
 
-        initializeDataTable(apiResponse.data); // Initialize table with main data
+        initializeDataTable(apiResponse.data);
         updateProgress(100, 'Finished');
         setTimeout(() => $('#loadingIndicator').hide(), 500);
 
     } catch (error) {
         $('#loadingIndicator').hide();
-        console.error("JSON Data Load Error:", error);
+        console.error("Data Load Error:", error);
         Swal.fire({
             icon: 'error',
             title: 'Data Load Error',
-            text: `Failed to load JSON data. Details: ${error.message}`
+            text: `Failed to load data. Details: ${error.message}`
         });
     }
 }
@@ -1518,6 +1522,7 @@ async function loadAllDataAndInitTable() {
 </script>
 </body>
 </html>
+
 
 
 
