@@ -277,23 +277,74 @@
 </div>
 
 <script>
-// --- CONSTANTS AND GLOBAL VARIABLES ---
-const googleSheetUrl = 'https://docs.google.com/spreadsheets/d/1BqwwNcR7oc8m2As4vEbCFVTeiN5ysK3_ySoXfixpkEU/gviz/tq?tqx=out:csv&sheet=สรุปข้อมูลยาเข้าใหม่';
+// --- CONFIGURATION & CONSTANTS ---
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby2t4AmusQz1v9t3ZXl4EXjXRUcyBJaTKbd2MxQqXD1wdLgLER_zUpRlNEsjmZ2Hj_B/exec';
+const REPORT_SUBMIT_URL = 'https://script.google.com/macros/s/AKfycbyH_ULtPI5Wat_VmNY7smo7Ytq2jfk0DcKgFmjFQU5FXTyG2ICT9-5ro4Bj70TQ0tjS/exec';
+const JSON_API_URL = `${WEB_APP_URL}?action=getDrugData`;
+const ANALYTICS_URL = WEB_APP_URL;
+
+// --- DOM ELEMENT REFERENCES ---
 const drugListContainer = document.getElementById('drug-list');
 const loadingContainer = document.getElementById('loading-container');
 const searchInput = document.getElementById('searchInput');
 const groupFilterContainer = document.getElementById('group-filter-container');
+const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+const openReportModalBtn = document.getElementById('openReportModalBtn');
+const reportModal = document.getElementById('reportModal');
+const closeReportModalBtn = document.getElementById('closeReportModalBtn');
+const formCancelBtn = document.querySelector('.form-cancel-btn');
+const reportForm = document.getElementById('reportForm');
+const warningModal = document.getElementById('warningModal');
+const acknowledgeBtn = document.getElementById('acknowledgeBtn');
+const revertFilterBtn = document.getElementById('revertFilterBtn');
+const visitorCountEl = document.getElementById('visitorCount');
+
+// --- GLOBAL STATE ---
 let allDrugData = [];
 let newestGroupName = '';
 const warnedFilters = new Set();
-let previousFilter = 'all'; 
-let filterThatTriggeredWarning = null; // To hold the filter that needs to be acknowledged
+let previousFilter = 'all';
+let filterThatTriggeredWarning = null;
 
-// --- CORE DATA HANDLING AND RENDERING FUNCTIONS ---
-function sanitizeHTML(text) { if (!text) return ''; const temp = document.createElement('div'); temp.textContent = text; return temp.innerHTML; }
-function getDrugGroupCode(code) { return ['1', '2', '3', '4', '5'].includes(String(code)) ? String(code) : 'misc'; }
-function getOrder(value, fallback = 999) { const num = parseInt(value, 10); return isNaN(num) ? fallback : num; }
+// --- CORE FUNCTIONS ---
 
+/**
+ * Sanitizes text to prevent XSS attacks by converting it to text content.
+ * @param {string} text The text to sanitize.
+ * @returns {string} The sanitized HTML string.
+ */
+function sanitizeHTML(text) {
+    if (!text) return '';
+    const temp = document.createElement('div');
+    temp.textContent = text;
+    return temp.innerHTML;
+}
+
+/**
+ * Gets a standardized drug group code for styling.
+ * @param {string|number} code The drug's code.
+ * @returns {string} '1', '2', '3', '4', '5', or 'misc'.
+ */
+function getDrugGroupCode(code) {
+    return ['1', '2', '3', '4', '5'].includes(String(code)) ? String(code) : 'misc';
+}
+
+/**
+ * Safely parses a string to an integer for sorting.
+ * @param {any} value The value to parse.
+ * @param {number} fallback The value to return if parsing fails.
+ * @returns {number} The parsed integer or the fallback.
+ */
+function getOrder(value, fallback = 999) {
+    const num = parseInt(value, 10);
+    return isNaN(num) ? fallback : num;
+}
+
+/**
+ * Formats the 'notes' field with special keyword highlighting.
+ * @param {string} text The notes text.
+ * @returns {string} HTML-formatted string.
+ */
 function formatNotesAdvanced(text) {
     if (!text || text.trim() === '') return '-';
     let processedText = sanitizeHTML(text);
@@ -303,8 +354,8 @@ function formatNotesAdvanced(text) {
         amber: 'font-bold text-amber-800 px-2.5 py-1 bg-amber-100 rounded-lg ring-1 ring-amber-200',
         green: 'font-bold text-green-800 px-2.5 py-1 bg-green-100 rounded-lg ring-1 ring-green-200',
         slate: 'font-bold text-slate-800 px-2.5 py-1 bg-slate-100 rounded-lg ring-1 ring-slate-200',
-        purple: 'font-bold text-purple-700 px-2.5 py-1 bg-purple-100 rounded-md ring-1 ring-purple-200',
-        cyan: 'font-bold text-cyan-700 px-2.5 py-1 bg-cyan-100 rounded-md ring-1 ring-cyan-200'
+        cyan: 'font-bold text-cyan-700 px-2.5 py-1 bg-cyan-100 rounded-md ring-1 ring-cyan-200',
+        purple: 'font-bold text-purple-700 px-2.5 py-1 bg-purple-100 rounded-md ring-1 ring-purple-200'
     };
 
     const keywordMap = [
@@ -320,47 +371,23 @@ function formatNotesAdvanced(text) {
         const regex = new RegExp(`(${group.words.join('|')})`, 'g');
         processedText = processedText.replace(regex, `<span class="${group.style}">$1</span>`);
     });
-    
+
     const lines = processedText.split(/\\n|\n/g);
-    let finalHtml = lines.map(line => {
+    return lines.map(line => {
         let trimmedLine = line.trim();
         if (/^(\d+\.\d+|\d+\)|\-|\•)\s/.test(trimmedLine)) {
             return `<div class="pl-5">${trimmedLine}</div>`;
         }
         return trimmedLine;
     }).join('<br />');
-
-    return finalHtml;
 }
 
-
-// --- CONSTANTS AND GLOBAL VARIABLES --
-
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby2t4AmusQz1v9t3ZXl4EXjXRUcyBJaTKbd2MxQqXD1wdLgLER_zUpRlNEsjmZ2Hj_B/exec';
-
-// For loading drug data, add '?action=getDrugData'
-const jsonApiUrl = `${WEB_APP_URL}?action=getDrugData`
-
-const ANALYTICS_URL = WEB_APP_URL; 
-
-const drugListContainer = document.getElementById('drug-list');
-// ... (the rest of your constants remain the same) ...
-let allDrugData = [];
-let newestGroupName = '';
-const warnedFilters = new Set();
-let previousFilter = 'all'; 
-let filterThatTriggeredWarning = null;
-
-
-// 2. REPLACE your entire 'loadDrugData' function with this new one
+/**
+ * Fetches drug data from the Google Apps Script JSON API.
+ */
 async function loadDrugData() {
-    if (jsonApiUrl === '') {
-        loadingContainer.innerHTML = `<p class="text-red-600 font-bold text-xl">Error: Please set the jsonApiUrl in the script.</p>`;
-        return;
-    }
-
     try {
-        const response = await fetch(jsonApiUrl);
+        const response = await fetch(JSON_API_URL);
         if (!response.ok) {
             throw new Error(`Network response error: ${response.statusText}`);
         }
@@ -392,19 +419,23 @@ async function loadDrugData() {
         setupEventListeners();
 
     } catch (error) {
-        loadingContainer.innerHTML = `<p class="text-red-600 font-bold text-xl">เกิดข้อผิดพลาดในการโหลดข้อมูล: ${error.message}</p>`;
+        loadingContainer.innerHTML = `<p class="text-red-600 font-bold text-xl">เกิดข้อผิดพลาดในการโหลดข้อมูล: ${error.message}<br>กรุณาตรวจสอบว่า Google Apps Script ได้รับการ Deploy อย่างถูกต้อง</p>`;
     }
 }
 
+/**
+ * Creates and renders the HTML for all drug cards, grouped by their proposal round.
+ * @param {Array} drugData The array of drug objects to render.
+ */
 function renderGroupedCards(drugData) {
     drugListContainer.innerHTML = '';
-    const fragment = document.createDocumentFragment();
-    const activeGroupFilter = groupFilterContainer.querySelector('.active')?.dataset.filter || 'all';
-
     if (drugData.length === 0) {
         drugListContainer.innerHTML = '<p class="text-center text-gray-500 font-semibold mt-8 text-xl">ไม่พบข้อมูลยาที่ตรงกับเงื่อนไขการค้นหา</p>';
         return;
     }
+
+    const fragment = document.createDocumentFragment();
+    const activeGroupFilter = groupFilterContainer.querySelector('.active')?.dataset.filter || 'all';
 
     const groupsToRender = drugData.reduce((acc, drug) => {
         const groupName = (drug.group || 'ไม่ระบุรอบการนำเข้า').trim();
@@ -416,9 +447,9 @@ function renderGroupedCards(drugData) {
     }, {});
 
     const sortedGroupNames = Object.keys(groupsToRender).sort((a, b) => {
-        if (activeGroupFilter !== 'all') {
-            if (a === activeGroupFilter && b !== activeGroupFilter) return -1;
-            if (b === activeGroupFilter && a !== activeGroupFilter) return 1;
+        if (activeGroupFilter !== 'all' && a !== b) {
+            if (a === activeGroupFilter) return -1;
+            if (b === activeGroupFilter) return 1;
         }
         return getOrder(groupsToRender[a].groupOrder) - getOrder(groupsToRender[b].groupOrder);
     });
@@ -435,8 +466,14 @@ function renderGroupedCards(drugData) {
     drugListContainer.appendChild(fragment);
 }
 
+/**
+ * Generates the HTML for a group header.
+ * @param {string} groupName The name of the group.
+ * @param {boolean} isNew Whether to add a "NEW" badge.
+ * @returns {string} The HTML string for the header.
+ */
 function createGroupHeaderHTML(groupName, isNew) {
-    const newBadgeHTML = isNew 
+    const newBadgeHTML = isNew
         ? `<span class="ml-3 text-sm font-bold text-red-600 bg-red-100 px-2.5 py-1 rounded-full animate-pulse">NEW ✨</span>`
         : '';
     return `<div class="mt-12 mb-5 flex items-center">
@@ -446,7 +483,11 @@ function createGroupHeaderHTML(groupName, isNew) {
             <hr class="border-gray-400">`;
 }
 
-
+/**
+ * Generates the HTML for a single drug card.
+ * @param {object} drug The drug data object.
+ * @returns {string} The HTML string for the card.
+ */
 function createDrugCardHTML(drug) {
     const formatContent = (text, fallback = '-') => (sanitizeHTML(text) || fallback).replace(/\\n|\n/g, '<br>');
     const druggroup = getDrugGroupCode(drug.code);
@@ -467,24 +508,18 @@ function createDrugCardHTML(drug) {
     const imageUrl2 = drug.image2 && drug.image2.trim() !== '' ? drug.image2.trim() : '';
     let imagesContent = '';
     const onErrorScript = `this.style.display='none';`;
-    if (imageUrl1) {
-        imagesContent += `<img src="${imageUrl1}" alt="รูปยา ${sanitizedName} 1" class="drug-image" onerror="${onErrorScript}">`;
-    }
-    if (imageUrl2) {
-        imagesContent += `<img src="${imageUrl2}" alt="รูปยา ${sanitizedName} 2" class="drug-image" onerror="${onErrorScript}">`;
-    }
-    if (!imageUrl1 && !imageUrl2) {
-        imagesContent = '<div class="flex items-center justify-center bg-gray-100 w-full h-full rounded-lg text-gray-400">ไม่มีรูปภาพ</div>';
-    }
+    if (imageUrl1) imagesContent += `<img src="${imageUrl1}" alt="รูปยา ${sanitizedName} 1" class="drug-image" onerror="${onErrorScript}">`;
+    if (imageUrl2) imagesContent += `<img src="${imageUrl2}" alt="รูปยา ${sanitizedName} 2" class="drug-image" onerror="${onErrorScript}">`;
+    if (!imageUrl1 && !imageUrl2) imagesContent = '<div class="flex items-center justify-center bg-gray-100 w-full h-full rounded-lg text-gray-400">ไม่มีรูปภาพ</div>';
 
     const indicationHTML = `<div class="flex items-start text-lg mt-4"> <span class="label-indication mt-1"><svg class="h-6 w-6 mr-3 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.963 2.286a.75.75 0 00-1.071 1.052A11.213 11.213 0 0112 15a11.213 11.213 0 01-9.892-11.662.75.75 0 00-1.071-1.052A12.713 12.713 0 001.5 15C1.5 21.627 6.873 27 13.5 27s12-5.373 12-12c0-5.12-3.213-9.489-7.537-11.348z" clip-rule="evenodd" /></svg></span> <div><strong class="font-semibold label-indication">ข้อบ่งชี้:</strong><div class="mt-1 text-gray-700">${formatContent(drug.indication)}</div></div> </div>`;
     const comparableDrug = formatContent(drug['Comparable drug']);
-    const comparableDrugHTML = comparableDrug && comparableDrug !== '-' 
-        ? `<div class="flex items-start text-base mt-4"> <span class="label-comparable mt-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1z" /></svg></span> <div><strong class="font-semibold label-comparable">ยาในบัญชีฯ ที่ใกล้เคียง:</strong><div class="mt-1 text-gray-700">${comparableDrug}</div></div> </div>` 
+    const comparableDrugHTML = comparableDrug && comparableDrug !== '-'
+        ? `<div class="flex items-start text-base mt-4"> <span class="label-comparable mt-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1z" /></svg></span> <div><strong class="font-semibold label-comparable">ยาในบัญชีฯ ที่ใกล้เคียง:</strong><div class="mt-1 text-gray-700">${comparableDrug}</div></div> </div>`
         : '';
     const foodInteraction = formatContent(drug.food);
-    const foodHTML = foodInteraction && foodInteraction !== '-' 
-        ? `<div class="flex items-start"> <span class="label-food mt-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 00-3 3v2.236l-1.063.807a1 1 0 00.414 1.832L3 13.447V17a1 1 0 001 1h12a1 1 0 001-1v-3.553l1.649-.412a1 1 0 00.553-1.832L17 10.236V6a3 3 0 00-3-3h-3.763L18 3zM16 6v4.062l-.5.125-10-2.5V6a1 1 0 011-1h8a1 1 0 011 1z" /></svg></span> <div><strong class="font-semibold label-food">Food Interaction:</strong><div class="mt-1 text-gray-700">${foodInteraction}</div></div> </div>` 
+    const foodHTML = foodInteraction && foodInteraction !== '-'
+        ? `<div class="flex items-start"> <span class="label-food mt-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 00-3 3v2.236l-1.063.807a1 1 0 00.414 1.832L3 13.447V17a1 1 0 001 1h12a1 1 0 001-1v-3.553l1.649-.412a1 1 0 00.553-1.832L17 10.236V6a3 3 0 00-3-3h-3.763L18 3zM16 6v4.062l-.5.125-10-2.5V6a1 1 0 011-1h8a1 1 0 011 1z" /></svg></span> <div><strong class="font-semibold label-food">Food Interaction:</strong><div class="mt-1 text-gray-700">${foodInteraction}</div></div> </div>`
         : '';
 
     return `
@@ -529,60 +564,91 @@ function createDrugCardHTML(drug) {
     </div>`;
 }
 
-// ===== SCRIPT SECTION WITH NEW LOGIC =====
+// --- EVENT HANDLING ---
+
+/**
+ * Sets up all major event listeners for the page.
+ */
 function setupEventListeners() {
     searchInput.addEventListener('input', filterAndRender);
+    groupFilterContainer.addEventListener('click', handleFilterClick);
     
-    const handleFilterClick = (container) => (e) => {
-        if (e.target.tagName === 'BUTTON') {
-            const filterValue = e.target.dataset.filter;
-            const currentActiveFilterElement = container.querySelector('.active');
-
-            if (currentActiveFilterElement) {
-                previousFilter = currentActiveFilterElement.dataset.filter;
-            }
-
-            // Warning logic: Check if filter needs a warning and hasn't been acknowledged yet
-            if (filterValue !== newestGroupName && !warnedFilters.has(filterValue)) {
-                filterThatTriggeredWarning = filterValue; // Remember which filter caused this
-                openWarningModal();
-            }
-            
-            // Update the UI immediately
-            if (currentActiveFilterElement) currentActiveFilterElement.classList.remove('active');
-            e.target.classList.add('active');
-            filterAndRender();
-        }
+    // Scroll-to-top button visibility
+    window.onscroll = () => {
+        scrollToTopBtn.style.display = (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) ? "flex" : "none";
     };
+    scrollToTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-    groupFilterContainer.addEventListener('click', handleFilterClick(groupFilterContainer));
+    // Report Modal
+    openReportModalBtn.addEventListener('click', () => reportModal.classList.remove('hidden'));
+    closeReportModalBtn.addEventListener('click', () => reportModal.classList.add('hidden'));
+    formCancelBtn.addEventListener('click', () => reportModal.classList.add('hidden'));
+    reportModal.addEventListener('click', (e) => { if (e.target === reportModal) reportModal.classList.add('hidden'); });
+    reportForm.addEventListener('submit', handleReportSubmit);
+
+    // Warning Modal
+    acknowledgeBtn.addEventListener('click', handleAcknowledgeWarning);
+    revertFilterBtn.addEventListener('click', revertToPreviousFilter);
+    warningModal.addEventListener('click', (e) => { if (e.target === warningModal) warningModal.classList.add('hidden'); });
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !warningModal.classList.contains('hidden')) {
+            e.preventDefault();
+            revertToPreviousFilter();
+        }
+    });
 }
 
+/**
+ * Handles clicks on the filter buttons.
+ * @param {Event} e The click event.
+ */
+function handleFilterClick(e) {
+    if (e.target.tagName !== 'BUTTON') return;
+
+    const filterValue = e.target.dataset.filter;
+    const currentActive = groupFilterContainer.querySelector('.active');
+
+    if (currentActive) {
+        previousFilter = currentActive.dataset.filter;
+    }
+
+    if (filterValue !== newestGroupName && !warnedFilters.has(filterValue)) {
+        filterThatTriggeredWarning = filterValue;
+        warningModal.classList.remove('hidden');
+    }
+
+    if (currentActive) currentActive.classList.remove('active');
+    e.target.classList.add('active');
+    filterAndRender();
+}
+
+/**
+ * Creates the filter buttons based on available drug groups.
+ * @param {string} defaultGroup The group name to be active by default.
+ */
 function setupGroupFilters(defaultGroup) {
     const groups = [...new Set(allDrugData.map(drug => (drug.group || '').trim()).filter(Boolean))];
-    
-    const isAllDefault = defaultGroup === 'all';
-    let filterHtml = `<button class="filter-btn${isAllDefault ? ' active' : ''}" data-filter="all">ทั้งหมด</button>`;
+    let filterHtml = `<button class="filter-btn${defaultGroup === 'all' ? ' active' : ''}" data-filter="all">ทั้งหมด</button>`;
     
     groups.sort().forEach(group => {
         let buttonText = sanitizeHTML(group.replace(/\s*\(.*\)/, ''));
         const isActive = group === defaultGroup ? ' active' : '';
-
         if (group === newestGroupName) {
             buttonText += ` <span class="text-xs font-bold text-red-500">(NEW)</span>`;
         }
-
         filterHtml += `<button class="filter-btn tag-filter-group${isActive}" data-filter="${group}">${buttonText}</button>`;
     });
 
     groupFilterContainer.innerHTML = filterHtml;
 }
 
-
+/**
+ * Filters the drug data based on search and active filters, then triggers a re-render.
+ */
 function filterAndRender() {
     const searchTerm = searchInput.value.toLowerCase().trim();
     const activeGroupFilter = groupFilterContainer.querySelector('.active').dataset.filter;
-    
+
     const filteredData = allDrugData.filter(drug => {
         const searchableContent = (drug.name + ' ' + drug.generic + ' ' + drug.sapCode).toLowerCase();
         const matchesSearch = searchTerm === '' || searchableContent.includes(searchTerm);
@@ -592,219 +658,109 @@ function filterAndRender() {
     renderGroupedCards(filteredData);
 }
 
+/**
+ * Reverts the filter selection to the previous one when the warning modal is cancelled.
+ */
 function revertToPreviousFilter() {
-    if (warningModal.classList.contains('hidden')) {
-        return;
-    }
+    if (warningModal.classList.contains('hidden')) return;
 
-    const previousFilterBtn = groupFilterContainer.querySelector(`button[data-filter="${previousFilter}"]`);
-    const currentActiveBtn = groupFilterContainer.querySelector('.active');
+    const prevBtn = groupFilterContainer.querySelector(`button[data-filter="${previousFilter}"]`);
+    const currentBtn = groupFilterContainer.querySelector('.active');
 
-    if (currentActiveBtn) currentActiveBtn.classList.remove('active');
-    if (previousFilterBtn) previousFilterBtn.classList.add('active');
+    if (currentBtn) currentBtn.classList.remove('active');
+    if (prevBtn) prevBtn.classList.add('active');
 
     filterAndRender();
-    warningModal.classList.add('hidden'); // Just hide the modal, don't acknowledge
+    warningModal.classList.add('hidden');
 }
 
-// ===== FLOATING TOOLBAR & MODAL SCRIPT START =====
-const scrollToTopBtn = document.getElementById('scrollToTopBtn');
-const openReportModalBtn = document.getElementById('openReportModalBtn');
-const reportModal = document.getElementById('reportModal');
-const closeReportModalBtn = document.getElementById('closeReportModalBtn');
-const formCancelBtn = document.querySelector('.form-cancel-btn');
-const reportForm = document.getElementById('reportForm');
-
-const warningModal = document.getElementById('warningModal');
-const acknowledgeBtn = document.getElementById('acknowledgeBtn');
-const revertFilterBtn = document.getElementById('revertFilterBtn');
-
-function openWarningModal() { warningModal.classList.remove('hidden'); }
-function closeWarningModal() { warningModal.classList.add('hidden'); }
-
-// Acknowledge button permanently dismisses the warning for that filter
-acknowledgeBtn.addEventListener('click', () => {
+/**
+ * Handles the "Acknowledge" button click on the warning modal.
+ */
+function handleAcknowledgeWarning() {
     if (filterThatTriggeredWarning) {
         warnedFilters.add(filterThatTriggeredWarning);
-        filterThatTriggeredWarning = null; // Reset the state
+        filterThatTriggeredWarning = null;
     }
-    closeWarningModal();
-});
+    warningModal.classList.add('hidden');
+}
 
-revertFilterBtn.addEventListener('click', revertToPreviousFilter);
-
-// Clicking the overlay simply closes the modal without acknowledging
-warningModal.addEventListener('click', function(event) {
-    if (event.target === warningModal) {
-        closeWarningModal();
-    }
-});
-
-window.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter' && !warningModal.classList.contains('hidden')) {
-        event.preventDefault();
-        revertToPreviousFilter();
-    }
-});
-
-window.onscroll = function() {
-    if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
-        scrollToTopBtn.style.display = "flex";
-    } else {
-        scrollToTopBtn.style.display = "none";
-    }
-};
-scrollToTopBtn.addEventListener('click', function() {
-    window.scrollTo({top: 0, behavior: 'smooth'});
-});
-
-function openModal() { reportModal.classList.remove('hidden'); }
-function closeModal() { reportModal.classList.add('hidden'); }
-
-openReportModalBtn.addEventListener('click', openModal);
-closeReportModalBtn.addEventListener('click', closeModal);
-formCancelBtn.addEventListener('click', closeModal);
-reportModal.addEventListener('click', function(event) {
-    if (event.target === reportModal) {
-        closeModal();
-    }
-});
-
-reportForm.addEventListener('submit', function(event) {
+/**
+ * Handles the submission of the report/feedback form.
+ * @param {Event} event The form submission event.
+ */
+function handleReportSubmit(event) {
     event.preventDefault();
-    const webAppUrl = 'https://script.google.com/macros/s/AKfycbyH_ULtPI5Wat_VmNY7smo7Ytq2jfk0DcKgFmjFQU5FXTyG2ICT9-5ro4Bj70TQ0tjS/exec';
     const formData = new FormData(reportForm);
     const data = Object.fromEntries(formData.entries());
     const submitButton = reportForm.querySelector('button[type="submit"]');
 
-    if (webAppUrl === 'YOUR_WEB_APP_URL_HERE') {
-        alert('Error: กรุณาตั้งค่า Web App URL ในไฟล์ HTML ก่อนใช้งาน');
-        return;
-    }
-
     submitButton.disabled = true;
     submitButton.innerHTML = `<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>กำลังส่ง...`;
 
-    fetch(webAppUrl, {
+    fetch(REPORT_SUBMIT_URL, {
         method: 'POST',
         mode: 'no-cors',
-        cache: 'no-cache',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
-        redirect: 'follow'
     })
-    .then(response => {
-        console.log('Form submitted');
+    .then(() => {
         alert('ส่งข้อมูลเรียบร้อยแล้ว ขอบคุณสำหรับข้อมูลครับ/ค่ะ');
-        closeModal();
+        reportModal.classList.add('hidden');
         reportForm.reset();
     })
     .catch(error => {
-        console.error('Error:', error);
+        console.error('Error submitting form:', error);
         alert('เกิดข้อผิดพลาดในการส่งข้อมูล: ' + error.message);
     })
     .finally(() => {
         submitButton.disabled = false;
         submitButton.textContent = 'ส่งเรื่อง';
     });
-});
-// ===== FLOATING TOOLBAR & MODAL SCRIPT END =====
+}
 
-// --- INITIAL LOAD ---
-document.addEventListener('DOMContentLoaded', loadDrugData);
-const ANALYTICS_URL = 'https://script.google.com/macros/s/AKfycby2t4AmusQz1v9t3ZXl4EXjXRUcyBJaTKbd2MxQqXD1wdLgLER_zUpRlNEsjmZ2Hj_B/exec'; // ใส่ URL จาก Google Apps Script
+// --- ANALYTICS ---
 
-// Function to log visit
+/**
+ * Logs a page visit to the analytics backend.
+ */
 async function logVisit() {
     try {
-        const visitData = {
-            timestamp: new Date().toISOString(),
-            userAgent: navigator.userAgent,
-            screenResolution: `${screen.width}x${screen.height}`,
-            referrer: document.referrer || 'Direct',
-            language: navigator.language,
-            platform: navigator.platform
-        };
-
         await fetch(ANALYTICS_URL, {
             method: 'POST',
             mode: 'no-cors',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(visitData)
+            body: JSON.stringify({
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent,
+                referrer: document.referrer || 'Direct'
+            })
         });
     } catch (error) {
         console.error('Error logging visit:', error);
     }
 }
 
-// Function to get and display visitor count
+/**
+ * Fetches and updates the visitor count displayed on the page.
+ */
 async function updateVisitorCount() {
     try {
         const response = await fetch(ANALYTICS_URL);
         const data = await response.json();
-        
-        const visitorCount = document.getElementById('visitorCount');
-        if (visitorCount && data.totalViews) {
-            visitorCount.textContent = data.totalViews.toLocaleString();
+        if (visitorCountEl && data.totalViews) {
+            visitorCountEl.textContent = data.totalViews.toLocaleString();
         }
     } catch (error) {
         console.error('Error fetching visitor count:', error);
-        document.getElementById('visitorCount').textContent = 'N/A';
+        if (visitorCountEl) visitorCountEl.textContent = 'N/A';
     }
 }
 
-// Initialize visitor tracking
-document.addEventListener('DOMContentLoaded', function() {
-    // Log this visit
+// --- INITIALIZATION ---
+document.addEventListener('DOMContentLoaded', () => {
+    loadDrugData();
     logVisit();
-    
-    // Get and display visitor count
     updateVisitorCount();
-    
-    // Update visitor count every 30 seconds
-    setInterval(updateVisitorCount, 30000);
-});
-
-// Optional: Track specific events
-function trackEvent(eventName, eventData = {}) {
-    if (ANALYTICS_URL === 'YOUR_ANALYTICS_WEB_APP_URL') return;
-    
-    fetch(ANALYTICS_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            ...eventData,
-            event: eventName,
-            timestamp: new Date().toISOString()
-        })
-    }).catch(console.error);
-}
-
-// Track filter usage
-groupFilterContainer.addEventListener('click', (e) => {
-    if (e.target.tagName === 'BUTTON') {
-        trackEvent('filter_used', {
-            filter: e.target.dataset.filter
-        });
-    }
-});
-
-// Track search usage
-let searchTimeout;
-searchInput.addEventListener('input', () => {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
-        if (searchInput.value.trim()) {
-            trackEvent('search_performed', {
-                searchTerm: searchInput.value.trim()
-            });
-        }
-    }, 1000);
+    setInterval(updateVisitorCount, 30000); // Refresh count every 30 seconds
 });
 
 </script>
