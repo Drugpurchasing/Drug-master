@@ -1,231 +1,1157 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>แบบฟอร์มแจ้งความต้องการใช้ยา (Non-stock) — No-GCP</title>
+    <meta charset="utf-8">
+    <title>Drug master CRA</title>
+    <base target="_top">
+    <link rel="icon" type="image/png" href="favicon-32x32.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Vendor CSS -->
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@200;300;400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Vendor JS -->
-  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5.min.css" />
 
-  <style>
-    :root { --brand-1:#002f87; --brand-2:#1f3d7d; --accent:#f36b21; --accent-hover:#fcb58d; --bg:#f6f8fc; --text:#1c2333; --muted:#637087; --card-bg:#ffffffee; }
-    body{font-family:'Sarabun',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);background:linear-gradient(160deg,#0f1d47 0%,#1f3d7d 50%,#0f1d47 100%) fixed;min-height:100vh;display:flex;flex-direction:column}
-    .app-header{position:sticky;top:0;z-index:10;backdrop-filter:saturate(180%) blur(12px);background:rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.12)}
-    .app-header .inner{display:flex;align-items:center;gap:14px;padding:14px 18px;color:#fff}
-    #logo{height:48px;width:auto}
-    .brand-title{font-weight:700;font-size:1.125rem;letter-spacing:.3px}
-    .brand-subtitle{font-size:.85rem;opacity:.9}
-    .page-wrap{flex:1 1 auto;display:grid;place-items:start center;padding:28px 14px}
-    .card-app{width:min(980px,100%);background:var(--card-bg);border-radius:18px;border:1px solid rgba(15,29,71,.08);box-shadow:0 12px 30px rgba(0,0,0,.12);overflow:hidden}
-    .card-header{background:linear-gradient(135deg,#fff 0%,#eef3ff 100%);border-bottom:1px solid rgba(0,0,0,.06);padding:20px 22px}
-    .card-header h1{color:var(--brand-1);font-size:1.4rem;font-weight:700;margin:0}
-    .card-header .helper{color:#d93025;font-size:.9rem;font-weight:700;margin-top:6px}
-    .card-body{padding:20px 22px 8px}
-    .section-title{color:var(--brand-2);font-weight:700;font-size:1.05rem;margin-bottom:12px}
-    label{font-weight:700;color:var(--text)}
-    .form-control,.select2-container .select2-selection--single{border-radius:12px!important;border:1px solid #d8dce6!important;min-height:44px;font-size:1rem}
-    .form-control:focus{border-color:var(--brand-1);box-shadow:0 0 0 .2rem rgba(0,47,135,.12)}
-    .select2-container--default .select2-selection--single .select2-selection__rendered{font-weight:600;font-size:1rem;color:var(--text)}
-    .select2-container--default .select2-results__option{font-weight:600;font-size:1rem}
-    .select2-container--default .select2-selection--single .select2-selection__arrow{height:44px}
-    .text-muted{color:var(--muted)!important}
-    .btn-primary,#btn{background-color:var(--accent)!important;border-color:var(--accent)!important;color:#fff;font-weight:700;border-radius:12px;padding:10px 18px;box-shadow:0 6px 16px rgba(243,107,33,.3);transition:transform .06s ease,box-shadow .2s ease,background-color .2s ease}
-    .btn-primary:hover,#btn:hover{background-color:var(--accent-hover)!important;transform:translateY(-1px);box-shadow:0 10px 18px rgba(243,107,33,.25)}
-    .btn-primary:active,#btn:active{transform:translateY(0)}
-    .help-row{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.95rem;margin-top:6px;margin-bottom:2px}
-    #minDateDisplay{display:inline-block;margin-top:8px;padding:8px 12px;border-radius:999px;background:#fff5f5;color:#d93025;font-weight:700;border:1px solid #ffd9d6}
-    footer{color:#fff;text-align:center;padding:12px 10px 20px}
-    .footer-note{font-size:12px;opacity:.9}
-    @media (max-width:576px){.card-body,.card-header{padding:16px}.app-header .inner{padding:10px 14px}#logo{height:40px}}
-    .is-invalid{border-color:#dc3545!important}.invalid-feedback{display:block}
-  </style>
+<style>
+    :root {
+        --primary-color: #0d6efd;
+        --secondary-color: #1A2B48; /* MODIFIED: Darker, modern blue */
+        --accent-color: #ffc107;
+        --light-bg: #f8f9fa;
+        --card-bg: #ffffff;
+        --text-color: #333;
+        --success-color: #198754;
+        --warning-color: #fd7e14;
+        --danger-color: #dc3545;
+        --bs-purple: #6f42c1;
+        --bs-pink: #d63384;
+        --bs-teal: #20c997;
+    }
+
+    body {
+        font-family: 'Sarabun', sans-serif;
+        background-color: #f5f7fb; /* MODIFIED: Simplified background */
+        color: var(--text-color);
+        line-height: 1.7; /* MODIFIED: Increased for readability */
+        font-size: 1.05rem; /* MODIFIED: Increased for readability */
+    }
+
+    .app-container {
+        max-width: 1800px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    .logo-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--secondary-color); /* MODIFIED: Solid modern dark blue */
+        padding: 15px 25px; /* MODIFIED: Increased padding */
+        border-radius: 12px; /* MODIFIED: Softer radius */
+        color: white;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .logo-container img {
+        height: 60px;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    }
+
+    .app-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: white;
+        margin: 0;
+    }
+
+    .version-info {
+        font-size: 16px;
+        color: var(--accent-color);
+        font-weight: 500;
+        margin-top: 5px;
+    }
+
+    .card {
+        border: 1px solid #e0e5ec; /* MODIFIED: Subtle border */
+        border-radius: 16px; /* MODIFIED: Larger radius */
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); /* MODIFIED: Softer shadow */
+        margin-bottom: 25px;
+        background-color: var(--card-bg);
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: var(--secondary-color); /* MODIFIED: Solid color */
+        padding: 2px; /* MODIFIED: Slim header bar */
+        border-bottom: none;
+    }
+    
+    .card-body {
+        padding: 2rem; /* MODIFIED: Increased padding */
+    }
+
+    .filter-section {
+        background-color: var(--card-bg);
+        padding: 1.5rem; /* MODIFIED: Increased padding */
+        border-radius: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #e3e9f1;
+    }
+
+    .btn {
+        border-radius: 0.5rem; /* MODIFIED: Softer, modern radius for all buttons */
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    /* MODIFIED: Styling for Pill-based view toggles */
+    .nav-pills .nav-link {
+        color: var(--secondary-color);
+        font-weight: 600;
+    }
+    .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+        color: #fff;
+        background-color: var(--primary-color);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-purple { color: #fff; background-color: var(--bs-purple); border-color: var(--bs-purple); }
+    .btn-purple:hover { background-color: #5a34a0; border-color: #533092; }
+
+    table.dataTable thead th {
+        background-color: var(--secondary-color);
+        color: white;
+        font-weight: 600;
+        vertical-align: middle;
+        padding: 12px 15px;
+    }
+
+    /* NEW: Truncate text in table cells */
+    .truncate-text {
+        max-width: 250px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        cursor: pointer;
+    }
+
+    #drugTable td {
+        vertical-align: middle;
+        padding: 10px 15px;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        padding: 5px 12px;
+        border-radius: 6px;
+        margin: 0 3px;
+    }
+
+    .modal-xl { max-width: 98%; }
+
+    .modal-header {
+        background: #fff; /* MODIFIED: Cleaner header */
+        color: var(--secondary-color);
+        padding: 1.25rem 1.5rem; /* MODIFIED: More padding */
+        border-bottom: 1px solid #e0e5ec;
+    }
+    .modal-header .modal-title { font-weight: 700; }
+    .modal-header .btn-close { filter: none; }
+    .modal-body { padding: 2rem; } /* MODIFIED: More padding */
+
+    #drugDetailModalBody .modal-main-layout { display: flex; flex-wrap: wrap; gap: 25px; }
+    #drugDetailModalBody .details-section { flex: 2; min-width: 400px; }
+    #drugDetailModalBody .image-section { flex: 1; min-width: 280px; }
+    .detail-row { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 15px; }
+    .detail-row:last-child { margin-bottom: 0; }
+    .detail-item {
+        flex: 1;
+        min-width: 150px;
+        background-color: #fdfdfd;
+        border: 1px solid #e9ecef;
+        border-left: 5px solid var(--primary-color);
+        border-radius: 8px;
+        padding: 15px;
+        word-wrap: break-word;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s;
+    }
+    .detail-item:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
+    .detail-item strong { display: block; color: var(--secondary-color); margin-bottom: 8px; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; }
+    .detail-item div { font-size: 1.1rem; font-weight: 500; }
+    .material-no-card { flex: 0 1 180px; }
+    .compact-card { flex: 0 1 120px !important; }
+    .status-card strong { font-size: 1rem !important; }
+    .status-card .badge { font-size: 1rem !important; padding: .5em .7em !important; }
+    .highlight-card strong { font-size: 1.05rem !important; }
+    .main-title-value { font-size: 1.3rem !important; font-weight: bold !important; }
+    .sale-price-value, .cost-price-value { font-size: 1.4rem !important; font-weight: bold !important; }
+    .sale-price-value { color: var(--success-color); }
+    .cost-price-value { color: var(--warning-color); }
+    .unlock-cost-btn { cursor: pointer; color: var(--accent-color); font-size: 0.85em; margin-left: 8px; transition: color 0.2s; }
+    .unlock-cost-btn:hover { color: #ffae00; }
+    .inline-error-msg { color: var(--danger-color); font-size: 0.85rem; margin-top: 8px; }
+    .image-section h5, #stats-section h5 { font-weight: bold; color: var(--secondary-color); margin-bottom: 1.2rem; padding-bottom: 0.6rem; border-bottom: 2px solid var(--primary-color); }
+    .drug-image { width: 100%; height: 320px; object-fit: contain; background-color: #f9fafb; border-radius: 10px; margin-bottom: 1rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); border: 1px solid #eaecef; }
+    #stats-section { margin-top: 1.8rem; width: 100%; border-top: 1px solid #dee2e6; padding-top: 1.8rem; }
+    .charts-container { display: flex; flex-wrap: wrap; gap: 25px; align-items: flex-start; }
+    .chart-wrapper { flex: 1; min-width: 350px; position: relative; height: 400px; background: #fff; border-radius: 10px; padding: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); border: 1px solid #eaecef; }
+    #stats-section .tables-container { margin-top: 2.2rem; clear: both; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--secondary-color); }
+    .orange-border-card { border-left-color: var(--warning-color) !important; }
+    
+    .floating-action-button {
+        position: fixed;
+        bottom: 1.5rem;
+        right: 1.5rem;
+        width: auto;
+        height: auto;
+        background: var(--success-color);
+        color: white;
+        border-radius: 50px;
+        border: none;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        padding: 0.8rem 1.5rem;
+        z-index: 1050;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    .floating-action-button:hover { background: #157347; transform: translateY(-3px) scale(1.05); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); }
+    .floating-action-button svg { width: 22px; height: 22px; }
+
+    .action-buttons { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+    .action-buttons .btn { flex: 1; min-width: 120px; display: flex; align-items: center; justify-content: center; padding: 0.5rem 0.8rem; }
+    .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.85); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+    .spinner { width: 60px; height: 60px; border: 5px solid rgba(13, 110, 253, 0.3); border-radius: 50%; border-top-color: var(--primary-color); animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .badge { font-weight: 500; padding: 0.6em 0.9em; font-size: 0.9rem; border-radius: 8px; margin: 2px; }
+    .bg-purple { background-color: var(--bs-purple) !important; }
+    .bg-pink { background-color: var(--bs-pink) !important; }
+    .bg-teal { background-color: var(--bs-teal) !important; }
+    .bg-orange { background-color: var(--warning-color) !important; }
+    .danger-border-card { border-left-color: var(--danger-color) !important; }
+    
+    .app-footer {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 20px 15px;
+        margin-top: 25px;
+        color: #6c757d;
+        border-top: 1px solid #dee2e6;
+        background-color: var(--card-bg);
+        border-radius: 0 0 12px 12px;
+    }
+    .view-counter-widget {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        display: inline-flex;
+        background-color: var(--light-bg);
+        color: var(--secondary-color);
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    .select2-container--bootstrap-5 .select2-selection { box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important; border-radius: 8px !important; }
+    .select2-container--bootstrap-5 .select2-dropdown { border-radius: 8px !important; box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important; }
+    .select2-results__option .badge { font-size: 0.85rem; padding: 0.4em 0.7em; }
+    .select2-selection__choice .badge { font-size: 0.8rem !important; padding: 0.3em 0.6em !important; margin: 0 !important; }
+    .select2-selection__choice { background-color: transparent !important; border: none !important; padding-top: 5px !important; padding-bottom: 5px !important; }
+    
+    .table-hover tbody tr:hover {
+        background-color: rgba(13, 110, 253, 0.08); /* MODIFIED: Enhanced hover */
+        cursor: pointer;
+    }
+    .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter, .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_paginate { padding: 10px 15px; }
+    .dataTables_wrapper .dataTables_filter input { border-radius: 8px; padding: 8px 12px; border: 1px solid #ced4da; transition: all 0.2s ease-in-out; }
+    .dataTables_wrapper .dataTables_filter input:focus { border-color: var(--primary-color); box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); }
+
+
+    /* --- NEW: Mobile Card View Styles --- */
+    #mobileCardView {
+        padding: 10px 0;
+    }
+    .drug-card {
+        background-color: #fff;
+        border: 1px solid #e0e5ec;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        padding: 1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        transition: box-shadow 0.3s;
+    }
+    .drug-card:hover {
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .drug-card-header h5 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 0.25rem;
+    }
+    .drug-card-header p {
+        font-size: 0.95rem;
+        color: #6c757d;
+        margin-bottom: 1rem;
+    }
+    .drug-card-body .info-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .drug-card-body .info-item:last-child {
+        border-bottom: none;
+    }
+    .drug-card-body .info-item strong {
+        color: var(--secondary-color);
+        font-weight: 600;
+    }
+    .drug-card-footer {
+        margin-top: 1rem;
+    }
+    /* --- End of Mobile Card View Styles --- */
+
+    /* --- Responsive Adjustments --- */
+    @media (max-width: 992px) {
+        .logo-container { flex-direction: column; text-align: center; gap: 15px; }
+        .app-title { font-size: 24px; }
+        .charts-container { flex-direction: column; }
+        .chart-wrapper { min-width: 100%; }
+        /* MODIFIED: Hide table and show cards on smaller screens */
+        .table-responsive.d-none.d-lg-block { display: none !important; }
+        #mobileCardView.d-lg-none { display: block !important; }
+    }
+
+    @media (max-width: 768px) {
+        body { font-size: 0.95rem; }
+        .app-title { font-size: 22px; }
+        .version-info { font-size: 14px; }
+        .card-body { padding: 1rem; }
+        .filter-section .row > div { margin-bottom: 15px; }
+        .action-buttons .btn { min-width: 100%; }
+        .detail-item { flex: 1 1 45%; padding: 10px; min-width: 140px; }
+        .detail-row { gap: 10px; margin-bottom: 10px; }
+        .modal-main-layout { flex-direction: column; }
+        .floating-action-button { bottom: 1rem; right: 1rem; padding: 0.7rem 1.2rem; font-size: 0.9rem; }
+        .floating-action-button svg { width: 18px; height: 18px; }
+        .detail-item div { font-size: 0.95rem; }
+        .drug-image { height: 220px; }
+        .chart-wrapper { max-height: 250px; }
+    }
+
+    @media (max-width: 576px) {
+        .logo-container img { height: 50px; }
+        .app-title { font-size: 20px; }
+        .version-info { font-size: 13px; }
+        .floating-action-button span { display: none; }
+        .floating-action-button { width: 50px; height: 50px; padding: 0; border-radius: 50%; }
+        .detail-item { flex-basis: 100%; }
+        .main-title-value { font-size: 1.1rem !important; }
+        .sale-price-value, .cost-price-value { font-size: 1.15rem !important; }
+        .detail-item strong { font-size: 0.85rem; }
+    }
+</style>
 </head>
 
 <body>
-  <header class="app-header">
-    <div class="inner container">
-      <img id="logo" src="https://raw.githubusercontent.com/Drugpurchasing/Drug-master/main/CRAlogo.png" alt="CRA Logo" />
-      <div>
-        <div class="brand-title">แบบฟอร์มแจ้งความต้องการใช้ยาไม่สำรองคงคลัง (Non-stock)</div>
-        <div class="brand-subtitle">กรุณาส่งแบบฟอร์มก่อนใช้ยาอย่างน้อย 14 วันทำการ</div>
-      </div>
-      <div class="ml-auto d-none d-md-block text-right">
-        <a href="https://drugpurchasing.github.io/Drug-master/NS-list.html" class="btn btn-sm btn-light font-weight-bold">ตรวจสอบการลงทะเบียน</a>
-      </div>
+    <div class="app-container">
+        <div class="logo-container">
+            <div class="d-flex align-items-center">
+                <img src="CRAlogo.png" alt="Logo" class="img-fluid me-3" onerror="this.style.display='none'">
+                <div>
+                    <h1 class="app-title">Drug master CRA</h1>
+                    <p class="version-info mb-0 fw-bold">Latest update 07/08/2025 | Version 4.06</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header"></div>
+            <div class="card-body">
+                <div class="filter-section">
+                    <div class="row g-3 justify-content-between align-items-center">
+                        <div class="col-lg-5 col-md-12">
+                            <div class="input-group shadow-sm">
+                                <span class="input-group-text bg-white"><i class="fas fa-search text-primary"></i></span>
+                                <input type="text" id="globalSearch" class="form-control" placeholder="ค้นหายา...">
+                            </div>
+                        </div>
+                        <div class="col-lg-7 col-md-12">
+                            <div class="d-flex flex-wrap gap-3 justify-content-lg-end justify-content-center align-items-center">
+                                <div class="btn-group" role="group" aria-label="Action Buttons">
+                                    <a href="https://drugpurchasing.github.io/Drug-master/Markup.html" target="_blank" class="btn btn-warning text-dark fw-bold" data-bs-toggle="tooltip" data-bs-placement="top" title="คำนวณราคาขายจากราคาทุน">
+                                        <i class="fas fa-calculator me-1"></i>Markup
+                                    </a>
+                                    <a href="https://drugpurchasing.github.io/Drug-master/NewList.html" target="_blank" class="btn btn-purple" data-bs-toggle="tooltip" data-bs-placement="top" title="เปิดหน้ารายการยาเข้าใหม่">
+                                        <i class="fas fa-file-medical me-1"></i>New Drugs
+                                    </a>
+                                    <button id="exportButton" class="btn btn-success" data-bs-toggle="tooltip" data-bs-placement="top" title="ส่งออกข้อมูลตารางที่แสดงอยู่เป็นไฟล์ Excel">
+                                        <i class="fas fa-file-excel me-1"></i>Excel
+                                    </button>
+                                </div>
+                                <button class="btn btn-info" type="button" data-bs-toggle="collapse" data-bs-target="#filterPanel" aria-expanded="true" aria-controls="filterPanel" title="Toggle Advanced Filters">
+                                    <i class="fas fa-filter me-1"></i>Filters
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="filterPanel" class="collapse show mt-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="drugGroupFilter" class="form-label fw-bold text-secondary">Filter by Drug Group</label>
+                                <div class="d-flex gap-2">
+                                    <select id="drugGroupFilter" class="form-select" multiple="multiple" style="width: 100%;"></select>
+                                    <button class="btn btn-outline-secondary btn-sm" id="clearGroupFilter" title="Clear Group Filter"><i class="fas fa-times"></i></button>
+                                </div>
+                            </div>
+                            <div class="col-md-6" id="drugSubgroupFilterContainer"> 
+                                <label for="drugSubgroupFilter" class="form-label fw-bold text-secondary">Filter by Drug Subgroup</label>
+                                <div class="d-flex gap-2">
+                                    <select id="drugSubgroupFilter" class="form-select" multiple="multiple" style="width: 100%;"></select>
+                                    <button class="btn btn-outline-secondary btn-sm" id="clearSubgroupFilter" title="Clear Subgroup Filter"><i class="fas fa-times"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <ul class="nav nav-pills nav-fill mb-4" id="viewSelector" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active" data-view="default" href="#" data-bs-toggle="tooltip" title="แสดงข้อมูลที่จำเป็นพื้นฐาน"><i class="fas fa-eye me-1"></i>Essential</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" data-view="purchasing" href="#" data-bs-toggle="tooltip" title="แสดงข้อมูลสำหรับฝ่ายจัดซื้อ"><i class="fas fa-shopping-cart me-1"></i>Purchasing</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" data-view="rate" href="#" data-bs-toggle="tooltip" title="แสดงข้อมูลอัตราการใช้ยาย้อนหลัง"><i class="fas fa-chart-line me-1"></i>Rates</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" data-view="all" href="#" data-bs-toggle="tooltip" title="แสดงข้อมูลทั้งหมดทุกคอลัมน์"><i class="fas fa-th-list me-1"></i>All</a>
+                    </li>
+                </ul>
+                
+                <div id="loadingIndicator" class="progress mb-4" style="height: 25px; display: none;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        <strong class="text-white" id="progressText">Loading...</strong>
+                    </div>
+                </div>
+                
+                <div class="table-responsive d-none d-lg-block">
+                    <table id="drugTable" class="table table-hover table-striped w-100"></table>
+                </div>
+
+                <div id="mobileCardView" class="d-lg-none"></div>
+                
+            </div>
+        </div>
     </div>
-  </header>
+    
+    <footer class="app-footer">
+        <div id="viewCounter" class="view-counter-widget" title="Total Page Views">
+            <i class="fas fa-eye"></i>&nbsp;ยอดเข้าชม:&nbsp;<span id="viewCountValue">...</span>
+        </div>
+    </footer>
 
-  <main class="page-wrap">
-    <div class="card-app">
-      <div class="card-header">
-        <h1 id="title">แบบฟอร์มแจ้งความต้องการใช้ยาไม่สำรองคงคลัง (Non-stock)</h1>
-        <div id="subtitle" class="helper">กรุณาส่งแบบฟอร์มก่อนใช้ยาอย่างน้อย 14 วันทำการ</div>
-      </div>
-
-      <div class="card-body">
-        <form id="myForm" onsubmit="submitForm(); return false;" novalidate>
-          <div class="section-title">ข้อมูลผู้สั่งใช้ยา</div>
-          <div class="form-row">
-            <div class="form-group col-md-6">
-              <label for="doctorName">ชื่อ-นามสกุล แพทย์ผู้ใช้ยา</label>
-              <input type="text" class="form-control" id="doctorName" name="doctorName" placeholder="เช่น นพ. ก้องภพ ใจดี" required />
-              <div class="invalid-feedback">กรุณากรอกชื่อแพทย์ผู้ใช้ยา</div>
+    <button id="openReportModalBtn" title="Help & Support" class="contact-trigger floating-action-button">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 24px; height: 24px;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+        </svg>
+        <span>Support</span>
+    </button>
+    
+    <div class="modal fade" id="drugDetailModal" tabindex="-1" aria-labelledby="drugDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="drugDetailModalLabel">Drug Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="drugDetailModalBody">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info me-auto contact-trigger">
+                        <i class="fas fa-comments me-1"></i>แจ้งปัญหาเกี่ยวกับยานี้
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
-            <div class="form-group col-md-6">
-              <label for="patientHN">HN ผู้ป่วย</label>
-              <input type="text" class="form-control" id="patientHN" name="patientHN" inputmode="numeric" pattern="^[0-9]+$" placeholder="ตัวเลขเท่านั้น" required />
-              <div class="invalid-feedback">HN ผู้ป่วยต้องเป็นตัวเลข</div>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group col-md-6">
-              <label for="patientName">ชื่อ-นามสกุล ผู้ป่วย</label>
-              <input type="text" class="form-control" id="patientName" name="patientName" placeholder="เช่น นางสาว สุชาดา ใจดี" required />
-              <div class="invalid-feedback">กรุณากรอกชื่อผู้ป่วย</div>
-            </div>
-            <div class="form-group col-md-6">
-              <label for="dateNeeded">วันที่ต้องการใช้ยา</label>
-              <small class="form-text text-muted">ยาจะพร้อมใช้หลัง 14 วันทำการ</small>
-              <div class="input-group">
-                <input type="text" class="form-control" id="dateNeeded" name="dateNeeded" readonly required aria-describedby="minDateHelp" />
-                <div class="input-group-append"><span class="input-group-text">📅</span></div>
-              </div>
-              <div class="help-row"><span id="minDateDisplay"></span></div>
-              <div id="minDateHelp" class="sr-only">เลือกวันที่ไม่เร็วกว่าวันที่กำหนด</div>
-            </div>
-          </div>
-
-          <hr />
-          <div class="section-title">รายการยาและปริมาณ</div>
-          <div class="form-group">
-            <label for="medication">เลือกรายการยาที่ต้องการสั่งใช้</label>
-            <select class="form-control" id="medication" name="medication" required>
-              <option value="">เลือก หรือพิมพ์ค้นหารายการยา…</option>
-            </select>
-            <div class="invalid-feedback">กรุณาเลือกรายการยา</div>
-          </div>
-
-          <div class="form-group">
-            <label for="quantity">จำนวนที่ต้องการใช้ต่อรอบการรักษา และจำนวนรอบการรักษา</label>
-            <input type="text" class="form-control" id="quantity" name="quantity" placeholder="เช่น 2 ขวด x 6 รอบ" required />
-            <div class="invalid-feedback">กรุณาระบุจำนวน</div>
-          </div>
-
-          <div class="d-flex align-items-center flex-wrap gap-2">
-            <button type="submit" id="btn" class="btn btn-primary btn-lg">ส่งข้อมูล</button>
-            <a id="resultLink" href="https://drugpurchasing.github.io/Drug-master/NS-list.html" class="btn btn-outline-primary ml-2">ตรวจสอบการลงทะเบียน</a>
-          </div>
-
-          <div id="formResponse" class="mt-3"></div>
-        </form>
-
-        <div class="mt-3 text-muted">หากท่านพบปัญหาในการลงทะเบียน ติดต่อเบอร์ <strong>02-576-6096</strong></div>
-      </div>
+        </div>
     </div>
-  </main>
 
-  <footer>
-    <hr style="border-color: rgba(255,255,255,.25)" />
-    <div id="footer" class="footer-note">(Version 2.00 // 25/08/2025) Non-stock form — HTML+JS only (Sheets+Email via Apps Script Web App)</div>
-  </footer>
+    <div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="contactModalLabel"><i class="fas fa-comments me-2"></i>ติดต่อผู้ดูแลระบบ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-secondary mb-4">เลือกหัวข้อและกรอกรายละเอียดที่ต้องการแจ้ง</p>
+                    <form id="contactForm">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">หัวข้อการติดต่อ:</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check mb-3"> <input class="form-check-input" type="radio" name="topic" id="topic1" value="ขอแก้ไขข้อมูลยา" checked> <label class="form-check-label" for="topic1">ขอแก้ไขข้อมูลยา</label> </div>
+                                    <div class="form-check mb-3"> <input class="form-check-input" type="radio" name="topic" id="topic2" value="พบปัญหาการใช้งาน"> <label class="form-check-label" for="topic2">พบปัญหาการใช้งาน</label> </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check mb-3"> <input class="form-check-input" type="radio" name="topic" id="topic3" value="คำถาม"> <label class="form-check-label" for="topic3">คำถาม</label> </div>
+                                    <div class="form-check mb-3"> <input class="form-check-input" type="radio" name="topic" id="topic4" value="ข้อเสนอแนะ"> <label class="form-check-label" for="topic4">ข้อเสนอแนะ</label> </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="message" class="form-label fw-bold">รายละเอียด:</label>
+                            <textarea class="form-control" id="message" name="message" rows="5" placeholder="กรุณาระบุรายละเอียด เช่น ชื่อยาที่ต้องการแก้ไข หรือปัญหาที่พบ..." required></textarea>
+                        </div>
+                        <div class="modal-footer pb-0">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane me-2"></i>ส่งเรื่อง</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
-  <script>
-    // =====================
-    //  CONFIG — Apps Script Web App (no GCP project)
-    // =====================
-    const APPS_SCRIPT_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyHwrTbKqadiLpde_RX4UwXBFsESiqAFMSVGz512OjjbrkYHAPy6P5GceIX5WcsgE3lig/exec'; // e.g. https://script.google.com/macros/s/XXXX/exec
-    const APP_SHARED_KEY = 'SSS';
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-    $(document).ready(function () {
-      $('#medication').select2({ width: '100%', placeholder: 'เลือก หรือพิมพ์ค้นหารายการยา…' });
-      loadMedicationOptions();
-      setMinDate();
-      $('#dateNeeded').datepicker({ dateFormat: 'DD dd/MM/yy', minDate: calculateMinDate(), onSelect: function (dateText) { $('#dateNeeded').val(dateText); } });
 
-      $('#myForm').on('submit', function () {
-        const required = $(this).find('[required]');
-        required.each(function(){ this.value ? $(this).removeClass('is-invalid') : $(this).addClass('is-invalid'); });
-        if($('#patientHN').val() && !/^\d+$/.test($('#patientHN').val())){ $('#patientHN').addClass('is-invalid'); }
-      });
+    <script>
+$(document).ready(function () {
+    const webAppUrl = 'https://script.google.com/macros/s/AKfycbzDSIzvndrlTxCT6hxQIxsKosS5PRphOn4qQmEA8lh1iuvJbW1L0zJaRxfO1EHFa27o_A/exec'; 
+    
+    var table;
+    var passwordVerified = false;
+    var lineChartInstance; 
+    var pieChartInstance;
+    var tooltipMap = {};
+    const contactModal = new bootstrap.Modal(document.getElementById('contactModal'));
 
-      $('input, select').on('change keyup', function(){ $(this).removeClass('is-invalid'); });
-    });
+    var selectedGroups = [];
+    var selectedSubgroups = [];
 
-    function loadMedicationOptions() {
-      const medications = ['Abacavir GPO (Abacavir) 300 mg FCT (Non-stock)','Abrysvo (วัคซีน RSV) 120 mcg vaccine prefilled syr (0.5 mL)','Alecensa (Alectinib) 150 mg cap (Non-stock) (ขรก เบิกไม่ได้) (NED)','Alunbrig (Brigatinib) 30 mg FC tab (Non-stock) (ขรก เบิกไม่ได้) (NED)','BICNU (Carmustine) 100 mg inj. (Non-stock)','Bioferon (Interferon alpha-2b) 3 MU inj. (Non-stock) (NED)','Brukinsa (Zanubrutinib) 80 mg cap (ขรก เบิกไม่ได้) (NED)','Cabometyx (Cabozantinib) 40 mg FC tab (Non-stock) (ขรก เบิกไม่ได้) (NED)','Cabometyx (Cabozantinib) 60 mg FC tab (Non-stock) (ขรก เบิกไม่ได้) (NED)','Calquence (Acalabrutinib) 100 mg cap (Non-stock) (ขรก เบิกไม่ได้)  (NED)','Cyramza (Ramucirumab) 100 mg/10 mL inj. (Non-stock) (สำรองจ่าย) (NED)','Cyramza 500 mg/50 mL inj. (Ramucirumab) (Non-stock) (สำรองจ่าย) (NED)','Dacogen (Decitabine) 50 mg inj. (Non-stock) (สำรองจ่าย) (NED)','Dactinomycin 0.5 mg (Lyovac Cosmegen) inj. (Non-stock)','Dasatinib (Sandoz) 50 mg FC tab (Non-stock) **(OCPA)**','Dasatinib 70 mg (Sandoz) FC tab (Non-stock) **(OCPA)**','Decitabine (Decitex) 50 mg inj. (Non-stock) (สำรองจ่าย) (NED)','Dupixent (Dupilumab) 300 mg/2 mL prefilled syr (Non-stock) (ขรก เบิกไม่ไ ด้) (NED)','Enhertu (Trastuzumab deruxtecan) 100 mg inj. (ขรก เบิกไม่ได้) (NED)','Erleada (Apalutamide) 60 mg FC tab (ขรก เบิกไม่ได้) (NED)','Florinef (Fludrocortisone acetate) 100 mcg tab (Non-stock)','Gavreto (Pralsetinib) 100 mg cap (Non-stock) (ขรก เบิกไม่ได้) (NED)','Gazyva (Obinutuzumab) 1 g/40 mL inj. (Non-stock) (สำรองจ่าย) (NED)','Hexaxim 0.5 mL prefilled syr (วัคซีนรวม 6 โรค) (Non-stock)','Igamad (Human anti-D ig) 750 iu/1 mL prefilled syr','Imjudo (Tremelimumab) 300 mg/15 mL inj. (ขรก เบิกไม่ได้) (NED)','Immunate (Octocog alfa) 500 iu inj. (Non-stock)','Jevtana (Cabazitaxel) 60 mg/1.5 mL inj. (Non-stock) (สำรองจ่าย) (NED)','Jinarc (Tolvaptan) 30 mg tab (ขรก เบิกไม่ได้) (NED)','Kyprolis (Carfilzomib) 30 mg inj. (Non-stock) (สำรองจ่าย) (NED)','Lorviqua (Lorlatinib) 100 mg FC tab (Non-stock) (ขรก เบิกไม่ได้) (NED)','Lorviqua (Lorlatinib) 25 mg FC tab (Non-stock) (ขรก เบิกไม่ได้) (NED)','Lucentis 0.5 mg/0.05 mL inj. (NED) (Non-stock)','Lumakras (Sotorasib) 120 mg FC tab (ขรก เบิกไม่ได้) (NED)','Mabthera (Rituximab) 100 mg/10 mL inj. **เฉพาะเคส** **(OCPA)** (NED)','Mabthera (Rituximab) 500 mg/50 mL inj. **เฉพาะเคส** **(OCPA)** (NED)','Mekinist (Trametinib) 2 mg FC tab (Non-stock) (NED)','Ninlaro (Ixazomib) 4 mg cap (Non-stock) (ขรก.เบิกไมได้)(NED)','Norditropin (Somatropin) 10 mg/1.5 mL prefilled pen','Novorapid penfill (Insulin aspart) 100 iu/1 mL inj. (3 mL)','Nubeqa (Darolutamide) 300 mg FC tab (ขรก เบิกไม่ได้) (NED)','Opsumit (Macitentan) 10 mg FC tab (NED)','Piqray 250 Mg Daily Dose FC tab (Non-stock) (ขรก เบิกไม่ได้) (NED)','Piqray 300 mg Daily Dose FC tab (Alpelisib) (Non-stock) (ขรก เบิกไม่ได้) (N ED)','Plerifor (Plerixafor) 24 mg/1.2 mL inj. (Non-stock) (สำรองจ่าย) (NED)','Pomalyst (Pomalidomide) 4 mg cap (Non-stock) (สำรองจ่าย) (NED)','Rozlytrek (Entrectinib) 100 mg cap (Non-stock) (ขรก เบิกไม่ได้) (NED)','Rozlytrek (Entrectinib) 200 mg cap (Non-stock) (ขรก เบิกไม่ได้) (NED)','Rybrevant (Amivantamab) 350 mg/7 mL inj. (ขรก เบิกไม่ได้) (NED)','Sebivo (Telbivudine) 600 mg tab (NED) (Non-stock)','Simponi (Golimumab) 50 mg/0.5 mL prefilled pen (Non-stock) (ขรก เบิกไม่ไ ด้) (NED)','Somatuline Autogel 120 mg/0.5 mL (Lanreotide) prefilled syr (Non-stock) (NED)','Supralip NT (Fenofibrate) 145 mg FC tab (NED)','Tabrecta (Capmatinib) 200 mg FC tab (Non-stock) (ขรก เบิกไม่ได้) (NED)','Tafinlar (Dabrafenib) 75 mg cap (Non-stock) (NED)','Tanstrive (Selpercatinib) 40 mg cap (NED)','Tecentriq SC (Atezolizumab) 1875 mg/15 mL inj. (ขรก เบิกไม่ได้) (NED)','Tecvayli 153 mg/1.7 mL (Teclistamab) inj. (ขรก เบิกไม่ได้) (NED)','Tevimbra (Tislelizumab) 100 mg/10 mL inj. (ขรก เบิกไม่ได้) (NED)','Uptravi (Selexipag) 1600 mcg FC tab (Non-stock) (ขรก เบิกไม่ได้) (NED)','Valvir (Valganciclovir) 450 mg FC tab (NED)','Imatinib (Veenat 100) 100 mg FC tab (Non-stock) **(OCPA)**','Imatinib 400 mg (Veenat 400) FC tab (Non-stock) **(OCPA)**','Voriconazole (Voraiz) 200 mg FC tab (Non-stock)','Xospata (Gilteritinib) 40 mg FC tab (Non-stock) (ขรก เบิกไม่ได้)  (NED)','Xpovio (Selinexor) 20 mg FC tab (ขรก เบิกไม่ได้) (NED)','Yervoy (Ipilimumab) 50 mg/10 mL inj. (Non-stock) (สำรองจ่าย) (NED)','Yulareb (Abemaciclib) 100 mg FC tab (Non-stock) (ขรก เบิกไม่ได้) (NED)','Yulareb (Abemaciclib) 150 mg FC tab (Non-stock) (ขรก เบิกไม่ได้) (NED)','Zerpidio (Serplulimab) 100 mg/10 mL inj. (ขรก เบิกไม่ได้) (NED)'];
-      const sel = document.getElementById('medication');
-      medications.forEach(text => { const o = document.createElement('option'); o.value = text; o.textContent = text; sel.appendChild(o); });
+    const exportPasswords = {
+        'default': 'rxccc', 'purchasing': 'rxpur', 'rate': 'rxccc', 'all': 'rxall'
+    };
+
+    Chart.register(ChartDataLabels);
+    
+    $('body').tooltip({ selector: '[data-bs-toggle="tooltip"]' });
+
+    $.fn.dataTable.ext.search.push(
+        function(settings, data, dataIndex) {
+            if (settings.nTable.id !== 'drugTable') return true;
+            
+            const hasGroupFilter = selectedGroups && selectedGroups.length > 0;
+            const hasSubgroupFilter = selectedSubgroups && selectedSubgroups.length > 0;
+
+            if (!hasGroupFilter && !hasSubgroupFilter) return true;
+
+            const rowData = table.row(dataIndex).data();
+            const rowDrugGroup = rowData[25] || '';
+            const rowDrugSubgroup = rowData[26] || '';
+
+            const groupMatch = !hasGroupFilter || selectedGroups.includes(rowDrugGroup);
+            const subgroupMatch = !hasSubgroupFilter || selectedSubgroups.includes(rowDrugSubgroup);
+
+            return groupMatch && subgroupMatch;
+        }
+    );
+
+    function formatNumber(data, minDecimals = 0, maxDecimals = 0) {
+        const number = parseFloat(data);
+        if (isNaN(number)) return data === null || data === '' ? '-' : data;
+        return number.toLocaleString('en-US', { minimumFractionDigits: minDecimals, maximumFractionDigits: maxDecimals });
+    }
+    
+    function updateProgress(percentage, text) {
+        const progressBar = $('#loadingIndicator .progress-bar');
+        const progressText = $('#progressText');
+        
+        progressBar.css('width', percentage + '%').attr('aria-valuenow', percentage);
+        progressText.html(`<i class="fas fa-spinner fa-spin me-2"></i>${text} (${percentage}%)`);
     }
 
-    function setMinDate() { const input = document.getElementById('dateNeeded'); const minDate = calculateMinDate(); input.setAttribute('min', minDate.toISOString().split('T')[0]); document.getElementById('minDateDisplay').textContent = `วันที่สามารถจัดหายาได้เร็วสุดภายใน: ${formatDateThai(minDate)}`; }
-    function formatDateThai(date) { const w=['วันอาทิตย์','วันจันทร์','วันอังคาร','วันพุธ','วันพฤหัสบดี','วันศุกร์','วันเสาร์']; const m=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม']; return `${w[date.getDay()]} ที่ ${String(date.getDate()).padStart(2,'0')} ${m[date.getMonth()]} ${date.getFullYear()+543}`; }
-    function calculateMinDate(){ const today=new Date(); const target=new Date(today); let wd=0; while(wd<14){ target.setDate(target.getDate()+1); if(target.getDay()!==0 && target.getDay()!==6) wd++; } return target; }
+    async function loadAllDataAndInitTable() {
+        $('#loadingIndicator').show();
+        updateProgress(0, 'Initializing...');
 
-    async function submitForm(){
-      const formData = {
-        doctorName: document.getElementById('doctorName').value.trim(),
-        patientHN: document.getElementById('patientHN').value.trim(),
-        patientName: document.getElementById('patientName').value.trim(),
-        dateNeeded: document.getElementById('dateNeeded').value.trim(),
-        medication: $('#medication').val(),
-        quantity: document.getElementById('quantity').value.trim()
-      };
+        const cacheKey = 'drugMasterDataCache_v4.06_JSON';
 
-      if (!/^\d+$/.test(formData.patientHN)) { Swal.fire({ icon:'error', title:'ข้อผิดพลาด', text:'HN ผู้ป่วยต้องเป็นตัวเลข' }); return; }
-      if (!formData.doctorName || !formData.patientName || !formData.dateNeeded || !formData.medication || !formData.quantity){ Swal.fire('ข้อมูลไม่ครบ','กรอกข้อมูลที่จำเป็นให้ครบก่อนส่ง','warning'); return; }
+        if (webAppUrl === 'YOUR_WEB_APP_URL_HERE') {
+            $('#loadingIndicator').hide();
+            Swal.fire('Configuration Needed', 'Please paste the Google Web App URL into the `webAppUrl` constant.', 'warning');
+            return;
+        }
 
-      const confirmDlg = await Swal.fire({ title:'ยืนยันการส่งแบบฟอร์ม?', text:'กรุณาตรวจสอบข้อมูลก่อนยืนยัน', icon:'warning', showCancelButton:true, confirmButtonText:'ใช่, ยืนยัน', cancelButtonText:'ยกเลิก' });
-      if (!confirmDlg.isConfirmed) return;
+        try {
+            const cachedItem = localStorage.getItem(cacheKey);
 
-      try {
-        // ส่งไป Apps Script (ให้ Apps Script จัดการบันทึกชีต + ส่งเมล)
-        await fetch(APPS_SCRIPT_ENDPOINT, {
-          method: 'POST',
-          mode: 'no-cors', // fire-and-forget เพื่อหลีกเลี่ยง CORS ของ Apps Script
-          headers: { 'Content-Type': 'application/json', 'X-APP-KEY': APP_SHARED_KEY },
-          body: JSON.stringify(formData)
+            if (cachedItem) {
+                updateProgress(10, 'Verifying cache...');
+                const { checksum: cachedChecksum } = JSON.parse(cachedItem);
+                
+                const checkResponse = await fetch(`${webAppUrl}?action=check`);
+                const serverStatus = await checkResponse.json();
+
+                if (serverStatus.checksum === cachedChecksum) {
+                    updateProgress(50, 'Cache is fresh. Loading...');
+                    const { apiResponse } = JSON.parse(cachedItem);
+                    tooltipMap = apiResponse.tooltips;
+                    initializeDataTable(apiResponse.data);
+                    updateProgress(100, 'Finished');
+                    setTimeout(() => $('#loadingIndicator').hide(), 500);
+                    return;
+                }
+            }
+
+            updateProgress(25, 'Fetching updated data...');
+            const response = await fetch(webAppUrl);
+            if (!response.ok) throw new Error(`Network error: ${response.statusText}`);
+            
+            const apiResponse = await response.json();
+            if (apiResponse.status !== 'success') throw new Error(`API Error: ${apiResponse.message}`);
+
+            updateProgress(75, 'Data received, preparing table...');
+            tooltipMap = apiResponse.tooltips;
+
+            const dataToCache = {
+                checksum: apiResponse.checksum,
+                apiResponse: apiResponse
+            };
+            localStorage.setItem(cacheKey, JSON.stringify(dataToCache));
+
+            initializeDataTable(apiResponse.data);
+            updateProgress(100, 'Finished');
+            setTimeout(() => $('#loadingIndicator').hide(), 500);
+
+        } catch (error) {
+            $('#loadingIndicator').hide();
+            console.error("Data Load Error:", error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Data Load Error',
+                text: `Failed to load data. Details: ${error.message}`
+            });
+        }
+    }
+
+    const drugGroupColorMap = { 'gastro-intestinal system': 'bg-success', 'cardiovascular system': 'bg-danger', 'respiratory system': 'bg-info text-dark', 'central nervous system': 'bg-purple', 'infections': 'bg-warning text-dark', 'endocrine system': 'bg-orange', 'obstetrics': 'bg-pink', 'malignant disease': 'bg-dark', 'nutrition and blood': 'bg-primary', 'musculoskeletal': 'bg-teal', 'eye': 'bg-secondary', 'ear, nose, and oropharynx': 'bg-light text-dark', 'skin': 'bg-warning text-dark', 'immunological': 'bg-info text-dark', 'anesthesia': 'bg-purple', 'antidotes': 'bg-danger', 'contrast media': 'bg-primary', 'other': 'bg-secondary' };
+    const storageColorMap = { 'below 30°c': 'bg-success', '2°c - 8°c': 'bg-primary', 'below 25°c': 'bg-orange', 'below -20°c': 'bg-info', '-15°c ถึง -25°c': 'bg-info text-dark' };
+
+    // MODIFIED: Added `truncate-text` class to long text fields
+    const columnConfig = [
+        { title: 'Detail View', data: null, defaultContent: '<button class="btn btn-sm btn-primary view-details-btn" data-bs-toggle="tooltip" data-bs-placement="top" title="คลิกเพื่อดูข้อมูลของยาโดยละเอียด"><i class="fas fa-eye"></i></button>', orderable: false, className: 'text-center all-column', width: "60px" },
+        { title: 'Material No.', data: 0, className: 'default-column purchasing-column rate-column' },
+        { title: 'SAP Name', data: 1, width: "25%", className: 'default-column purchasing-column rate-column truncate-text', render: (d, t, r, meta) => t === 'display' && d ? `<span style="color: var(--primary-color)" class="fw-bold" title="${d}">${d}</span>` : d },
+        { title: 'Generic Name', data: 2, width: "25%", className: 'default-column truncate-text', render: (d, t) => t === 'display' && d ? `<span title="${d}">${d}</span>` : d },
+        { title: 'TPU', data: 3, className: 'default-column purchasing-column' }, { title: 'GPU', data: 4, className: 'default-column' }, { title: 'เงื่อนไขการเบิกจ่าย', data: 5, className: 'default-column', width: '180px', render: (d,t) => renderBadge(d, t, {'สำรองจ่าย': 'bg-primary', 'ocpa': 'bg-success', 'เบิกได้': 'bg-success', 'ขรก เบิกไม่ได้': 'bg-danger', 'เบิกนอก': 'bg-info text-dark', 'วัคซีน': 'bg-warning text-dark'}, true) }, { title: 'บัญชียา', data: 6, className: 'default-column', render: (d,t) => renderBadge(d, t, {'ned': 'bg-danger', 'ed': 'bg-success' , 'ค่าสารทึบ': 'bg-orange', 'promotion': 'bg-warning text-dark', 'วิตามิน อาหารเสริม': 'bg-teal'}) }, { title: 'Purchasing Unit', data: 7, className: 'purchasing-column default-column' }, { title: 'ราคาขาย <span class="ml-3 text-sm font-bold text-red-600 px-2.5 py-1 rounded-full">NEW ✨</span> / หน่วย ', data: 8, width: '130px', className: 'default-column purchasing-column rate-column', render: (d, t, row) => `${formatNumber(row[8], 2, 2)} / ${row[9] || 'หน่วย'}` }, { title: 'ราคาทุน / หน่วย', data: 10, width: '130px', className: 'purchasing-column', render: (d, t, row) => `${formatNumber(row[10], 2, 2)} / ${row[11] || 'หน่วย'}` }, { title: 'Status', data: 12, className: 'default-column rate-column', render: (d,t) => renderBadge(d, t, {'ในบัญชี(ns)': 'bg-primary','ในบัญชี(วถ)': 'bg-info text-dark','ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}) },
+        { title: '08/67', data: 13, className: 'rate-column' }, { title: '09/67', data: 14, className: 'rate-column' }, { title: '10/67', data: 15, className: 'rate-column' }, { title: '11/67', data: 16, className: 'rate-column' }, { title: '12/67', data: 17, className: 'rate-column' }, { title: '01/68', data: 18, className: 'rate-column' }, { title: '02/68', data: 19, className: 'rate-column' }, { title: '03/68', data: 20, className: 'rate-column' }, { title: '04/68', data: 21, className: 'rate-column' }, { title: '05/68', data: 22, className: 'rate-column' }, { title: '06/68', data: 23, className: 'rate-column' }, { title: '07/68', data: 24, className: 'rate-column' }, { title: 'Drug Group', data: 25, className: 'default-column', render: (d, t) => renderBadge(d, t, drugGroupColorMap, true) },
+        { title: 'Drug Subgroup', data: 26, visible: false, className: 'modal-only' }, { title: 'ราคากลาง', data: 27, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) }, { title: 'Fee Schedule', data: 28, className: 'purchasing-column', render: (data) => formatNumber(data, 2, 2) }, { title: 'Storage', data: 29, className: 'purchasing-column default-column', render: (d,t) => renderBadge(d, t, storageColorMap, true) }, { title: 'รหัสยาทดแทน', data: 30, className: 'purchasing-column' }, { title: 'การรับเข้าบัญชี', data: 31, className: 'purchasing-column' }, { title: 'Distributor', data: 32, className: 'purchasing-column' },
+        { title: 'ข้าราชการ', data: 33, visible: false, className: 'modal-only' }, { title: 'จ่ายเอง', data: 34, visible: false, className: 'modal-only' }, { title: 'ปกส', data: 35, visible: false, className: 'modal-only' }, { title: 'รัฐวิสาหกิจ', data: 36, visible: false, className: 'modal-only' }, { title: 'สปสช', data: 37, visible: false, className: 'modal-only' }, { title: 'สวัสดิการเจ้าหน้าที่', data: 38, visible: false, className: 'modal-only' }, { title: 'เงื่อนไขบัญชียาหลัก', data: 39, visible: false, className: 'modal-only' }, { title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', data: 40, visible: false, className: 'modal-only' }, { title: 'คำเตือน/หมายเหตุ/จำกัดแพทย์', data: 41, visible: false, className: 'modal-only' }, { title: 'PAP', data: 42, visible: false, className: 'modal-only' },
+        { title: 'Image 1', data: 43, visible: false, className: 'modal-only' }, { title: 'Image 2', data: 44, visible: false, className: 'modal-only' }, { title: 'Image 3', data: 45, visible: false, className: 'modal-only' }
+    ];
+    
+    function renderBadge(data, type, map, textWrap = false) {
+        if (type === 'display' && data) {
+            const status = data.toLowerCase().trim();
+            const key = Object.keys(map).find(k => status.includes(k.toLowerCase()));
+            const cls = key ? map[key] : 'bg-secondary';
+            const tooltipKey = Object.keys(tooltipMap).find(k => status.includes(k.toLowerCase()));
+            const tooltipHtml = tooltipKey ? `data-bs-toggle="tooltip" data-bs-placement="top" title="${tooltipMap[tooltipKey]}"` : '';
+            return `<span class="badge ${cls} ${textWrap ? 'text-wrap' : ''}" ${tooltipHtml}>${data}</span>`;
+        }
+        return data;
+    }
+
+    function calculateTrendline(data) { if (!data || data.length < 2) return []; const n = data.length; let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0; for (let i = 0; i < n; i++) { sumX += i; sumY += data[i]; sumXY += i * data[i]; sumXX += i * i; } const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX); const intercept = (sumY - slope * sumX) / n; return data.map((_, i) => slope * i + intercept); }
+    function calculateStatistics(data) { const filteredData = data.filter(d => typeof d === 'number' && d > 0); if (filteredData.length === 0) return { mean: 0, avgLast3: 0, median: 0, min: 0, max: 0, stdDev: 0, total: 0 }; const total = data.reduce((sum, val) => sum + (val || 0), 0); const mean = filteredData.reduce((a, b) => a + b, 0) / filteredData.length; const last3 = data.slice(-3); const avgLast3 = last3.reduce((sum, val) => sum + (val || 0), 0) / last3.length; const sorted = [...filteredData].sort((a, b) => a - b); const mid = Math.floor(sorted.length / 2); const median = sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2; const min = Math.min(...filteredData); const max = Math.max(...filteredData); const stdDev = Math.sqrt(filteredData.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b, 0) / filteredData.length); return { mean, avgLast3, median, min, max, stdDev, total }; }
+    function createStatsTable(stats) { return ` <h5 class="mt-4">Usage Statistics</h5> <div class="table-responsive"> <table class="table table-sm table-bordered text-center"> <thead class="table-light"> <tr> <th>Average</th> <th>3-Month Avg</th> <th>Median</th> <th>Min / Max</th> <th>Std. Dev</th> <th>Total</th> </tr> </thead> <tbody> <tr> <td>${formatNumber(stats.mean, 2, 2)}</td> <td>${formatNumber(stats.avgLast3, 2, 2)}</td> <td>${formatNumber(stats.median, 2, 2)}</td> <td>${formatNumber(stats.min, 0, 0)} / ${formatNumber(stats.max, 0, 0)}</td> <td>${formatNumber(stats.stdDev, 2, 2)}</td> <td>${formatNumber(stats.total, 0, 0)}</td> </tr> </tbody> </table> </div>`; }
+
+    // REFACTORED: Logic to show the modal is now in its own function
+    function showDrugModal(rowData) {
+        if (!rowData) return;
+        $('#drugDetailModalLabel').html(`<strong>${rowData[1] || ''}</strong> <small class="text-black-50 fw-normal">(${rowData[2] || 'N/A'})</small>`);
+        
+        function createDetailCard(options) { const { title, value, valueClass, itemClass, isProtected, realValue } = { valueClass: '', itemClass: '', isProtected: false, realValue: '', ...options }; if (!value || value.toString().trim() === '-' || value.toString().trim() === '') return ''; let titleHtml = `<strong>${title}</strong>`; let valueHtml = `<div class="value-container ${valueClass}" data-real-value="${realValue}">${value}</div>`; if (isProtected && !passwordVerified) { titleHtml = `<strong>${title} <i class="fas fa-lock unlock-cost-btn" title="ปลดล็อคเพื่อดูราคาทุน"></i></strong>`; valueHtml = `<div class="value-container ${valueClass}" data-real-value="${realValue}">****</div>`; } return `<div class="detail-item ${itemClass}">${titleHtml}${valueHtml}</div>`; }
+        let detailsHtml = '';
+
+        let row1Html = ''; 
+        row1Html += createDetailCard({ title: 'Material No.', value: rowData[0], valueClass: 'main-title-value', itemClass: 'material-no-card' }); 
+        row1Html += createDetailCard({ title: 'SAP Name', value: rowData[1], valueClass: 'main-title-value' }); 
+        row1Html += createDetailCard({ title: 'Generic Name', value: rowData[2], valueClass: 'main-title-value' }); 
+        if (row1Html) detailsHtml += `<div class="detail-row">${row1Html}</div>`;
+        
+        let row2Html = '';
+        row2Html += createDetailCard({ title: 'TPU', value: rowData[3], itemClass: 'compact-card' });
+        row2Html += createDetailCard({ title: 'GPU', value: rowData[4], itemClass: 'compact-card' });
+        row2Html += createDetailCard({ title: 'เงื่อนไขการเบิกจ่าย', value: renderBadge(rowData[5], 'display', {'สำรองจ่าย': 'bg-primary', 'ocpa': 'bg-success', 'เบิกได้': 'bg-success', 'ขรก เบิกไม่ได้': 'bg-danger', 'เบิกนอก': 'bg-info text-dark', 'วัคซีน': 'bg-warning text-dark'}, true), itemClass: 'status-card' });
+        row2Html += createDetailCard({ title: 'บัญชียา', value: renderBadge(rowData[6], 'display', {'ned': 'bg-danger', 'ed': 'bg-success', 'ในบัญชี(วถ)': 'bg-info text-dark', 'ค่าสารทึบ': 'bg-primary', 'promotion': 'bg-warning text-dark', 'วิตามิน อาหารเสริม': 'bg-teal'}), itemClass: 'status-card' });
+        row2Html += createDetailCard({ title: 'Status', value: renderBadge(rowData[12], 'display', {'ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'}), itemClass: 'status-card' });
+        if (row2Html) detailsHtml += `<div class="detail-row">${row2Html}</div>`;
+        
+        let row3Html = ''; 
+        row3Html += createDetailCard({ title: 'Drug Group', value: renderBadge(rowData[25], 'display', drugGroupColorMap, true) });
+        row3Html += createDetailCard({ title: 'Drug Subgroup', value: renderBadge(rowData[26], 'display', {}, true) });
+        row3Html += createDetailCard({ title: 'ราคาขาย', value: `${formatNumber(rowData[8], 2, 2)} / ${rowData[9] || 'หน่วย'}`, valueClass: 'sale-price-value', itemClass: 'highlight-card' }); 
+        const realCostValue = `${formatNumber(rowData[10], 2, 2)} / ${rowData[11] || 'หน่วย'}`; 
+        row3Html += createDetailCard({ title: 'ราคาทุน', value: realCostValue, valueClass: 'cost-price-value', itemClass: 'highlight-card', isProtected: true, realValue: realCostValue }); 
+        row3Html += createDetailCard({ title: 'ราคากลาง', value: formatNumber(rowData[27], 2, 2) }); 
+        row3Html += createDetailCard({ title: 'Fee Schedule', value: formatNumber(rowData[28], 2, 2) });
+        row3Html += createDetailCard({ title: 'การรับเข้าบัญชี', value: rowData[31] });
+        if (row3Html) detailsHtml += `<div class="detail-row">${row3Html}</div>`;
+
+        let row4Html = '';
+        row4Html += createDetailCard({ title: 'Purchasing Unit', value: rowData[7] });
+        row4Html += createDetailCard({ title: 'Distributor', value: rowData[32] });
+        row4Html += createDetailCard({ title: 'Storage', value: renderBadge(rowData[29], 'display', storageColorMap, true) });
+        row4Html += createDetailCard({ title: 'รหัสยาทดแทน', value: rowData[30] }); 
+        if (row4Html) detailsHtml += `<div class="detail-row">${row4Html}</div>`;
+
+        let row5Html = ''; 
+        let conditions = rowData[39]; if (conditions) conditions = conditions.replace(/\n/g, '<br>'); 
+        row5Html += createDetailCard({ title: 'เงื่อนไขบัญชียาหลัก', value: conditions, itemClass: 'orange-border-card' }); 
+        let indications = rowData[40]; if (indications) indications = indications.replace(/\n/g, '<br>'); 
+        row5Html += createDetailCard({ title: 'ข้อบ่งชี้ที่ได้ขึ้นทะเบียน', value: indications }); 
+        let papValue = rowData[42]; if (papValue) papValue = papValue.replace(/\n/g, '<br>'); 
+        row5Html += createDetailCard({ title: 'PAP', value: papValue, itemClass: 'orange-border-card' }); 
+        if (row5Html) detailsHtml += `<div class="detail-row">${row5Html}</div>`;
+        
+        let row6Html = '';
+        let warningNote = rowData[41]; if (warningNote) warningNote = warningNote.replace(/\n/g, '<br>');
+        row6Html += createDetailCard({ title: 'คำเตือน/หมายเหตุ/จำกัดแพทย์', value: warningNote, itemClass: 'danger-border-card' });
+        if (row6Html) detailsHtml += `<div class="detail-row">${row6Html}</div>`;
+
+        let imageHtml = '';
+        if (rowData[43]) imageHtml += `<img src="${rowData[43]}" class="drug-image img-fluid" alt="Drug Image 1" onerror="this.style.display='none'">`;
+        if (rowData[44]) imageHtml += `<img src="${rowData[44]}" class="drug-image img-fluid" alt="Drug Image 2" onerror="this.style.display='none'">`;
+        if (rowData[45]) imageHtml += `<img src="${rowData[45]}" class="drug-image img-fluid" alt="Drug Image 3" onerror="this.style.display='none'">`;
+
+        const rateLabels = [], usageData = [], caseData = [];
+        columnConfig.forEach(col => {
+            if (/\d{2}\/\d{2}/.test(col.title)) {
+                const rawValue = rowData[col.data] || '';
+                usageData.push(parseFloat(rawValue.match(/^[0-9.]+/)?.[0] || 0));
+                caseData.push(parseInt(rawValue.match(/\((\d+)\)/)?.[1] || 0, 10));
+                rateLabels.push(col.title);
+            }
         });
 
-        const minDate = calculateMinDate();
-        const swalHtml = `<p>ข้อมูลที่คุณส่งมีดังนี้:</p>
-          <p><strong>ชื่อ-นามสกุล แพทย์ผู้ใช้ยา:</strong> ${escapeHtml(formData.doctorName)}</p>
-          <p><strong>HN ผู้ป่วย:</strong> ${escapeHtml(formData.patientHN)}</p>
-          <p><strong>ชื่อ-นามสกุล ผู้ป่วย:</strong> ${escapeHtml(formData.patientName)}</p>
-          <p><strong>วันที่ต้องการใช้ยา:</strong> ${escapeHtml(formData.dateNeeded)}</p>
-          <p><strong>รายการยา:</strong> ${escapeHtml(formData.medication)}</p>
-          <p><strong>จำนวนที่ต้องการใช้ (ต่อรอบการรักษา):</strong> ${escapeHtml(formData.quantity)}</p>
-          <p style="color:red;font-weight:bold;font-size:18px;">วันที่สามารถจัดหายาได้เร็วสุด: ${formatDateThai(minDate)}</p>
-          <a href="https://drugpurchasing.github.io/Drug-master/NS-list.html" class="btn btn-primary mt-3">ตรวจสอบการลงทะเบียน</a>`;
+        const payerLabels = ['ข้าราชการ', 'จ่ายเอง', 'ปกส', 'รัฐวิสาหกิจ', 'สปสช', 'สวัสดิการเจ้าหน้าที่'];
+        const payerData = [ parseFloat(rowData[33] || 0), parseFloat(rowData[34] || 0), parseFloat(rowData[35] || 0), parseFloat(rowData[36] || 0), parseFloat(rowData[37] || 0), parseFloat(rowData[38] || 0) ];
+        const showUsageStats = usageData.some(d => d > 0);
+        const showPieChart = payerData.some(d => d > 0);
+        
+        let statsHtml = '';
+        if (showUsageStats) {
+            let chartsHtml = `<div class="charts-container"> <div class="chart-wrapper"><h5 class="mb-3">อัตราการใช้ยาย้อนหลัง 12 เดือน</h5><canvas id="usageLineChart"></canvas></div> ${showPieChart ? `<div class="chart-wrapper"><h5 class="mb-3">สัดส่วนการใช้ตามสิทธิ์</h5><canvas id="payerPieChart"></canvas></div>` : ''} </div>`;
+            const stats = calculateStatistics(usageData);
+            const statsTable = createStatsTable(stats);
+            let caseTable = `<h5 class="mt-4">จำนวนเคส (Case Count)</h5><div class="table-responsive"><table class="table table-sm table-bordered text-center"><thead><tr>`;
+            rateLabels.forEach(label => caseTable += `<th>${label}</th>`);
+            caseTable += `</tr></thead><tbody><tr>${caseData.map(d => `<td>${formatNumber(d, 0, 0)}</td>`).join('')}</tr></tbody></table></div>`;
+            let tablesHtml = `<div class="tables-container mt-5">${statsTable}${caseTable}</div>`;
+            statsHtml = `<div id="stats-section">${chartsHtml}${tablesHtml}</div>`;
+        } else {
+            statsHtml = '<div id="stats-section"><h5>ข้อมูลสถิติ</h5><p class="text-center text-muted mt-3">ไม่มีข้อมูลย้อนหลัง 1 ปี</p></div>';
+        }
+        
+        const finalModalHtml = `<div class="modal-main-layout"><div class="details-section">${detailsHtml}${statsHtml}</div>${imageHtml ? `<div class="image-section"><h5>รูปภาพประกอบ</h5>${imageHtml}</div>` : ''}</div>`;
+        $('#drugDetailModalBody').html(finalModalHtml);
 
-        Swal.fire({ title:'ส่งแบบฟอร์มเรียบร้อย!', html: swalHtml, icon:'success' });
-        document.getElementById('formResponse').innerHTML = swalHtml;
-        document.getElementById('myForm').reset();
-        $('#medication').val(null).trigger('change');
-        setMinDate();
-      } catch (err) {
-        console.error(err);
-        Swal.fire('ส่งไม่สำเร็จ','เกิดข้อผิดพลาดในการส่งข้อมูล','error');
-      }
+        $('#drugDetailModal').data('drug-name', `${rowData[1]} (Mat No: ${rowData[0]})`);
+
+        if (lineChartInstance) lineChartInstance.destroy(); if (pieChartInstance) pieChartInstance.destroy();
+        if (showUsageStats) { const dataMax = Math.max(...usageData); const suggestedMax = dataMax > 0 ? dataMax * 1.15 : 1; const trendlineData = calculateTrendline(usageData); const lineCtx = document.getElementById('usageLineChart').getContext('2d'); lineChartInstance = new Chart(lineCtx, { type: 'line', data: { labels: rateLabels, datasets: [ { label: 'Usage Rate', data: usageData, borderColor: 'var(--primary-color)', backgroundColor: 'rgba(0, 91, 161, 0.2)', fill: true, tension: 0.1 }, { label: 'Trendline', data: trendlineData, type: 'line', fill: false, borderColor: 'rgba(220, 53, 69, 0.7)', borderWidth: 2, borderDash: [5, 5], pointRadius: 0, datalabels: { display: false } } ] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { ticks: { color: '#000000', font: { weight: 'bold' } } }, y: { ticks: { color: '#000000', font: { weight: 'bold' } }, min: 0, suggestedMax: suggestedMax } }, plugins: { legend: { display: true, position: 'top', labels: { usePointStyle: true } }, datalabels: { align: 'end', anchor: 'end', color: '#555', font: { weight: 'bold', size: 14 }, formatter: (value) => value > 0 ? Math.round(value) : '' } } } }); }
+        if (showUsageStats && showPieChart) { const pieCtx = document.getElementById('payerPieChart').getContext('2d'); pieChartInstance = new Chart(pieCtx, { type: 'pie', data: { labels: payerLabels, datasets: [{ label: 'สัดส่วน', data: payerData, backgroundColor: ['#005ba1', '#dc3545', '#198754', '#6f42c1', '#fd7e14', '#ffc107'], hoverOffset: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#000000', font: { weight: 'bold' } } }, datalabels: { color: '#fff', textStrokeColor: '#000', textStrokeWidth: 2, font: { weight: 'bold', size: 14 }, formatter: (value, ctx) => { if (value === 0) return ''; const total = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); const percentage = (value / total * 100).toFixed(1) + '%'; return percentage; } } } } }); }
+        
+        const modalTooltipTriggerList = [].slice.call(document.querySelectorAll('#drugDetailModal [data-bs-toggle="tooltip"]'));
+        modalTooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        $('#drugDetailModal').modal('show');
     }
 
-    function escapeHtml(str){ return String(str).replace(/[&<>"']/g, s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[s])); }
-  </script>
+    // NEW: Function to render the mobile card view
+    function updateMobileView(tableInstance) {
+        const container = $('#mobileCardView').empty();
+        const data = tableInstance.rows({ search: 'applied' }).data();
+        const indexes = tableInstance.rows({ search: 'applied' }).indexes();
+
+        if (data.length === 0) {
+            container.html('<p class="text-center text-muted">No matching records found.</p>');
+            return;
+        }
+
+        data.each((rowData, i) => {
+            const rowIndex = indexes[i];
+            const sapName = rowData[1] || 'N/A';
+            const genericName = rowData[2] || 'N/A';
+            const status = renderBadge(rowData[12], 'display', {'ในบัญชี': 'bg-success', 'ตัดออกจากบัญชี': 'bg-danger', 'ns': 'bg-primary', 'ยาใหม่': 'bg-info text-dark', 'promotion': 'bg-warning text-dark'});
+            const salePrice = `${formatNumber(rowData[8], 2, 2)} / ${rowData[9] || 'หน่วย'}`;
+
+            const cardHtml = `
+                <div class="drug-card">
+                    <div class="drug-card-header">
+                        <h5>${sapName}</h5>
+                        <p>${genericName}</p>
+                    </div>
+                    <div class="drug-card-body">
+                        <div class="info-item">
+                            <strong>Status:</strong>
+                            <span>${status}</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>ราคาขาย:</strong>
+                            <span class="fw-bold text-success">${salePrice}</span>
+                        </div>
+                    </div>
+                    <div class="drug-card-footer">
+                        <button class="btn btn-primary w-100 view-details-btn-mobile" data-row-index="${rowIndex}">
+                            <i class="fas fa-eye me-2"></i>View Details
+                        </button>
+                    </div>
+                </div>
+            `;
+            container.append(cardHtml);
+        });
+    }
+
+    function initializeDataTable(data) {
+        $('#loadingIndicator').hide();
+        table = $('#drugTable').DataTable({ 
+            data: data, 
+            columns: columnConfig, 
+            dom: 'rt<"bottom d-none d-lg-flex justify-content-between align-items-center mt-3"lip>', 
+            pageLength: 10, 
+            lengthMenu: [10, 25, 50, 100], 
+            scrollX: true, 
+            responsive: false, 
+            language: { 
+                info: "Showing _START_ to _END_ of _TOTAL_ entries", 
+                lengthMenu: "Show _MENU_ entries", 
+                paginate: { first: "First", last: "Last", next: "Next", previous: "Previous" } 
+            } 
+        });
+        
+        const allData = table.rows().data().toArray();
+        const $drugGroupFilter = $('#drugGroupFilter');
+        const $drugSubgroupFilter = $('#drugSubgroupFilter');
+
+        const normalizedDrugGroupColorMap = {};
+        for (const key in drugGroupColorMap) {
+            normalizedDrugGroupColorMap[key.trim().toLowerCase()] = drugGroupColorMap[key];
+        }
+
+        const subgroupColorMap = {};
+        allData.forEach(row => {
+            const group = row[25]; const subgroup = row[26];
+            if (group && subgroup) {
+                const subgroupKey = subgroup.trim();
+                if (!subgroupColorMap[subgroupKey]) {
+                    const groupKey = group.trim().toLowerCase();
+                    subgroupColorMap[subgroupKey] = normalizedDrugGroupColorMap[groupKey] || 'bg-secondary';
+                }
+            }
+        });
+        
+        function formatGroupState(state) { if (!state.id) { return state.text; } const key = state.id.trim().toLowerCase(); const cls = normalizedDrugGroupColorMap[key] || 'bg-secondary'; return $(`<span><span class="badge ${cls}">${state.text}</span></span>`); };
+        function formatSubgroupState(state) { if (!state.id) { return state.text; } const key = state.id.trim(); const colorClass = subgroupColorMap[key] || 'bg-secondary'; return $(`<span><span class="badge ${colorClass}">${state.text}</span></span>`); };
+        
+        const drugGroups = [...new Set(allData.map(row => row[25]).filter(Boolean))].sort();
+        drugGroups.forEach(group => { $drugGroupFilter.append(new Option(group, group)); });
+        $drugGroupFilter.select2({ theme: 'bootstrap-5', placeholder: 'Select Drug Groups', closeOnSelect: false, templateResult: formatGroupState, templateSelection: formatGroupState });
+
+        const allSubgroups = [...new Set(allData.map(row => row[26]).filter(Boolean))].sort();
+        allSubgroups.forEach(subgroup => { $drugSubgroupFilter.append(new Option(subgroup, subgroup)); });
+        $drugSubgroupFilter.select2({ theme: 'bootstrap-5', placeholder: 'Select Subgroups', closeOnSelect: false, templateResult: formatSubgroupState, templateSelection: formatSubgroupState });
+        
+        $drugGroupFilter.on('change', function() {
+            selectedGroups = $(this).val() || [];
+            
+            const currentSubgroupSelection = $drugSubgroupFilter.val() || [];
+            $drugSubgroupFilter.empty(); 
+
+            let relevantSubgroups;
+            if (selectedGroups.length > 0) {
+                const selectedGroupsClean = selectedGroups.map(g => g.trim());
+                relevantSubgroups = [...new Set( allData.filter(row => row[25] && selectedGroupsClean.includes(row[25].trim())).map(row => row[26]) )].filter(Boolean).sort();
+            } else {
+                relevantSubgroups = allSubgroups;
+            }
+            
+            relevantSubgroups.forEach(subgroup => { $drugSubgroupFilter.append(new Option(subgroup, subgroup)); });
+
+            const newValidSelection = currentSubgroupSelection.filter(sg => relevantSubgroups.includes(sg));
+            $drugSubgroupFilter.val(newValidSelection).trigger('change.select2');
+            
+            table.draw();
+        });
+
+        $drugSubgroupFilter.on('change', function() {
+            selectedSubgroups = $(this).val() || [];
+            table.draw();
+        });
+
+        $('#clearGroupFilter').on('click', () => { $drugGroupFilter.val(null).trigger('change'); });
+        $('#clearSubgroupFilter').on('click', () => { $drugSubgroupFilter.val(null).trigger('change'); });
+
+        $('#globalSearch').on('keyup', function () { table.search(this.value).draw(); });
+        setView('default');
+        
+        // MODIFIED: Event listener for desktop table rows
+        $('#drugTable tbody').on('click', 'button.view-details-btn', function (e) {
+            e.stopPropagation(); // Prevent row click event if button is clicked
+            const rowData = table.row($(this).closest('tr')).data();
+            showDrugModal(rowData);
+        });
+        $('#drugTable tbody').on('click', 'tr', function () {
+             const rowData = table.row(this).data();
+             showDrugModal(rowData);
+        });
+
+        // NEW: Event listener for mobile card view buttons
+        $('#mobileCardView').on('click', '.view-details-btn-mobile', function() {
+            const rowIndex = $(this).data('row-index');
+            const rowData = table.row(rowIndex).data();
+            showDrugModal(rowData);
+        });
+        
+        // NEW: Update mobile view whenever the table is redrawn (filtered, searched, etc.)
+        table.on('draw', () => updateMobileView(table));
+        updateMobileView(table); // Initial render
+
+        $('#drugDetailModal').on('click', '.unlock-cost-btn', function(e) { e.stopPropagation(); const unlockButton = $(this); const valueContainer = unlockButton.closest('.detail-item').find('.value-container'); unlockButton.hide(); const formHtml = `<div class="input-group input-group-sm"><input type="password" class="form-control inline-password-input" placeholder="Password..."><button class="btn btn-primary inline-submit-btn" type="button">OK</button></div><div class="inline-error-msg" style="display:none;">Incorrect Password</div>`; valueContainer.html(formHtml); valueContainer.find('.inline-password-input').focus(); });
+        $('#drugDetailModal').on('click', '.inline-submit-btn', function(e) { e.stopPropagation(); const submitButton = $(this); const inputField = submitButton.siblings('.inline-password-input'); const valueContainer = submitButton.closest('.value-container'); const errorMsg = valueContainer.find('.inline-error-msg'); const password = inputField.val(); if (password === 'rxccc') { passwordVerified = true; const realCost = valueContainer.data('real-value'); valueContainer.html(realCost); } else { errorMsg.show().delay(2000).fadeOut(); inputField.val('').focus(); } });
+        $('#drugDetailModal').on('keypress', '.inline-password-input', function(e) { if (e.which === 13) { e.preventDefault(); $(this).siblings('.inline-submit-btn').click(); } });
+    
+        $('#drugDetailModal').on('hidden.bs.modal', function () {
+            $(this).find('[data-bs-toggle="tooltip"]').tooltip('dispose');
+            if (lineChartInstance) lineChartInstance.destroy();
+            if (pieChartInstance) pieChartInstance.destroy();
+            $(this).data('drug-name', '');
+        });
+    }
+    
+    function setView(viewType) { 
+        if (!table) return;
+        if (viewType === 'all' || viewType === 'purchasing') {
+            const context = { forceReauth: true, view: viewType };
+            promptPassword(() => {
+                applyView(viewType);
+            }, context);
+        } else {
+             applyView(viewType);
+        }
+    }
+    
+    // NEW: Separated the visual application of the view
+    function applyView(viewType) {
+        if (!table) return;
+        // Update active pill
+        $('#viewSelector .nav-link').removeClass('active');
+        $(`#viewSelector .nav-link[data-view="${viewType}"]`).addClass('active');
+
+        if (viewType === 'all') { 
+            table.columns(':not(.modal-only)').visible(true); 
+            table.columns('.modal-only').visible(false); 
+        } else { 
+            table.columns().visible(false); 
+            table.columns('.all-column').visible(true); 
+            if (viewType === 'default') table.columns('.default-column').visible(true); 
+            else if (viewType === 'purchasing') table.columns('.purchasing-column').visible(true); 
+            else if (viewType === 'rate') table.columns('.rate-column').visible(true); 
+        } 
+        table.columns.adjust().draw(false); 
+    }
+
+    // MODIFIED: Event listener for new view selector
+    $('#viewSelector').on('click', '.nav-link', function(e) {
+        e.preventDefault();
+        const viewType = $(this).data('view');
+        // The actual logic is now in setView, which includes the password prompt
+        setView(viewType);
+    });
+    
+    $('#exportButton').on('click', () => {
+        let activeView = $('#viewSelector .nav-link.active').data('view') || 'default';
+
+        promptPassword(() => { 
+            const visibleColumns = table.columns(':visible').toArray()[0]; 
+            const headers = table.columns(visibleColumns).header().toArray().map(h => $(h).text()); 
+            const data = [headers]; 
+            table.rows({ search: 'applied' }).every(function () { 
+                const rowData = this.data(); 
+                const visibleData = visibleColumns.map(index => rowData[index]); 
+                data.push(visibleData); 
+            }); 
+            const wb = XLSX.utils.book_new(); 
+            const ws = XLSX.utils.aoa_to_sheet(data); 
+            XLSX.utils.book_append_sheet(wb, ws, "Drug Master Data"); 
+            XLSX.writeFile(wb, `drug_master_${activeView}_view.xlsx`); 
+            showSwalSuccess('Excel exported successfully!'); 
+        }, { forceReauth: true, view: activeView });
+    });
+    
+    function promptPassword(callback, context = {}) { 
+        const { forceReauth = false, view = null } = context;
+
+        let requiresAuth = false;
+        if (forceReauth) {
+            requiresAuth = true;
+        } else if (view === 'purchasing' || view === 'all') {
+            requiresAuth = !passwordVerified;
+        }
+
+        if (!requiresAuth) {
+            callback();
+            return;
+        }
+        
+        Swal.fire({ 
+            title: 'Authentication Required', 
+            input: 'password', 
+            inputPlaceholder: 'Enter your password', 
+            inputAttributes: { autocapitalize: 'off', autocorrect: 'off' }, 
+            showCancelButton: true, 
+            confirmButtonText: 'Submit', 
+            showLoaderOnConfirm: true, 
+            preConfirm: (password) => { 
+                let correctPassword = 'rxccc';
+                if (view && exportPasswords[view]) {
+                    correctPassword = exportPasswords[view];
+                }
+
+                if (password === correctPassword) { 
+                    return true; 
+                } else { 
+                    Swal.showValidationMessage('Incorrect password'); 
+                    return false; 
+                } 
+            }, 
+            allowOutsideClick: () => !Swal.isLoading() 
+        }).then((result) => { 
+            if (result.isConfirmed) { 
+                if (view === 'all' || view === 'purchasing') {
+                    passwordVerified = true; 
+                }
+                callback(); 
+            } else {
+                // If user cancels, revert the active pill to the last known safe view
+                const lastView = $('#viewSelector .nav-link.active').data('view');
+                if (lastView === 'all' || lastView === 'purchasing') {
+                    applyView('default');
+                }
+            }
+        }); 
+    }
+
+    function showSwalSuccess(message) { Swal.fire({ icon: 'success', title: 'Success!', text: message, timer: 2000, showConfirmButton: false }); }
+    
+    $('.contact-trigger').on('click', function() {
+        const drugName = $('#drugDetailModal').data('drug-name');
+        const contactForm = $('#contactForm');
+        contactForm.trigger('reset');
+
+        if (drugName) {
+            contactForm.find('input[name="topic"][value="ขอแก้ไขข้อมูลยา"]').prop('checked', true);
+            contactForm.find('#message').val(`[Drug: ${drugName}]\n\n`);
+        }
+        contactModal.show();
+    });
+
+    $('#contactForm').on('submit', function(event) {
+        event.preventDefault();
+        const contactWebAppUrl = 'https://script.google.com/macros/s/AKfycbyH_ULtPI5Wat_VmNY7smo7Ytq2jfk0DcKgFmjFQU5FXTyG2ICT9-5ro4Bj70TQ0tjS/exec'; 
+        const form = this;
+        const submitButton = $(form).find('button[type="submit"]');
+        const originalButtonText = submitButton.html();
+
+        submitButton.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> กำลังส่ง...');
+
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+        data.source = 'Drug Master';
+
+        fetch(contactWebAppUrl, { method: 'POST', mode: 'no-cors', cache: 'no-cache', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data), redirect: 'follow' })
+        .then(response => {
+            contactModal.hide();
+            form.reset();
+            Swal.fire({ icon: 'success', title: 'ส่งข้อมูลสำเร็จ', text: 'ขอบคุณสำหรับข้อมูลครับ', timer: 2000, showConfirmButton: false });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: 'ไม่สามารถส่งข้อมูลได้: ' + error.message });
+        })
+        .finally(() => {
+            submitButton.prop('disabled', false).html(originalButtonText);
+        });
+    });
+
+    function logVisitAndTrackTime() {
+        const sessionStartTime = Date.now();
+        let totalHiddenTime = 0, lastHiddenTime = 0;
+        fetch(webAppUrl, { method: 'POST', mode: 'cors', cache: 'no-cache', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'log_visit', userAgent: navigator.userAgent, screenResolution: `${screen.width}x${screen.height}`, viewportSize: `${window.innerWidth}x${window.innerHeight}`, language: navigator.language }) })
+        .then(response => response.ok ? response.json() : response.text().then(text => Promise.reject(new Error(text))))
+        .then(data => { if (data && data.status === 'success' && data.count) { $('#viewCountValue').text(formatNumber(data.count, 0)); $('#viewCounter').css('display', 'inline-flex'); } else { throw new Error(data.message || 'Invalid data'); }})
+        .catch(error => { console.error('Error during visit log:', error); $('#viewCounter').hide(); });
+        document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { lastHiddenTime = Date.now(); } else if (document.visibilityState === 'visible' && lastHiddenTime > 0) { totalHiddenTime += (Date.now() - lastHiddenTime); }});
+        window.addEventListener('beforeunload', () => { if (document.visibilityState === 'hidden' && lastHiddenTime > 0) { totalHiddenTime += (Date.now() - lastHiddenTime); } const activeDurationSeconds = Math.round((Date.now() - sessionStartTime - totalHiddenTime) / 1000); if (navigator.sendBeacon) { navigator.sendBeacon(webAppUrl, new Blob([JSON.stringify({ action: 'log_session', duration: Math.max(0, activeDurationSeconds), userAgent: navigator.userAgent })], { type: 'text/plain;charset=utf-8' })); }});
+    }
+
+    loadAllDataAndInitTable();
+    logVisitAndTrackTime();
+});
+</script>
 </body>
 </html>
-
 
 
 
